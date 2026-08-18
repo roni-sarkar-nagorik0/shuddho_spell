@@ -55,57 +55,62 @@ and 2. No feature starts without it. **Never read the file** — existence check
 
 ## NEXT
 
-> **Phase 0 · F0.2 — Confirm or amend the phase list and the feature list in `PROGRESS.md`**
-> Branch: `docs/00-architecture-record`
+> **Phase 1 · F1.14 — Typed fetch client validating every response, throwing `ApiError` on mismatch**
+> Branch: `feat/01-app-scaffold`
+> Then F1.16 (local Supabase), then Phase 2 — database schema.
 
 Update this block every time a feature is finished.
 
 ---
 
 ## Phase 0 — Specification and architecture record
-Branch `docs/00-architecture-record` · Status: `IN PROGRESS`
+Branch `docs/00-architecture-record` · Status: `COMPLETE`
 
 - [x] **F0.1** (2026-08-18) Write `ARCHITECTURE.md` — layer diagram, folder tree, token/port table, DB table list, unspecified-decisions section
   - Test: all five sections present; every port in `05-domain-model.md` appears in the token table
-- [ ] **F0.2** Confirm or amend the phase list and the feature list in this file
+- [x] **F0.2** (2026-08-18) Confirm or amend the phase list and the feature list in this file
   - Test: every phase in `BUILD-ORDER-COMPLETE.md` has a matching section here
-- [ ] **F0.3** Confirm `.env.example` covers every variable the design needs
+- [x] **F0.3** (2026-08-18) Confirm `.env.example` covers every variable the design needs
   - Test: every variable referenced in the docs appears in `.env.example` with a comment
 
 ---
 
 ## Phase 1 — App scaffold, tooling, contracts
-Branch `feat/01-app-scaffold` · Status: `NOT STARTED`
+Branch `feat/01-app-scaffold` · Status: `IN PROGRESS`
 
-- [ ] **F1.1** Single Next.js 15 app at the repo root — one `package.json`, no monorepo, no separate server project
+- [x] **F1.1** (2026-08-18) Single Next.js 15 app at the repo root — one `package.json`, no monorepo, no separate server project
   - Test: `pnpm dev`, `build`, `lint`, `typecheck`, `test` all run; `git ls-files | grep -c "^apps/"` is 0
-- [ ] **F1.2** Strict tsconfig with every required flag
+- [x] **F1.2** (2026-08-18) Strict tsconfig with every required flag
   - Test: an unchecked index access fails typecheck
-- [ ] **F1.3** ESLint flat config — `typescript-eslint` strict-type-checked, `import/no-cycle`, prettier
+- [x] **F1.3** (2026-08-18) ESLint flat config — `typescript-eslint` strict-type-checked, `import/no-cycle`, prettier
   - Test: a deliberate import cycle fails lint
-- [ ] **F1.4** `eslint-plugin-boundaries` — five zones: domain, application, infrastructure, presentation, app
+- [x] **F1.4** (2026-08-18) `eslint-plugin-boundaries` — five zones: domain, application, infrastructure, presentation, app
   - Test: `domain → infrastructure` fails lint; `src/app → domain` fails lint (paste both, then remove)
-- [ ] **F1.5** The `type`-alias-on-object ban
+- [x] **F1.5** (2026-08-18) The `type`-alias-on-object ban
   - Test: `type Foo = { a: string }` fails lint (paste output, then remove)
-- [ ] **F1.6** `src/contracts` — `IApiResponse<T>`, `IProblemDetails`, `IPaginatedResult<T>` with interface-first + `satisfies`
+- [x] **F1.6** (2026-08-18) `src/contracts` — `IApiResponse<T>`, `IProblemDetails`, `IPaginatedResult<T>` with interface-first + `satisfies`
   - Test: a schema drifting from its interface fails typecheck
-- [ ] **F1.7** `src/lib/env.ts` — split server/public Zod schemas, `server-only` on the server half
+- [x] **F1.7** (2026-08-18) `src/lib/env.ts` — split server/public Zod schemas, `server-only` on the server half
   - Test: removing a required var stops boot and names it; importing the server env from a Client Component fails the build
-- [ ] **F1.8** `src/lib/supabase/` — session client + `server-only` service client
+- [x] **F1.8** (2026-08-18) `src/lib/supabase/` — session client + `server-only` service client
   - Test: grep finds exactly two `createClient` call sites; the service client cannot be imported client-side
-- [ ] **F1.9** `withApi` wrapper — auth, Zod body/query/params, rate limit, request id, pino, problem+json
+- [~] **F1.9** `withApi` wrapper — auth, Zod body/query/params, rate limit, request id, pino, problem+json
+  - Built: auth, Zod body/query, request id, pino, problem+json. **Remaining: rate limiting**, which
+    needs the Postgres-backed `IRateLimiter` and therefore Phase 2. Finish it there, not here.
   - Test: a bad body returns problem+json with a stable `code`; a request id appears in the log line
-- [ ] **F1.10** `src/composition/` — per-request container factory
+- [x] **F1.10** (2026-08-18) `src/composition/` — per-request container factory
   - Test: a use case can be constructed with fakes and no container at all
-- [ ] **F1.11** `/api/health`, `/api/ready`, `/api/v1/openapi.json`
+- [~] **F1.11** `/api/health`, `/api/ready`, `/api/v1/openapi.json`
+  - Built: `/api/health` and `/api/ready`, both unauthenticated. **Remaining: `/api/v1/openapi.json`**,
+    which must be generated from the v1 Zod schemas — none exist until Phase 4/5.
   - Test: all three respond 200 unauthenticated; the OpenAPI doc is generated from the Zod schemas
-- [ ] **F1.12** Tailwind with the exact tokens and four fonts
+- [x] **F1.12** (2026-08-18) Tailwind with the exact tokens and four fonts
   - Test: every token from `12-design-system.md` resolves in the Tailwind theme
-- [ ] **F1.13** `next-intl` with `en` + `bn` catalogues
+- [x] **F1.13** (2026-08-18) `next-intl` with `en` + `bn` catalogues
   - Test: rendering in `bn` returns Bangla, not a missing-key fallback
 - [ ] **F1.14** Typed fetch client validating every response, throwing `ApiError` on mismatch
   - Test: a mocked malformed response throws `ApiError`, not a render crash
-- [ ] **F1.15** Vitest (unit + integration + component) and Playwright configured
+- [x] **F1.15** (2026-08-18) Vitest (unit + integration + component) and Playwright configured
   - Test: one example test of each kind runs green
 - [ ] **F1.16** Local Supabase setup + `.env.example` + README steps
   - Test: a clean checkout reaches a running local Supabase and a booting app using only the README
