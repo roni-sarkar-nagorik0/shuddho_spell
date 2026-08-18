@@ -55,7 +55,7 @@ and 2. No feature starts without it. **Never read the file** — existence check
 
 ## NEXT
 
-> **Phase 2 · F2.3 — `004_exam_tables`**
+> **Phase 2 · F2.4 — `005_notification_tables` + `006_certificates`**
 > Branch: `feat/02-database-schema`
 > Migrations now run for real: `pnpm db:migrate` against hosted Supabase, and every migration
 > is applied from empty inside a WASM Postgres (PGlite) by `migrations.apply.test.ts` in CI.
@@ -132,7 +132,10 @@ Branch `feat/02-database-schema` · Status: `IN PROGRESS`
     `review_items`, `mastery_records`, `streak_records`. `profile_id` is denormalised onto
     every child so an RLS policy in 008 never has to join to find the owner.
   - Test: every learner table has `profile_id` with `on delete cascade`
-- [ ] **F2.3** `004_exam_tables`
+- [x] **F2.3** (2026-08-18) `004_exam_tables`
+  - `exam_definitions`, `exam_sections`, `exam_attempts`, `exam_questions`, `exam_answers`.
+    A partial unique index allows one `in_progress` attempt per learner per exam, and
+    `exam_answers` is unique per question, so a replayed save updates rather than duplicates.
   - Test: score columns are `numeric`, never `float`
 - [ ] **F2.4** `005_notification_tables` + `006_certificates`
   - Test: the notification idempotency unique key `(profile_id, type, scheduled_for)` exists
@@ -470,6 +473,7 @@ Newest first. One line per finished feature: date · id · what · test result.
 
 | Date | Feature | What landed | Tests |
 | --- | --- | --- | --- |
+| 2026-08-18 | F2.3 | `004_exam_tables` — definitions, sections, attempts, questions, answers; one live attempt per exam enforced by a partial unique index; every score `numeric` | `pnpm test` 61/61 — 23 against real Postgres · typecheck, lint green |
 | 2026-08-18 | F2.2 | `003_learner_tables` — profile + sessions, attempts, review queue, mastery, streaks; `profile_id` on every child, cascading from `auth.users` down | `pnpm test` 54/54 — 16 applied against real Postgres, incl. a full delete-the-user cascade · typecheck, lint green |
 | 2026-08-18 | F2.1 | `001_extensions` + `002_content_tables` (7 content tables, RLS on, checks not enums) · `pnpm db:migrate` runner over `DATABASE_URL` — no Docker, no Supabase CLI | `pnpm test` 47/47 — 9 of them apply the migrations from empty in PGlite · typecheck, lint, build green |
 | 2026-08-18 | F1.16 | Hosted-Supabase setup path — README getting-started, `.env.example` rewrite, `pnpm setup:check` doctor; **Docker removed everywhere** | `pnpm test` 26/26 · clean-clone walkthrough · typecheck, lint, build green |

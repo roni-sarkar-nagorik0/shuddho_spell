@@ -54,15 +54,21 @@ const CONTENT_TABLES: readonly string[] = [
 /** Every one of these is private to one learner and carries `profile_id`. */
 const LEARNER_TABLES: readonly string[] = [
   'attempts',
+  'exam_answers',
+  'exam_attempts',
   'lesson_sessions',
   'mastery_records',
   'review_items',
   'streak_records',
 ];
 
+/** Global exam content, plus exam_questions, which belongs to an attempt. */
+const EXAM_TABLES: readonly string[] = ['exam_definitions', 'exam_sections', 'exam_questions'];
+
 const EXPECTED_TABLES: readonly string[] = [
   ...CONTENT_TABLES,
   ...LEARNER_TABLES,
+  ...EXAM_TABLES,
   // The root of the learner graph: owned by an auth.users row, not by a profile.
   'learner_profiles',
 ]
@@ -282,9 +288,39 @@ describe('migrations against an empty database', () => {
         [profileId],
       );
 
+      // An exam attempt with a question and an answer, so the cascade is proved
+      // through the two-hop path (profile → attempt → question → answer) too.
+      const definition = await db.query<{ readonly id: string }>(
+        `insert into public.exam_definitions
+           (code, title, duration_seconds, question_count, pass_percent, max_attempts,
+            cooldown_hours, unlock_day_standard, unlock_day_sprint)
+         values ('milestone1', 'Milestone 1', 2700, 60, 70.00, 3, 24, 7, 5)
+         returning id`,
+      );
+      const attempt = await db.query<{ readonly id: string }>(
+        `insert into public.exam_attempts
+           (profile_id, definition_id, attempt_number, status, started_at, server_deadline_at, seed)
+         values ($1, $2, 1, 'in_progress', now(), now() + interval '45 minutes', 'seed-cascade')
+         returning id`,
+        [profileId, definition.rows[0]?.id],
+      );
+      const question = await db.query<{ readonly id: string }>(
+        `insert into public.exam_questions
+           (attempt_id, section_code, order_index, type, payload, correct_answer)
+         values ($1, 'dictation', 0, 'dictation', '{"prompt":"knowledge"}'::jsonb,
+                 '{"value":"knowledge"}'::jsonb)
+         returning id`,
+        [attempt.rows[0]?.id],
+      );
+      await db.query(
+        `insert into public.exam_answers (question_id, attempt_id, profile_id, submitted_value)
+         values ($1, $2, $3, 'nowledge')`,
+        [question.rows[0]?.id, attempt.rows[0]?.id, profileId],
+      );
+
       await db.query(`delete from auth.users where id = $1`, [userId]);
 
-      for (const table of ['learner_profiles', ...LEARNER_TABLES]) {
+      for (const table of ['learner_profiles', ...LEARNER_TABLES, 'exam_questions']) {
         const left = await db.query<{ readonly count: string }>(
           `select count(*)::text as count from public.${table}`,
         );
@@ -368,6 +404,147 @@ describe('migrations against an empty database', () => {
           [profile.rows[0]?.id],
         ),
       ).rejects.toThrow(/review_items_interval_index_range/);
+    });
+  });
+
+  describe('exam tables', () => {
+    /**
+     * Every exam test needs a learner and an exam to attach an attempt to. There
+     * are only ever five exams and `code` is unique, so the definition is
+     * upserted — a fresh insert per test would collide, which is the constraint
+     * doing its job rather than a problem to work around.
+     */
+    async function fixture(email: string, code: string): Promise<{
+      readonly profileId: string | undefined;
+      readonly definitionId: string | undefined;
+    }> {
+      const user = await db.query<{ readonly id: string }>(
+        `insert into auth.users (email) values ($1) returning id`,
+        [email],
+      );
+      const profile = await db.query<{ readonly id: string }>(
+        `insert into public.learner_profiles (user_id, display_name)
+         values ($1, 'Exam Test') returning id`,
+        [user.rows[0]?.id],
+      );
+      const definition = await db.query<{ readonly id: string }>(
+        `insert into public.exam_definitions
+           (code, title, duration_seconds, question_count, pass_percent, max_attempts,
+            cooldown_hours, unlock_day_standard, unlock_day_sprint)
+         values ($1, 'Exam', 3600, 80, 75.00, 3, 24, 14, 11)
+         on conflict (code) do update set title = excluded.title
+         returning id`,
+        [code],
+      );
+      return { profileId: profile.rows[0]?.id, definitionId: definition.rows[0]?.id };
+    }
+
+    it('allows only one in-progress attempt per learner per exam', async () => {
+      const { profileId, definitionId } = await fixture('active@example.com', 'milestone2');
+      const start = `insert into public.exam_attempts
+          (profile_id, definition_id, attempt_number, status, started_at, server_deadline_at, seed)
+        values ($1, $2, $3, 'in_progress', now(), now() + interval '60 minutes', 'seed')`;
+
+      await db.query(start, [profileId, definitionId, 1]);
+      await expect(db.query(start, [profileId, definitionId, 2])).rejects.toThrow(
+        /exam_attempts_one_active_per_exam/,
+      );
+
+      // Finishing the first frees the slot — the index is partial, not absolute.
+      await db.query(
+        `update public.exam_attempts
+            set status = 'failed', submitted_at = now(), score_percent = 41.50, passed = false
+          where profile_id = $1`,
+        [profileId],
+      );
+      await db.query(start, [profileId, definitionId, 2]);
+    });
+
+    it('refuses a second answer to the same question', async () => {
+      const { profileId, definitionId } = await fixture('answer@example.com', 'milestone3');
+      const attempt = await db.query<{ readonly id: string }>(
+        `insert into public.exam_attempts
+           (profile_id, definition_id, attempt_number, status, started_at, server_deadline_at, seed)
+         values ($1, $2, 1, 'in_progress', now(), now() + interval '60 minutes', 'seed')
+         returning id`,
+        [profileId, definitionId],
+      );
+      const question = await db.query<{ readonly id: string }>(
+        `insert into public.exam_questions
+           (attempt_id, section_code, order_index, type, payload, correct_answer)
+         values ($1, 'grammar_and_construction', 0, 'construction', '{}'::jsonb, '{}'::jsonb)
+         returning id`,
+        [attempt.rows[0]?.id],
+      );
+      const save = `insert into public.exam_answers (question_id, attempt_id, profile_id, submitted_value)
+                    values ($1, $2, $3, 'an answer')`;
+
+      await db.query(save, [question.rows[0]?.id, attempt.rows[0]?.id, profileId]);
+      await expect(
+        db.query(save, [question.rows[0]?.id, attempt.rows[0]?.id, profileId]),
+      ).rejects.toThrow(/exam_answers_question_unique/);
+    });
+
+    it('refuses an exam that is graded only halfway', async () => {
+      await expect(
+        db.query(
+          `insert into public.exam_definitions
+             (code, title, duration_seconds, question_count, pass_percent,
+              unlock_day_standard, unlock_day_sprint)
+           values ('final', 'Final', 7200, 150, 80.00, 28, 21)`,
+        ),
+      ).rejects.toThrow(/exam_definitions_grading_complete/);
+    });
+
+    it('accepts the diagnostic, which is ungraded by design', async () => {
+      const result = await db.query<{ readonly pass_percent: string | null }>(
+        `insert into public.exam_definitions
+           (code, title, duration_seconds, question_count, unlock_day_standard, unlock_day_sprint)
+         values ('diagnostic', 'Diagnostic', 1200, 30, 0, 0)
+         returning pass_percent`,
+      );
+      expect(result.rows[0]?.pass_percent).toBeNull();
+    });
+
+    it('will not let an attempt be in progress without a deadline', async () => {
+      const { profileId, definitionId } = await fixture('nodeadline@example.com', 'milestone1');
+      await expect(
+        db.query(
+          `insert into public.exam_attempts
+             (profile_id, definition_id, attempt_number, status, started_at, seed)
+           values ($1, $2, 1, 'in_progress', now(), 'seed')`,
+          [profileId, definitionId],
+        ),
+      ).rejects.toThrow(/exam_attempts_started_has_deadline/);
+    });
+
+    it('will not let an attempt be passed without a recorded outcome', async () => {
+      const { profileId, definitionId } = await fixture('nooutcome@example.com', 'final');
+      await expect(
+        db.query(
+          `insert into public.exam_attempts
+             (profile_id, definition_id, attempt_number, status, started_at, server_deadline_at, seed)
+           values ($1, $2, 1, 'passed', now(), now() + interval '120 minutes', 'seed')`,
+          [profileId, definitionId],
+        ),
+      ).rejects.toThrow(/exam_attempts_finished_has_outcome/);
+    });
+
+    it('scores exams as exact numerics, not floats', async () => {
+      const result = await db.query<{
+        readonly table_name: string;
+        readonly column_name: string;
+        readonly data_type: string;
+      }>(
+        `select table_name, column_name, data_type from information_schema.columns
+          where table_schema = 'public'
+            and column_name in ('score_percent', 'weight', 'awarded_points', 'pass_percent')
+          order by table_name, column_name`,
+      );
+      expect(result.rows.length).toBeGreaterThan(0);
+      for (const row of result.rows) {
+        expect(row.data_type, `${row.table_name}.${row.column_name} is not numeric`).toBe('numeric');
+      }
     });
   });
 });
