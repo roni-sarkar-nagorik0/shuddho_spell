@@ -54,10 +54,14 @@ const CONTENT_TABLES: readonly string[] = [
 /** Every one of these is private to one learner and carries `profile_id`. */
 const LEARNER_TABLES: readonly string[] = [
   'attempts',
+  'certificates',
   'exam_answers',
   'exam_attempts',
   'lesson_sessions',
   'mastery_records',
+  'notification_preferences',
+  'notifications',
+  'push_subscriptions',
   'review_items',
   'streak_records',
 ];
@@ -545,6 +549,303 @@ describe('migrations against an empty database', () => {
       for (const row of result.rows) {
         expect(row.data_type, `${row.table_name}.${row.column_name} is not numeric`).toBe('numeric');
       }
+    });
+  });
+  describe('notification tables', () => {
+    async function learner(email: string): Promise<string | undefined> {
+      const user = await db.query<{ readonly id: string }>(
+        `insert into auth.users (email) values ($1) returning id`,
+        [email],
+      );
+      const profile = await db.query<{ readonly id: string }>(
+        `insert into public.learner_profiles (user_id, display_name)
+         values ($1, 'Notify Test') returning id`,
+        [user.rows[0]?.id],
+      );
+      return profile.rows[0]?.id;
+    }
+
+    /**
+     * The feature's stated test. A cron invocation can be retried by the platform
+     * after a timeout, having already sent half its batch; this key is the only
+     * thing between that and a double-send.
+     */
+    it('refuses a second notification for the same learner, type and scheduled window', async () => {
+      const profileId = await learner('idempotent@example.com');
+      const send = `insert into public.notifications
+                      (profile_id, type, title, body, scheduled_for)
+                    values ($1, 'daily_reminder', 'Day 12 is ready', 'Twenty-five minutes today.',
+                            timestamptz '2026-03-04 20:00:00+06')`;
+
+      await db.query(send, [profileId]);
+      await expect(db.query(send, [profileId])).rejects.toThrow(
+        /notifications_idempotency_unique/,
+      );
+
+      const rows = await db.query<{ readonly count: string }>(
+        `select count(*)::text as count from public.notifications where profile_id = $1`,
+        [profileId],
+      );
+      expect(rows.rows[0]?.count, 'the retry got through').toBe('1');
+    });
+
+    it('carries the idempotency key on exactly (profile_id, type, scheduled_for)', async () => {
+      const result = await db.query<{ readonly column_name: string }>(
+        `select kcu.column_name
+           from information_schema.table_constraints tc
+           join information_schema.key_column_usage kcu
+             on kcu.constraint_name = tc.constraint_name
+          where tc.table_schema = 'public'
+            and tc.table_name = 'notifications'
+            and tc.constraint_name = 'notifications_idempotency_unique'
+          order by kcu.ordinal_position`,
+      );
+      expect(result.rows.map((row) => row.column_name)).toEqual([
+        'profile_id',
+        'type',
+        'scheduled_for',
+      ]);
+    });
+
+    it('lets tomorrow through — the key is scoped to the window, not to the type', async () => {
+      const profileId = await learner('tomorrow@example.com');
+      const send = `insert into public.notifications
+                      (profile_id, type, title, body, scheduled_for)
+                    values ($1, 'daily_reminder', 'Ready', 'Body', $2)`;
+
+      await db.query(send, [profileId, '2026-03-04 20:00:00+06']);
+      await db.query(send, [profileId, '2026-03-05 20:00:00+06']);
+
+      const rows = await db.query<{ readonly count: string }>(
+        `select count(*)::text as count from public.notifications where profile_id = $1`,
+        [profileId],
+      );
+      expect(rows.rows[0]?.count).toBe('2');
+    });
+
+    it('refuses a notification type that is not a named NotificationType', async () => {
+      const profileId = await learner('badtype@example.com');
+      await expect(
+        db.query(
+          `insert into public.notifications (profile_id, type, title, body, scheduled_for)
+           values ($1, 'marketing_blast', 'Buy', 'Now', now())`,
+          [profileId],
+        ),
+      ).rejects.toThrow(/notifications_type_check/);
+    });
+
+    it('refuses a delivery channel that does not exist', async () => {
+      const profileId = await learner('badchannel@example.com');
+      await expect(
+        db.query(
+          `insert into public.notifications
+             (profile_id, type, title, body, scheduled_for, channels_delivered)
+           values ($1, 'exam_result', 'Result', 'Body', now(), array['sms'])`,
+          [profileId],
+        ),
+      ).rejects.toThrow(/notifications_channels_delivered_check/);
+    });
+
+    /**
+     * Email is deferred to v2 and never written today. The point of this test is
+     * that adding it then needs no migration — the schema already permits it.
+     */
+    it('permits the email channel it will not use until v2', async () => {
+      const profileId = await learner('v2door@example.com');
+      await db.query(
+        `insert into public.notification_preferences (profile_id, type, channel, enabled)
+         values ($1, 'weekly_report', 'email', false)`,
+        [profileId],
+      );
+      const rows = await db.query<{ readonly count: string }>(
+        `select count(*)::text as count from public.notification_preferences
+          where profile_id = $1 and channel = 'email'`,
+        [profileId],
+      );
+      expect(rows.rows[0]?.count).toBe('1');
+    });
+
+    it('keeps one preference per learner, type and channel', async () => {
+      const profileId = await learner('prefs@example.com');
+      const pref = `insert into public.notification_preferences (profile_id, type, channel)
+                    values ($1, 'daily_reminder', 'push')`;
+
+      await db.query(pref, [profileId]);
+      await expect(db.query(pref, [profileId])).rejects.toThrow(
+        /notification_preferences_unique/,
+      );
+
+      // The same type on the other live channel is a different preference.
+      await db.query(
+        `insert into public.notification_preferences (profile_id, type, channel)
+         values ($1, 'daily_reminder', 'in_app')`,
+        [profileId],
+      );
+    });
+
+    it('accepts quiet hours that wrap midnight', async () => {
+      const profileId = await learner('quiet@example.com');
+      const result = await db.query<{
+        readonly quiet_hours_start: string;
+        readonly quiet_hours_end: string;
+      }>(
+        `insert into public.notification_preferences
+           (profile_id, type, channel, quiet_hours_start, quiet_hours_end, reminder_time)
+         values ($1, 'daily_reminder', 'push', '22:00', '07:00', '20:00')
+         returning quiet_hours_start, quiet_hours_end`,
+        [profileId],
+      );
+      expect(result.rows[0]?.quiet_hours_start).toBe('22:00:00');
+      expect(result.rows[0]?.quiet_hours_end).toBe('07:00:00');
+    });
+
+    it('refuses half a quiet-hours window', async () => {
+      const profileId = await learner('halfquiet@example.com');
+      await expect(
+        db.query(
+          `insert into public.notification_preferences
+             (profile_id, type, channel, quiet_hours_start)
+           values ($1, 'daily_reminder', 'push', '22:00')`,
+          [profileId],
+        ),
+      ).rejects.toThrow(/notification_preferences_quiet_hours_paired/);
+    });
+
+    it('refuses a push subscription that cannot be encrypted to', async () => {
+      const profileId = await learner('nokeys@example.com');
+      await expect(
+        db.query(
+          `insert into public.push_subscriptions (profile_id, endpoint, keys)
+           values ($1, 'https://push.example.com/a', '{"p256dh":"key"}'::jsonb)`,
+          [profileId],
+        ),
+      ).rejects.toThrow(/push_subscriptions_keys_complete/);
+    });
+
+    it('treats a push endpoint as one browser, not one per learner', async () => {
+      const first = await learner('device-a@example.com');
+      const second = await learner('device-b@example.com');
+      const subscribe = `insert into public.push_subscriptions (profile_id, endpoint, keys)
+                         values ($1, 'https://push.example.com/shared',
+                                 '{"p256dh":"key","auth":"secret"}'::jsonb)`;
+
+      await db.query(subscribe, [first]);
+      await expect(db.query(subscribe, [second])).rejects.toThrow(
+        /push_subscriptions_endpoint_key/,
+      );
+    });
+  });
+
+  describe('certificates', () => {
+    /** A certificate needs a learner who passed the final. */
+    async function passedFinal(email: string): Promise<{
+      readonly profileId: string | undefined;
+      readonly attemptId: string | undefined;
+    }> {
+      const user = await db.query<{ readonly id: string }>(
+        `insert into auth.users (email) values ($1) returning id`,
+        [email],
+      );
+      const profile = await db.query<{ readonly id: string }>(
+        `insert into public.learner_profiles (user_id, display_name)
+         values ($1, 'Certificate Test') returning id`,
+        [user.rows[0]?.id],
+      );
+      const definition = await db.query<{ readonly id: string }>(
+        `insert into public.exam_definitions
+           (code, title, duration_seconds, question_count, pass_percent, max_attempts,
+            cooldown_hours, unlock_day_standard, unlock_day_sprint)
+         values ('final', 'Final', 7200, 150, 80.00, 2, 48, 28, 21)
+         on conflict (code) do update set title = excluded.title
+         returning id`,
+      );
+      const attempt = await db.query<{ readonly id: string }>(
+        `insert into public.exam_attempts
+           (profile_id, definition_id, attempt_number, status, started_at, server_deadline_at,
+            submitted_at, score_percent, passed, seed)
+         values ($1, $2, 1, 'passed', now(), now() + interval '120 minutes', now(), 86.50, true,
+                 'seed-cert')
+         returning id`,
+        [profile.rows[0]?.id, definition.rows[0]?.id],
+      );
+      return { profileId: profile.rows[0]?.id, attemptId: attempt.rows[0]?.id };
+    }
+
+    it('issues one certificate per passed attempt, and only one', async () => {
+      const { profileId, attemptId } = await passedFinal('cert-one@example.com');
+      const issue = `insert into public.certificates
+                       (profile_id, exam_attempt_id, verification_code, learner_name, track,
+                        score_percent)
+                     values ($1, $2, $3, 'Certificate Test', 'standard28', 86.50)`;
+
+      await db.query(issue, [profileId, attemptId, 'A1B2-C3D4-E5F6']);
+      await expect(
+        db.query(issue, [profileId, attemptId, 'Z9Y8-X7W6-V5U4']),
+      ).rejects.toThrow(/certificates_attempt_unique/);
+    });
+
+    it('refuses a verification code that cannot be read off a screen', async () => {
+      const { profileId, attemptId } = await passedFinal('cert-format@example.com');
+      await expect(
+        db.query(
+          `insert into public.certificates
+             (profile_id, exam_attempt_id, verification_code, learner_name, track, score_percent)
+           values ($1, $2, 'a1b2c3d4e5f6', 'Certificate Test', 'standard28', 86.50)`,
+          [profileId, attemptId],
+        ),
+      ).rejects.toThrow(/certificates_verification_code_format/);
+    });
+
+    it('keeps a verification code unique across every certificate ever issued', async () => {
+      const first = await passedFinal('cert-dup-a@example.com');
+      const second = await passedFinal('cert-dup-b@example.com');
+      const issue = `insert into public.certificates
+                       (profile_id, exam_attempt_id, verification_code, learner_name, track,
+                        score_percent)
+                     values ($1, $2, 'DUP1-DUP2-DUP3', 'Certificate Test', 'standard28', 86.50)`;
+
+      await db.query(issue, [first.profileId, first.attemptId]);
+      await expect(db.query(issue, [second.profileId, second.attemptId])).rejects.toThrow(
+        /certificates_verification_code_key/,
+      );
+    });
+
+    it('will not let the attempt behind an issued certificate be deleted', async () => {
+      const { profileId, attemptId } = await passedFinal('cert-restrict@example.com');
+      await db.query(
+        `insert into public.certificates
+           (profile_id, exam_attempt_id, verification_code, learner_name, track, score_percent)
+         values ($1, $2, 'KEEP-THIS-ROW1', 'Certificate Test', 'standard28', 86.50)`,
+        [profileId, attemptId],
+      );
+      await expect(
+        db.query(`delete from public.exam_attempts where id = $1`, [attemptId]),
+      ).rejects.toThrow(/certificates_exam_attempt_id_fkey/);
+    });
+
+    it('refuses a revocation with no reason', async () => {
+      const { profileId, attemptId } = await passedFinal('cert-revoke@example.com');
+      await db.query(
+        `insert into public.certificates
+           (profile_id, exam_attempt_id, verification_code, learner_name, track, score_percent)
+         values ($1, $2, 'REVO-KE12-3456', 'Certificate Test', 'standard28', 86.50)`,
+        [profileId, attemptId],
+      );
+      await expect(
+        db.query(
+          `update public.certificates set revoked_at = now() where exam_attempt_id = $1`,
+          [attemptId],
+        ),
+      ).rejects.toThrow(/certificates_revocation_has_reason/);
+
+      // Revoking properly is an update, never a delete: a revoked certificate
+      // must still verify — as revoked.
+      await db.query(
+        `update public.certificates
+            set revoked_at = now(), revoked_reason = 'Issued against a voided attempt.'
+          where exam_attempt_id = $1`,
+        [attemptId],
+      );
     });
   });
 });

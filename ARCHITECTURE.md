@@ -440,6 +440,19 @@ today with no dependencies. It also asserts the inverse: a port `05-domain-model
 explicitly negates (`IMailer`) must be **absent** from the token table. When Vitest lands the
 check can be ported; until then a real, runnable, failing-when-wrong check beats a claim.
 
+**D12 — Columns `05` and `09` imply but do not name (F2.4).** `09-notifications.md` gives
+`Notification` a `severity` with no values, and an idempotency key on
+`(profile_id, type, scheduled_for)` without a `scheduled_for` column. So: `severity in
+('info', 'success', 'warning', 'critical')`, mapped to the design tokens in the UI rather
+than storing token names in the database; `scheduled_for` is the **window the dispatcher
+aimed at**, not when it ran, which is what keeps the key stable across a platform retry.
+`push_subscriptions.endpoint` is unique **globally**, not per learner: it identifies a
+browser install, so a re-subscribe moves the row instead of duplicating it and a push can
+never reach the wrong person. Certificates get `revoked_at` / `revoked_reason` because a
+revoked certificate must still verify — as revoked; deleting the row would make a forged
+copy of the code indistinguishable from one that never existed. The verification code format
+is `XXXX-XXXX-XXXX`, uppercase, because it is read off one screen and typed into another.
+
 ### Open — needs the user, not me
 
 **O1 — `02-typescript-rules.md` still says `packages/config` base tsconfig.** That is a

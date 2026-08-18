@@ -161,3 +161,74 @@ describe('002 content tables', () => {
     expect(sql).toMatch(/phoneme_id\s+uuid\s+not null references public\.phonemes \(id\) on delete restrict/);
   });
 });
+
+describe('005 notification tables', () => {
+  const notifications = files.find((file) => file.version === '005');
+  const sql = notifications === undefined ? '' : notifications.sql;
+  const created = tableBlocks(sql).map((block) => block.table);
+
+  it('creates exactly the three tables the design names', () => {
+    expect([...created].sort()).toEqual([
+      'notification_preferences',
+      'notifications',
+      'push_subscriptions',
+    ]);
+  });
+
+  it('enables row level security on every one of them', () => {
+    for (const table of created) {
+      expect(sql, `RLS is not enabled on ${table}`).toMatch(
+        new RegExp(`alter table public\\.${table}\\s+enable row level security`),
+      );
+    }
+  });
+
+  it('holds the idempotency key that stops a retried cron tick double-sending', () => {
+    expect(sql).toMatch(/unique \(profile_id, type, scheduled_for\)/);
+  });
+
+  it('keeps the email channel legal so v2 needs no migration, in both tables', () => {
+    const channelChecks = sql.match(/check \(channel in \([^)]*\)\)/g) ?? [];
+    expect(channelChecks.length).toBe(1);
+    expect(channelChecks[0]).toMatch(/'email'/);
+    expect(sql).toMatch(/channels_delivered <@ array\['in_app', 'push', 'email'\]/);
+  });
+
+  it('names every NotificationType from 09-notifications.md, in both tables', () => {
+    const types = [
+      'daily_reminder',
+      'streak_at_risk',
+      'review_items_due',
+      'exam_unlocked',
+      'exam_result',
+      'weekly_report',
+      'milestone_reached',
+      'product_update',
+    ];
+    for (const type of types) {
+      const occurrences = sql.split(`'${type}'`).length - 1;
+      expect(occurrences, `${type} is not constrained in both tables`).toBe(2);
+    }
+  });
+});
+
+describe('006 certificates', () => {
+  const certificates = files.find((file) => file.version === '006');
+  const sql = certificates === undefined ? '' : certificates.sql;
+
+  it('creates the one table, with row level security on', () => {
+    expect(tableBlocks(sql).map((block) => block.table)).toEqual(['certificates']);
+    expect(sql).toMatch(/alter table public\.certificates enable row level security/);
+  });
+
+  it('carries a public verification code, unique and format-checked', () => {
+    expect(sql).toMatch(/verification_code\s+text\s+not null unique/);
+    expect(sql).toMatch(/check \(verification_code ~ '\^\[A-Z0-9\]\{4\}-\[A-Z0-9\]\{4\}-\[A-Z0-9\]\{4\}\$'\)/);
+  });
+
+  it('protects the attempt behind an issued certificate from deletion', () => {
+    expect(sql).toMatch(
+      /exam_attempt_id\s+uuid\s+not null references public\.exam_attempts \(id\) on delete restrict/,
+    );
+  });
+});
