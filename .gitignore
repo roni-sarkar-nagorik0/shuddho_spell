@@ -38,3 +38,11 @@ yarn-error.log*
 .vercel/
 tsconfig.tsbuildinfo
 storybook-static/
+node_modules
+.next
+out
+coverage
+next-env.d.ts
+test-results
+playwright-report
+tsconfig.tsbuildinfo

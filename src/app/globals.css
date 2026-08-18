@@ -1,0 +1,64 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    font-size: 16px;
+  }
+
+  body {
+    @apply bg-neutral-50 font-sans text-base text-neutral-900 antialiased;
+  }
+
+  :lang(bn) {
+    @apply font-bengali;
+  }
+
+  h1,
+  h2,
+  h3 {
+    @apply font-display tracking-tight text-primary-900;
+  }
+
+  /* Every numeral in the product is mono and tabular — see 12-design-system.md. */
+  .num {
+    @apply font-mono tabular-nums;
+  }
+
+  :focus-visible {
+    @apply outline-none ring-2 ring-secondary-500 ring-offset-2 ring-offset-neutral-50;
+  }
+}
+
+@layer components {
+  /* The ruled-paper surface: 32px rules plus one tertiary margin rule. */
+  .paper {
+    background-image:
+      linear-gradient(to right, rgba(194, 74, 60, 0.35) 0 1px, transparent 1px),
+      repeating-linear-gradient(
+        to bottom,
+        transparent 0 31px,
+        theme('colors.hairline') 31px 32px
+      );
+    background-position:
+      64px 0,
+      0 0;
+    background-repeat: no-repeat, repeat;
+    background-size:
+      1px 100%,
+      100% 32px;
+  }
+
+  .label {
+    @apply text-label font-medium uppercase text-muted;
+  }
+
+  .card {
+    @apply rounded-card border border-hairline bg-surface;
+  }
+
+  .card-accent {
+    @apply border-l-2 border-l-tertiary-500;
+  }
+}
