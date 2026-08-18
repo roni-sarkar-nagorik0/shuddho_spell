@@ -10,6 +10,13 @@ For **each** checkbox in the gate:
 - paste the actual output
 - mark it pass or fail
 
+Then check `PROGRESS.md`:
+
+- [ ] every feature of this phase is `[x]`
+- [ ] the **Blocked / failed** table is empty
+- [ ] no feature is left `[~]`
+- [ ] the **Log** and the **NEXT** pointer are current
+
 Then run the cross-phase invariants at the bottom of the file:
 
 ```bash

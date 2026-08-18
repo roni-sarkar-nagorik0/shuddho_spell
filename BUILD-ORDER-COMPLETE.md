@@ -1,6 +1,9 @@
 # BUILD-ORDER-COMPLETE.md
 
-The build contract for ShuddhoSpell. **This file is the source of truth for what to do next.**
+The build contract for ShuddhoSpell: **what each phase must deliver and how it is proved.**
+
+For **which single feature to work on right now**, read [`PROGRESS.md`](PROGRESS.md). This
+file defines the phases; `PROGRESS.md` tracks the features inside them, one at a time.
 
 ## How to use it
 
@@ -10,7 +13,9 @@ The build contract for ShuddhoSpell. **This file is the source of truth for what
 4. **Branch.** From an up-to-date `dev`, never from `main`:
    `git checkout dev && git pull origin dev && git checkout -b feat/<phase>-<slug>`.
    One phase = one feature branch. The branch name for each phase is given below.
-5. Build only what is under *Deliverables*.
+5. Build the phase's features **one at a time**, in `PROGRESS.md` order. Each feature: build →
+   write its tests → run them → fix any failure before starting the next → mark `[x]`.
+   Never two features at once. Never a `[!]` left behind.
 6. Run the *Exit gate*. Paste the actual command output.
 7. **Only if the gate is fully green:** commit, push the feature branch, open a PR into `dev`.
    Never push to `dev` directly. Never touch `main`. See `.claude/docs/15-git-workflow.md`.
@@ -339,3 +344,6 @@ Status values: `NOT STARTED` · `IN PROGRESS` · `BLOCKED — <reason>` · `DONE
 - [ ] No secret in code; env still validated at boot.
 - [ ] `pnpm typecheck && pnpm lint && pnpm test` clean.
 - [ ] `ARCHITECTURE.md` updated with any unspecified decision made this phase.
+- [ ] Every feature of this phase is `[x]` in `PROGRESS.md`, each with passing tests.
+- [ ] The **Blocked / failed** table in `PROGRESS.md` is empty.
+- [ ] The `NEXT` pointer and the `Log` in `PROGRESS.md` are up to date.

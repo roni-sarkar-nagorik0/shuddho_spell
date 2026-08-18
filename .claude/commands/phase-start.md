@@ -5,8 +5,8 @@ description: Begin the next unfinished build phase under its documented boundari
 Start the next phase of the ShuddhoSpell build.
 
 1. Read `CLAUDE.md` in full.
-2. Read `BUILD-ORDER-COMPLETE.md` and identify the **first** phase whose Status is not `DONE`.
-   If a phase is `IN PROGRESS`, that is the one — do not skip past it.
+2. Read `PROGRESS.md`, then `BUILD-ORDER-COMPLETE.md`. Identify the **first** phase whose
+   Status is not `DONE`. If a phase is `IN PROGRESS`, that is the one — do not skip past it.
 3. Read every doc listed under that phase's *Reads*, plus `.claude/docs/15-git-workflow.md`.
 4. **Branch before writing anything.** From an up-to-date `dev`, never from `main`:
 
@@ -19,9 +19,10 @@ Start the next phase of the ShuddhoSpell build.
 5. Set its Status to `IN PROGRESS`.
 6. Restate, in five lines or fewer: the phase number, its branch, its deliverables, and its
    exit gate.
-7. Build **only** what is under *Deliverables*. Nothing from a later phase. No placeholder
-   stubs for future phases.
-8. When the deliverables are complete, run `/phase-check`, then `/ship`.
+7. Build the phase's features **one at a time**, in `PROGRESS.md` order, using
+   `/next-feature` for each. Never two at once. Never leave one `[!]`.
+8. Nothing from a later phase. No placeholder stubs for future phases.
+9. When every feature of the phase is `[x]`, run `/phase-check`, then `/ship`.
 
 If the phase's scope is ambiguous, state your interpretation and proceed — do not stall.
 If it contradicts a doc, stop and ask.

@@ -3,6 +3,9 @@
 Detailed, authoritative explanation of every feature of ShuddhoSpell. `CLAUDE.md` is the
 rules; `BUILD-ORDER-COMPLETE.md` is the order; these are the *what and why*.
 
+Before any of these, read [`PROGRESS.md`](../../PROGRESS.md) — it names the one feature you
+may work on right now.
+
 | Doc | Covers | Needed in phase |
 | --- | --- | --- |
 | [00-overview](00-overview.md) | the product, the problem, the 28-day program, the five exams | all |

@@ -1,8 +1,8 @@
 # CLAUDE.md — ShuddhoSpell
 
 Read this file at the start of **every** session, before writing a single line of code.
-Then read `BUILD-ORDER-COMPLETE.md` to find out which phase is next, and read the
-`.claude/docs/` files that phase points at.
+Then read **`PROGRESS.md`** — it tells you the one feature you are allowed to work on next —
+and `BUILD-ORDER-COMPLETE.md` for that phase's gate, and the `.claude/docs/` files it points at.
 
 ---
 
@@ -108,11 +108,40 @@ and tell the user it happened.
 
 ---
 
-## 5. Working boundaries — how you must operate
+## 5. One feature at a time — the working rhythm
+
+`PROGRESS.md` is the live state of the build. It is the file that answers "what next".
+Full rules are at the top of it; these are the ones you may never break:
+
+1. **Work on exactly one feature.** Find the first `[ ]` in the topmost unfinished phase of
+   `PROGRESS.md`, mark it `[~]`, and build only that. There is never more than one `[~]` in
+   the file.
+2. **Never start a second feature** because the current one is awkward, blocked in your head,
+   or "mostly done". Mostly done is not done.
+3. **Every feature ships with tests.** Each feature in `PROGRESS.md` lists its test cases.
+   Write them, run them, paste the output.
+4. **If a test fails: it becomes `[!]`, and it is now the only thing you work on.** Debug it,
+   find the actual cause, fix it, re-run. Do not move on. Do not park it. Do not "come back
+   to it later". The **Blocked / failed** table in `PROGRESS.md` must be empty before any new
+   feature starts.
+5. **Never fake a pass.** No deleting a test, no skipping it, no `.skip`, no loosening an
+   assertion, no disabling a lint rule to go green. A red test is information; a deleted red
+   test is a lie.
+6. **Mark `[x]` only when** it is built **and** its tests are green **and** it is merged into
+   `dev`. Then add the date, add a line to the **Log**, and move the **NEXT** pointer.
+7. **Never leave a feature incomplete at the end of a session.** If you genuinely cannot
+   finish, leave it `[~]` with a written note of exactly where it stands and what remains —
+   never silently.
+
+---
+
+## 6. Working boundaries — how you must operate
 
 1. **Build in phase order.** `BUILD-ORDER-COMPLETE.md` is the contract. Do not start
-   phase N+1 while phase N has an unmet exit gate.
-2. **One phase per session.** Finish it, run its exit gate, report the result, stop.
+   phase N+1 while phase N has an unmet exit gate, and do not start feature N+1 while
+   feature N is not `[x]` in `PROGRESS.md`.
+2. **One feature at a time; one phase per session.** Finish the feature, test it, mark it,
+   then take the next. At the end of the phase run its exit gate, report, stop.
    Do not silently roll into the next phase.
 3. **Never scaffold ahead.** No placeholder modules "for later", no `// TODO: implement
    in phase 7` stubs outside the current phase's scope.
@@ -132,10 +161,11 @@ and tell the user it happened.
 
 ---
 
-## 6. Documentation map
+## 7. Documentation map
 
 | Doc | Read it when |
 | --- | --- |
+| [`PROGRESS.md`](PROGRESS.md) | **Every session, first** — it names the one feature you may work on |
 | [`docs/00-overview.md`](.claude/docs/00-overview.md) | Always, once, first |
 | [`docs/01-architecture.md`](.claude/docs/01-architecture.md) | Any backend work |
 | [`docs/02-typescript-rules.md`](.claude/docs/02-typescript-rules.md) | Any code at all |
@@ -157,7 +187,7 @@ and tell the user it happened.
 
 ---
 
-## 7. Commands
+## 8. Commands
 
 ```bash
 pnpm dev            # all apps
@@ -170,12 +200,12 @@ pnpm content:seed   # validate + diff + apply course content
 pnpm db:reset       # local Supabase reset + migrate + seed
 ```
 
-Slash commands in `.claude/commands/`: `/phase-start`, `/phase-check`, `/ship`, `/layer-audit`,
-`/type-audit`, `/exam-attack`, `/content-gap`.
+Slash commands in `.claude/commands/`: `/next-feature`, `/phase-start`, `/phase-check`, `/ship`,
+`/layer-audit`, `/type-audit`, `/exam-attack`, `/content-gap`.
 
 ---
 
-## 8. Standing prohibitions
+## 9. Standing prohibitions
 
 - No `type` on object literals. No `enum`. No `any`. No `as`. No `!`.
 - No ORM. No Prisma. No repository that returns a raw Supabase row past infrastructure.
@@ -187,3 +217,6 @@ Slash commands in `.claude/commands/`: `/phase-start`, `/phase-check`, `/ship`, 
 - No transliterated "Bangla". Real Bangla script only.
 - No commit, push or merge to `main`. No force-push. No branch deletion. No `--no-verify`.
 - No push with a failing typecheck, lint, test or phase gate.
+- No second feature started while one is `[~]` or `[!]` in `PROGRESS.md`.
+- No `[x]` without written, passing tests. No skipped, deleted or weakened test to get there.
+- No feature left incomplete.

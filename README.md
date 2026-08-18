@@ -13,18 +13,32 @@ Google-only auth.
 
 1. Claude reads [`CLAUDE.md`](CLAUDE.md) automatically at the start of every session —
    the stack, the rules checklist, and the operating boundaries.
-2. [`BUILD-ORDER-COMPLETE.md`](BUILD-ORDER-COMPLETE.md) is the build contract: 14 phases,
+2. [`PROGRESS.md`](PROGRESS.md) is the live tracker: every feature, one checkbox each, with
+   its test cases. It answers "what next" — **one feature at a time**.
+3. [`BUILD-ORDER-COMPLETE.md`](BUILD-ORDER-COMPLETE.md) is the build contract: 14 phases,
    each with deliverables, an exit gate, and a status you flip only when the gate really passes.
-3. [`.claude/docs/`](.claude/docs/README.md) holds the detailed feature specifications.
+4. [`.claude/docs/`](.claude/docs/README.md) holds the detailed feature specifications.
 
-### Starting a session
+### Building the next feature
+
+```
+/next-feature
+```
+
+Claude finds the single next `[ ]` in `PROGRESS.md`, marks it `[~]`, builds only that, writes
+and runs its tests, fixes any failure before moving on, then marks it `[x]` and stops.
+
+If anything is `[!]` (failed), `/next-feature` works on **that** instead — nothing else starts
+until it is green.
+
+### Starting a phase
 
 ```
 /phase-start
 ```
 
-Claude reads the rules, finds the first unfinished phase, reads that phase's docs, and builds
-only that phase.
+Reads the rules, finds the first unfinished phase, cuts its branch from `dev`, and works its
+features one at a time.
 
 ### Finishing a session
 
@@ -57,6 +71,22 @@ It refuses to run on `main` or `dev`, and refuses to push on a red gate.
 ```
 Read CLAUDE.md and BUILD-ORDER-COMPLETE.md, then continue.
 ```
+
+## The working rhythm
+
+**One feature at a time.** `PROGRESS.md` holds every feature with a checkbox and its test cases:
+
+| Mark | Meaning |
+| --- | --- |
+| `[ ]` | not started |
+| `[~]` | in progress — only ever one in the whole file |
+| `[x]` | built, tested, green, merged into `dev` |
+| `[!]` | failed — blocks everything until it is fixed |
+
+The loop: pick the next `[ ]` → build only that → write and run its tests → **if it fails,
+debug and fix it before touching anything else** → mark `[x]` → move the NEXT pointer → stop.
+
+Nothing is marked `[x]` without passing tests, and no feature is ever left incomplete.
 
 ## Git rules
 

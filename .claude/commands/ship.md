@@ -30,7 +30,13 @@ Plus every checkbox of the current phase's exit gate in `BUILD-ORDER-COMPLETE.md
 **If anything is red: stop and report it.** Do not push. Do not delete or skip a test to go
 green. Do not disable a lint rule to go green. Do not use `--no-verify`.
 
-### 3. Check the diff for secrets
+### 3. Check `PROGRESS.md`
+
+The feature you are shipping must be `[x]` with its tests green, and the **Blocked / failed**
+table must be empty. If a feature is still `[!]` or `[~]`, fix or finish it first — do not ship
+around it.
+
+### 4. Check the diff for secrets
 
 ```bash
 git diff --staged
@@ -38,7 +44,7 @@ git diff --staged
 
 No key, token, `.env`, service-role credential or VAPID private key in the diff.
 
-### 4. Commit and push the feature branch
+### 5. Commit and push the feature branch
 
 ```bash
 git add -A
@@ -48,7 +54,7 @@ git push -u origin <feature-branch>
 
 Conventional commits, one logical change per commit.
 
-### 5. Open a PR into `dev`
+### 6. Open a PR into `dev`
 
 ```bash
 gh pr create --base dev --head <feature-branch>
