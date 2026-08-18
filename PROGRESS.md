@@ -55,7 +55,7 @@ and 2. No feature starts without it. **Never read the file** — existence check
 
 ## NEXT
 
-> **Phase 2 · F2.5 — `007_indexes`**
+> **Phase 2 · F2.6 — `008_rls_policies`**
 > Branch: `feat/02-database-schema`
 > Migrations now run for real: `pnpm db:migrate` against hosted Supabase, and every migration
 > is applied from empty inside a WASM Postgres (PGlite) by `migrations.apply.test.ts` in CI.
@@ -144,7 +144,11 @@ Branch `feat/02-database-schema` · Status: `IN PROGRESS`
     constraints and written by nothing — the v2 door, held open with no migration.
     A certificate is revoked by update, never by delete: it must still verify, as revoked.
   - Test: the notification idempotency unique key `(profile_id, type, scheduled_for)` exists
-- [ ] **F2.5** `007_indexes`
+- [x] **F2.5** (2026-08-18) `007_indexes`
+  - Five indexes created; `exam_answers (question_id)` and `exam_questions (attempt_id,
+    section_code, order_index)` were already btrees behind `unique (...)` from 004, so they
+    are commented rather than duplicated. Every index carries `comment on index` naming its
+    query, and the catalogue test enforces that for any non-constraint index added later.
   - Test: each index has a comment naming the query it serves; `explain` uses it
 - [ ] **F2.6** `008_rls_policies`
   - Test: **the two-user script** — user A cannot read B's attempts, review items, exam attempts, answers or notifications
@@ -478,6 +482,7 @@ Newest first. One line per finished feature: date · id · what · test result.
 
 | Date | Feature | What landed | Tests |
 | --- | --- | --- | --- |
+| 2026-08-18 | F2.5 | `007_indexes` — five indexes for the queries that run; the two already served by a `unique (...)` btree are documented, not duplicated; every index names its query in a `comment on index` | `pnpm test` 99/99 — 11 new cases, 5 of them `explain` against seeded PGlite · typecheck, lint green |
 | 2026-08-18 | F2.4 | `005_notification_tables` + `006_certificates` — idempotency key, wrapping quiet hours, globally-unique push endpoint, revocable certificate | 85 passed (7 files); 16 new PGlite cases + 8 static | 
 | 2026-08-18 | F2.3 | `004_exam_tables` — definitions, sections, attempts, questions, answers; one live attempt per exam enforced by a partial unique index; every score `numeric` | `pnpm test` 61/61 — 23 against real Postgres · typecheck, lint green |
 | 2026-08-18 | F2.2 | `003_learner_tables` — profile + sessions, attempts, review queue, mastery, streaks; `profile_id` on every child, cascading from `auth.users` down | `pnpm test` 54/54 — 16 applied against real Postgres, incl. a full delete-the-user cascade · typecheck, lint green |

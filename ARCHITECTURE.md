@@ -453,6 +453,23 @@ revoked certificate must still verify — as revoked; deleting the row would mak
 copy of the code indistinguishable from one that never existed. The verification code format
 is `XXXX-XXXX-XXXX`, uppercase, because it is read off one screen and typed into another.
 
+**D13 — A constraint's btree is the index; 007 documents it rather than repeating it (F2.5).**
+`03-database.md` lists seven access paths to index. Two of them —
+`exam_answers (question_id)` and `exam_questions (attempt_id, section_code, order_index)` —
+are already `unique (...)` constraints from `004`, and Postgres enforces a unique constraint
+with a btree on exactly those columns in exactly that order. Creating them again would add a
+second identical index to every write on the two hottest tables in an exam and serve no read
+the first does not. So `007` creates five indexes and carries `comment on index` for the two
+constraint-backed ones, which satisfies the doc's rule — an index exists only with the query
+it serves named in a comment — without paying for the duplicate.
+
+The same comment rule reaches `exam_attempts_one_active_per_exam`, the partial unique index
+`004` creates explicitly. It is both an integrity rule and the lookup behind crash-safe
+resume, so it stays where the rule it enforces lives and is commented in `007`, where the
+index rule is kept. The catalogue test draws the line at `pg_constraint`: an index backing a
+declared constraint exists for correctness and needs no query comment; an index somebody
+chose to create must name its reader.
+
 ### Open — needs the user, not me
 
 **O1 — `02-typescript-rules.md` still says `packages/config` base tsconfig.** That is a

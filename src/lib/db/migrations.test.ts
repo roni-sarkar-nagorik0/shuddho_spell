@@ -232,3 +232,68 @@ describe('006 certificates', () => {
     );
   });
 });
+
+describe('007 indexes', () => {
+  const indexes = files.find((file) => file.version === '007');
+  const sql = indexes === undefined ? '' : indexes.sql;
+
+  /** `create index if not exists <name>` — the name is what a comment must match. */
+  function createdIndexNames(source: string): readonly string[] {
+    const pattern = /create index if not exists\s+(\w+)/gi;
+    return [...source.matchAll(pattern)]
+      .map((match) => match[1])
+      .filter((name): name is string => name !== undefined);
+  }
+
+  function commentedIndexNames(source: string): readonly string[] {
+    const pattern = /comment on index public\.(\w+) is/gi;
+    return [...source.matchAll(pattern)]
+      .map((match) => match[1])
+      .filter((name): name is string => name !== undefined);
+  }
+
+  it('creates the access paths that are not already served by a unique constraint', () => {
+    expect([...createdIndexNames(sql)].sort()).toEqual([
+      'attempts_session_idx',
+      'lesson_sessions_profile_day_idx',
+      'notifications_profile_read_idx',
+      'review_items_profile_due_idx',
+      'words_rule_family_week_idx',
+    ]);
+  });
+
+  it('names the query every index it creates serves', () => {
+    const commented = new Set(commentedIndexNames(sql));
+    for (const name of createdIndexNames(sql)) {
+      expect(commented.has(name), `${name} has no comment naming its query`).toBe(true);
+    }
+  });
+
+  it('documents the two constraint-backed btrees instead of duplicating them', () => {
+    // 004 already indexes these three columns via `unique (...)`. A second
+    // identical index would cost every write and serve no read the first
+    // one does not.
+    for (const name of ['exam_answers_question_unique', 'exam_questions_attempt_section_order_unique']) {
+      expect(commentedIndexNames(sql), `${name} is undocumented`).toContain(name);
+      expect(createdIndexNames(sql), `${name} is duplicated`).not.toContain(name);
+    }
+  });
+
+  it('writes a comment that quotes a real select, not a description', () => {
+    const bodies = [...sql.matchAll(/comment on index public\.\w+ is\s*\n?\s*'([^']*)'/gi)]
+      .map((match) => match[1] ?? '');
+    expect(bodies.length).toBe(8);
+    for (const body of bodies) {
+      expect(body, `comment is not a query: ${body}`).toMatch(/select .* from \w+ where /i);
+    }
+  });
+
+  it('creates no index on a content table that nothing reads by', () => {
+    // Content is small and read whole; only `words` earns an index, and only
+    // because the lesson builder filters it.
+    const onContent = createdIndexNames(sql).filter((name) =>
+      /^(phonemes|rule_families|sentence_items|program_days|program_day_items|word_phonemes)_/.test(name),
+    );
+    expect(onContent).toEqual([]);
+  });
+});

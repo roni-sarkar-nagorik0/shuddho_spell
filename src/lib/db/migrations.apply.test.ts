@@ -848,4 +848,188 @@ describe('migrations against an empty database', () => {
       );
     });
   });
+
+  /**
+   * F2.5 — the indexes in 007 are proved by planning the queries their comments
+   * name, not by reading the SQL. A seeded table is the point: on an empty one
+   * the planner sequentially scans everything and an unused index looks
+   * identical to a missing one.
+   */
+  describe('007 indexes', () => {
+    let profileId = '';
+    let sessionId = '';
+    let ruleFamilyId = '';
+
+    beforeAll(async () => {
+      // 150 learners so a single-profile predicate is ~0.7% of each table and
+      // the planner has a real reason to prefer the index.
+      await db.exec(`
+        insert into auth.users (id, email)
+        select gen_random_uuid(), 'idx-fixture-' || g || '@example.com'
+          from generate_series(1, 150) g;
+
+        insert into public.learner_profiles (user_id, display_name)
+        select id, 'Index Fixture'
+          from auth.users
+         where email like 'idx-fixture-%';
+
+        insert into public.review_items (profile_id, item_id, item_type, due_at)
+        select p.id, gen_random_uuid(), 'word', now() + ((g - 10) || ' hours')::interval
+          from public.learner_profiles p, generate_series(1, 20) g
+         where p.display_name = 'Index Fixture';
+
+        insert into public.lesson_sessions (profile_id, day_index)
+        select p.id, g
+          from public.learner_profiles p, generate_series(1, 28) g
+         where p.display_name = 'Index Fixture';
+
+        insert into public.attempts
+          (session_id, profile_id, item_type, item_id, mode, submitted_value, is_correct, score)
+        select s.id, s.profile_id, 'word', gen_random_uuid(), 'dictation', 'beautiful', true, 100
+          from public.lesson_sessions s, generate_series(1, 2) g;
+
+        insert into public.notifications (profile_id, type, title, body, scheduled_for, sent_at, read_at)
+        select p.id, 'daily_reminder', 'Day is waiting', 'Ten minutes.',
+               now() - (g || ' days')::interval, now() - (g || ' days')::interval,
+               case when g % 3 = 0 then null else now() end
+          from public.learner_profiles p, generate_series(1, 20) g
+         where p.display_name = 'Index Fixture';
+
+        insert into public.rule_families (code, statement, examples, counterexamples)
+        select 'IDX_RF_' || g, 'A fixture rule family.',
+               array['one', 'two', 'three'], array['four', 'five']
+          from generate_series(1, 20) g;
+
+        insert into public.words
+          (text, ipa, syllables, bangla_sound, bangla_meaning, part_of_speech, rule_family_id, week_index)
+        select 'idxword' || g || '_' || replace(r.id::text, '-', ''), 'ˈbjuː-tɪ-fʊl',
+               array['beau', 'ti', 'ful'], 'বিউটিফুল', 'সুন্দর', 'noun', r.id, 1 + (g % 4)
+          from public.rule_families r, generate_series(1, 50) g
+         where r.code like 'IDX_RF_%';
+
+        analyze;
+      `);
+
+      const profile = await db.query<{ readonly id: string }>(
+        `select id from public.learner_profiles where display_name = 'Index Fixture' limit 1`,
+      );
+      profileId = profile.rows[0]?.id ?? '';
+
+      const session = await db.query<{ readonly id: string }>(
+        `select id from public.lesson_sessions where profile_id = $1 limit 1`,
+        [profileId],
+      );
+      sessionId = session.rows[0]?.id ?? '';
+
+      const family = await db.query<{ readonly id: string }>(
+        `select id from public.rule_families where code like 'IDX_RF_%' limit 1`,
+      );
+      ruleFamilyId = family.rows[0]?.id ?? '';
+    }, 120_000);
+
+    /** The plan as text. `costs off` keeps the assertion about access path, not estimates. */
+    async function planFor(sql: string): Promise<string> {
+      const result = await db.query<Record<string, string>>(`explain (costs off) ${sql}`);
+      return result.rows.map((row) => Object.values(row).join(' ')).join('\n');
+    }
+
+    it('seeded enough rows for the planner to have a choice', () => {
+      expect(profileId).not.toBe('');
+      expect(sessionId).not.toBe('');
+      expect(ruleFamilyId).not.toBe('');
+    });
+
+    it('every index 007 creates exists on the database', async () => {
+      const result = await db.query<{ readonly indexname: string }>(
+        `select indexname from pg_indexes where schemaname = 'public' order by indexname`,
+      );
+      const present = result.rows.map((row) => row.indexname);
+      for (const name of [
+        'attempts_session_idx',
+        'lesson_sessions_profile_day_idx',
+        'notifications_profile_read_idx',
+        'review_items_profile_due_idx',
+        'words_rule_family_week_idx',
+      ]) {
+        expect(present, `${name} was not created`).toContain(name);
+      }
+    });
+
+    it('carries a comment on every index in the schema, naming its query', async () => {
+      // The 03-database.md rule: an index exists only with the query it serves
+      // named in a comment. This checks the live catalogue, so an index added
+      // later without a comment fails here too.
+      // Constraint-backed btrees are excluded: Postgres builds those to enforce
+      // `unique (...)`, and they exist for correctness whether or not a query
+      // reads them. The rule governs indexes added for performance — the ones
+      // someone chose to create.
+      const result = await db.query<{
+        readonly indexname: string;
+        readonly description: string | null;
+      }>(`
+        select c.relname as indexname, d.description
+          from pg_class c
+          join pg_namespace n on n.oid = c.relnamespace
+          left join pg_description d on d.objoid = c.oid
+          left join pg_constraint con on con.conindid = c.oid
+         where c.relkind = 'i'
+           and n.nspname = 'public'
+           and con.oid is null
+         order by c.relname
+      `);
+      expect(result.rows.length).toBeGreaterThan(0);
+      for (const row of result.rows) {
+        expect(row.description ?? '', `${row.indexname} has no comment`).toMatch(/select .* from /i);
+      }
+    });
+
+    it('plans the due-review query with review_items_profile_due_idx', async () => {
+      const plan = await planFor(
+        `select id from public.review_items
+          where profile_id = '${profileId}' and due_at <= now()
+          order by due_at`,
+      );
+      expect(plan).toContain('review_items_profile_due_idx');
+    });
+
+    it('plans the session-attempts query with attempts_session_idx', async () => {
+      const plan = await planFor(
+        `select id from public.attempts where session_id = '${sessionId}'`,
+      );
+      expect(plan).toContain('attempts_session_idx');
+    });
+
+    it('plans the resume-a-day query with lesson_sessions_profile_day_idx', async () => {
+      const plan = await planFor(
+        `select id from public.lesson_sessions
+          where profile_id = '${profileId}' and day_index = 7`,
+      );
+      expect(plan).toContain('lesson_sessions_profile_day_idx');
+    });
+
+    it('plans the unread-notifications query with notifications_profile_read_idx', async () => {
+      const plan = await planFor(
+        `select id from public.notifications
+          where profile_id = '${profileId}' and read_at is null`,
+      );
+      expect(plan).toContain('notifications_profile_read_idx');
+    });
+
+    it('plans the content-selection query with words_rule_family_week_idx', async () => {
+      const plan = await planFor(
+        `select id from public.words
+          where rule_family_id = '${ruleFamilyId}' and week_index = 2`,
+      );
+      expect(plan).toContain('words_rule_family_week_idx');
+    });
+
+    it('serves the exam-answer lookup from the unique constraint, with no second index', async () => {
+      const result = await db.query<{ readonly indexname: string }>(
+        `select indexname from pg_indexes
+          where schemaname = 'public' and tablename = 'exam_answers'
+            and indexdef like '%(question_id)%'`,
+      );
+      expect(result.rows.map((row) => row.indexname)).toEqual(['exam_answers_question_unique']);
+    });
+  });
 });
