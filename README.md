@@ -19,48 +19,34 @@ Supabase · Clean Architecture · Google-only auth.
    each with deliverables, an exit gate, and a status you flip only when the gate really passes.
 4. [`.claude/docs/`](.claude/docs/README.md) holds the detailed feature specifications.
 
-### Building the next feature
+### The only command you need
 
 ```
-/next-feature
+/build
 ```
 
-Claude finds the single next `[ ]` in `PROGRESS.md`, marks it `[~]`, builds only that, writes
-and runs its tests, fixes any failure before moving on, then marks it `[x]` and stops.
+That is it. Run it, and Claude:
 
-If anything is `[!]` (failed), `/next-feature` works on **that** instead — nothing else starts
-until it is green.
+1. checks `.env.local` exists — stops if it doesn't
+2. reads the rules and the docs for the current phase
+3. picks the **one** next feature from `PROGRESS.md` (a failed `[!]` one first, if any)
+4. cuts the phase branch from `dev`
+5. builds only that feature
+6. writes and runs its tests
+7. if anything fails: marks it `[!]`, debugs, fixes, re-runs — starts nothing else
+8. marks it `[x]`, logs it, commits and pushes the feature branch
+9. **stops** and tells you what's next
 
-### Starting a phase
-
-```
-/phase-start
-```
-
-Reads the rules, finds the first unfinished phase, cuts its branch from `dev`, and works its
-features one at a time.
-
-### Finishing a session
-
-```
-/phase-check
-```
-
-Runs the phase's exit gate, pastes real output, and flips the status only if everything passed.
-
-### Shipping a phase
-
-```
-/ship
-```
-
-Runs the gate, then commits and pushes the **feature branch** and opens a PR into `dev`.
-It refuses to run on `main` or `dev`, and refuses to push on a red gate.
+Run `/build` again for the next feature. Repeat until the program is finished.
 
 ### Other commands
 
 | Command | Use |
 | --- | --- |
+| `/next-feature` | same loop, without the branch and ship steps |
+| `/phase-start` | set up a whole phase at once |
+| `/phase-check` | run the current phase's exit gate |
+| `/ship` | test, commit, push, PR into `dev` |
 | `/layer-audit` | find and fix Clean Architecture violations by adding ports |
 | `/type-audit` | convert illegitimate `type` aliases to interfaces |
 | `/exam-attack` | attack the exam engine's server authority |
@@ -68,9 +54,7 @@ It refuses to run on `main` or `dev`, and refuses to push on a red gate.
 
 ### If you start a fresh session mid-build
 
-```
-Read CLAUDE.md and BUILD-ORDER-COMPLETE.md, then continue.
-```
+Just run `/build` — it re-reads everything and picks up exactly where `PROGRESS.md` left off.
 
 ## The working rhythm
 

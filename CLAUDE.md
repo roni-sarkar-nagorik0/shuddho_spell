@@ -255,8 +255,12 @@ pnpm content:seed   # validate + diff + apply course content
 pnpm db:reset       # local Supabase reset + migrate + seed
 ```
 
-Slash commands in `.claude/commands/`: `/next-feature`, `/phase-start`, `/phase-check`, `/ship`,
-`/layer-audit`, `/type-audit`, `/exam-attack`, `/content-gap`.
+**`/build` is the single entry point.** It runs preflight → picks the one next feature →
+branches → builds → tests → fixes any failure → marks it `[x]` → commits and pushes → stops.
+Run it again for the next feature.
+
+Other commands in `.claude/commands/`: `/next-feature`, `/phase-start`, `/phase-check`,
+`/ship`, `/layer-audit`, `/type-audit`, `/exam-attack`, `/content-gap`.
 
 ---
 
