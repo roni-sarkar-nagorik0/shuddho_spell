@@ -55,7 +55,7 @@ and 2. No feature starts without it. **Never read the file** — existence check
 
 ## NEXT
 
-> **Phase 2 · F2.6 — `008_rls_policies`**
+> **Phase 2 · F2.7 — `correct_answer` protection (column policy or view)**
 > Branch: `feat/02-database-schema`
 > Migrations now run for real: `pnpm db:migrate` against hosted Supabase, and every migration
 > is applied from empty inside a WASM Postgres (PGlite) by `migrations.apply.test.ts` in CI.
@@ -150,7 +150,12 @@ Branch `feat/02-database-schema` · Status: `IN PROGRESS`
     are commented rather than duplicated. Every index carries `comment on index` naming its
     query, and the catalogue test enforces that for any non-constraint index added later.
   - Test: each index has a comment naming the query it serves; `explain` uses it
-- [ ] **F2.6** `008_rls_policies`
+- [x] **F2.6** (2026-08-18) `008_rls_policies`
+  - `current_profile_id()` (security definer, pinned search path) resolves the caller once;
+    every learner table gets the same select/insert/update pair, no delete anywhere. Content
+    is readable by any authenticated user and writable by none. `exam_questions` gets no
+    policy and no grant — refused at the privilege layer until F2.7 opens the safe view.
+    Public certificate verification ships as a view, per 006's note.
   - Test: **the two-user script** — user A cannot read B's attempts, review items, exam attempts, answers or notifications
 - [ ] **F2.7** `correct_answer` protection (column policy or view)
   - Test: a client-role select of `correct_answer` is denied
@@ -482,6 +487,7 @@ Newest first. One line per finished feature: date · id · what · test result.
 
 | Date | Feature | What landed | Tests |
 | --- | --- | --- | --- |
+| 2026-08-18 | F2.6 | `008_rls_policies` — revoke-first grants, one policy shape per learner table, no client delete, `exam_questions` unreachable, public certificate view | `pnpm test` 116/116 — 17 new, incl. the two-user script run as real `authenticated` roles · typecheck, lint green |
 | 2026-08-18 | F2.5 | `007_indexes` — five indexes for the queries that run; the two already served by a `unique (...)` btree are documented, not duplicated; every index names its query in a `comment on index` | `pnpm test` 99/99 — 11 new cases, 5 of them `explain` against seeded PGlite · typecheck, lint green |
 | 2026-08-18 | F2.4 | `005_notification_tables` + `006_certificates` — idempotency key, wrapping quiet hours, globally-unique push endpoint, revocable certificate | 85 passed (7 files); 16 new PGlite cases + 8 static | 
 | 2026-08-18 | F2.3 | `004_exam_tables` — definitions, sections, attempts, questions, answers; one live attempt per exam enforced by a partial unique index; every score `numeric` | `pnpm test` 61/61 — 23 against real Postgres · typecheck, lint green |

@@ -297,3 +297,42 @@ describe('007 indexes', () => {
     expect(onContent).toEqual([]);
   });
 });
+
+describe('008 RLS policies', () => {
+  const policies = files.find((file) => file.version === '008');
+  const sql = policies === undefined ? '' : policies.sql;
+
+  it('never grants the client a delete, on any table', () => {
+    // Learner history is not the client's to erase. The two-user script proves
+    // this at runtime; this catches it in review, where it is cheaper.
+    expect(sql, '008 writes a delete policy').not.toMatch(/for delete/i);
+    expect(withoutComments(sql), '008 grants delete').not.toMatch(/grant[^;]*\bdelete\b/i);
+  });
+
+  it('starts from revoke rather than trusting the default grants', () => {
+    expect(sql).toMatch(/revoke all on all tables in schema public from anon, authenticated/);
+  });
+
+  it('writes no policy at all for exam_questions', () => {
+    // RLS is on and no policy exists, so the table denies everything. A select
+    // policy here would hand a learner the answer key mid-exam.
+    expect(sql).not.toMatch(/create policy \S+ on public\.exam_questions/i);
+    expect(withoutComments(sql)).not.toMatch(/grant[^;]*on public\.exam_questions/i);
+  });
+
+  it('pins the search path on the security definer helper', () => {
+    // A security definer function that resolves its own table through a
+    // caller-controlled search_path is a privilege escalation.
+    expect(sql).toMatch(/security definer/);
+    expect(sql).toMatch(/set search_path = public, pg_temp/);
+  });
+
+  it('exposes the public certificate view without the private columns', () => {
+    const view = sql.match(/create or replace view public\.certificate_verifications as([\s\S]*?);/);
+    expect(view).not.toBeNull();
+    const body = view?.[1] ?? '';
+    expect(body).toContain('verification_code');
+    expect(body, 'the public view selects the owner').not.toMatch(/\bprofile_id\b/);
+    expect(body, 'the public view selects progress history').not.toMatch(/\bcomparison\b/);
+  });
+});

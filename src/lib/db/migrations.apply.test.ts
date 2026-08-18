@@ -33,6 +33,28 @@ const AUTH_SHIM = `
     id     uuid primary key default gen_random_uuid(),
     email  text unique
   );
+
+  -- The three roles every Supabase project ships with. 008 revokes from and
+  -- grants to them by name, so they must exist before it applies.
+  do $$ begin create role anon; exception when duplicate_object then null; end $$;
+  do $$ begin create role authenticated; exception when duplicate_object then null; end $$;
+  do $$ begin create role service_role bypassrls; exception when duplicate_object then null; end $$;
+
+  grant usage on schema auth to anon, authenticated, service_role;
+
+  -- Supabase's own auth.uid(), reproduced exactly: the caller's id is read from
+  -- the request's JWT claims, which PostgREST sets per request. A test drives it
+  -- with set_config the same way.
+  create or replace function auth.uid()
+  returns uuid
+  language sql
+  stable
+  as $$
+    select case
+      when coalesce(current_setting('request.jwt.claims', true), '') = '' then null
+      else (current_setting('request.jwt.claims', true)::json ->> 'sub')::uuid
+    end
+  $$;
 `;
 
 async function applyAll(db: PGlite): Promise<void> {
@@ -1030,6 +1052,290 @@ describe('migrations against an empty database', () => {
             and indexdef like '%(question_id)%'`,
       );
       expect(result.rows.map((row) => row.indexname)).toEqual(['exam_answers_question_unique']);
+    });
+  });
+
+  /**
+   * F2.6 — the two-user proof `03-database.md` calls not optional and not
+   * replaceable by a unit test. Everything above runs as the migration role,
+   * which owns the tables and therefore bypasses RLS entirely. These tests are
+   * the only ones that `set role authenticated` and are actually subject to the
+   * policies, so this is the only place the policies are proved at all.
+   */
+  describe('008 RLS policies — the two-user proof', () => {
+    interface ILearner {
+      readonly userId: string;
+      readonly profileId: string;
+      readonly attemptId: string;
+      readonly questionId: string;
+    }
+
+    let alice: ILearner;
+    let bob: ILearner;
+
+    /** One learner with a row in every table the proof covers. Written as owner, before any role switch. */
+    async function seedLearner(email: string, name: string): Promise<ILearner> {
+      const user = await db.query<{ readonly id: string }>(
+        `insert into auth.users (email) values ($1) returning id`,
+        [email],
+      );
+      const userId = user.rows[0]?.id ?? '';
+
+      const profile = await db.query<{ readonly id: string }>(
+        `insert into public.learner_profiles (user_id, display_name) values ($1, $2) returning id`,
+        [userId, name],
+      );
+      const profileId = profile.rows[0]?.id ?? '';
+
+      const definition = await db.query<{ readonly id: string }>(
+        `insert into public.exam_definitions
+           (code, title, duration_seconds, question_count, pass_percent, max_attempts,
+            cooldown_hours, unlock_day_standard, unlock_day_sprint)
+         values ('diagnostic', 'RLS Fixture', 3600, 40, 70.00, 3, 24, 0, 0)
+         on conflict (code) do update set title = excluded.title
+         returning id`,
+      );
+      const definitionId = definition.rows[0]?.id ?? '';
+
+      const session = await db.query<{ readonly id: string }>(
+        `insert into public.lesson_sessions (profile_id, day_index) values ($1, 3) returning id`,
+        [profileId],
+      );
+      const sessionId = session.rows[0]?.id ?? '';
+
+      await db.query(
+        `insert into public.attempts
+           (session_id, profile_id, item_type, item_id, mode, submitted_value, is_correct, score)
+         values ($1, $2, 'word', gen_random_uuid(), 'dictation', $3, true, 100)`,
+        [sessionId, profileId, name],
+      );
+
+      await db.query(
+        `insert into public.review_items (profile_id, item_id, item_type, due_at)
+         values ($1, gen_random_uuid(), 'word', now())`,
+        [profileId],
+      );
+
+      const attempt = await db.query<{ readonly id: string }>(
+        `insert into public.exam_attempts
+           (profile_id, definition_id, attempt_number, status, started_at, server_deadline_at, seed)
+         values ($1, $2, 1, 'in_progress', now(), now() + interval '60 minutes', $3)
+         returning id`,
+        [profileId, definitionId, name],
+      );
+      const attemptId = attempt.rows[0]?.id ?? '';
+
+      const question = await db.query<{ readonly id: string }>(
+        `insert into public.exam_questions
+           (attempt_id, section_code, order_index, type, payload, correct_answer)
+         values ($1, 'dictation', 0, 'dictation', '{"prompt":"beautiful"}'::jsonb,
+                 '{"answer":"beautiful"}'::jsonb)
+         returning id`,
+        [attemptId],
+      );
+      const questionId = question.rows[0]?.id ?? '';
+
+      await db.query(
+        `insert into public.exam_answers (question_id, attempt_id, profile_id, submitted_value)
+         values ($1, $2, $3, $4)`,
+        [questionId, attemptId, profileId, name],
+      );
+
+      await db.query(
+        `insert into public.notifications (profile_id, type, title, body, scheduled_for)
+         values ($1, 'daily_reminder', $2, 'Ten minutes.', now())`,
+        [profileId, `${name} reminder`],
+      );
+
+      return { userId, profileId, attemptId, questionId };
+    }
+
+    beforeAll(async () => {
+      alice = await seedLearner('alice-rls@example.com', 'Alice');
+      bob = await seedLearner('bob-rls@example.com', 'Bob');
+    }, 60_000);
+
+    /**
+     * Run something as a real client role. `authenticated` is not the table
+     * owner, so RLS applies to it — the owner would bypass every policy and
+     * prove nothing. Role and claims are always reset, or one leaked `set role`
+     * would silently rewrite every test after it.
+     */
+    async function actingAs<T>(userId: string | null, run: () => Promise<T>): Promise<T> {
+      await db.query(`select set_config('request.jwt.claims', $1, false)`, [
+        userId === null ? '' : JSON.stringify({ sub: userId }),
+      ]);
+      await db.exec(`set role ${userId === null ? 'anon' : 'authenticated'};`);
+      try {
+        return await run();
+      } finally {
+        await db.exec(`reset role;`);
+        await db.query(`select set_config('request.jwt.claims', '', false)`);
+      }
+    }
+
+    async function countVisible(table: string, profileId: string): Promise<number> {
+      const result = await db.query<{ readonly n: number }>(
+        `select count(*)::int as n from public.${table} where profile_id = $1`,
+        [profileId],
+      );
+      return result.rows[0]?.n ?? 0;
+    }
+
+    const OWNED_TABLES: readonly string[] = [
+      'attempts',
+      'review_items',
+      'exam_attempts',
+      'exam_answers',
+      'notifications',
+    ];
+
+    it('seeded two distinct learners', () => {
+      expect(alice.profileId).not.toBe('');
+      expect(bob.profileId).not.toBe('');
+      expect(alice.profileId).not.toBe(bob.profileId);
+    });
+
+    it('shows a learner their own rows', async () => {
+      await actingAs(alice.userId, async () => {
+        for (const table of OWNED_TABLES) {
+          expect(await countVisible(table, alice.profileId), `alice cannot see her own ${table}`)
+            .toBe(1);
+        }
+      });
+    });
+
+    it('hides user B\'s rows from user A, in every table the proof names', async () => {
+      await actingAs(alice.userId, async () => {
+        for (const table of OWNED_TABLES) {
+          expect(await countVisible(table, bob.profileId), `alice can read bob's ${table}`).toBe(0);
+        }
+      });
+    });
+
+    it('hides user A\'s rows from user B, so the policy is not one-directional', async () => {
+      await actingAs(bob.userId, async () => {
+        for (const table of OWNED_TABLES) {
+          expect(await countVisible(table, alice.profileId), `bob can read alice's ${table}`).toBe(0);
+        }
+      });
+    });
+
+    it('shows a learner only their own profile', async () => {
+      await actingAs(alice.userId, async () => {
+        const result = await db.query<{ readonly n: number }>(
+          `select count(*)::int as n from public.learner_profiles`,
+        );
+        expect(result.rows[0]?.n).toBe(1);
+      });
+    });
+
+    it('refuses to let a learner write a row owned by someone else', async () => {
+      await actingAs(alice.userId, async () => {
+        await expect(
+          db.query(
+            `insert into public.review_items (profile_id, item_id, item_type, due_at)
+             values ($1, gen_random_uuid(), 'word', now())`,
+            [bob.profileId],
+          ),
+        ).rejects.toThrow(/row-level security/i);
+      });
+    });
+
+    it('refuses to let a learner hand their own row to someone else', async () => {
+      // `using` alone would allow this: the row is visible, so the update is
+      // permitted, and only `with check` stops the new value landing in B's set.
+      await actingAs(alice.userId, async () => {
+        await expect(
+          db.query(`update public.review_items set profile_id = $1 where profile_id = $2`, [
+            bob.profileId,
+            alice.profileId,
+          ]),
+        ).rejects.toThrow(/row-level security/i);
+      });
+    });
+
+    it('gives the client no delete on learner history at all', async () => {
+      await actingAs(alice.userId, async () => {
+        await expect(
+          db.query(`delete from public.attempts where profile_id = $1`, [alice.profileId]),
+        ).rejects.toThrow(/permission denied/i);
+      });
+    });
+
+    it('refuses a learner the exam_questions table outright, answer key and all', async () => {
+      // Stronger than an empty result: 008 grants the client nothing on this
+      // table, so the request is refused at the privilege layer before RLS is
+      // consulted. `03-database.md` asks for `correct_answer` to be unreachable,
+      // and a table you cannot select from is unreachable in a way a
+      // row-returning policy never quite is. F2.7 opens the safe subset as a
+      // view; until then this is the whole story.
+      await actingAs(alice.userId, async () => {
+        await expect(
+          db.query(`select count(*) from public.exam_questions`),
+        ).rejects.toThrow(/permission denied/i);
+        await expect(
+          db.query(`select correct_answer from public.exam_questions where id = $1`, [
+            alice.questionId,
+          ]),
+        ).rejects.toThrow(/permission denied/i);
+      });
+    });
+
+    it('lets any authenticated learner read content, and write none of it', async () => {
+      await actingAs(alice.userId, async () => {
+        const read = await db.query<{ readonly n: number }>(
+          `select count(*)::int as n from public.rule_families`,
+        );
+        expect(read.rows[0]?.n).toBeGreaterThan(0);
+
+        await expect(
+          db.query(
+            `insert into public.rule_families (code, statement, examples, counterexamples)
+             values ('HACKED', 'x', array['a','b','c'], array['d','e'])`,
+          ),
+        ).rejects.toThrow(/permission denied/i);
+      });
+    });
+
+    it('shows an anonymous caller no learner data whatsoever', async () => {
+      await actingAs(null, async () => {
+        for (const table of OWNED_TABLES) {
+          await expect(
+            db.query(`select count(*) from public.${table}`),
+            `anon can reach ${table}`,
+          ).rejects.toThrow(/permission denied/i);
+        }
+      });
+    });
+
+    it('verifies a certificate publicly without leaking the learner behind it', async () => {
+      const certificate = await db.query<{ readonly verification_code: string }>(
+        `insert into public.certificates
+           (profile_id, exam_attempt_id, verification_code, learner_name, track, score_percent, comparison)
+         values ($1, $2, 'PUBL-ICVE-RIFY', 'Alice', 'standard28', 88.00, '{"day1": 40}'::jsonb)
+         returning verification_code`,
+        [alice.profileId, alice.attemptId],
+      );
+      const code = certificate.rows[0]?.verification_code ?? '';
+
+      await actingAs(null, async () => {
+        const view = await db.query<Record<string, unknown>>(
+          `select * from public.certificate_verifications where verification_code = $1`,
+          [code],
+        );
+        expect(view.rows.length).toBe(1);
+
+        const columns = Object.keys(view.rows[0] ?? {});
+        expect(columns, 'the public view leaks the owner').not.toContain('profile_id');
+        expect(columns, 'the public view leaks progress history').not.toContain('comparison');
+        expect(columns).toContain('revoked_at');
+
+        // The view is the only public door; the table behind it stays shut.
+        await expect(db.query(`select count(*) from public.certificates`)).rejects.toThrow(
+          /permission denied/i,
+        );
+      });
     });
   });
 });

@@ -470,6 +470,41 @@ index rule is kept. The catalogue test draws the line at `pg_constraint`: an ind
 declared constraint exists for correctness and needs no query comment; an index somebody
 chose to create must name its reader.
 
+**D14 — How the policies in `008` are shaped (F2.6).** `03-database.md` gives the rule —
+a learner reads and writes only rows whose `profile_id` resolves to `auth.uid()`, no client
+delete — but not the mechanism. Four choices, none of them departures:
+
+`public.current_profile_id()` resolves the caller's `learner_profiles.id` once instead of
+each policy re-planning the same subquery. It is `security definer` because it reads
+`learner_profiles`, which is itself under RLS, and a policy that had to consult a policy to
+evaluate would not terminate. Its `search_path` is pinned to `public, pg_temp`: a
+`security definer` function that resolves its own table name through a caller-controlled
+search path is a privilege escalation.
+
+The file opens by revoking all table and function privileges from `anon` and `authenticated`
+and then granting back only what each shape needs. Supabase grants the client roles broad
+privileges by default, so starting from revoke means a table added later is unreachable
+until someone grants it deliberately, rather than readable because nobody remembered.
+
+`exam_questions` gets no policy and no grant at all. RLS is on, so the client is refused at
+the privilege layer — stricter than an empty result, and stricter than any select policy
+could be while `correct_answer` sits in the row. F2.7 opens the column-limited subset; until
+then the API reads the table through the service role and nothing else reads it.
+
+`certificate_verifications` is a view, not an anon policy on `certificates`. `006` promised
+this door to `008`. A row-level policy exposes every column of any row it matches, which
+would publish `profile_id` and the day-1/day-28 `comparison`; a view that never selects them
+cannot leak them. `revoked_at` is exposed on purpose — a revoked certificate must verify as
+revoked.
+
+**Noted, not acted on:** learner tables grant `select, insert, update` exactly as the doc
+specifies, which means the policies alone would let a client write its own `attempts.score`
+or `exam_attempts.score_percent`. Those columns are server-authoritative and the API writes
+them with the service role, so the exposure is theoretical today — but "written as if the API
+did not exist" is the standard this file is held to, and it is not met for score-bearing
+columns. Tightening it contradicts the doc's stated grant list, so it belongs to the Phase 13
+hardening pass or to a doc amendment, not to F2.6.
+
 ### Open — needs the user, not me
 
 **O1 — `02-typescript-rules.md` still says `packages/config` base tsconfig.** That is a
