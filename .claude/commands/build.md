@@ -11,12 +11,12 @@ Work through these steps in order. **Stop at the first failure — do not contin
 ## Step 0 — Preflight
 
 ```bash
-ls -la .env.local
+ls -la .env .env.local 2>/dev/null
 ```
 
 **Missing → STOP.** Say exactly this and end the turn:
 
-> `.env.local` is missing. Copy `.env.example` to `.env.local` and fill in sections 1 and 2
+> No env file found. Copy `.env.example` to `.env.local` and fill in sections 1 and 2
 > (core + Supabase — `supabase start` prints the Supabase values). I'll stop here until it exists.
 
 Do not scaffold. Do not start "the parts that don't need env".

@@ -27,7 +27,7 @@ Supabase · Clean Architecture · Google-only auth.
 
 That is it. Run it, and Claude:
 
-1. checks `.env.local` exists — stops if it doesn't
+1. checks an env file exists (`.env` or `.env.local`) — notes it once, never blocks twice
 2. reads the rules and the docs for the current phase
 3. picks the **one** next feature from `PROGRESS.md` (a failed `[!]` one first, if any)
 4. cuts the phase branch from `dev`
@@ -96,8 +96,8 @@ Full rules: [`.claude/docs/15-git-workflow.md`](.claude/docs/15-git-workflow.md)
 cp .env.example .env.local
 ```
 
-**Claude will not start any work until `.env.local` exists**, and it never reads, prints or
-edits that file — it only checks that it is there (`ls -la .env.local`). Filling it in is
+**Claude checks once that an env file exists** (`.env` or `.env.local`) and then gets on with
+the build. It never reads, prints or edits that file — existence only. Filling it in is
 yours to do. If a real value ever needs changing, you change it; Claude works from
 `.env.example` and from the Zod schema in `src/lib/env.ts`, which names any missing variable
 at boot.

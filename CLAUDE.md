@@ -1,7 +1,7 @@
 # CLAUDE.md — ShuddhoSpell
 
 Read this file at the start of **every** session, before writing a single line of code.
-**Run the preflight in section 2 first — no `.env.local`, no work.**
+**Run the preflight in section 2 once, then build.**
 Then read **`PROGRESS.md`** — it tells you the one feature you are allowed to work on next —
 and `BUILD-ORDER-COMPLETE.md` for that phase's gate, and the `.claude/docs/` files it points at.
 
@@ -20,22 +20,21 @@ Full product detail: [`.claude/docs/00-overview.md`](.claude/docs/00-overview.md
 
 ---
 
-## 2. PREFLIGHT — run this before any work, every session
-
-**Check first. If the check fails, stop. Do not start.**
+## 2. PREFLIGHT — run this once per session, then get on with it
 
 ```bash
-ls -la .env.local
+ls -la .env .env.local 2>/dev/null
 ```
 
-- **`.env.local` exists** → continue.
-- **`.env.local` does not exist** → **STOP.** Do not scaffold, do not write code, do not
-  "start the parts that don't need it". Tell the user:
+- **Either `.env` or `.env.local` exists** → the environment is the user's business. **Continue
+  immediately.** Do not ask about it, do not mention it, do not re-check it later in the session.
+- **Neither exists** → say one sentence — "no env file found; copy `.env.example` to `.env.local`
+  and fill sections 1 and 2" — and continue with everything that does not need live credentials
+  (scaffolding, types, domain logic, tests with fakes). Only stop at the first step that genuinely
+  needs a real Supabase connection.
 
-  > `.env.local` is missing. Copy `.env.example` to `.env.local` and fill in sections 1 and 2
-  > (core + Supabase). I'll stop here until it exists.
-
-  Then wait. Nothing begins without it.
+**The preflight is a one-line check, not a gate to relitigate.** If it passed once, it stays
+passed. Never block a build on it twice in the same session.
 
 That check is an **existence check only**. It uses `ls`. It does not read the file.
 
@@ -48,7 +47,7 @@ variable is set, not because the user seemed to imply it, not even if asked in p
 - ❌ `cat .env.local` · `head .env` · `grep SUPABASE .env.local` · Read tool on any `.env*`
 - ❌ echoing a value, pasting one into a message, or copying one between files
 - ❌ writing or editing `.env.local` — the user owns that file, always
-- ✅ `ls -la .env.local` — existence only
+- ✅ `ls -la .env .env.local` — existence only
 - ✅ reading and editing **`.env.example`**, which holds placeholders only
 - ✅ reading `src/lib/env.ts` to see which variables the schema requires
 
@@ -273,8 +272,8 @@ Other commands in `.claude/commands/`: `/next-feature`, `/phase-start`, `/phase-
   domain service should own.
 - No `process.env` outside `src/lib/env.ts`. No secret in a `NEXT_PUBLIC_*` variable.
 - **No reading, printing, editing or writing `.env`, `.env.local` or any `.env.*` file — ever.**
-  `ls -la .env.local` to check it exists is the only permitted interaction.
-- No starting work at all when `.env.local` is missing.
+  `ls -la .env .env.local` to check existence is the only permitted interaction.
+- No stalling the whole build on the env check. Run it once, then work.
 - No Server Component fetching its own API over HTTP.
 - No client-trusted identity, score, deadline, or attempt count.
 - No `correct_answer` in any exam response before submission.

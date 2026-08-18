@@ -7,12 +7,12 @@ Work the **next single feature**. One only.
 ### 0. Preflight
 
 ```bash
-ls -la .env.local
+ls -la .env .env.local 2>/dev/null
 ```
 
 If it is missing, **stop immediately** and tell the user:
 
-> `.env.local` is missing. Copy `.env.example` to `.env.local` and fill in sections 1 and 2
+> No env file found. Copy `.env.example` to `.env.local` and fill in sections 1 and 2
 > (core + Supabase). I'll stop here until it exists.
 
 Do not start the feature. Do not do "the parts that don't need env". **Never read the

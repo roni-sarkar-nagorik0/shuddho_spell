@@ -20,10 +20,12 @@ this file says exactly where you are inside them.
 ### Preflight — before the loop, every session
 
 ```bash
-ls -la .env.local
+ls -la .env .env.local 2>/dev/null
 ```
 
-Missing? **Stop.** Ask the user to copy `.env.example` to `.env.local` and fill sections 1
+Either file present → continue immediately; do not raise it again this session. Neither
+present? Say so in one sentence, then keep building everything that does not need live
+credentials. Formerly this said: copy `.env.example` to `.env.local` and fill sections 1
 and 2. No feature starts without it. **Never read the file** — existence check only.
 
 ### The loop, every single time
@@ -41,7 +43,7 @@ and 2. No feature starts without it. **Never read the file** — existence check
 
 ### Absolute rules
 
-- **Never start without `.env.local`**, and never read it.
+- **Check the env file once, never read it**, and never block the build on it twice.
 - **Never work on two features at once.** One `[~]` in this file, ever.
 - **Never mark `[x]` without tests written and green.** "It works when I try it" is not a test.
 - **Never leave a feature incomplete.** A `[!]` blocks the whole build until it is `[x]`.
