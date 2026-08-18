@@ -32,7 +32,7 @@
       "Bash(tail .env*)",
       "Bash(less .env*)",
       "Bash(more .env*)",
-      "Bash(grep:* .env*)",
+      "Bash(grep * .env*)",
       "Bash(source .env*)",
       "Bash(cp .env*)",
       "Bash(mv .env*)",
