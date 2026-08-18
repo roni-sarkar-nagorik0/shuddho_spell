@@ -53,7 +53,7 @@ and 2. No feature starts without it. **Never read the file** — existence check
 
 ## NEXT
 
-> **Phase 0 · F0.1 — Write `ARCHITECTURE.md`**
+> **Phase 0 · F0.2 — Confirm or amend the phase list and the feature list in `PROGRESS.md`**
 > Branch: `docs/00-architecture-record`
 
 Update this block every time a feature is finished.
@@ -61,9 +61,9 @@ Update this block every time a feature is finished.
 ---
 
 ## Phase 0 — Specification and architecture record
-Branch `docs/00-architecture-record` · Status: `NOT STARTED`
+Branch `docs/00-architecture-record` · Status: `IN PROGRESS`
 
-- [ ] **F0.1** Write `ARCHITECTURE.md` — layer diagram, folder tree, token/port table, DB table list, unspecified-decisions section
+- [x] **F0.1** (2026-08-18) Write `ARCHITECTURE.md` — layer diagram, folder tree, token/port table, DB table list, unspecified-decisions section
   - Test: all five sections present; every port in `05-domain-model.md` appears in the token table
 - [ ] **F0.2** Confirm or amend the phase list and the feature list in this file
   - Test: every phase in `BUILD-ORDER-COMPLETE.md` has a matching section here
@@ -455,6 +455,7 @@ Newest first. One line per finished feature: date · id · what · test result.
 
 | Date | Feature | What landed | Tests |
 | --- | --- | --- | --- |
+| 2026-08-18 | F0.1 | `ARCHITECTURE.md` — layer diagram, folder tree, 24-token port table, 23-table DB list, 11 recorded decisions + 1 open question | `scripts/check-architecture-doc.sh` — 5/5 sections, 15/15 ports tokenised, `IMailer` correctly absent · PASSED |
 | 2026-08-18 | — | Email deferred to v2 — notifications are in-app + push only; `RESEND_API_KEY` commented out | n/a — docs only |
 | 2026-08-18 | — | Restructured to a **single Next.js app** (no separate backend); added `.env.example`, `.gitignore`, `16-environment.md` | n/a — docs only |
 | 2026-08-18 | — | Claude Code setup: CLAUDE.md, build order, docs, commands, git rules | n/a — docs only |
