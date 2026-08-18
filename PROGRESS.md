@@ -55,9 +55,10 @@ and 2. No feature starts without it. **Never read the file** — existence check
 
 ## NEXT
 
-> **Phase 1 · F1.14 — Typed fetch client validating every response, throwing `ApiError` on mismatch**
+> **Phase 1 · F1.16 — Local Supabase setup + `.env.example` + README steps**
 > Branch: `feat/01-app-scaffold`
-> Then F1.16 (local Supabase), then Phase 2 — database schema.
+> Last two Phase 1 items after that are the `[~]` carry-overs F1.9 (rate limiter, needs Phase 2)
+> and F1.11 (OpenAPI, needs v1 schemas). Then Phase 2 — database schema.
 
 Update this block every time a feature is finished.
 
@@ -108,7 +109,7 @@ Branch `feat/01-app-scaffold` · Status: `IN PROGRESS`
   - Test: every token from `12-design-system.md` resolves in the Tailwind theme
 - [x] **F1.13** (2026-08-18) `next-intl` with `en` + `bn` catalogues
   - Test: rendering in `bn` returns Bangla, not a missing-key fallback
-- [ ] **F1.14** Typed fetch client validating every response, throwing `ApiError` on mismatch
+- [x] **F1.14** (2026-08-18) Typed fetch client validating every response, throwing `ApiError` on mismatch
   - Test: a mocked malformed response throws `ApiError`, not a render crash
 - [x] **F1.15** (2026-08-18) Vitest (unit + integration + component) and Playwright configured
   - Test: one example test of each kind runs green
@@ -462,6 +463,7 @@ Newest first. One line per finished feature: date · id · what · test result.
 
 | Date | Feature | What landed | Tests |
 | --- | --- | --- | --- |
+| 2026-08-18 | F1.14 | Typed fetch client — `apiFetch`/`apiRequest` validate the `{data,meta}` envelope and the caller's schema, map problem+json onto `ApiError` | `pnpm test` 22/22 · typecheck, lint, build green |
 | 2026-08-18 | F0.1 | `ARCHITECTURE.md` — layer diagram, folder tree, 24-token port table, 23-table DB list, 11 recorded decisions + 1 open question | `scripts/check-architecture-doc.sh` — 5/5 sections, 15/15 ports tokenised, `IMailer` correctly absent · PASSED |
 | 2026-08-18 | — | Email deferred to v2 — notifications are in-app + push only; `RESEND_API_KEY` commented out | n/a — docs only |
 | 2026-08-18 | — | Restructured to a **single Next.js app** (no separate backend); added `.env.example`, `.gitignore`, `16-environment.md` | n/a — docs only |

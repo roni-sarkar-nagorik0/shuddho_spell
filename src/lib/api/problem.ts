@@ -55,4 +55,17 @@ export class ApiError extends Error {
   static forbidden(): ApiError {
     return new ApiError(403, PROBLEM_CODES.FORBIDDEN, 'You cannot access this resource.');
   }
+
+  /**
+   * The server answered, but not in the shape the contract promises. This is a bug on one
+   * side of the wire, never a user error — it must be loud, not rendered as `undefined`.
+   */
+  static contractMismatch(detail: string, fieldErrors?: readonly IFieldError[]): ApiError {
+    return new ApiError(500, PROBLEM_CODES.INTERNAL, detail, fieldErrors);
+  }
+
+  /** The request never produced a response: offline, DNS, TLS, abort. */
+  static network(detail: string): ApiError {
+    return new ApiError(500, PROBLEM_CODES.INTERNAL, detail);
+  }
 }
