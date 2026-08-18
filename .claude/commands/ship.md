@@ -42,7 +42,9 @@ around it.
 git diff --staged
 ```
 
-No key, token, `.env`, service-role credential or VAPID private key in the diff.
+No key, token, `.env` file, service-role credential or VAPID private key in the diff.
+`.env.example` may change; `.env.local` must never appear — it is gitignored and must never
+have been read or written.
 
 ### 5. Commit and push the feature branch
 

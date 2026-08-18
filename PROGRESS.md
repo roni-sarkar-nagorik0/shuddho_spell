@@ -17,6 +17,15 @@ this file says exactly where you are inside them.
 | `[!]` | **failed or blocked** — must be debugged and fixed before anything else starts |
 | `[-]` | deliberately skipped — needs a one-line reason on the same row |
 
+### Preflight — before the loop, every session
+
+```bash
+ls -la .env.local
+```
+
+Missing? **Stop.** Ask the user to copy `.env.example` to `.env.local` and fill sections 1
+and 2. No feature starts without it. **Never read the file** — existence check only.
+
 ### The loop, every single time
 
 1. Find the **first** `[ ]` feature in the topmost unfinished phase. That is the only feature
@@ -32,6 +41,7 @@ this file says exactly where you are inside them.
 
 ### Absolute rules
 
+- **Never start without `.env.local`**, and never read it.
 - **Never work on two features at once.** One `[~]` in this file, ever.
 - **Never mark `[x]` without tests written and green.** "It works when I try it" is not a test.
 - **Never leave a feature incomplete.** A `[!]` blocks the whole build until it is `[x]`.

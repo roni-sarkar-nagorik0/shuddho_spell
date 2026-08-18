@@ -4,6 +4,8 @@ description: Begin the next unfinished build phase under its documented boundari
 
 Start the next phase of the ShuddhoSpell build.
 
+0. **Preflight:** `ls -la .env.local`. Missing → **stop** and ask the user to create it from
+   `.env.example`. No phase starts without it. Never read the file's contents.
 1. Read `CLAUDE.md` in full.
 2. Read `PROGRESS.md`, then `BUILD-ORDER-COMPLETE.md`. Identify the **first** phase whose
    Status is not `DONE`. If a phase is `IN PROGRESS`, that is the one — do not skip past it.

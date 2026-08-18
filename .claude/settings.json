@@ -1,6 +1,8 @@
 {
   "permissions": {
     "allow": [
+      "Bash(ls -la .env.local)",
+      "Bash(ls .env.local)",
       "Bash(pnpm typecheck:*)",
       "Bash(pnpm lint:*)",
       "Bash(pnpm test:*)",
@@ -12,6 +14,29 @@
       "Bash(git branch --show-current)"
     ],
     "deny": [
+      "Read(./.env)",
+      "Read(./.env.*)",
+      "Read(**/.env)",
+      "Read(**/.env.*)",
+      "Edit(./.env)",
+      "Edit(./.env.*)",
+      "Edit(**/.env)",
+      "Edit(**/.env.*)",
+      "Write(./.env)",
+      "Write(./.env.*)",
+      "Write(**/.env)",
+      "Write(**/.env.*)",
+      "Bash(cat .env*)",
+      "Bash(cat ./.env*)",
+      "Bash(head .env*)",
+      "Bash(tail .env*)",
+      "Bash(less .env*)",
+      "Bash(more .env*)",
+      "Bash(grep:* .env*)",
+      "Bash(source .env*)",
+      "Bash(cp .env*)",
+      "Bash(mv .env*)",
+      "Bash(rm .env*)",
       "Bash(git push origin main:*)",
       "Bash(git push origin HEAD:main:*)",
       "Bash(git push --force:*)",

@@ -106,11 +106,17 @@ Full rules: [`.claude/docs/15-git-workflow.md`](.claude/docs/15-git-workflow.md)
 `.claude/settings.json` additionally denies force-push, branch deletion, `--no-verify`,
 `git reset --hard` and pushes to `main` at the tool level.
 
-## Setup
+## Setup — do this first
 
 ```bash
 cp .env.example .env.local
 ```
+
+**Claude will not start any work until `.env.local` exists**, and it never reads, prints or
+edits that file — it only checks that it is there (`ls -la .env.local`). Filling it in is
+yours to do. If a real value ever needs changing, you change it; Claude works from
+`.env.example` and from the Zod schema in `src/lib/env.ts`, which names any missing variable
+at boot.
 
 `.env.example` documents every variable — what it is, where to get it, and which phase first
 needs it. To run today you only need sections 1 and 2: `NODE_ENV`, `NEXT_PUBLIC_APP_URL`, the

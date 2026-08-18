@@ -3,11 +3,42 @@
 Every variable is declared in `.env.example` with a comment saying what it is, where to get
 it, and which phase first needs it. That file is the reference; this doc is the rules.
 
+## The `.env` rule — read this before anything else
+
+**Claude never reads, opens, prints, edits, writes or moves `.env`, `.env.local` or any
+`.env.*` file.** The only permitted interaction is checking that it exists:
+
+```bash
+ls -la .env.local
+```
+
+And the precondition: **if `.env.local` does not exist, no work starts.** Not scaffolding,
+not "the parts that don't need it". Claude stops and asks the user to create it from
+`.env.example`.
+
+| Allowed | Never |
+| --- | --- |
+| `ls -la .env.local` — existence only | `cat` / `head` / `grep` / Read on any `.env*` |
+| reading and editing `.env.example` (placeholders only) | echoing or pasting a real value |
+| reading `src/lib/env.ts` to see what the schema requires | writing or editing `.env.local` |
+
+`.claude/settings.json` denies these at the tool level, so a slip is blocked rather than
+caught in review.
+
+**Why.** Secrets that enter a conversation are in the transcript, and a transcript is not a
+vault. Nothing about this project needs Claude to see a real key: the schema in
+`src/lib/env.ts` says which variables are required, and the Zod boot validation names the
+offending variable when one is missing or malformed. That is the supported way to diagnose an
+env problem. Reading the file adds nothing and costs containment.
+
+If a task appears to require reading a secret, the task is wrong. Say so and stop.
+
 ## The contract
 
 - `.env.example` is **committed** and always complete. Adding a variable without adding it
   there is a bug.
-- `.env.local` holds real values and is **never committed** (`.gitignore` covers it).
+- `.env.local` holds real values, is **owned by the user**, is **never read or written by
+  Claude**, and is **never committed** (`.gitignore` covers it).
 - Every variable is validated by **Zod at boot** in `src/lib/env.ts`. A missing or malformed
   value **stops the app from starting** and prints exactly which variable is wrong.
 - Nothing reads `process.env` directly except `src/lib/env.ts`. Everything else imports the

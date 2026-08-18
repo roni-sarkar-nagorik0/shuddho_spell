@@ -1,6 +1,7 @@
 # CLAUDE.md — ShuddhoSpell
 
 Read this file at the start of **every** session, before writing a single line of code.
+**Run the preflight in section 2 first — no `.env.local`, no work.**
 Then read **`PROGRESS.md`** — it tells you the one feature you are allowed to work on next —
 and `BUILD-ORDER-COMPLETE.md` for that phase's gate, and the `.claude/docs/` files it points at.
 
@@ -19,7 +20,47 @@ Full product detail: [`.claude/docs/00-overview.md`](.claude/docs/00-overview.md
 
 ---
 
-## 2. Stack — non-negotiable
+## 2. PREFLIGHT — run this before any work, every session
+
+**Check first. If the check fails, stop. Do not start.**
+
+```bash
+ls -la .env.local
+```
+
+- **`.env.local` exists** → continue.
+- **`.env.local` does not exist** → **STOP.** Do not scaffold, do not write code, do not
+  "start the parts that don't need it". Tell the user:
+
+  > `.env.local` is missing. Copy `.env.example` to `.env.local` and fill in sections 1 and 2
+  > (core + Supabase). I'll stop here until it exists.
+
+  Then wait. Nothing begins without it.
+
+That check is an **existence check only**. It uses `ls`. It does not read the file.
+
+### The `.env` rule — absolute
+
+**Never read, open, print, copy, edit, write, or move `.env`, `.env.local`, or any
+`.env.*` file.** Not to "check a value", not to debug a connection, not to confirm a
+variable is set, not because the user seemed to imply it, not even if asked in passing.
+
+- ❌ `cat .env.local` · `head .env` · `grep SUPABASE .env.local` · Read tool on any `.env*`
+- ❌ echoing a value, pasting one into a message, or copying one between files
+- ❌ writing or editing `.env.local` — the user owns that file, always
+- ✅ `ls -la .env.local` — existence only
+- ✅ reading and editing **`.env.example`**, which holds placeholders only
+- ✅ reading `src/lib/env.ts` to see which variables the schema requires
+
+If you need to know whether a variable is set, **ask the user** or let the app's Zod boot
+validation say so — it names the offending variable by design. That is the supported path.
+Never inspect the file yourself.
+
+If a task appears to require reading a secret, that task is wrong. Say so and stop.
+
+---
+
+## 3. Stack — non-negotiable
 
 **One Next.js application. There is no separate backend project.** The App Router serves the
 UI *and* the API. One `package.json`, one build, one deploy.
@@ -43,7 +84,7 @@ state library, a component library, or a CSS-in-JS runtime.
 
 ---
 
-## 3. The rules checklist — re-read this every session
+## 4. The rules checklist — re-read this every session
 
 ### Architecture
 - [ ] Four layers per feature module in `src/modules/<feature>/`: `domain/`, `application/`, `infrastructure/`, `presentation/`.
@@ -90,7 +131,7 @@ Detail and rationale: [`.claude/docs/01-architecture.md`](.claude/docs/01-archit
 
 ---
 
-## 4. Git rules — absolute, no exceptions
+## 5. Git rules — absolute, no exceptions
 
 Full detail: [`.claude/docs/15-git-workflow.md`](.claude/docs/15-git-workflow.md)
 
@@ -121,7 +162,7 @@ and tell the user it happened.
 
 ---
 
-## 5. One feature at a time — the working rhythm
+## 6. One feature at a time — the working rhythm
 
 `PROGRESS.md` is the live state of the build. It is the file that answers "what next".
 Full rules are at the top of it; these are the ones you may never break:
@@ -148,7 +189,7 @@ Full rules are at the top of it; these are the ones you may never break:
 
 ---
 
-## 6. Working boundaries — how you must operate
+## 7. Working boundaries — how you must operate
 
 1. **Build in phase order.** `BUILD-ORDER-COMPLETE.md` is the contract. Do not start
    phase N+1 while phase N has an unmet exit gate, and do not start feature N+1 while
@@ -174,7 +215,7 @@ Full rules are at the top of it; these are the ones you may never break:
 
 ---
 
-## 7. Documentation map
+## 8. Documentation map
 
 | Doc | Read it when |
 | --- | --- |
@@ -201,7 +242,7 @@ Full rules are at the top of it; these are the ones you may never break:
 
 ---
 
-## 8. Commands
+## 9. Commands
 
 ```bash
 pnpm dev            # the app — UI and API together
@@ -219,7 +260,7 @@ Slash commands in `.claude/commands/`: `/next-feature`, `/phase-start`, `/phase-
 
 ---
 
-## 9. Standing prohibitions
+## 10. Standing prohibitions
 
 - No `type` on object literals. No `enum`. No `any`. No `as`. No `!`.
 - No separate backend project. No NestJS, no Express, no second deploy target.
@@ -227,6 +268,9 @@ Slash commands in `.claude/commands/`: `/next-feature`, `/phase-start`, `/phase-
 - No business logic in a route handler, a React component, or a Postgres trigger that a
   domain service should own.
 - No `process.env` outside `src/lib/env.ts`. No secret in a `NEXT_PUBLIC_*` variable.
+- **No reading, printing, editing or writing `.env`, `.env.local` or any `.env.*` file — ever.**
+  `ls -la .env.local` to check it exists is the only permitted interaction.
+- No starting work at all when `.env.local` is missing.
 - No Server Component fetching its own API over HTTP.
 - No client-trusted identity, score, deadline, or attempt count.
 - No `correct_answer` in any exam response before submission.

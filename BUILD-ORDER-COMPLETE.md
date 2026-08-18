@@ -7,6 +7,8 @@ file defines the phases; `PROGRESS.md` tracks the features inside them, one at a
 
 ## How to use it
 
+0. **Preflight.** `ls -la .env.local`. If it does not exist, **stop** and ask the user to
+   create it from `.env.example`. No phase begins without it. Never read the file itself.
 1. Read `CLAUDE.md` first, always.
 2. Find the first phase below whose **Status** is not `DONE`. That is the only phase you may work on.
 3. Read the docs listed under *Reads*.
@@ -356,7 +358,7 @@ Status values: `NOT STARTED` · `IN PROGRESS` · `BLOCKED — <reason>` · `DONE
 - [ ] Work happened on the phase's feature branch, never on `main`, never on `dev`.
 - [ ] `pnpm typecheck && pnpm lint && pnpm test` green **before** the push, output pasted.
 - [ ] Nothing was force-pushed. No branch was deleted. `--no-verify` was not used.
-- [ ] No secret, key, token or `.env` in the diff.
+- [ ] No secret, key, token or `.env` file in the diff. `.env.local` was never read or written.
 - [ ] The PR targets `dev`. `main` was not touched.
 - [ ] Lint boundaries pass with no rule loosened or disabled.
 - [ ] No `type` object alias, no `enum`, no `any`, no `as` outside a post-Zod boundary, no `!`.
