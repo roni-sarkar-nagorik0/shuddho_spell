@@ -140,7 +140,24 @@ pnpm setup:check
 
 Node version, dependencies, env file present. It reads nothing out of your env file.
 
-### 5. Run it
+### 5. Apply the database schema
+
+```bash
+pnpm db:migrate
+```
+
+Plain SQL from `supabase/migrations/`, applied over `DATABASE_URL` in order. No Docker, no
+Supabase CLI. The runner keeps a ledger in `public.schema_migrations`, so it is safe to run
+again — already-applied files are skipped, and an *edited* one is refused: migrations are
+forward-only, so you add a new numbered file rather than changing a shipped one.
+
+`pnpm db:migrate:dry` lists what is pending without opening a connection.
+
+If `001` prints `pg_cron not enabled`, that is expected on plans that cannot install it —
+nothing before Phase 7 needs it. Enable it in Supabase → Database → Extensions when you
+get there.
+
+### 6. Run it
 
 ```bash
 pnpm dev
@@ -158,6 +175,7 @@ pnpm dev
 | --- | --- |
 | `Invalid public environment. Check these in .env.local: …` | that variable is missing or malformed — the message names it |
 | `/api/ready` reports `"database":"down"` | wrong Supabase URL or key, or the Phase 2 schema has not been applied yet |
+| `pnpm db:migrate` fails with `ENOTFOUND db.<ref>.supabase.co` | that is the direct host, which Supabase serves over IPv6 only. Use the **Session pooler** URI from Project Settings → Database as `DATABASE_URL` |
 | port 3000 is taken | `PORT=3311 pnpm dev` |
 
 ## Repository layout (once built)
@@ -189,4 +207,5 @@ pnpm lint
 pnpm test             # Vitest — unit, integration, component
 pnpm test:e2e         # Playwright
 pnpm setup:check      # node version, dependencies, env file present
+pnpm db:migrate       # apply supabase/migrations over DATABASE_URL
 ```

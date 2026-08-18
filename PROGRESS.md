@@ -55,8 +55,10 @@ and 2. No feature starts without it. **Never read the file** — existence check
 
 ## NEXT
 
-> **Phase 2 · F2.1 — `001_extensions` + `002_content_tables`**
+> **Phase 2 · F2.2 — `003_learner_tables`**
 > Branch: `feat/02-database-schema`
+> Migrations now run for real: `pnpm db:migrate` against hosted Supabase, and every migration
+> is applied from empty inside a WASM Postgres (PGlite) by `migrations.apply.test.ts` in CI.
 > Phase 1's only open items are the two carry-overs that genuinely need later phases:
 > F1.9 (rate limiter, needs the Phase 2 tables) and F1.11 (OpenAPI, needs the v1 schemas).
 
@@ -119,9 +121,11 @@ Branch `feat/01-app-scaffold` · Status: `IN PROGRESS`
 ---
 
 ## Phase 2 — Database schema, migrations, RLS
-Branch `feat/02-database-schema` · Status: `NOT STARTED`
+Branch `feat/02-database-schema` · Status: `IN PROGRESS`
 
-- [ ] **F2.1** `001_extensions` + `002_content_tables`
+- [x] **F2.1** (2026-08-18) `001_extensions` + `002_content_tables`
+  - Applied by `pnpm db:migrate` over `DATABASE_URL` — plain SQL, forward-only, checksum ledger
+    in `public.schema_migrations`. No Docker, no Supabase CLI.
   - Test: migration applies from empty; every table has id/created_at/updated_at
 - [ ] **F2.2** `003_learner_tables`
   - Test: every learner table has `profile_id` with `on delete cascade`
@@ -463,6 +467,7 @@ Newest first. One line per finished feature: date · id · what · test result.
 
 | Date | Feature | What landed | Tests |
 | --- | --- | --- | --- |
+| 2026-08-18 | F2.1 | `001_extensions` + `002_content_tables` (7 content tables, RLS on, checks not enums) · `pnpm db:migrate` runner over `DATABASE_URL` — no Docker, no Supabase CLI | `pnpm test` 47/47 — 9 of them apply the migrations from empty in PGlite · typecheck, lint, build green |
 | 2026-08-18 | F1.16 | Hosted-Supabase setup path — README getting-started, `.env.example` rewrite, `pnpm setup:check` doctor; **Docker removed everywhere** | `pnpm test` 26/26 · clean-clone walkthrough · typecheck, lint, build green |
 | 2026-08-18 | F1.14 | Typed fetch client — `apiFetch`/`apiRequest` validate the `{data,meta}` envelope and the caller's schema, map problem+json onto `ApiError` | `pnpm test` 22/22 · typecheck, lint, build green |
 | 2026-08-18 | F0.1 | `ARCHITECTURE.md` — layer diagram, folder tree, 24-token port table, 23-table DB list, 11 recorded decisions + 1 open question | `scripts/check-architecture-doc.sh` — 5/5 sections, 15/15 ports tokenised, `IMailer` correctly absent · PASSED |

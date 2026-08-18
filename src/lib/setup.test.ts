@@ -85,6 +85,7 @@ describe('documented setup', () => {
       'README.md',
       'package.json',
       'scripts/check-setup.mjs',
+      'scripts/migrate.mjs',
     ];
 
     for (const file of files) {
