@@ -358,7 +358,7 @@ Branch `feat/10-web-shell` · Status: `NOT STARTED`
 - [ ] **F10.8** i18n key-parity CI check
   - Test: deleting a `bn` key fails CI (paste output, restore key)
 - [ ] **F10.9** Accessibility baseline
-  - Test: focus rings 2px signal / 2px offset; `prefers-reduced-motion` respected; no colour-only signal
+  - Test: focus rings 2px secondary-500 / 2px offset; `prefers-reduced-motion` respected; no colour-only cue
 
 ---
 
@@ -402,7 +402,7 @@ Branch `feat/12-exam-marketing-screens` · Status: `NOT STARTED`
 - [ ] **F12.3** `/exams/attempt/[id]` runtime shell
   - Test: no navigation out; `beforeunload` warning active
 - [ ] **F12.4** The countdown
-  - Test: driven by server remaining seconds; `signal` at 5:00, `error` at 0:60, each with `aria-live`
+  - Test: driven by server remaining seconds; `secondary-500` at 5:00, `tertiary-500` at 0:60, each with `aria-live`
 - [ ] **F12.5** Question navigator
   - Test: answered / current / flagged / blank states; fully keyboard operable
 - [ ] **F12.6** Refresh and resume

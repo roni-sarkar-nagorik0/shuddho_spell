@@ -90,10 +90,10 @@ exam lobby honest instead of decorative.
 
 ## Frontend contract (Phase 12)
 
-- `/exams/attempt/[id]` is ink-900, with **no navigation out** of the runtime.
+- `/exams/attempt/[id]` is primary-900, with **no navigation out** of the runtime.
 - The countdown is driven by the server's remaining seconds, interpolated locally between
   syncs. It is never the sole source of truth — a submission is still validated server-side.
-- Timer turns `signal` (#E08700) at 5:00 and `error` (#C0392E) at 0:60, each with an
+- Timer turns `secondary-500` (#E9A13B) at 5:00 and `tertiary-500` (#C24A3C) at 0:60, each with an
   `aria-live` announcement.
 - The fixed bottom navigator shows answered / current / flagged / blank states.
 - A `beforeunload` warning is active during an attempt.

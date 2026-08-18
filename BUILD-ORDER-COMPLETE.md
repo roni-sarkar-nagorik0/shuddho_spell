@@ -285,7 +285,7 @@ Status values: `NOT STARTED` · `IN PROGRESS` · `BLOCKED — <reason>` · `DONE
 - **Status:** NOT STARTED
 - **Completed:**
 - **Reads:** `12-design-system`, `13-frontend`
-- **Deliverables:** app shell (232px ink-900 sidebar collapsing to 56px, 48px top bar, 1280px
+- **Deliverables:** app shell (232px primary-900 sidebar collapsing to 56px, 48px top bar, 1280px
   12-column content region); `PhonemeStrip` and `MasteryMatrix` built once, properly, typed, tested,
   Storybook-documented; the primitive layer (`DataTable`, `StatCell`, `PanelHeader`, `HeatCell`,
   `MonoValue`, `StatusBadge`, `Sparkline`, `Toast`, `Popover`, `Drawer`, `ConfirmDialog`);
@@ -325,13 +325,13 @@ Status values: `NOT STARTED` · `IN PROGRESS` · `BLOCKED — <reason>` · `DONE
 - **Completed:**
 - **Reads:** `08-exam-engine`, `13-frontend`, `12-design-system`
 - **Deliverables:** `/exams` · `/exams/[code]` (lobby with system check, gated begin button) ·
-  `/exams/attempt/[id]` (ink-900 runtime, no navigation out, server-driven countdown with local
+  `/exams/attempt/[id]` (primary-900 runtime, no navigation out, server-driven countdown with local
   interpolation, question navigator with answered/current/flagged/blank states) ·
   `/exams/result/[id]` (pass and fail variants) · `/exams/review/[id]` · `/certificate/[id]` ·
   `/` (marketing landing) · `/login` · `/onboarding`.
 - **Exit gate:**
   - [ ] The countdown is driven by the server's remaining seconds; a refresh resumes cleanly.
-  - [ ] Timer turns `signal` at 5:00 and `error` at 0:60, each with an `aria-live` announcement.
+  - [ ] Timer turns `secondary-500` at 5:00 and `tertiary-500` at 0:60, each with an `aria-live` announcement.
   - [ ] `beforeunload` warning during an active attempt.
   - [ ] The landing page is a statically rendered Server Component scoring ≥95 Lighthouse
         performance and 100 accessibility. Report attached.
