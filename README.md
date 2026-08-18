@@ -3,8 +3,8 @@
 A 28-day English precision-training program for Bengali (Bangla) speakers — spelling,
 pronunciation and sentence construction, diagnosed per phoneme and per rule family.
 
-NestJS · Next.js 15 · TypeScript (interface-first) · Supabase · Clean Architecture ·
-Google-only auth.
+**One Next.js 15 app** — UI and API in the same project. TypeScript (interface-first) ·
+Supabase · Clean Architecture · Google-only auth.
 
 > **The build has not started yet.** This repository currently contains the Claude Code
 > setup only. Begin at Phase 0 in [`BUILD-ORDER-COMPLETE.md`](BUILD-ORDER-COMPLETE.md).
@@ -106,27 +106,46 @@ Full rules: [`.claude/docs/15-git-workflow.md`](.claude/docs/15-git-workflow.md)
 `.claude/settings.json` additionally denies force-push, branch deletion, `--no-verify`,
 `git reset --hard` and pushes to `main` at the tool level.
 
+## Setup
+
+```bash
+cp .env.example .env.local
+```
+
+`.env.example` documents every variable — what it is, where to get it, and which phase first
+needs it. To run today you only need sections 1 and 2: `NODE_ENV`, `NEXT_PUBLIC_APP_URL`, the
+three Supabase values and `DATABASE_URL`. `supabase start` prints all of the Supabase ones.
+
+Everything is validated by Zod at boot — a missing variable stops the app and names itself.
+
 ## Repository layout (once built)
 
 ```
-apps/api                 NestJS — four layers per feature module
-apps/web                 Next.js 15 App Router
-packages/contracts       shared interfaces + Zod schemas (single source of truth)
-packages/config          shared tsconfig, eslint, prettier
-supabase/migrations      plain SQL, numbered, forward-only
+src/
+  app/                   App Router — pages AND api route handlers
+    api/v1/…/route.ts    three-line re-exports of module handlers
+    api/cron/…           scheduled jobs, guarded by CRON_SECRET
+  modules/<feature>/     domain · application · infrastructure · presentation
+  contracts/             interfaces + Zod schemas, shared server and client
+  composition/           the composition root — ports wired to implementations
+  components/            design system + feature components
+  lib/                   env, supabase clients, logger, withApi wrapper, i18n
+supabase/migrations/     plain SQL, numbered, forward-only
 content/                 typed course content, one file per week
-.claude/docs             feature specifications
+.claude/docs/            feature specifications
 ```
+
+There is **no separate backend project**. One `package.json`, one build, one deploy.
 
 ## Commands (once built)
 
 ```bash
-pnpm dev
+pnpm dev              # UI and API together
 pnpm build
 pnpm typecheck
 pnpm lint
-pnpm test
-pnpm test:e2e
+pnpm test             # Vitest — unit, integration, component
+pnpm test:e2e         # Playwright
 pnpm content:seed
 pnpm db:reset
 ```

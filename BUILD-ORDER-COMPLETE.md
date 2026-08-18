@@ -49,34 +49,46 @@ Status values: `NOT STARTED` · `IN PROGRESS` · `BLOCKED — <reason>` · `DONE
 
 ---
 
-## Phase 1 — Monorepo, tooling, contracts
+## Phase 1 — App scaffold, tooling, contracts
 
-- **Branch:** `feat/01-monorepo-scaffold` (from `dev`)
+- **Branch:** `feat/01-app-scaffold` (from `dev`)
 - **Status:** NOT STARTED
 - **Completed:**
-- **Reads:** `01-architecture`, `02-typescript-rules`, `11-api-surface`, `12-design-system`, `14-quality-gates`
+- **Reads:** `01-architecture`, `02-typescript-rules`, `11-api-surface`, `12-design-system`, `14-quality-gates`, `16-environment`
 - **Deliverables:**
-  - pnpm workspace + Turborepo: `apps/api`, `apps/web`, `packages/contracts`, `packages/config`.
-    Working `dev` / `build` / `lint` / `typecheck` / `test` pipelines.
-  - `packages/config`: base tsconfig with every strict flag; shared flat ESLint config with
-    `typescript-eslint` strict-type-checked, `eslint-plugin-boundaries`, `eslint-plugin-import`
-    (`no-cycle`), and a rule banning `type` aliases for object literal shapes. Prettier.
-  - `packages/contracts`: the interface + Zod convention proven with three real examples —
-    `IApiResponse<T>`, `IProblemDetails`, `IPaginatedResult<T>`. Interface first, schema second,
-    compile-time `satisfies` assertion third. Barrel per domain area, never one giant index.
-  - `apps/api`: NestJS scaffold with global `ZodValidationPipe`, global exception filter emitting
-    `application/problem+json`, global `ThrottlerGuard`, pino logging with request ids,
-    `/health` and `/ready`, Swagger at `/docs`, boundaries plugin configured for the four layers.
-  - `apps/web`: Next.js App Router scaffold, Tailwind wired to the exact design tokens and four
-    font families, `next-intl` with `en` + `bn` catalogues, typed fetch client that validates every
-    response against the contracts schema and throws a typed `ApiError` on mismatch.
-  - Zod env validation in both apps, failing loudly at boot with the offending var named.
-  - Docker Compose for local Supabase + `README.md` with exact setup steps.
+  - **A single Next.js 15 app at the repo root.** One `package.json`. No monorepo, no
+    `apps/`, no separate server project. Working `dev` / `build` / `lint` / `typecheck` /
+    `test` scripts.
+  - Strict tsconfig with every flag from `02-typescript-rules`; flat ESLint config with
+    `typescript-eslint` strict-type-checked, `eslint-plugin-import` (`no-cycle`), and a rule
+    banning `type` aliases for object literal shapes. Prettier.
+  - `eslint-plugin-boundaries` configured for the five zones: `domain`, `application`,
+    `infrastructure`, `presentation`, `app`.
+  - `src/contracts`: the interface + Zod convention proven with three real examples —
+    `IApiResponse<T>`, `IProblemDetails`, `IPaginatedResult<T>`. Interface first, schema
+    second, compile-time `satisfies` assertion third. Barrel per domain area.
+  - `src/lib/env.ts`: split server/public Zod schemas, `server-only` on the server half,
+    failing loudly at boot with the offending variable named. `.env.example` complete.
+  - `src/lib/supabase/`: the session client and the `server-only` service client. Nothing
+    else in the codebase constructs a client.
+  - `withApi`: the one route-handler wrapper — auth, Zod parsing of body/query/params, rate
+    limiting via `IRateLimiter`, request id, pino log line, and problem+json error mapping.
+  - `src/composition/`: the composition root, with a per-request container factory.
+  - `/api/health`, `/api/ready`, and `/api/v1/openapi.json` generated from the Zod schemas.
+  - Tailwind wired to the exact design tokens and the four font families; `next-intl` with
+    `en` + `bn` catalogues; a typed fetch client validating every response and throwing
+    `ApiError` on mismatch.
+  - Vitest configured for unit, integration and component tests. Playwright installed.
+  - Docker Compose (or `supabase start`) for local Supabase + `README.md` setup steps.
 - **Exit gate:**
   - [ ] A deliberate `domain → infrastructure` import fails lint. Output pasted. Import removed.
+  - [ ] A deliberate `src/app → domain` import fails lint. Output pasted. Import removed.
   - [ ] A deliberate `type Foo = { … }` object alias fails lint. Output pasted. Alias removed.
+  - [ ] Importing the service client from a Client Component fails the build. Output pasted.
+  - [ ] Removing a required env var stops boot and prints that variable's name.
   - [ ] `pnpm typecheck && pnpm lint && pnpm test` all clean.
-  - [ ] `/health`, `/ready` and `/docs` respond locally.
+  - [ ] `/api/health`, `/api/ready` and `/api/v1/openapi.json` respond locally.
+  - [ ] `git ls-files | grep -c "^apps/"` is 0 — there is no second project.
 
 ---
 
@@ -110,17 +122,20 @@ Status values: `NOT STARTED` · `IN PROGRESS` · `BLOCKED — <reason>` · `DONE
 - **Status:** NOT STARTED
 - **Completed:**
 - **Reads:** `04-authentication`, `01-architecture`
-- **Deliverables:** `@supabase/ssr` cookie sessions, `/login` (one heading, one line, one Google
-  button), `/auth/callback` code exchange routing to `/onboarding` or `/dashboard`, session-refresh
-  middleware, `useSession()` + `requireUser()`. On the API: `SupabaseJwtGuard` (jose, JWKS cache,
-  `iss`/`aud`/`exp`), global `APP_GUARD`, `@Public()`, `@CurrentUser()`, augmented Express `Request`
-  in a `.d.ts`, `BootstrapProfileUseCase` (idempotent), `GET /api/v1/me`.
+- **Deliverables:** `@supabase/ssr` cookie sessions; `/login` (one heading, one line, one Google
+  button); `/auth/callback` code exchange routing to `/onboarding` or `/dashboard`;
+  session-refresh middleware protecting every route by default; the **three** user-reading
+  helpers and no others — `requireUser()` (Server Components), `withApi({ auth })` (handlers),
+  `useSession()` (Client Components); the `CRON_SECRET` bearer check for `/api/cron/*`;
+  `BootstrapProfileUseCase` (idempotent); `GET /api/v1/me`.
 - **Exit gate:**
-  - [ ] Guard unit tests cover expired, wrong-audience, wrong-issuer, malformed and missing tokens.
-  - [ ] E2E: protected route 401 without token, 200 with a valid one.
-  - [ ] E2E: a `@Public()` route is reachable unauthenticated.
-  - [ ] `grep -ri "password\|magic.link\|signInWithOtp" apps/` returns nothing in app code.
-  - [ ] No `any` and no `as` on the request object.
+  - [ ] No session → protected page redirects to `/login`; protected handler returns 401 problem+json.
+  - [ ] Valid session → 200. An `auth: 'public'` route → 200 unauthenticated.
+  - [ ] An expired cookie is refreshed by middleware, or 401 — never a 500. A tampered cookie → 401.
+  - [ ] A body carrying another user's `profileId` is ignored; the session's profile is used.
+  - [ ] `/api/cron/*` without the bearer secret → 401.
+  - [ ] `grep -ri "password\|magic.link\|signInWithOtp" src/` returns nothing in app code.
+  - [ ] `/login` contains exactly one button and zero input elements.
 
 ---
 
@@ -161,7 +176,9 @@ Status values: `NOT STARTED` · `IN PROGRESS` · `BLOCKED — <reason>` · `DONE
   - [ ] Session completion writes attempts + review items + mastery + streak atomically,
         via a Postgres function, not TypeScript sequencing.
   - [ ] Integration tests run against a real local Supabase, seeded and torn down per suite.
-  - [ ] No controller contains a conditional that is a business rule.
+  - [ ] No route handler contains a conditional that is a business rule.
+  - [ ] Every DB-touching handler declares `runtime = 'nodejs'`; lesson handlers declare `dynamic = 'force-dynamic'`.
+  - [ ] The Server Component read path and the handler path call the **same** use case.
 
 ---
 
@@ -194,7 +211,8 @@ Status values: `NOT STARTED` · `IN PROGRESS` · `BLOCKED — <reason>` · `DONE
 - **Completed:**
 - **Reads:** `08-exam-engine`, `05-domain-model`
 - **Deliverables:** exam entities; pure `ExamScoringService` and `ExamBlueprintService`
-  (seed-deterministic); the ten use cases; the pg_cron auto-submit job for abandoned attempts.
+  (seed-deterministic); the ten use cases; the `pg_cron` auto-submit job for abandoned attempts,
+  plus `/api/cron/exam-autosubmit` as a backstop guarded by `CRON_SECRET`.
 - **Exit gate:** every item below has a test that fails if the behaviour breaks.
   - [ ] `serverDeadlineAt` set at start, never extended.
   - [ ] Any write past the deadline → 409 `EXAM_TIME_EXPIRED`.
@@ -218,13 +236,14 @@ Status values: `NOT STARTED` · `IN PROGRESS` · `BLOCKED — <reason>` · `DONE
 - **Reads:** `09-notifications`
 - **Deliverables:** notification entities + `NotificationPolicy`; `IPushSender` (web-push/VAPID),
   `IMailer`, `IInAppNotifier`; the preference/list/read use cases and one dispatch use case per
-  type; hourly timezone-aware scheduling; idempotency via unique
+  type; hourly timezone-aware dispatch via `/api/cron/notifications` (Vercel Cron + `CRON_SECRET`); idempotency via unique
   `(profile_id, type, scheduled_for)`. Frontend: service worker, inline permission banner
   (never a modal), bell popover, toast system, preferences table.
 - **Exit gate:**
   - [ ] Policy tests: quiet hours spanning midnight · a disabled channel · a push endpoint
         returning 410 (must self-clean) · a UTC+6 learner with a 20:00 reminder.
   - [ ] The reminder job runs hourly and selects by learner local time, not server-local hour.
+  - [ ] `/api/cron/notifications` rejects a request without the bearer secret.
   - [ ] A retried dispatch cannot double-send. Proven by test.
 
 ---
@@ -326,7 +345,7 @@ Status values: `NOT STARTED` · `IN PROGRESS` · `BLOCKED — <reason>` · `DONE
   - [ ] RLS re-verified with the phase-2 two-user script; no `correct_answer` leak; rate limits on
         every write route; security headers + CSP; no secret in the client bundle.
   - [ ] p95 ≤ 200ms on read routes; N+1 audit clean; bundle budget met.
-  - [ ] CI runs typecheck, lint, unit, integration (Supabase service container), e2e, build.
+  - [ ] CI runs typecheck, lint, unit, integration (Supabase service container), e2e, build — one app, one build job.
   - [ ] Migrations deploy as a gated step.
   - [ ] An honest closing list: what is incomplete, what is fragile, what to build next.
 

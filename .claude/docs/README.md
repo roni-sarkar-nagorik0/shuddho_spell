@@ -24,3 +24,4 @@ may work on right now.
 | [13-frontend](13-frontend.md) | server vs client, data layer, every screen, the fragile interactions | 10–12 |
 | [14-quality-gates](14-quality-gates.md) | lint, tests, coverage floors, CI, security, performance | every phase exit |
 | [15-git-workflow](15-git-workflow.md) | branch structure, the pre-push gate, what never to run | every commit and push |
+| [16-environment](16-environment.md) | env var rules, public vs secret, boot validation | 1, 7, 8, 13 |

@@ -21,32 +21,42 @@ Full product detail: [`.claude/docs/00-overview.md`](.claude/docs/00-overview.md
 
 ## 2. Stack — non-negotiable
 
+**One Next.js application. There is no separate backend project.** The App Router serves the
+UI *and* the API. One `package.json`, one build, one deploy.
+
 | Concern | Choice |
 | --- | --- |
-| Monorepo | pnpm workspaces + Turborepo |
-| API | NestJS 10, TypeScript strict, REST, OpenAPI via `@nestjs/swagger` |
-| Web | Next.js 15 App Router, React 19, Tailwind, TanStack Query |
-| Shared | `packages/contracts` (interfaces + Zod), `packages/config` (tsconfig/eslint/prettier) |
+| App | Next.js 15 App Router, React 19, TypeScript strict — UI **and** API in one project |
+| API | Route handlers under `src/app/api/v1/*`, built by the `withApi` wrapper |
+| Client state | TanStack Query |
+| Styling | Tailwind, tokens from `12-design-system.md` |
+| Shared types | `src/contracts` — interfaces + Zod, used by both server and client |
 | DB / Auth / Storage | Supabase (Postgres 15, Supabase Auth, Supabase Storage) |
 | Migrations | Plain SQL in `supabase/migrations`. No ORM. No Prisma. |
+| Scheduled work | `pg_cron` in the database + `/api/cron/*` handlers guarded by `CRON_SECRET` |
 | Runtime | Node 20 LTS, pnpm |
-| Tests | Jest + supertest (api), Vitest + Testing Library (web), Playwright (e2e) |
+| Tests | Vitest (unit, integration, component), Playwright (e2e) |
 
-Do not add a dependency that replaces one of these. Do not introduce an ORM, a
-second state library, a component library, or a CSS-in-JS runtime.
+Do not add a dependency that replaces one of these. **Do not add a separate server project,
+a NestJS app, an Express app, or a second deploy target.** Do not introduce an ORM, a second
+state library, a component library, or a CSS-in-JS runtime.
 
 ---
 
 ## 3. The rules checklist — re-read this every session
 
 ### Architecture
-- [ ] Four layers per feature module: `domain/`, `application/`, `infrastructure/`, `presentation/`.
-- [ ] Dependency rule: `domain` → nothing. `application` → domain. `infrastructure` → domain + application. `presentation` → application + contracts.
+- [ ] Four layers per feature module in `src/modules/<feature>/`: `domain/`, `application/`, `infrastructure/`, `presentation/`.
+- [ ] Dependency rule: `domain` → nothing. `application` → domain. `infrastructure` → domain + application. `presentation` → application + contracts. `src/app` → presentation + contracts + components, never domain or infrastructure.
 - [ ] A violation must fail **lint** (`eslint-plugin-boundaries`), not review. Never loosen the rule to make an import pass — introduce the missing port instead.
-- [ ] Every port has a `Symbol` token declared beside its interface. Use cases inject via the token, never the concrete class.
+- [ ] Every port has a `Symbol` token declared beside its interface. Wiring happens **only** in `src/composition/` — a use case never reaches into the container.
+- [ ] Use cases are plain classes. **No decorators anywhere.** Dependencies arrive as interfaces through the constructor.
 - [ ] One use case per class, one public `execute(input): Promise<output>` method, with its own `IXInput` / `IXOutput` interfaces.
-- [ ] A use case never receives a `Request`, a `Response`, a Supabase client, or a raw DB row.
-- [ ] Controllers are thin: parse with Zod → call exactly one use case → map to contract → return. Business logic in a controller is a bug.
+- [ ] A use case never receives a `Request`, a `NextRequest`, a `Response`, a Supabase client, or a raw DB row. It never reads `process.env`. It never calls `Date.now()` — it injects `IClock`.
+- [ ] Route handlers are thin and built by `withApi`: it owns auth, Zod parsing, rate limiting, request ids and problem+json mapping. Business logic in a handler is a bug.
+- [ ] `src/app/api/**/route.ts` files are three-line re-exports. All work lives in the module.
+- [ ] `export const runtime = 'nodejs'` on every handler touching the database; `dynamic = 'force-dynamic'` on exam and lesson handlers.
+- [ ] **Server Components call use cases directly** through the composition root — they never fetch their own API over HTTP. One implementation serves both paths.
 
 ### TypeScript
 - [ ] Every object shape is an `interface`. Never `type`.
@@ -61,14 +71,17 @@ second state library, a component library, or a CSS-in-JS runtime.
 
 ### Auth
 - [ ] Google only. No email/password, no magic link, no second provider. No email input field exists anywhere in the codebase.
-- [ ] The API never performs the OAuth dance — it only verifies the Supabase JWT (RS256, JWKS, `iss`/`aud`/`exp`).
-- [ ] Identity always comes from the verified token, never from the client body.
-- [ ] Routes are protected by default (`APP_GUARD`), public by exception (`@Public()`).
+- [ ] Cookie sessions via `@supabase/ssr`. Only three ways to read the user: `requireUser()` in a Server Component, `withApi({ auth: 'required' })` in a handler, `useSession()` in a Client Component.
+- [ ] Identity always comes from the server-verified session, never from the client body.
+- [ ] Routes are protected by default; public by explicit `auth: 'public'`.
+- [ ] `/api/cron/*` authenticates with `Bearer ${CRON_SECRET}`, compared in constant time.
+- [ ] Exactly two Supabase clients exist: the session client and the `server-only` service client. Nothing else constructs one.
 - [ ] RLS is on for every learner table and written as if the API did not exist.
 
 ### Quality
-- [ ] Env vars validated with Zod at boot; the app refuses to start and names the offending var.
-- [ ] Every use case has a unit test with in-memory fakes and a `FakeClock` — no Nest `TestingModule`.
+- [ ] Env vars validated with Zod at boot in `src/lib/env.ts`; the app refuses to start and names the offending var. Nothing else reads `process.env`.
+- [ ] `.env.example` stays complete — a new variable without an entry there is a bug.
+- [ ] Every use case has a unit test constructed directly: `new SomeUseCase(fakeRepo, fakeClock)`. No framework, no container.
 - [ ] Coverage floor 90% on `domain` and `application`.
 - [ ] No secret in code, ever, and none in the client bundle.
 
@@ -181,6 +194,7 @@ Full rules are at the top of it; these are the ones you may never break:
 | [`docs/12-design-system.md`](.claude/docs/12-design-system.md) | Phase 1, 10, 11, 12 |
 | [`docs/13-frontend.md`](.claude/docs/13-frontend.md) | Phase 10, 11, 12 |
 | [`docs/14-quality-gates.md`](.claude/docs/14-quality-gates.md) | Every phase exit |
+| [`docs/16-environment.md`](.claude/docs/16-environment.md) | Phase 1, 7, 8, 13 — and any new env var |
 | [`docs/15-git-workflow.md`](.claude/docs/15-git-workflow.md) | Every commit and push |
 
 `ARCHITECTURE.md` (written in Phase 0) is a living record — update it when a decision changes.
@@ -190,7 +204,7 @@ Full rules are at the top of it; these are the ones you may never break:
 ## 8. Commands
 
 ```bash
-pnpm dev            # all apps
+pnpm dev            # the app — UI and API together
 pnpm build
 pnpm typecheck
 pnpm lint
@@ -208,9 +222,12 @@ Slash commands in `.claude/commands/`: `/next-feature`, `/phase-start`, `/phase-
 ## 9. Standing prohibitions
 
 - No `type` on object literals. No `enum`. No `any`. No `as`. No `!`.
+- No separate backend project. No NestJS, no Express, no second deploy target.
 - No ORM. No Prisma. No repository that returns a raw Supabase row past infrastructure.
-- No business logic in a controller, a React component, or a Postgres trigger that a
+- No business logic in a route handler, a React component, or a Postgres trigger that a
   domain service should own.
+- No `process.env` outside `src/lib/env.ts`. No secret in a `NEXT_PUBLIC_*` variable.
+- No Server Component fetching its own API over HTTP.
 - No client-trusted identity, score, deadline, or attempt count.
 - No `correct_answer` in any exam response before submission.
 - No emoji, gradient, illustration, or shadow (except overlays) in the UI.

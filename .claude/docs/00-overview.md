@@ -65,6 +65,13 @@ Everything else in the codebase is plumbing around these. Get them right.
 This is real linguistic content. It is generated one week at a time, validated after each
 week, and anything uncertain is flagged rather than invented. See `10-content-pipeline.md`.
 
+## Shape of the build
+
+**One Next.js application.** The App Router serves the UI and the API in the same project —
+there is no separate backend, no second deploy target. Clean Architecture is preserved inside
+`src/modules/<feature>/`, and the `src/app/` tree stays a thin routing table.
+See `01-architecture.md`.
+
 ## Tone of the product
 
 A dense professional instrument, not a game. No emoji, no gradients, no illustration, no

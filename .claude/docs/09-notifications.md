@@ -47,8 +47,12 @@ Plus one dispatch use case per type: `SendDailyReminder` · `SendStreakAtRisk` �
 
 ## Scheduling — the part that is usually wrong
 
-`@nestjs/schedule` drives in-process jobs. The reminder job **runs hourly** and selects the
-learners whose **local** time matches their stored `reminderTime`.
+There is no long-running server process, so there is no in-process scheduler.
+Dispatch runs as a **cron route handler**: `/api/cron/notifications`, called hourly by Vercel
+Cron (or any scheduler), authenticated with `Bearer ${CRON_SECRET}`, `runtime = 'nodejs'`.
+
+The job **runs hourly** and selects the learners whose **local** time matches their stored
+`reminderTime`.
 
 It does **not** run once at a server-local hour. A learner in UTC+6 with a 20:00 reminder
 gets it at 20:00 *their* time. Write the query as "select learners where
@@ -57,7 +61,12 @@ gets it at 20:00 *their* time. Write the query as "select learners where
 ## Idempotency
 
 A unique constraint on `(profile_id, type, scheduled_for)`. A retried job, a duplicated
-cron tick, or a redeploy mid-run **cannot double-send**. Proven by test.
+cron tick, a scheduler firing twice, or a redeploy mid-run **cannot double-send**. Proven by
+test.
+
+This matters more without a persistent process: a cron invocation can be retried by the
+platform after a timeout, having already sent half its batch. The constraint is the only
+thing standing between that and duplicate emails.
 
 ## Self-cleaning push
 
@@ -72,7 +81,7 @@ it immediately. A 429 backs off. A 500 retries once. Nothing else.
 - A bell popover for the in-app feed, with unread counts.
 - A toast system for in-session events.
 - A preferences table with **In-app / Push / Email** columns, all typed from
-  `packages/contracts`.
+  `src/contracts`.
 
 ## Required policy tests
 

@@ -2,6 +2,9 @@
 
 Next.js 15 App Router, React 19, Tailwind, TanStack Query. Read `12-design-system.md` first.
 
+This is the whole application — UI and API in one project. `13-frontend.md` covers the UI;
+`11-api-surface.md` covers the handlers; `01-architecture.md` covers how they share use cases.
+
 ## Server vs Client Components
 
 - **Server Components** for data-heavy read screens: dashboard panels, program table,
@@ -14,8 +17,11 @@ If a component does not use state, an effect, or an event handler, it stays on t
 ## Data layer
 
 - TanStack Query for client state.
-- A Zod-validated fetch wrapper generated from `packages/contracts`. Every response is
-  validated; a mismatch throws a typed `ApiError`.
+- A Zod-validated fetch wrapper built on `src/contracts`. Every response is validated; a
+  mismatch throws a typed `ApiError`.
+- **Server Components do not fetch their own API over HTTP.** They call the same use case
+  directly through the composition root. The route handler exists for the client. Both paths
+  run one implementation — never two.
 - **Optimistic updates** for exam answer saving — the learner must never wait on the network
   to move to the next question.
 - **Exam writes are never retried.** Configure the retry policy to exclude them explicitly.

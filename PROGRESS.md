@@ -57,38 +57,46 @@ Branch `docs/00-architecture-record` · Status: `NOT STARTED`
   - Test: all five sections present; every port in `05-domain-model.md` appears in the token table
 - [ ] **F0.2** Confirm or amend the phase list and the feature list in this file
   - Test: every phase in `BUILD-ORDER-COMPLETE.md` has a matching section here
+- [ ] **F0.3** Confirm `.env.example` covers every variable the design needs
+  - Test: every variable referenced in the docs appears in `.env.example` with a comment
 
 ---
 
-## Phase 1 — Monorepo, tooling, contracts
-Branch `feat/01-monorepo-scaffold` · Status: `NOT STARTED`
+## Phase 1 — App scaffold, tooling, contracts
+Branch `feat/01-app-scaffold` · Status: `NOT STARTED`
 
-- [ ] **F1.1** pnpm workspace + Turborepo, four packages, working pipelines
-  - Test: `pnpm dev`, `build`, `lint`, `typecheck`, `test` all resolve in every package
-- [ ] **F1.2** `packages/config` — strict tsconfig with every required flag
-  - Test: a file using an unchecked index access fails typecheck
+- [ ] **F1.1** Single Next.js 15 app at the repo root — one `package.json`, no monorepo, no separate server project
+  - Test: `pnpm dev`, `build`, `lint`, `typecheck`, `test` all run; `git ls-files | grep -c "^apps/"` is 0
+- [ ] **F1.2** Strict tsconfig with every required flag
+  - Test: an unchecked index access fails typecheck
 - [ ] **F1.3** ESLint flat config — `typescript-eslint` strict-type-checked, `import/no-cycle`, prettier
   - Test: a deliberate import cycle fails lint
-- [ ] **F1.4** `eslint-plugin-boundaries` — the four-layer dependency rule
-  - Test: a `domain → infrastructure` import fails lint (paste output, then remove)
+- [ ] **F1.4** `eslint-plugin-boundaries` — five zones: domain, application, infrastructure, presentation, app
+  - Test: `domain → infrastructure` fails lint; `src/app → domain` fails lint (paste both, then remove)
 - [ ] **F1.5** The `type`-alias-on-object ban
   - Test: `type Foo = { a: string }` fails lint (paste output, then remove)
-- [ ] **F1.6** `packages/contracts` — `IApiResponse<T>`, `IProblemDetails`, `IPaginatedResult<T>` with interface-first + `satisfies` assertion
+- [ ] **F1.6** `src/contracts` — `IApiResponse<T>`, `IProblemDetails`, `IPaginatedResult<T>` with interface-first + `satisfies`
   - Test: a schema drifting from its interface fails typecheck
-- [ ] **F1.7** API scaffold — global `ZodValidationPipe`, problem+json exception filter, `ThrottlerGuard`, pino + request ids
-  - Test: a bad body returns problem+json with a `code`; a request id appears in the log line
-- [ ] **F1.8** `/health`, `/ready`, Swagger at `/docs`
-  - Test: all three respond 200 unauthenticated
-- [ ] **F1.9** Web scaffold — Tailwind with the exact tokens and four fonts, App Router
+- [ ] **F1.7** `src/lib/env.ts` — split server/public Zod schemas, `server-only` on the server half
+  - Test: removing a required var stops boot and names it; importing the server env from a Client Component fails the build
+- [ ] **F1.8** `src/lib/supabase/` — session client + `server-only` service client
+  - Test: grep finds exactly two `createClient` call sites; the service client cannot be imported client-side
+- [ ] **F1.9** `withApi` wrapper — auth, Zod body/query/params, rate limit, request id, pino, problem+json
+  - Test: a bad body returns problem+json with a stable `code`; a request id appears in the log line
+- [ ] **F1.10** `src/composition/` — per-request container factory
+  - Test: a use case can be constructed with fakes and no container at all
+- [ ] **F1.11** `/api/health`, `/api/ready`, `/api/v1/openapi.json`
+  - Test: all three respond 200 unauthenticated; the OpenAPI doc is generated from the Zod schemas
+- [ ] **F1.12** Tailwind with the exact tokens and four fonts
   - Test: every token from `12-design-system.md` resolves in the Tailwind theme
-- [ ] **F1.10** `next-intl` with `en` + `bn` catalogues
+- [ ] **F1.13** `next-intl` with `en` + `bn` catalogues
   - Test: rendering in `bn` returns Bangla, not a missing-key fallback
-- [ ] **F1.11** Typed fetch client validating every response, throwing `ApiError` on mismatch
+- [ ] **F1.14** Typed fetch client validating every response, throwing `ApiError` on mismatch
   - Test: a mocked malformed response throws `ApiError`, not a render crash
-- [ ] **F1.12** Zod env validation in both apps
-  - Test: removing a required var makes boot fail and print that var's name
-- [ ] **F1.13** Docker Compose for local Supabase + README setup steps
-  - Test: a clean checkout reaches a running local Supabase using only the README
+- [ ] **F1.15** Vitest (unit + integration + component) and Playwright configured
+  - Test: one example test of each kind runs green
+- [ ] **F1.16** Local Supabase setup + `.env.example` + README steps
+  - Test: a clean checkout reaches a running local Supabase and a booting app using only the README
 
 ---
 
@@ -131,18 +139,20 @@ Branch `feat/03-google-auth` · Status: `NOT STARTED`
   - Test: an unauthenticated request to `/dashboard` redirects to `/login`
 - [ ] **F3.5** `useSession()` + `requireUser()`
   - Test: `requireUser()` throws/redirects with no session
-- [ ] **F3.6** `SupabaseJwtGuard` — jose, JWKS cache, iss/aud/exp
-  - Test: expired · wrong audience · wrong issuer · malformed · missing → all 401; valid → 200
-- [ ] **F3.7** Global `APP_GUARD` + `@Public()` + `@CurrentUser()`
-  - Test: protected route 401 without token; `@Public()` route 200 without token
-- [ ] **F3.8** Augmented Express `Request` in a `.d.ts`
-  - Test: no `any` and no `as` on the request object anywhere (grep)
+- [ ] **F3.6** `withApi({ auth: 'required' })` session resolution
+  - Test: no session → 401 problem+json; expired cookie → refreshed or 401, never 500; tampered cookie → 401
+- [ ] **F3.7** Protected-by-default routing; `auth: 'public'` as the explicit opt-out
+  - Test: a protected handler 401s without a session; a public one returns 200
+- [ ] **F3.8** `CRON_SECRET` bearer check for `/api/cron/*`, constant-time compare
+  - Test: a request without the secret → 401; the secret never appears in a log line
 - [ ] **F3.9** `BootstrapProfileUseCase`, idempotent
   - Test: two concurrent first requests produce exactly one profile, no 500
 - [ ] **F3.10** `GET /api/v1/me`
   - Test: returns profile + program position for a valid token
 - [ ] **F3.11** No email/password path exists
-  - Test: `grep -ri "password\|magic.link\|signInWithOtp" apps/` returns nothing in app code
+  - Test: `grep -ri "password\|magic.link\|signInWithOtp" src/` returns nothing in app code
+- [ ] **F3.12** Identity comes only from the session
+  - Test: a body carrying another user's `profileId` is ignored; the session's profile is used
 
 ---
 
@@ -185,8 +195,8 @@ Branch `feat/04-domain-application` · Status: `NOT STARTED`
 ## Phase 5 — Infrastructure and presentation wiring
 Branch `feat/05-infrastructure` · Status: `NOT STARTED`
 
-- [ ] **F5.1** `SupabaseClientProvider` — the only file constructing a client
-  - Test: grep finds exactly one `createClient` call
+- [ ] **F5.1** Repositories use the `server-only` service client and nothing else
+  - Test: grep finds no `createClient` outside `src/lib/supabase/`
 - [ ] **F5.2** Row↔entity mappers, both directions
   - Test: round-trip mapping is lossless; no row interface escapes `infrastructure/`
 - [ ] **F5.3** Repository implementations (8 ports)
@@ -197,8 +207,10 @@ Branch `feat/05-infrastructure` · Status: `NOT STARTED`
   - Test: each code produces its typed domain error; 40001 retries exactly once
 - [ ] **F5.6** Batched reads — no N+1 on the dashboard
   - Test: a query-count assertion on `GetLearnerDashboard`
-- [ ] **F5.7** Program, lessons and review controllers (thin)
-  - Test: e2e per route; no business conditional in any controller (review + grep)
+- [ ] **F5.7** Program, lessons and review handlers via `withApi` + three-line route re-exports
+  - Test: each handler invoked directly with a constructed `Request`; no business conditional in any handler; `runtime = 'nodejs'` declared
+- [ ] **F5.8** Server Component read path calls the same use cases
+  - Test: the dashboard Server Component and `GET /api/v1/progress/summary` run one implementation, not two
 
 ---
 
@@ -251,8 +263,8 @@ Branch `feat/07-exam-engine` · Status: `NOT STARTED`
   - Test: review is unreachable before submission
 - [ ] **F7.12** `GetExamReadiness`
   - Test: returns a predicted score and exactly three costliest topics
-- [ ] **F7.13** pg_cron auto-submit for abandoned attempts
-  - Test: an abandoned attempt is submitted and no longer blocks a retake
+- [ ] **F7.13** `pg_cron` auto-submit for abandoned attempts + `/api/cron/exam-autosubmit` backstop
+  - Test: an abandoned attempt is submitted and no longer blocks a retake; the cron route 401s without the bearer secret; a double-fire does not double-submit
 - [ ] **F7.14** The full attack suite (`/exam-attack`)
   - Test: all 11 attacks rejected or resumed correctly
 
@@ -273,8 +285,8 @@ Branch `feat/08-notifications` · Status: `NOT STARTED`
   - Test: a learner can only read and update their own preferences
 - [ ] **F8.6** Dispatch use cases (6 types)
   - Test: each respects the policy service
-- [ ] **F8.7** Hourly timezone-aware scheduling
-  - Test: a UTC+6 learner with a 20:00 reminder fires at 20:00 local, exactly once
+- [ ] **F8.7** `/api/cron/notifications` — hourly, timezone-aware dispatch
+  - Test: a UTC+6 learner with a 20:00 reminder fires at 20:00 local, exactly once; the route 401s without the bearer secret; a platform retry does not double-send
 - [ ] **F8.8** Idempotency on `(profile_id, type, scheduled_for)`
   - Test: a retried dispatch produces one row and one send
 - [ ] **F8.9** Service worker + inline permission banner
@@ -417,7 +429,8 @@ Newest first. One line per finished feature: date · id · what · test result.
 
 | Date | Feature | What landed | Tests |
 | --- | --- | --- | --- |
-| 2026-08-18 | — | Claude Code setup: CLAUDE.md, build order, 16 docs, commands, git rules | n/a — docs only |
+| 2026-08-18 | — | Restructured to a **single Next.js app** (no separate backend); added `.env.example`, `.gitignore`, `16-environment.md` | n/a — docs only |
+| 2026-08-18 | — | Claude Code setup: CLAUDE.md, build order, docs, commands, git rules | n/a — docs only |
 
 ---
 

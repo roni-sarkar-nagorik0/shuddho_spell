@@ -26,13 +26,19 @@ every phase exit.
 
 | Layer | Approach | Floor |
 | --- | --- | --- |
-| `domain` | pure unit tests | **90%** |
+| `domain` | pure unit tests (Vitest) | **90%** |
 | `application` | unit tests with in-memory fakes + `FakeClock` | **90%** |
 | `infrastructure` | integration tests against a real local Supabase | covered by integration |
-| `presentation` | e2e / supertest | covered by integration |
+| `presentation` | route handlers invoked directly with a `Request` | covered by integration |
+| UI | Vitest + Testing Library | covered by component + e2e |
 
-- Every use case has a unit test with in-memory fake repositories and **no Nest
-  `TestingModule`**. If a use case needs Nest to be tested, its dependencies are wrong.
+One test runner: **Vitest** for unit, integration and component tests; **Playwright** for e2e.
+Route handlers are tested by calling the exported `GET`/`POST` with a constructed `Request` —
+no HTTP server, no supertest.
+
+- Every use case has a unit test constructed directly: `new SomeUseCase(fakeRepo, fakeClock)`.
+  No framework, no container, no module loader. If a use case needs more than that to be
+  tested, its dependencies are wrong.
 - Integration suites seed and tear down per suite. No shared mutable fixture.
 - Playwright covers the four flows that must never break:
   1. Google sign-in → dashboard
@@ -53,14 +59,17 @@ touched. Full rules: `15-git-workflow.md`.
 
 - Husky + lint-staged on commit.
 - GitHub Actions: `typecheck` → `lint` → `unit` → `integration` (Supabase service container)
-  → `e2e` → `build`.
+  → `e2e` → `build`. One app, one build job.
 - Migrations run as a **gated** deployment step, never automatically on push.
 
 ## Secrets and env
 
 - No secret in code. Ever.
-- Env vars validated at boot with Zod. The app **refuses to start** on a missing or malformed
-  var and prints exactly which one.
+- Env vars validated at boot with Zod (`src/lib/env.ts`). The app **refuses to start** on a
+  missing or malformed var and prints exactly which one. See `16-environment.md`.
+- `.env.example` is complete and committed; `.env.local` never is.
+- The server env module is `server-only`, so importing a secret into a Client Component is a
+  build failure rather than a runtime leak.
 - Phase 13 verifies no secret reaches the client bundle.
 
 ## Security pass (Phase 13)

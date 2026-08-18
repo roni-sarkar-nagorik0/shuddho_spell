@@ -32,7 +32,8 @@ export interface IPronunciationDiagnosis {
 ```
 
 It lives behind this port so a real acoustic model can replace it later **without touching a
-single use case**.
+single use case**. Scoring runs server-side in a route handler (`runtime = 'nodejs'`), never
+in the browser — a client-computed score is a client-editable score.
 
 ## Grapheme-to-phoneme
 

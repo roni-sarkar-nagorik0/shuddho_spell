@@ -74,7 +74,13 @@ This script runs again in Phase 13. It is not optional and it is not replaceable
 - **Session completion** → one Postgres function writing `attempts`, `review_items`,
   `mastery_records` and `streak_records` in a single transaction, invoked through `IUnitOfWork`.
 - **Exam auto-submit** → a `pg_cron` job that submits attempts abandoned past
-  `server_deadline_at`, so a stale attempt never blocks a retake.
+  `server_deadline_at`, so a stale attempt never blocks a retake. Because the app is
+  serverless and has no long-running process, this job lives **in the database** and must work
+  even when the app is completely down. `/api/cron/exam-autosubmit` is a backstop, not the
+  primary path.
+- **Rate limiting** → a `rate_limits` table plus a function implementing a fixed-window
+  counter, behind `IRateLimiter`. Serverless invocations share no memory, so an in-process
+  limiter would not limit anything.
 
 ## Indexes
 
@@ -94,8 +100,8 @@ Add an index only with the query it serves named in a comment.
 
 ## Row interfaces
 
-Row interfaces are **hand-written from the SQL** and live in `infrastructure/`, never in
-`domain/`. Use `supabase gen types` only to *verify* your hand-written interfaces, never as
+Row interfaces are **hand-written from the SQL** and live in `src/modules/*/infrastructure/`,
+never in `domain/`. Use `supabase gen types` only to *verify* your hand-written interfaces, never as
 the source of truth — generated types leak snake_case and nullable-everything into places
 that must not know about the database.
 
