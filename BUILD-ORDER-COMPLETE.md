@@ -83,7 +83,8 @@ Status values: `NOT STARTED` · `IN PROGRESS` · `BLOCKED — <reason>` · `DONE
     `en` + `bn` catalogues; a typed fetch client validating every response and throwing
     `ApiError` on mismatch.
   - Vitest configured for unit, integration and component tests. Playwright installed.
-  - Docker Compose (or `supabase start`) for local Supabase + `README.md` setup steps.
+  - `README.md` setup steps against a hosted Supabase project, plus `pnpm setup:check`.
+    **No Docker, no local database stack.**
 - **Exit gate:**
   - [ ] A deliberate `domain → infrastructure` import fails lint. Output pasted. Import removed.
   - [ ] A deliberate `src/app → domain` import fails lint. Output pasted. Import removed.
@@ -116,7 +117,7 @@ Status values: `NOT STARTED` · `IN PROGRESS` · `BLOCKED — <reason>` · `DONE
         review items, exam attempts or notifications. Output pasted.
   - [ ] `exam_questions.correct_answer` is unreachable except via the service role.
   - [ ] `auth.users` insert trigger creates a `learner_profiles` row.
-  - [ ] Migrations apply cleanly from empty on `pnpm db:reset`.
+  - [ ] Migrations apply cleanly from empty against a fresh Supabase project.
 
 ---
 

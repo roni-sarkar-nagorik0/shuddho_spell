@@ -251,7 +251,7 @@ pnpm lint
 pnpm test
 pnpm test:e2e
 pnpm content:seed   # validate + diff + apply course content
-pnpm db:reset       # local Supabase reset + migrate + seed
+pnpm setup:check    # node version, dependencies, env file present
 ```
 
 **`/build` is the single entry point.** It runs preflight → picks the one next feature →

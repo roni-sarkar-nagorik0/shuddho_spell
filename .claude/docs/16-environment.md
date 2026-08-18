@@ -85,14 +85,23 @@ log, never in a client bundle. Phase 13 verifies this against the built bundle.
 Sections 1 and 2 of `.env.example` — `NODE_ENV`, `NEXT_PUBLIC_APP_URL`, the three Supabase
 values and `DATABASE_URL`. Everything else is needed from the phase noted in that file.
 
-## Local Supabase
+## Supabase — hosted, no local stack
 
-`supabase start` prints the URL, anon key and service role key. The local defaults are:
+**There is no Docker and no local database.** Development runs against a hosted Supabase
+project, the same way production does. Nothing to install, nothing to boot, no second set of
+credentials to keep in sync.
 
-```
-NEXT_PUBLIC_SUPABASE_URL=http://127.0.0.1:54321
-DATABASE_URL=postgresql://postgres:postgres@127.0.0.1:54322/postgres
-```
+Take the four values from the Supabase dashboard → Project Settings:
+
+| Variable | Where |
+| --- | --- |
+| `NEXT_PUBLIC_SUPABASE_URL` | API → Project URL |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | API → Project API keys → `anon` |
+| `SUPABASE_SERVICE_ROLE_KEY` | API → Project API keys → `service_role` |
+| `DATABASE_URL` | Database → Connection string → URI |
+
+Use a **separate Supabase project for development**, never the production one — migrations
+and seeds are applied straight against whatever `DATABASE_URL` points at.
 
 ## Not used: email
 

@@ -6,8 +6,8 @@ pronunciation and sentence construction, diagnosed per phoneme and per rule fami
 **One Next.js 15 app** — UI and API in the same project. TypeScript (interface-first) ·
 Supabase · Clean Architecture · Google-only auth.
 
-> **The build has not started yet.** This repository currently contains the Claude Code
-> setup only. Begin at Phase 0 in [`BUILD-ORDER-COMPLETE.md`](BUILD-ORDER-COMPLETE.md).
+> **Phase 1 is in progress.** The app scaffold boots; the database schema is Phase 2.
+> [`PROGRESS.md`](PROGRESS.md) is the live state.
 
 ## Working on this project with Claude Code
 
@@ -90,23 +90,75 @@ Full rules: [`.claude/docs/15-git-workflow.md`](.claude/docs/15-git-workflow.md)
 `.claude/settings.json` additionally denies force-push, branch deletion, `--no-verify`,
 `git reset --hard` and pushes to `main` at the tool level.
 
-## Setup — do this first
+## Getting started — from a clean checkout
+
+**No Docker. No local database.** This app talks to a hosted Supabase project in development
+exactly as it does in production, so there is nothing to boot on your machine.
+
+### 1. Prerequisites
+
+- Node 20.11 or newer
+- pnpm 10 (`corepack enable pnpm`)
+- A Supabase project — free tier is enough. **Use a separate project for development**,
+  never the production one.
+
+### 2. Install
+
+```bash
+pnpm install
+```
+
+### 3. Create your env file
 
 ```bash
 cp .env.example .env.local
 ```
 
+Fill in **sections 1 and 2 only** — the rest is documented per phase and not needed yet:
+
+| Variable | Where to get it |
+| --- | --- |
+| `NODE_ENV` | `development` |
+| `NEXT_PUBLIC_APP_URL` | `http://localhost:3000` |
+| `NEXT_PUBLIC_SUPABASE_URL` | Supabase dashboard → Project Settings → API → Project URL |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | same page → Project API keys → `anon` |
+| `SUPABASE_SERVICE_ROLE_KEY` | same page → Project API keys → `service_role` |
+| `DATABASE_URL` | Project Settings → Database → Connection string → URI |
+
+`SUPABASE_SERVICE_ROLE_KEY` bypasses every RLS policy. Server-only, never logged, never
+imported into a Client Component.
+
 **Claude checks once that an env file exists** (`.env` or `.env.local`) and then gets on with
-the build. It never reads, prints or edits that file — existence only. Filling it in is
-yours to do. If a real value ever needs changing, you change it; Claude works from
-`.env.example` and from the Zod schema in `src/lib/env.ts`, which names any missing variable
-at boot.
+the build. It never reads, prints or edits that file — existence only. Every variable is
+validated by Zod at boot, and a missing one stops the app and names itself.
 
-`.env.example` documents every variable — what it is, where to get it, and which phase first
-needs it. To run today you only need sections 1 and 2: `NODE_ENV`, `NEXT_PUBLIC_APP_URL`, the
-three Supabase values and `DATABASE_URL`. `supabase start` prints all of the Supabase ones.
+### 4. Check the setup
 
-Everything is validated by Zod at boot — a missing variable stops the app and names itself.
+```bash
+pnpm setup:check
+```
+
+Node version, dependencies, env file present. It reads nothing out of your env file.
+
+### 5. Run it
+
+```bash
+pnpm dev
+```
+
+| URL | Expect |
+| --- | --- |
+| http://localhost:3000 | the landing page, in English and Bangla |
+| http://localhost:3000/api/health | `{"data":{"status":"ok"},…}` |
+| http://localhost:3000/api/ready | `"database":"up"` once your Supabase values are real — `"down"` until the Phase 2 schema exists |
+
+### Troubleshooting
+
+| Symptom | Cause |
+| --- | --- |
+| `Invalid public environment. Check these in .env.local: …` | that variable is missing or malformed — the message names it |
+| `/api/ready` reports `"database":"down"` | wrong Supabase URL or key, or the Phase 2 schema has not been applied yet |
+| port 3000 is taken | `PORT=3311 pnpm dev` |
 
 ## Repository layout (once built)
 
@@ -136,6 +188,5 @@ pnpm typecheck
 pnpm lint
 pnpm test             # Vitest — unit, integration, component
 pnpm test:e2e         # Playwright
-pnpm content:seed
-pnpm db:reset
+pnpm setup:check      # node version, dependencies, env file present
 ```

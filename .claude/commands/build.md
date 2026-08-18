@@ -17,7 +17,7 @@ ls -la .env .env.local 2>/dev/null
 **Missing → STOP.** Say exactly this and end the turn:
 
 > No env file found. Copy `.env.example` to `.env.local` and fill in sections 1 and 2
-> (core + Supabase — `supabase start` prints the Supabase values). I'll stop here until it exists.
+> (core + Supabase — the four values come from the Supabase dashboard). I'll stop here until it exists.
 
 Do not scaffold. Do not start "the parts that don't need env".
 **Never read the file** — existence check only.

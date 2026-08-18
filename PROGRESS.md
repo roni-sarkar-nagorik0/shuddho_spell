@@ -55,10 +55,10 @@ and 2. No feature starts without it. **Never read the file** — existence check
 
 ## NEXT
 
-> **Phase 1 · F1.16 — Local Supabase setup + `.env.example` + README steps**
-> Branch: `feat/01-app-scaffold`
-> Last two Phase 1 items after that are the `[~]` carry-overs F1.9 (rate limiter, needs Phase 2)
-> and F1.11 (OpenAPI, needs v1 schemas). Then Phase 2 — database schema.
+> **Phase 2 · F2.1 — `001_extensions` + `002_content_tables`**
+> Branch: `feat/02-database-schema`
+> Phase 1's only open items are the two carry-overs that genuinely need later phases:
+> F1.9 (rate limiter, needs the Phase 2 tables) and F1.11 (OpenAPI, needs the v1 schemas).
 
 Update this block every time a feature is finished.
 
@@ -113,8 +113,8 @@ Branch `feat/01-app-scaffold` · Status: `IN PROGRESS`
   - Test: a mocked malformed response throws `ApiError`, not a render crash
 - [x] **F1.15** (2026-08-18) Vitest (unit + integration + component) and Playwright configured
   - Test: one example test of each kind runs green
-- [ ] **F1.16** Local Supabase setup + `.env.example` + README steps
-  - Test: a clean checkout reaches a running local Supabase and a booting app using only the README
+- [x] **F1.16** (2026-08-18) Hosted Supabase setup + `.env.example` + README steps — **no Docker, no local stack**
+  - Test: a clean checkout reaches a booting app using only the README
 
 ---
 
@@ -463,6 +463,7 @@ Newest first. One line per finished feature: date · id · what · test result.
 
 | Date | Feature | What landed | Tests |
 | --- | --- | --- | --- |
+| 2026-08-18 | F1.16 | Hosted-Supabase setup path — README getting-started, `.env.example` rewrite, `pnpm setup:check` doctor; **Docker removed everywhere** | `pnpm test` 26/26 · clean-clone walkthrough · typecheck, lint, build green |
 | 2026-08-18 | F1.14 | Typed fetch client — `apiFetch`/`apiRequest` validate the `{data,meta}` envelope and the caller's schema, map problem+json onto `ApiError` | `pnpm test` 22/22 · typecheck, lint, build green |
 | 2026-08-18 | F0.1 | `ARCHITECTURE.md` — layer diagram, folder tree, 24-token port table, 23-table DB list, 11 recorded decisions + 1 open question | `scripts/check-architecture-doc.sh` — 5/5 sections, 15/15 ports tokenised, `IMailer` correctly absent · PASSED |
 | 2026-08-18 | — | Email deferred to v2 — notifications are in-app + push only; `RESEND_API_KEY` commented out | n/a — docs only |
