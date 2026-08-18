@@ -236,17 +236,23 @@ Status values: `NOT STARTED` · `IN PROGRESS` · `BLOCKED — <reason>` · `DONE
 - **Status:** NOT STARTED
 - **Completed:**
 - **Reads:** `09-notifications`
-- **Deliverables:** notification entities + `NotificationPolicy`; `IPushSender` (web-push/VAPID),
-  `IMailer`, `IInAppNotifier`; the preference/list/read use cases and one dispatch use case per
+- **Scope note:** **two channels only — in-app and web push. No email.** Do not implement
+  `IMailer`, do not add Resend or SMTP, do not read `RESEND_API_KEY`. Email is a v2 decision;
+  `email` stays in the channel union and the DB check constraint so v2 needs no migration.
+- **Deliverables:** notification entities + `NotificationPolicy`; `IPushSender` (web-push/VAPID)
+  and `IInAppNotifier`; the preference/list/read use cases and one dispatch use case per
   type; hourly timezone-aware dispatch via `/api/cron/notifications` (Vercel Cron + `CRON_SECRET`); idempotency via unique
   `(profile_id, type, scheduled_for)`. Frontend: service worker, inline permission banner
-  (never a modal), bell popover, toast system, preferences table.
+  (never a modal), bell popover, toast system, preferences table with **In-app / Push** columns.
 - **Exit gate:**
   - [ ] Policy tests: quiet hours spanning midnight · a disabled channel · a push endpoint
         returning 410 (must self-clean) · a UTC+6 learner with a 20:00 reminder.
   - [ ] The reminder job runs hourly and selects by learner local time, not server-local hour.
   - [ ] `/api/cron/notifications` rejects a request without the bearer secret.
   - [ ] A retried dispatch cannot double-send. Proven by test.
+  - [ ] A preference requesting the `email` channel is never selected and never attempts a send.
+  - [ ] No mail dependency in `package.json`; `grep -ri "resend\|nodemailer\|smtp" src/` is empty.
+  - [ ] The preferences UI has no Email column — not greyed out, not "coming soon".
 
 ---
 

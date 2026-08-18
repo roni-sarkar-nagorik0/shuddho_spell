@@ -72,7 +72,10 @@ Each with its `Symbol` token, in `domain/repositories/`:
 
 ## Application ports
 
-`IClock` · `IIdGenerator` · `ISpeechScorer` · `IUnitOfWork`
+`IClock` · `IIdGenerator` · `ISpeechScorer` · `IUnitOfWork` · `IRateLimiter` ·
+`IPushSender` · `IInAppNotifier`
+
+(No `IMailer` — the app sends no email. See `09-notifications.md`.)
 
 ## Use cases (Phase 4)
 

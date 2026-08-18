@@ -69,7 +69,7 @@ not a runtime leak.
 | `NEXT_PUBLIC_APP_URL` | `SUPABASE_SERVICE_ROLE_KEY` |
 | `NEXT_PUBLIC_SUPABASE_URL` | `DATABASE_URL` |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | `VAPID_PRIVATE_KEY` |
-| `NEXT_PUBLIC_VAPID_PUBLIC_KEY` | `RESEND_API_KEY` |
+| `NEXT_PUBLIC_VAPID_PUBLIC_KEY` | *(no mail key — no email is sent)* |
 | `NEXT_PUBLIC_SENTRY_DSN` | `CRON_SECRET` |
 | `NEXT_PUBLIC_ENABLE_AUDIO_STORAGE` | `GOOGLE_CLIENT_SECRET`, `SENTRY_AUTH_TOKEN` |
 
@@ -93,6 +93,13 @@ values and `DATABASE_URL`. Everything else is needed from the phase noted in tha
 NEXT_PUBLIC_SUPABASE_URL=http://127.0.0.1:54321
 DATABASE_URL=postgresql://postgres:postgres@127.0.0.1:54322/postgres
 ```
+
+## Not used: email
+
+The app sends no email. `RESEND_API_KEY` and `EMAIL_FROM` stay **commented out** in
+`.env.example` and are **absent from the Zod schema** — adding them to the schema would make
+the app refuse to boot over a feature that does not exist. Notifications run on in-app and
+web push only. Email is a v2 decision. See `09-notifications.md`.
 
 ## Keys that must stay stable
 

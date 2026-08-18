@@ -61,7 +61,7 @@ src/
       errors/                        typed domain errors, never generic Error
     application/
       use-cases/                     ONE class, ONE public execute()
-      ports/                         IClock, ISpeechScorer, IMailer, IPushSender,
+      ports/                         IClock, ISpeechScorer, IPushSender,
                                      IIdGenerator, IUnitOfWork, IRateLimiter
       dto/                           input/output interfaces
       mappers/                       domain <-> dto
@@ -210,7 +210,6 @@ is a missing use case.
 | `RATE_LIMITER` | `IRateLimiter` | Postgres-backed; Upstash Redis optional swap |
 | `SPEECH_SCORER` | `ISpeechScorer` | phase 6 blend scorer |
 | `PUSH_SENDER` | `IPushSender` | web-push / VAPID |
-| `MAILER` | `IMailer` | Resend |
 | `IN_APP_NOTIFIER` | `IInAppNotifier` | notification row writer |
 | `*_REPOSITORY` | one per aggregate | `infrastructure/persistence/supabase` |
 

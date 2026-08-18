@@ -1,6 +1,21 @@
 # 09 — Notifications
 
-Three channels: **in-app**, **push**, **email**. One policy service decides which fire.
+**Two channels: in-app and web push. The app sends no email.**
+
+Email is deferred to **v2** and is explicitly out of scope for the 28-day build. Do not
+implement `IMailer`, do not add Resend or any SMTP dependency, do not read `RESEND_API_KEY`.
+The variables stay commented out in `.env.example`.
+
+What *is* built now keeps the door open at zero cost:
+
+- `email` remains a value in the `NotificationChannel` union and in the database check
+  constraint, so adding it in v2 needs **no migration**.
+- `NotificationPolicy` treats `email` as an **unavailable channel** — it is never selected,
+  and a preference row for it is never created.
+- The preferences UI ships **In-app / Push** columns only. No greyed-out third column, no
+  "coming soon" row.
+
+One policy service decides which of the two live channels fire.
 
 ## Entities
 
@@ -28,13 +43,15 @@ a mandatory test for it.
 
 ## Ports and adapters
 
-| Port | Adapter |
-| --- | --- |
-| `IPushSender` | Web Push with VAPID via `web-push` |
-| `IMailer` | Resend or Supabase SMTP — behind the interface either way |
-| `IInAppNotifier` | writes a `notifications` row |
+| Port | Adapter | Status |
+| --- | --- | --- |
+| `IPushSender` | Web Push with VAPID via `web-push` | built now |
+| `IInAppNotifier` | writes a `notifications` row | built now |
+| ~~`IMailer`~~ | Resend or SMTP | **v2 — not built, not declared** |
 
-The choice of mail provider must never appear outside the adapter.
+Do not declare a port you are not implementing. When email lands in v2, `IMailer` is added
+then, with its adapter, in one change. A speculative interface with no implementation is dead
+weight that drifts out of date.
 
 ## Use cases
 
@@ -44,6 +61,9 @@ The choice of mail provider must never appear outside the adapter.
 
 Plus one dispatch use case per type: `SendDailyReminder` · `SendStreakAtRisk` ·
 `SendReviewItemsDue` · `SendExamUnlocked` · `SendExamResult` · `SendWeeklyReport`.
+
+Each dispatches to in-app and push only. `SendWeeklyReport` writes an in-app notification and
+sends a push — it does **not** send a weekly email.
 
 ## Scheduling — the part that is usually wrong
 
@@ -80,8 +100,8 @@ it immediately. A 429 backs off. A 500 retries once. Nothing else.
   request notification permission in a modal on load, and so do users.
 - A bell popover for the in-app feed, with unread counts.
 - A toast system for in-session events.
-- A preferences table with **In-app / Push / Email** columns, all typed from
-  `src/contracts`.
+- A preferences table with **In-app / Push** columns, typed from `src/contracts`.
+  No Email column — not greyed out, not "coming soon". It appears in v2 when it works.
 
 ## Required policy tests
 
@@ -90,6 +110,7 @@ it immediately. A 429 backs off. A 500 retries once. Nothing else.
 | quiet hours 22:00→07:00, send at 02:00 | suppressed |
 | quiet hours 22:00→07:00, send at 12:00 | delivered |
 | push disabled, in-app enabled | in-app only |
+| a preference requesting the `email` channel | never selected; no send attempted |
 | push endpoint returns 410 | subscription deleted, no throw |
 | UTC+6 learner, 20:00 reminder | fires at 20:00 local, once |
 | the same dispatch retried | one row, one send |

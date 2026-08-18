@@ -15,7 +15,7 @@ this file says exactly where you are inside them.
 | `[~]` | in progress — **only ever one of these in the whole file** |
 | `[x]` | done: built, tested, tests green, merged into `dev` |
 | `[!]` | **failed or blocked** — must be debugged and fixed before anything else starts |
-| `[-]` | deliberately skipped — needs a one-line reason on the same row |
+| `[-]` | deliberately skipped or deferred — needs a one-line reason on the same row |
 
 ### Preflight — before the loop, every session
 
@@ -283,26 +283,32 @@ Branch `feat/07-exam-engine` · Status: `NOT STARTED`
 ## Phase 8 — Notifications
 Branch `feat/08-notifications` · Status: `NOT STARTED`
 
+> **In-app and web push only. The app sends no email.** No `IMailer`, no Resend, no SMTP,
+> no `RESEND_API_KEY`. `email` stays in the channel union and the DB constraint so v2 needs
+> no migration. See `09-notifications.md`.
+
 - [ ] **F8.1** Notification entities + type/channel unions
   - Test: construction and validation of all 8 types
 - [ ] **F8.2** `NotificationPolicy` — channels + quiet hours
   - Test: quiet hours **spanning midnight** (22:00→07:00) suppress at 02:00, allow at 12:00
 - [ ] **F8.3** `IPushSender` (VAPID) with self-cleaning
   - Test: a 410 response deletes the subscription without throwing
-- [ ] **F8.4** `IMailer` + `IInAppNotifier`
-  - Test: the provider name appears nowhere outside the adapter
+- [ ] **F8.4** `IInAppNotifier` — writes a `notifications` row
+  - Test: a dispatch writes exactly one row; unread counts update
+- [-] **F8.4b** `IMailer` + email channel — **deferred to v2, the app sends no email**
+  - Test: n/a. Gate instead: no mail dependency in `package.json`; `grep -ri "resend\|nodemailer\|smtp" src/` is empty
 - [ ] **F8.5** Preference and list use cases
   - Test: a learner can only read and update their own preferences
-- [ ] **F8.6** Dispatch use cases (6 types)
-  - Test: each respects the policy service
+- [ ] **F8.6** Dispatch use cases (6 types), in-app + push only
+  - Test: each respects the policy service; `SendWeeklyReport` sends no email; a preference requesting `email` is never selected
 - [ ] **F8.7** `/api/cron/notifications` — hourly, timezone-aware dispatch
   - Test: a UTC+6 learner with a 20:00 reminder fires at 20:00 local, exactly once; the route 401s without the bearer secret; a platform retry does not double-send
 - [ ] **F8.8** Idempotency on `(profile_id, type, scheduled_for)`
   - Test: a retried dispatch produces one row and one send
 - [ ] **F8.9** Service worker + inline permission banner
   - Test: the prompt is a banner, never a modal; a denied permission is a recoverable state
-- [ ] **F8.10** Bell popover, toasts, preferences table
-  - Test: component tests for unread counts and channel toggles
+- [ ] **F8.10** Bell popover, toasts, preferences table (**In-app / Push** columns only)
+  - Test: component tests for unread counts and channel toggles; no Email column rendered
 
 ---
 
@@ -433,12 +439,23 @@ Branch `feat/13-hardening` · Status: `NOT STARTED`
 
 ---
 
+## Deferred to v2
+
+Out of scope for this build. Do not start these, and do not leave stubs for them.
+
+| Item | Why | What is already in place |
+| --- | --- | --- |
+| Email channel / `IMailer` / Resend | The app sends no email. Notifications run on in-app + web push. | `email` stays in the `NotificationChannel` union and the DB check constraint, so v2 needs no migration. `RESEND_API_KEY` and `EMAIL_FROM` stay commented out in `.env.example` and absent from the Zod schema. |
+
+---
+
 ## Log
 
 Newest first. One line per finished feature: date · id · what · test result.
 
 | Date | Feature | What landed | Tests |
 | --- | --- | --- | --- |
+| 2026-08-18 | — | Email deferred to v2 — notifications are in-app + push only; `RESEND_API_KEY` commented out | n/a — docs only |
 | 2026-08-18 | — | Restructured to a **single Next.js app** (no separate backend); added `.env.example`, `.gitignore`, `16-environment.md` | n/a — docs only |
 | 2026-08-18 | — | Claude Code setup: CLAUDE.md, build order, docs, commands, git rules | n/a — docs only |
 
