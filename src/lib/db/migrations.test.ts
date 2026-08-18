@@ -336,3 +336,51 @@ describe('008 RLS policies', () => {
     expect(body, 'the public view selects progress history').not.toMatch(/\bcomparison\b/);
   });
 });
+
+describe('correct_answer is never handed to a client (F2.7)', () => {
+  /**
+   * The runtime proof in `migrations.apply.test.ts` checks the schema these
+   * files currently produce. This checks every migration file that will ever
+   * exist, including ones added long after Phase 2, because the realistic way
+   * this protection dies is a later migration granting the table to make some
+   * screen work.
+   */
+  it('no migration grants a client role anything on exam_questions', () => {
+    for (const file of files) {
+      const grants = withoutComments(file.sql)
+        .split(';')
+        .filter((statement) => /\bgrant\b/i.test(statement))
+        .filter((statement) => /exam_questions/i.test(statement))
+        .filter((statement) => /\b(anon|authenticated|public)\b/i.test(statement));
+      expect(grants, `${file.name} grants a client role access to exam_questions`).toEqual([]);
+    }
+  });
+
+  it('no migration writes an RLS policy on exam_questions', () => {
+    for (const file of files) {
+      expect(
+        withoutComments(file.sql),
+        `${file.name} writes a policy on exam_questions`,
+      ).not.toMatch(/create policy \S+\s+on public\.exam_questions/i);
+    }
+  });
+
+  it('no migration creates a view or function selecting correct_answer', () => {
+    // A view runs as its owner and would bypass the table privileges entirely.
+    for (const file of files) {
+      const body = withoutComments(file.sql);
+      const views = body.match(/create (or replace )?view[\s\S]*?;/gi) ?? [];
+      for (const view of views) {
+        expect(view, `${file.name} exposes correct_answer through a view`).not.toMatch(
+          /\bcorrect_answer\b/i,
+        );
+      }
+      const functions = body.match(/create (or replace )?function[\s\S]*?\$\$[\s\S]*?\$\$/gi) ?? [];
+      for (const fn of functions) {
+        expect(fn, `${file.name} exposes correct_answer through a function`).not.toMatch(
+          /\bcorrect_answer\b/i,
+        );
+      }
+    }
+  });
+});

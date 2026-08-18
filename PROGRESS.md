@@ -55,7 +55,7 @@ and 2. No feature starts without it. **Never read the file** — existence check
 
 ## NEXT
 
-> **Phase 2 · F2.7 — `correct_answer` protection (column policy or view)**
+> **Phase 2 · F2.8 — `009_functions_triggers`**
 > Branch: `feat/02-database-schema`
 > Migrations now run for real: `pnpm db:migrate` against hosted Supabase, and every migration
 > is applied from empty inside a WASM Postgres (PGlite) by `migrations.apply.test.ts` in CI.
@@ -154,10 +154,17 @@ Branch `feat/02-database-schema` · Status: `IN PROGRESS`
   - `current_profile_id()` (security definer, pinned search path) resolves the caller once;
     every learner table gets the same select/insert/update pair, no delete anywhere. Content
     is readable by any authenticated user and writable by none. `exam_questions` gets no
-    policy and no grant — refused at the privilege layer until F2.7 opens the safe view.
+    policy and no grant — refused at the privilege layer. F2.7 kept it that way (see D15).
     Public certificate verification ships as a view, per 006's note.
   - Test: **the two-user script** — user A cannot read B's attempts, review items, exam attempts, answers or notifications
-- [ ] **F2.7** `correct_answer` protection (column policy or view)
+- [x] **F2.7** (2026-08-18) `correct_answer` protection (column policy or view)
+  - No new SQL: 008 grants the client nothing on `exam_questions`, so the column is refused
+    at the privilege layer — stricter than a column policy or a view, both of which imply a
+    grant. A client view would also have no consumer (the API reads via the service role),
+    and the forward-only checksum in `scripts/migrate.mjs` forbids editing 008. See D15.
+  - Shipped instead: the lock. `has_column_privilege` false for every client role on every
+    column; no view carries the column; a static sweep fails any future migration that
+    grants, polices or views it.
   - Test: a client-role select of `correct_answer` is denied
 - [ ] **F2.8** `009_functions_triggers` — `updated_at`, profile-on-signup, session-completion function, exam auto-submit
   - Test: inserting into `auth.users` creates a `learner_profiles` row
@@ -487,6 +494,7 @@ Newest first. One line per finished feature: date · id · what · test result.
 
 | Date | Feature | What landed | Tests |
 | --- | --- | --- | --- |
+| 2026-08-18 | F2.7 | `correct_answer` protection — already unreachable after 008, so this ships the regression lock instead of redundant SQL: privilege sweep over every column and role, no-view assertion, static sweep of every migration | `pnpm test` 125/125 — 9 new · typecheck, lint green |
 | 2026-08-18 | F2.6 | `008_rls_policies` — revoke-first grants, one policy shape per learner table, no client delete, `exam_questions` unreachable, public certificate view | `pnpm test` 116/116 — 17 new, incl. the two-user script run as real `authenticated` roles · typecheck, lint green |
 | 2026-08-18 | F2.5 | `007_indexes` — five indexes for the queries that run; the two already served by a `unique (...)` btree are documented, not duplicated; every index names its query in a `comment on index` | `pnpm test` 99/99 — 11 new cases, 5 of them `explain` against seeded PGlite · typecheck, lint green |
 | 2026-08-18 | F2.4 | `005_notification_tables` + `006_certificates` — idempotency key, wrapping quiet hours, globally-unique push endpoint, revocable certificate | 85 passed (7 files); 16 new PGlite cases + 8 static | 

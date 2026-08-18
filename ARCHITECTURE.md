@@ -505,6 +505,43 @@ did not exist" is the standard this file is held to, and it is not met for score
 columns. Tightening it contradicts the doc's stated grant list, so it belongs to the Phase 13
 hardening pass or to a doc amendment, not to F2.6.
 
+**D15 — F2.7 ships tests, not SQL, because 008 already overshot it.** `03-database.md`
+offers two mechanisms for protecting `exam_questions.correct_answer`: a column-level policy,
+or a view that excludes the column. `008` reached a stricter state than either by granting
+the client nothing on the table at all, so the column is refused at the *privilege* layer —
+before RLS, before any column list, for `anon` and `authenticated` alike. A column-level
+policy would be weaker (it implies a grant), and a client-facing view would be weaker still
+and would have no consumer: the app reads questions through use cases on the service role,
+never through PostgREST, so a client view would be scaffolding for a caller that does not
+exist. `CLAUDE.md` §7 forbids that outright.
+
+Adding SQL anyway was not available regardless. `scripts/migrate.mjs` enforces forward-only
+by checksum — editing an applied migration is an error — so `008` cannot absorb the change,
+and `03-database.md` assigns F2.7 no file number of its own: `009` and `010` are spoken for
+by functions/triggers and the seed. Renumbering those would contradict a doc rather than
+extend one.
+
+So F2.7's deliverable is the lock, not the mechanism. The runtime proof asserts
+`has_column_privilege` is false for every client role against every column of the table, not
+just `correct_answer`, since a learner reading `payload` for someone else's attempt has also
+read an unreleased exam. It asserts no view in the schema carries the column, because a view
+runs as its owner and would bypass the table privileges entirely. The static proof sweeps
+every migration file that will ever exist for a grant, a policy, or a view touching it. The
+realistic way this protection dies is not today's schema — it is a migration six phases from
+now granting the table to make a screen work, and that is what these tests exist to catch.
+
+The corollary is that `exam_questions` is unreadable by the client **entirely**, not merely
+column-restricted. Phase 7 must therefore serve every question through the service role. If a
+later phase wants direct client reads, it needs a view over the safe columns filtered by
+`current_profile_id()` — a deliberate addition with its own feature and its own test, not a
+grant bolted onto an existing migration.
+
+One wart follows from this and cannot be cleaned: the header comments inside
+`008_rls_policies.sql` say the client-visible subset "is F2.7's job" and describe a view
+that F2.7 decided not to build. The comments are wrong and must stay wrong — the file's
+checksum is what makes the migration ledger forward-only, and editing a comment changes it
+exactly as much as editing a policy. This entry is the correction.
+
 ### Open — needs the user, not me
 
 **O1 — `02-typescript-rules.md` still says `packages/config` base tsconfig.** That is a

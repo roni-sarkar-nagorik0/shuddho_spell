@@ -1338,4 +1338,150 @@ describe('migrations against an empty database', () => {
       });
     });
   });
+
+  /**
+   * F2.7 — `correct_answer` protection.
+   *
+   * `03-database.md` offers two mechanisms: a column-level policy, or a view
+   * that excludes the column. 008 took a third and stricter route by accident
+   * of doing its job properly — it grants the client nothing on the table at
+   * all — so the column is refused at the privilege layer, before RLS or any
+   * column list is consulted. There is nothing left to build; there is a great
+   * deal left to prove, and to keep proved.
+   *
+   * These tests are the lock. The exposure they guard against is not today's
+   * schema, it is the migration six phases from now that grants `select` on
+   * `exam_questions` to make some screen work.
+   */
+  describe('F2.7 correct_answer protection', () => {
+    let learner: { readonly userId: string; readonly questionId: string };
+
+    beforeAll(async () => {
+      const user = await db.query<{ readonly id: string }>(
+        `insert into auth.users (email) values ('answerkey@example.com') returning id`,
+      );
+      const userId = user.rows[0]?.id ?? '';
+      const profile = await db.query<{ readonly id: string }>(
+        `insert into public.learner_profiles (user_id, display_name)
+         values ($1, 'Answer Key') returning id`,
+        [userId],
+      );
+      const definition = await db.query<{ readonly id: string }>(
+        `insert into public.exam_definitions
+           (code, title, duration_seconds, question_count, pass_percent, max_attempts,
+            cooldown_hours, unlock_day_standard, unlock_day_sprint)
+         values ('final', 'Answer Key Fixture', 3600, 40, 70.00, 3, 24, 28, 21)
+         on conflict (code) do update set title = excluded.title
+         returning id`,
+      );
+      const attempt = await db.query<{ readonly id: string }>(
+        `insert into public.exam_attempts
+           (profile_id, definition_id, attempt_number, status, started_at, server_deadline_at, seed)
+         values ($1, $2, 1, 'in_progress', now(), now() + interval '60 minutes', 'answerkey')
+         returning id`,
+        [profile.rows[0]?.id, definition.rows[0]?.id],
+      );
+      const question = await db.query<{ readonly id: string }>(
+        `insert into public.exam_questions
+           (attempt_id, section_code, order_index, type, payload, correct_answer)
+         values ($1, 'dictation', 0, 'dictation', '{"prompt":"necessary"}'::jsonb,
+                 '{"answer":"necessary"}'::jsonb)
+         returning id`,
+        [attempt.rows[0]?.id],
+      );
+      learner = { userId, questionId: question.rows[0]?.id ?? '' };
+    }, 60_000);
+
+    async function asRole<T>(role: 'anon' | 'authenticated', userId: string | null, run: () => Promise<T>): Promise<T> {
+      await db.query(`select set_config('request.jwt.claims', $1, false)`, [
+        userId === null ? '' : JSON.stringify({ sub: userId }),
+      ]);
+      await db.exec(`set role ${role};`);
+      try {
+        return await run();
+      } finally {
+        await db.exec(`reset role;`);
+        await db.query(`select set_config('request.jwt.claims', '', false)`);
+      }
+    }
+
+    it('denies an authenticated learner the correct_answer column', async () => {
+      await asRole('authenticated', learner.userId, async () => {
+        await expect(
+          db.query(`select correct_answer from public.exam_questions where id = $1`, [
+            learner.questionId,
+          ]),
+        ).rejects.toThrow(/permission denied/i);
+      });
+    });
+
+    it('denies an anonymous caller the same column', async () => {
+      await asRole('anon', null, async () => {
+        await expect(
+          db.query(`select correct_answer from public.exam_questions`),
+        ).rejects.toThrow(/permission denied/i);
+      });
+    });
+
+    it('grants no client role any privilege on correct_answer, by any route', async () => {
+      // The crisp regression lock: a future `grant select on exam_questions to
+      // authenticated`, or a column-level grant naming this column, flips one of
+      // these to true and fails here.
+      for (const role of ['anon', 'authenticated']) {
+        for (const privilege of ['select', 'insert', 'update', 'references']) {
+          const result = await db.query<{ readonly allowed: boolean }>(
+            `select has_column_privilege($1, 'public.exam_questions', 'correct_answer', $2) as allowed`,
+            [role, privilege],
+          );
+          expect(
+            result.rows[0]?.allowed,
+            `${role} has ${privilege} on exam_questions.correct_answer`,
+          ).toBe(false);
+        }
+      }
+    });
+
+    it('grants no client role any privilege on any other column of the table either', async () => {
+      // correct_answer is the prize, but a learner who can read `payload` for
+      // an attempt that is not theirs has still read an unreleased exam.
+      const columns = await db.query<{ readonly column_name: string }>(
+        `select column_name from information_schema.columns
+          where table_schema = 'public' and table_name = 'exam_questions'`,
+      );
+      expect(columns.rows.length).toBeGreaterThan(0);
+      for (const { column_name } of columns.rows) {
+        for (const role of ['anon', 'authenticated']) {
+          const result = await db.query<{ readonly allowed: boolean }>(
+            `select has_column_privilege($1, 'public.exam_questions', $2, 'select') as allowed`,
+            [role, column_name],
+          );
+          expect(result.rows[0]?.allowed, `${role} can select ${column_name}`).toBe(false);
+        }
+      }
+    });
+
+    it('exposes correct_answer through no view in the schema', async () => {
+      // A view runs as its owner and bypasses the table's privileges, so a view
+      // selecting this column would undo everything above. Today the only
+      // relation carrying the name is the base table itself.
+      const result = await db.query<{ readonly table_name: string }>(
+        `select c.table_name
+           from information_schema.columns c
+           join information_schema.views v
+             on v.table_schema = c.table_schema and v.table_name = c.table_name
+          where c.table_schema = 'public' and c.column_name = 'correct_answer'`,
+      );
+      expect(result.rows.map((row) => row.table_name), 'a view exposes correct_answer').toEqual([]);
+    });
+
+    it('keeps the column readable by the owner, so the grader can still grade', async () => {
+      // Protection that also blocked the service role would be a broken exam,
+      // not a secure one. The API reads this table as the service role.
+      const result = await db.query<{ readonly correct_answer: unknown }>(
+        `select correct_answer from public.exam_questions where id = $1`,
+        [learner.questionId],
+      );
+      expect(result.rows[0]?.correct_answer).toEqual({ answer: 'necessary' });
+    });
+  });
 });
