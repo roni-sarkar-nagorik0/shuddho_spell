@@ -59,54 +59,52 @@ and 2. No feature starts without it. **Never read the file** — existence check
 
 ## NEXT
 
-> **Phase 3 · Authentication (Google only) — F3.12, one feature left**
-> Branch: `feat/03-google-auth`, carrying F3.1–F3.11.
-> One more, then the seven-item exit gate closes the phase.
+> **Phase 4 · Domain and application layers — not started**
+> Cut `feat/04-domain-layer` from an up-to-date `dev`. Phase 3 is closed and merged; do not
+> reuse its branch.
 >
-> **F3.12 — identity comes only from the session — starts here.** What F3.11 left it:
-> - Most of it is already true and tested piecemeal: `withApi` injects the user, `/api/v1/me`
->   ignores a `userId` in the query, `/auth/callback` ignores one too. What is missing is the
->   rule stated as a rule — a sweep, like the `auth.getUser(` and public-route ones.
-> - The shape to catch: a handler or use case taking a `profileId` or `userId` out of a body or
->   a query schema. Today no v1 body schema exists at all, so the sweep starts vacuous and
->   earns its keep from Phase 5 onward. Say so rather than implying it caught something.
-> - `01-architecture.md`: a use case receives ids through its input from `withApi`'s `user`.
->   `GetMeUseCase` and `BootstrapProfileUseCase` both take `userId` — that is correct, and the
->   sweep must not flag it. What it flags is where the id *came from*.
+> **What Phase 3 leaves Phase 4**
+> - `src/modules/auth/` is the worked example of the four layers: entity, port with a `Symbol`
+>   token, use case taking interfaces through its constructor, Supabase adapter, and wiring in
+>   `src/composition/`. `container.ts`, `use-cases.ts` and `handlers.ts` are the three files a
+>   new module registers itself in.
+> - **`LearnerProfile` is deliberately partial.** It carries `id`, `userId`, `displayName`,
+>   `track`, `currentDayIndex`, `onboardingCompletedAt`. `05-domain-model.md` gives it ten
+>   fields; the rest are 003 defaults nobody has chosen yet. Grow it when there is something to
+>   grow it with.
+> - **F4.10a** — `IRateLimiter` **and the `rate_limits` table Phase 2 never shipped**. F1.9 is
+>   `[-]` waiting on it. `withApi` has no rate limiting at all until this lands.
+> - `01-architecture.md`'s `withApi({ handler, container })` sketch is not what was built, and
+>   cannot be — see **D27**. A handler is a factory; `src/composition/handlers.ts` joins it up.
+> - Coverage is enforced now: 90% on `domain` and `application`, currently 100%.
+>   `@vitest/coverage-v8` had to be installed for that to run at all.
 >
-> **Carried into the rest of the phase**
-> - Migration 011 added `learner_profiles.onboarding_completed_at`, null until Phase 11's
->   onboarding screen writes it. Until then every learner routes to `/onboarding`, correctly.
-> - `withApi` currently takes `auth?: boolean`. F3.6 does session resolution; **F3.7** is where
->   it becomes `auth: 'required' | 'public'`, the shape `01-architecture.md` and the exit gate use.
-> - For F3.11: `grep -ri "password" src/` hits `src/lib/logger.ts:7`, a pino **redaction** path —
->   a guard, not an auth path. Decide there whether the grep or the config moves.
-> - Still true from F3.1: the session cookie is httpOnly and `createBrowserClient` is dead (D21).
->   D22 records why sign-in is a plain form; D23 records the onboarding column.
->
-> **Spotted, not fixed — none of these belong to a Phase 3 feature**
-> - `src/lib/logger.ts:7` reads `process.env['LOG_LEVEL']` directly, against the "no `process.env`
->   outside the env module" rule.
-> - 008 grants `authenticated` a table-wide `update` on `learner_profiles`, so a learner can write
->   their own `current_day_index` — and now `onboarding_completed_at`. Column-level grants or a
->   trigger guard; it is a Phase 2 RLS decision, not an auth one.
-> - The repo has never been prettier-clean: `pnpm format` rewrites ~40 files that no feature
->   touched. Format the files you changed, never the tree, until someone lands a formatting-only
->   commit on purpose.
->
-> **Environment, not code — both still bite on this machine**
-> - `pnpm test:e2e` needs `pnpm exec playwright install chromium` on a fresh machine.
-> - `playwright.config.ts` has `reuseExistingServer: true`, so **anything** already listening on
->   :3000 hijacks the run — an unrelated Docker app on this machine does exactly that. Run
+> **Spotted, still open — none of these belonged to a Phase 3 feature**
+> - `src/lib/logger.ts:14` reads `process.env['LOG_LEVEL']` directly, against the "no
+>   `process.env` outside the env module" rule. Deliberately left: F3.11 touched that file, but
+>   the log level has nothing to do with whether a second sign-in path exists.
+> - 008 grants `authenticated` a table-wide `update` on `learner_profiles`, so a learner can
+>   write their own `current_day_index` — and `onboarding_completed_at`. Column-level grants or
+>   a trigger guard. It is a Phase 2 RLS decision.
+> - The repo has never been prettier-clean: `pnpm format` rewrites ~40 files no feature touched.
+>   Format the files you changed, not the tree, until someone lands a formatting-only commit.
+> - `playwright.config.ts` has `reuseExistingServer: true`, so anything already on :3000 hijacks
+>   the run. On this machine an unrelated Docker app does. Run
 >   `PORT=3100 NEXT_PUBLIC_APP_URL=http://localhost:3100 pnpm test:e2e`.
+> - `next build` warns that `@supabase/supabase-js` reads `process.version`, unavailable on the
+>   Edge runtime the middleware uses. Understood and recorded as **D25** — the only fix is an
+>   experimental Next flag.
 >
 > **The user's to run, not the code's**
-> - The Supabase dashboard must list `${NEXT_PUBLIC_APP_URL}/auth/callback` under Authentication →
->   URL Configuration, or Google refuses the round trip.
-> - `pnpm db:migrate` against the hosted project — now including **011**. It writes to a live
->   database; the from-empty proof is PGlite in CI.
-> - Phase 1's two carry-overs re-open as **F4.10a** (rate limiter + `rate_limits` table) and
->   **F5.9a** (OpenAPI).
+> - **Supabase dashboard → Authentication → URL Configuration must list
+>   `${NEXT_PUBLIC_APP_URL}/auth/callback`,** or Google refuses the round trip. Nothing in the
+>   codebase can do this, and sign-in does not work end to end until it is done.
+> - **Authentication → Providers → Google** must be enabled, with the client id and secret.
+> - `pnpm db:migrate` against the hosted project, now including **011**
+>   (`learner_profiles.onboarding_completed_at`). It writes to a live database; the from-empty
+>   proof is PGlite in CI.
+> - `CRON_SECRET` stays empty until Phase 8. Empty now reads as unset, and every cron route
+>   refuses rather than running unguarded.
 
 Update this block every time a feature is finished.
 
@@ -246,7 +244,9 @@ Branch `feat/02-database-schema` · Status: `DONE` (exit gate run 2026-08-19)
 ---
 
 ## Phase 3 — Authentication (Google only)
-Branch `feat/03-google-auth` · Status: `IN PROGRESS`
+Branch `feat/03-google-auth` · Status: `DONE` (12/12, 2026-08-19). Exit gate 7/7, with three
+items proven below the level they are written at — see **Completed** in
+`BUILD-ORDER-COMPLETE.md`.
 
 - [x] **F3.1** (2026-08-19) `@supabase/ssr` cookie session client
   - Test: the session cookie is httpOnly

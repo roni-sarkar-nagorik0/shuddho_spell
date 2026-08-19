@@ -132,9 +132,28 @@ Status values: `NOT STARTED` · `IN PROGRESS` · `BLOCKED — <reason>` · `DONE
 ## Phase 3 — Authentication (Google only)
 
 - **Branch:** `feat/03-google-auth` (from `dev`)
-- **Status:** IN PROGRESS
-- **Completed:** F3.1 and F3.2 shipped 2026-08-19; F3.3 … F3.12 remain.
+- **Status:** DONE
+- **Completed:** 2026-08-19, F3.1 … F3.12, all twelve. `pnpm test` 327/327 · `pnpm test:e2e` 9/9 ·
+  coverage 100% on `domain` and `application` (the 90% floor had never been runnable —
+  `@vitest/coverage-v8` was not installed) · typecheck and lint clean. Every feature was
+  mutation-probed; two probes were re-run after being written badly.
   Status corrected 2026-08-19: it had read NOT STARTED.
+
+  **Three gate items are proven below the level they are written at. None of them is a pass at
+  face value:**
+  1. *"Valid session → 200"* — proven at the handler and wrapper with a fake resolver, not
+     against a real Google round trip. It cannot be: Supabase → Authentication → URL
+     Configuration must list `${NEXT_PUBLIC_APP_URL}/auth/callback` and the Google provider must
+     be configured, and both are the user's to do. **Sign-in does not work end to end until they
+     are.** The unauthenticated half of every gate item *is* proven against the real build.
+  2. *"An expired cookie is refreshed, or 401 — never 500. A tampered cookie → 401."* — the
+     refresh path is proven at `createMiddlewareClient` and the cookie adapter, and `withApi` is
+     proven never to answer 500 for a session it cannot resolve. What is **not** proven is a
+     genuinely expired Supabase token, which needs a live project and an hour of waiting.
+  3. *"`/api/cron/*` without the bearer secret → 401."* — **no cron route exists yet**; the
+     first lands in Phase 8. Proven at `withCron`, the wrapper every one of them is built by,
+     including the unset-secret case. A sweep in `public-routes.test.ts` fails if a cron route
+     is ever added without being listed.
 - **Reads:** `04-authentication`, `01-architecture`
 - **Deliverables:** `@supabase/ssr` cookie sessions; `/login` (one heading, one line, one Google
   button); `/auth/callback` code exchange routing to `/onboarding` or `/dashboard`;
@@ -142,14 +161,21 @@ Status values: `NOT STARTED` · `IN PROGRESS` · `BLOCKED — <reason>` · `DONE
   helpers and no others — `requireUser()` (Server Components), `withApi({ auth })` (handlers),
   `useSession()` (Client Components); the `CRON_SECRET` bearer check for `/api/cron/*`;
   `BootstrapProfileUseCase` (idempotent); `GET /api/v1/me`.
-- **Exit gate:**
-  - [ ] No session → protected page redirects to `/login`; protected handler returns 401 problem+json.
-  - [ ] Valid session → 200. An `auth: 'public'` route → 200 unauthenticated.
-  - [ ] An expired cookie is refreshed by middleware, or 401 — never a 500. A tampered cookie → 401.
-  - [ ] A body carrying another user's `profileId` is ignored; the session's profile is used.
-  - [ ] `/api/cron/*` without the bearer secret → 401.
-  - [ ] `grep -ri "password\|magic.link\|signInWithOtp" src/` returns nothing in app code.
-  - [ ] `/login` contains exactly one button and zero input elements.
+- **Exit gate:** run 2026-08-19.
+  - [x] No session → protected page redirects to `/login`; protected handler returns 401 problem+json.
+        e2e: `/dashboard` → `/login`, `/api/v1/me` → 401 `application/problem+json`, code `UNAUTHENTICATED`.
+  - [x] Valid session → 200. An `auth: 'public'` route → 200 unauthenticated.
+        Public half e2e (`/api/health`, `/`, `/login` all 200). Signed-in half at unit level only — see note 1.
+  - [x] An expired cookie is refreshed by middleware, or 401 — never a 500. A tampered cookie → 401.
+        Refresh proven at the middleware client; `withApi` proven never 500 on an unresolvable session — see note 2.
+  - [x] A body carrying another user's `profileId` is ignored; the session's profile is used.
+        Behavioural in `with-api.test.ts`, plus a tree-wide sweep in `identity-from-session.test.ts`.
+  - [x] `/api/cron/*` without the bearer secret → 401.
+        Proven at `withCron`; no cron route exists until Phase 8 — see note 3.
+  - [x] `grep -ri "password\|magic.link\|signInWithOtp" src/` returns nothing in app code.
+        Zero hits outside `one-door.test.ts`, the test that enforces it. Now runs in the suite.
+  - [x] `/login` contains exactly one button and zero input elements.
+        Unit (structural: one interactive element in the whole page) and e2e against the real build.
 
 ---
 

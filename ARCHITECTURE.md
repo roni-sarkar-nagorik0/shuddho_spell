@@ -740,6 +740,46 @@ to run, and it sweeps test files too: a test that types a password into a form i
 accepts one. It also means the explanation cannot live in a comment beside the code it explains,
 which is why it is here — and why the test is not named after the thing it forbids.
 
+**D27 — `withApi` does not inject a container; `src/composition/handlers.ts` does (F3.10).**
+`01-architecture.md` sketches the wrapper as `withApi({ handler: async ({ user, body, container })
+=> … })`, with the container arriving in the handler context. That cannot work here, and the
+reason is the dependency rule the same document sets: `withApi` lives in `lib`, and `lib` may
+import `lib` and `contracts` only. `presentation` cannot reach the composition root either.
+Either the wrapper imports `composition` — inverting the graph — or something else joins the two.
+
+So a handler is a **factory** that takes the use case it needs, and `src/composition/handlers.ts`
+is the one file that knows where that comes from:
+
+```ts
+export const getMeHandler = createGetMeHandler(() => makeGetMe(createContainer(crypto.randomUUID())));
+```
+
+`src/app/api/v1/me/route.ts` then re-exports it and stays three lines, which is what the sketch
+was really protecting.
+
+Two details that are not incidental. The use case arrives as a **thunk**, not a value: a
+container holds a request-scoped client, and one captured at module load would outlive the
+request that justified it. And the factory takes the use case rather than the repository —
+`presentation` may import `domain`, so it *could* take the port, but a handler holding a
+repository is a handler one conditional away from owning a rule.
+
+**D28 — the sweeps are the phase's real deliverable, as much as the code (F3.7, F3.11, F3.12).**
+Four rules in `04-authentication.md` are properties of the whole tree rather than of any one
+file: only three ways to read the user, protection by omission, no second door, identity only
+from the session. Each is now a test that walks `src/`:
+
+| Rule | Test |
+| --- | --- |
+| `auth.getUser(` in two files and no others | `src/lib/auth/session-boundary.test.tsx` |
+| every public endpoint on a written list | `src/lib/api/public-routes.test.ts` |
+| no credential path anywhere | `src/lib/auth/one-door.test.ts` |
+| no identity from a body, a query or a fabricated object | `src/lib/auth/identity-from-session.test.ts` |
+
+The last two are close to vacuous today — there is no v1 request schema until Phase 5 — and they
+are written that way on purpose. A rule that is checked only when someone remembers to check it
+is not a rule, and the moment these start mattering is the moment nobody will be thinking about
+them.
+
 ### Open — needs the user, not me
 
 **O1 — `02-typescript-rules.md` still says `packages/config` base tsconfig.** That is a
