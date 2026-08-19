@@ -30,6 +30,7 @@ import { type IClock } from '@/modules/shared/application/ports/clock';
 import { type IIdGenerator } from '@/modules/shared/application/ports/id-generator';
 import { SystemClock } from '@/modules/shared/infrastructure/adapters/system-clock';
 import { UuidGenerator } from '@/modules/shared/infrastructure/adapters/uuid-generator';
+import { RetryingDatabase } from '@/modules/shared/infrastructure/persistence/retrying-database';
 import { toDatabase } from '@/modules/shared/infrastructure/persistence/supabase-database';
 
 /**
@@ -75,7 +76,11 @@ export function createContainer(requestId: string): IContainer {
   // One database handle for every repository in the request. The service
   // client, because 008 gives the learner's own no insert policy on
   // `learner_profiles` and the use cases filter by `profile_id` explicitly.
-  const db = toDatabase();
+  //
+  // Wrapped so a serialization failure is retried once and the three Postgres
+  // codes `03-database.md` names arrive as typed domain errors rather than as
+  // messages a caller would have to string-match.
+  const db = new RetryingDatabase(toDatabase());
 
   return {
     requestId,
