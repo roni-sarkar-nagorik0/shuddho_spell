@@ -59,33 +59,53 @@ and 2. No feature starts without it. **Never read the file** — existence check
 
 ## NEXT
 
-> **Phase 3 · Authentication (Google only) — F3.3 through F3.12, ten features left**
-> Branch: `feat/03-google-auth` (already cut, already carrying F3.1–F3.2)
-> `/build` now finishes a whole phase per invocation, so this run closes Phase 3: F3.3 first,
-> then straight on through F3.12, one feature at a time, each committed and merged into `dev`
-> before the next is picked. Then the phase's seven-item exit gate.
+> **Phase 3 · Authentication (Google only) — F3.4 through F3.12, nine features left**
+> Branch: `feat/03-google-auth`, carrying F3.1–F3.3.
+> This run closes the phase: one feature at a time, each committed and merged into `dev` before
+> the next is picked, then the seven-item exit gate.
 >
-> **F3.3 — `/auth/callback` — starts here.** What F3.2 left it:
-> - The PKCE code verifier was written by *our* cookie adapter, so it is httpOnly and only the
->   server can read it back. Exchange the code with `createSessionClient()`, never a browser client.
-> - `redirectTo` is `${NEXT_PUBLIC_APP_URL}/auth/callback`, so that url must also be registered in
->   the Supabase dashboard (Authentication → URL Configuration) or Google will refuse the round
->   trip. **That one is the user's to set, not the code's.**
-> - `/login?error=google` already renders a `role="alert"` line; reuse that surface rather than
->   inventing a second failure path.
-> Still true from F3.1: the session cookie is httpOnly, `createBrowserClient` is dead (D21), and
-> `secure` is unset and belongs to F3.4's middleware. D22 records why sign-in is a plain form.
-> For F3.11: `grep -ri "password" src/` hits `src/lib/logger.ts:7`, a pino **redaction** path —
-> a guard, not an auth path. Decide there whether the grep or the config moves.
-> Environment, not code — both still bite on this machine:
+> **F3.4 — session-refresh middleware and route protection — starts here.** What F3.3 left it:
+> - There is no `middleware.ts` yet. It is the first thing in the codebase that runs before a
+>   route, so it also owns `secure` on the session cookie — F3.1 deliberately left that unset
+>   because only the request knows the protocol.
+> - Public by name, everything else protected: `/`, `/login`, `/auth/*`,
+>   `/api/certificates/*/verify` and the marketing pages (`04-authentication.md` step 4).
+> - `/onboarding` and `/dashboard` are now real redirect targets but **neither page exists** —
+>   they are Phase 10/11. Middleware protecting them does not need them to render.
+>
+> **Carried into the rest of the phase**
+> - Migration 011 added `learner_profiles.onboarding_completed_at`, null until Phase 11's
+>   onboarding screen writes it. Until then every learner routes to `/onboarding`, correctly.
+> - `withApi` currently takes `auth?: boolean`. F3.6 does session resolution; **F3.7** is where
+>   it becomes `auth: 'required' | 'public'`, the shape `01-architecture.md` and the exit gate use.
+> - For F3.11: `grep -ri "password" src/` hits `src/lib/logger.ts:7`, a pino **redaction** path —
+>   a guard, not an auth path. Decide there whether the grep or the config moves.
+> - Still true from F3.1: the session cookie is httpOnly and `createBrowserClient` is dead (D21).
+>   D22 records why sign-in is a plain form; D23 records the onboarding column.
+>
+> **Spotted, not fixed — none of these belong to a Phase 3 feature**
+> - `src/lib/logger.ts:7` reads `process.env['LOG_LEVEL']` directly, against the "no `process.env`
+>   outside the env module" rule.
+> - 008 grants `authenticated` a table-wide `update` on `learner_profiles`, so a learner can write
+>   their own `current_day_index` — and now `onboarding_completed_at`. Column-level grants or a
+>   trigger guard; it is a Phase 2 RLS decision, not an auth one.
+> - The repo has never been prettier-clean: `pnpm format` rewrites ~40 files that no feature
+>   touched. Format the files you changed, never the tree, until someone lands a formatting-only
+>   commit on purpose.
+>
+> **Environment, not code — both still bite on this machine**
 > - `pnpm test:e2e` needs `pnpm exec playwright install chromium` on a fresh machine.
 > - `playwright.config.ts` has `reuseExistingServer: true`, so **anything** already listening on
 >   :3000 hijacks the run — an unrelated Docker app on this machine does exactly that. Run
 >   `PORT=3100 NEXT_PUBLIC_APP_URL=http://localhost:3100 pnpm test:e2e`.
-> One thing Phase 2's gate could not prove here: `pnpm db:migrate` against the hosted project. It
-> writes to a live database, so it is the user's to run; the from-empty proof is PGlite in CI.
-> Phase 1's two carry-overs are no longer `[~]`: they are `[-]` with their dependency named, and
-> they re-open as **F4.10a** (rate limiter + `rate_limits` table) and **F5.9a** (OpenAPI).
+>
+> **The user's to run, not the code's**
+> - The Supabase dashboard must list `${NEXT_PUBLIC_APP_URL}/auth/callback` under Authentication →
+>   URL Configuration, or Google refuses the round trip.
+> - `pnpm db:migrate` against the hosted project — now including **011**. It writes to a live
+>   database; the from-empty proof is PGlite in CI.
+> - Phase 1's two carry-overs re-open as **F4.10a** (rate limiter + `rate_limits` table) and
+>   **F5.9a** (OpenAPI).
 
 Update this block every time a feature is finished.
 
@@ -231,7 +251,7 @@ Branch `feat/03-google-auth` · Status: `IN PROGRESS`
   - Test: the session cookie is httpOnly
 - [x] **F3.2** (2026-08-19) `/login` — one heading, one line, one Google button
   - Test: the page contains exactly one button and zero input elements
-- [ ] **F3.3** `/auth/callback` code exchange + new-vs-existing routing
+- [x] **F3.3** (2026-08-19) `/auth/callback` code exchange + new-vs-existing routing
   - Test: a new profile lands on `/onboarding`, an existing one on `/dashboard`
 - [ ] **F3.4** Session-refresh middleware and route protection
   - Test: an unauthenticated request to `/dashboard` redirects to `/login`
@@ -553,6 +573,7 @@ Newest first. One line per finished feature: date · id · what · test result.
 
 | Date | Feature | What landed | Tests |
 | --- | --- | --- | --- |
+| 2026-08-19 | F3.3 | `/auth/callback` — server-side PKCE exchange, then routing on `learner_profiles.onboarding_completed_at`, a column 003 never had (migration 011). The row's *existence* cannot mean "has been here before": 009's signup trigger creates it before the learner sees a screen. Every failure — refusal, missing code, stale code, unreadable profile — lands on `/login?error=google`, and a refusal carrying a code is still never exchanged | `pnpm test` 202/202 — 10 new, all six mutations caught (one survived first: the refusal guard was untested against a code) · `pnpm test:e2e` 5/5 · typecheck, lint green |
 | 2026-08-19 | F3.2 | `/login` — one heading, one line, one Google button, and `POST /auth/signin` building the OAuth url server-side. A plain HTML form, not a Server Action: an action form renders a hidden `$ACTION_ID` input, and this page must carry zero inputs — it also means sign-in survives with JavaScript off | `pnpm test` 192/192 — 10 new, all six mutations caught · `pnpm test:e2e` 3/3 · typecheck, lint green |
 | 2026-08-19 | F3.1 | `@supabase/ssr` cookie session client — `toSessionCookieOptions` overrides the library's own `httpOnly: false` default so the access and refresh tokens are unreadable by script; every cookie in a chunked batch is hardened, the rest of Supabase's attributes pass through | `pnpm test` 182/182 — 9 new, all four mutations caught · `pnpm test:e2e` 1/1 · typecheck, lint green |
 | 2026-08-19 | F2.10 | 22 hand-written row interfaces across the nine owning modules, plus `Json` for jsonb; verified column-for-column against the Postgres catalogue instead of the uninstalled Supabase CLI. **Closes Phase 2** | `pnpm test` 173/173 — 8 new, each mutation-probed · typecheck, lint green |

@@ -1,5 +1,5 @@
 /**
- * `public.learner_profiles` — 003_learner_tables.sql
+ * `public.learner_profiles` — 003_learner_tables.sql, extended by 011
  *
  * Hand-written from the SQL, never generated. `supabase gen types` verifies it;
  * it is not the source of truth. This interface must not leave `infrastructure/`.
@@ -20,4 +20,9 @@ export interface ILearnerProfileRow {
   readonly playback_rate: number;
   readonly created_at: string;
   readonly updated_at: string;
+  /**
+   * Null until the learner finishes onboarding — 011. The signup trigger makes
+   * the row, so this, not the row's existence, is what "brand new" means.
+   */
+  readonly onboarding_completed_at: string | null;
 }

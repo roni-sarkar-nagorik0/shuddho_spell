@@ -657,6 +657,37 @@ The consequences, recorded so nobody re-litigates them:
   button that does nothing when url construction fails. `/auth/callback` (F3.3) should reuse
   this surface rather than invent a second one.
 
+**D23 — "Brand new" is a column, not an inference (F3.3).**
+`04-authentication.md` says the callback routes a brand-new profile to `/onboarding` and an
+existing one to `/dashboard`. Nothing in the schema could tell those apart.
+
+The obvious reading — "does a `learner_profiles` row exist?" — is wrong here. 009's signup
+trigger creates that row in the same transaction as the `auth.users` insert, so it is already
+true for a learner who has never seen a screen, and `/onboarding` would be unreachable. The
+profile's own columns cannot answer it either: `track`, `daily_minutes`, `timezone` and
+`accent_preference` all carry a default from 003, so a value there does not mean anyone chose it.
+
+A `created_at = updated_at` heuristic would work today and stop working the first time anything
+else writes to the profile before onboarding. That is a trap, not a design.
+
+So migration **011** adds `learner_profiles.onboarding_completed_at timestamptz`, null until the
+learner has answered the onboarding questions. Consequences:
+
+- Nothing writes it until Phase 11 ships the onboarding screen, so until then every learner
+  routes to `/onboarding`. That is correct, not a stub: with no way to answer the questions,
+  nobody has answered them.
+- The callback parses the column with Zod like any other external response, rather than
+  trusting the untyped Supabase result. It reads that one column and no more — a handler that
+  selected the whole profile would look like it owned it.
+- Anything short of a profile that says otherwise routes to `/onboarding`: no row, an
+  unreadable row, a shape that does not parse. Sending an onboarded learner through onboarding
+  costs a screen; sending a new one to a dashboard with no answers to render is a broken first
+  impression.
+- 008 grants `authenticated` a table-wide `update` on `learner_profiles`, so a learner can write
+  this column themselves — as they already can `current_day_index`. That is a pre-existing
+  Phase 2 RLS gap, recorded in `PROGRESS.md`'s NEXT block, not something F3.3 introduced or
+  should fix.
+
 ### Open — needs the user, not me
 
 **O1 — `02-typescript-rules.md` still says `packages/config` base tsconfig.** That is a
