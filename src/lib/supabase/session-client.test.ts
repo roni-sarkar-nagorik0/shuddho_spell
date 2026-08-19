@@ -129,7 +129,11 @@ describe('createSessionClient', () => {
       { name: 'sb-project-auth-token', value: 'access.and.refresh', options: SUPABASE_DEFAULTS },
     ]);
 
-    expect(written[0]?.options).toStrictEqual({ ...SUPABASE_DEFAULTS, httpOnly: true });
+    expect(written[0]?.options).toStrictEqual({
+      ...SUPABASE_DEFAULTS,
+      httpOnly: true,
+      secure: true,
+    });
   });
 
   it('builds on the anon key, so RLS still applies to the learner', async () => {

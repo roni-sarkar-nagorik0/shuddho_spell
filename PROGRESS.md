@@ -59,19 +59,20 @@ and 2. No feature starts without it. **Never read the file** — existence check
 
 ## NEXT
 
-> **Phase 3 · Authentication (Google only) — F3.4 through F3.12, nine features left**
-> Branch: `feat/03-google-auth`, carrying F3.1–F3.3.
+> **Phase 3 · Authentication (Google only) — F3.5 through F3.12, eight features left**
+> Branch: `feat/03-google-auth`, carrying F3.1–F3.4.
 > This run closes the phase: one feature at a time, each committed and merged into `dev` before
 > the next is picked, then the seven-item exit gate.
 >
-> **F3.4 — session-refresh middleware and route protection — starts here.** What F3.3 left it:
-> - There is no `middleware.ts` yet. It is the first thing in the codebase that runs before a
->   route, so it also owns `secure` on the session cookie — F3.1 deliberately left that unset
->   because only the request knows the protocol.
-> - Public by name, everything else protected: `/`, `/login`, `/auth/*`,
->   `/api/certificates/*/verify` and the marketing pages (`04-authentication.md` step 4).
-> - `/onboarding` and `/dashboard` are now real redirect targets but **neither page exists** —
->   they are Phase 10/11. Middleware protecting them does not need them to render.
+> **F3.5 — `useSession()` + `requireUser()` — starts here.** What F3.4 left it:
+> - `requireUser()` is the Server Component helper: it redirects to `/login` when there is no
+>   session. The middleware already does that for whole pages, so `requireUser()` is the
+>   belt — a page reached some other way, and the typed user object the page actually needs.
+> - `useSession()` cannot read a cookie: the session is httpOnly (D21). It has to be fed from a
+>   Server Component through a provider, which is the stricter reading D21 already recorded.
+> - `04-authentication.md` types the user as `IAuthenticatedUser` — `userId`, `profileId`,
+>   `email`, `displayName`. `profileId` and `displayName` mean reading `learner_profiles`.
+>   `withApi` currently returns only `{ id, email }`; F3.6 is where that gets reconciled.
 >
 > **Carried into the rest of the phase**
 > - Migration 011 added `learner_profiles.onboarding_completed_at`, null until Phase 11's
@@ -253,7 +254,7 @@ Branch `feat/03-google-auth` · Status: `IN PROGRESS`
   - Test: the page contains exactly one button and zero input elements
 - [x] **F3.3** (2026-08-19) `/auth/callback` code exchange + new-vs-existing routing
   - Test: a new profile lands on `/onboarding`, an existing one on `/dashboard`
-- [ ] **F3.4** Session-refresh middleware and route protection
+- [x] **F3.4** (2026-08-19) Session-refresh middleware and route protection
   - Test: an unauthenticated request to `/dashboard` redirects to `/login`
 - [ ] **F3.5** `useSession()` + `requireUser()`
   - Test: `requireUser()` throws/redirects with no session
@@ -573,6 +574,7 @@ Newest first. One line per finished feature: date · id · what · test result.
 
 | Date | Feature | What landed | Tests |
 | --- | --- | --- | --- |
+| 2026-08-19 | F3.4 | `src/middleware.ts` — `getUser()` refresh on every page, then protect-by-default: a page nobody listed is private, and an unauthenticated request for one is a redirect, never a 401. `/api/` is outside the matcher on purpose — a `fetch` answered with login markup is a 200 the caller cannot branch on, so that 401 stays `withApi`'s (F3.6). `secure` finally lands on the session cookie, off `NEXT_PUBLIC_APP_URL` rather than the spoofable `x-forwarded-proto`. One session client, two cookie transports, so neither can skip the hardening | `pnpm test` 217/217 — 15 new, all eight mutations caught · `pnpm test:e2e` 8/8 · typecheck, lint green |
 | 2026-08-19 | F3.3 | `/auth/callback` — server-side PKCE exchange, then routing on `learner_profiles.onboarding_completed_at`, a column 003 never had (migration 011). The row's *existence* cannot mean "has been here before": 009's signup trigger creates it before the learner sees a screen. Every failure — refusal, missing code, stale code, unreadable profile — lands on `/login?error=google`, and a refusal carrying a code is still never exchanged | `pnpm test` 202/202 — 10 new, all six mutations caught (one survived first: the refusal guard was untested against a code) · `pnpm test:e2e` 5/5 · typecheck, lint green |
 | 2026-08-19 | F3.2 | `/login` — one heading, one line, one Google button, and `POST /auth/signin` building the OAuth url server-side. A plain HTML form, not a Server Action: an action form renders a hidden `$ACTION_ID` input, and this page must carry zero inputs — it also means sign-in survives with JavaScript off | `pnpm test` 192/192 — 10 new, all six mutations caught · `pnpm test:e2e` 3/3 · typecheck, lint green |
 | 2026-08-19 | F3.1 | `@supabase/ssr` cookie session client — `toSessionCookieOptions` overrides the library's own `httpOnly: false` default so the access and refresh tokens are unreadable by script; every cookie in a chunked batch is hardened, the rest of Supabase's attributes pass through | `pnpm test` 182/182 — 9 new, all four mutations caught · `pnpm test:e2e` 1/1 · typecheck, lint green |

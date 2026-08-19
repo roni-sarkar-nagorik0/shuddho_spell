@@ -688,6 +688,41 @@ learner has answered the onboarding questions. Consequences:
   Phase 2 RLS gap, recorded in `PROGRESS.md`'s NEXT block, not something F3.3 introduced or
   should fix.
 
+**D24 — The middleware's three unspecified choices (F3.4).**
+
+*`secure` comes from the app url, not the request.* D21 left `secure` off the session cookie
+and said the middleware would own it, "which knows the request protocol". It does not, safely:
+behind a proxy the protocol arrives as `x-forwarded-proto`, a header the client sends, so an
+attacker could ask for a cookie without `secure` and then read it off a downgraded connection.
+`NEXT_PUBLIC_APP_URL` is configuration rather than input, it gives the same answer on every
+code path — so the middleware and the `next/headers` store cannot disagree about one cookie —
+and `http://localhost` still yields `false`, which is what kept `secure` off in the first place.
+It lives in `toSessionCookieOptions` beside `httpOnly`, written last so no caller can reopen it.
+
+*API routes are outside the matcher.* The gate asks for two different answers to "no session":
+a page redirects to `/login`, a handler returns 401 problem+json. Middleware can only give the
+first, and giving it to `fetch('/api/v1/me')` hands the caller a 200 full of login markup
+instead of an error it can branch on. So the matcher excludes `/api/`, and `withApi` owns every
+API 401 (F3.6). `/api/certificates/<code>/verify` is then public by construction rather than by
+a rule, and `/api/cron/*` keeps authenticating with its bearer secret (F3.8).
+
+*One session client, two transports.* Middleware runs before the `next/headers` store exists,
+so it needs cookies from the request and the response instead. Rather than construct a third
+Supabase client — `04-authentication.md` allows exactly two — `session-client.ts` now has one
+private builder taking a cookie adapter, and two exported factories over it. Neither can skip
+`toSessionCookieOptions`, which was the risk worth designing against.
+
+*And one thing deliberately not done:* the redirect to `/login` carries no `?next=` return path.
+Honouring it means `/login` and `/auth/callback` both have to thread and validate it, and an
+unvalidated one is an open redirect. It belongs with the feature that needs it, not here.
+
+**D25 — Middleware stays on the Edge runtime, with a known build warning (F3.4).**
+`next build` reports that `@supabase/supabase-js` reads `process.version`, unavailable on Edge.
+The check falls through to the global-fetch branch, which is correct there, and the e2e tests
+pass against the real build. The only fix is `experimental.nodeMiddleware`, and depending on an
+experimental Next flag in a production app is worse than a warning that is written down.
+Revisit when Node middleware is stable.
+
 ### Open — needs the user, not me
 
 **O1 — `02-typescript-rules.md` still says `packages/config` base tsconfig.** That is a
