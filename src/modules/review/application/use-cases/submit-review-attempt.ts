@@ -4,7 +4,6 @@ import { type ISentenceItemRepository } from '@/modules/library/domain/repositor
 import { type IWordRepository } from '@/modules/library/domain/repositories/word-repository';
 import { type ErrorTagger } from '@/modules/library/domain/services/error-tagger';
 import { type IClock } from '@/modules/shared/application/ports/clock';
-import { type IUnitOfWork } from '@/modules/shared/application/ports/unit-of-work';
 import { type ErrorTag } from '@/modules/shared/domain/value-objects/error-tag';
 import { LocalDate } from '@/modules/shared/domain/value-objects/local-date';
 import { ReviewItemNotFoundError } from '../../domain/errors/review-item-not-found.error';
@@ -44,7 +43,6 @@ export class SubmitReviewAttemptUseCase {
     private readonly tagger: ErrorTagger,
     private readonly policy: IReviewSchedulingPolicy,
     private readonly clock: IClock,
-    private readonly unitOfWork: IUnitOfWork,
   ) {}
 
   async execute(input: ISubmitReviewAttemptInput): Promise<ISubmitReviewAttemptOutput> {
@@ -69,26 +67,27 @@ export class SubmitReviewAttemptUseCase {
     const now = this.clock.now();
     const localDay = LocalDate.fromInstant(now, profile.timezone);
 
-    return this.unitOfWork.run(async () => {
-      const updated = await this.reviews.upsert(
-        item.recordResult(
-          marked.isCorrect,
-          now,
-          localDay,
-          this.policy,
-          marked.errorTags,
-          profile.timezone,
-        ),
-      );
+    // One write, so no transaction to arrange. A review answer touches the
+    // review item and nothing else — that is the difference between this and a
+    // lesson attempt, which moves four tables and needs 013's function.
+    const updated = await this.reviews.upsert(
+      item.recordResult(
+        marked.isCorrect,
+        now,
+        localDay,
+        this.policy,
+        marked.errorTags,
+        profile.timezone,
+      ),
+    );
 
-      return {
-        isCorrect: marked.isCorrect,
-        errorTags: marked.errorTags,
-        correctValue: marked.isCorrect ? null : marked.correctValue,
-        isMastered: updated.isMastered,
-        nextDueAt: updated.dueAt.toISOString(),
-      };
-    });
+    return {
+      isCorrect: marked.isCorrect,
+      errorTags: marked.errorTags,
+      correctValue: marked.isCorrect ? null : marked.correctValue,
+      isMastered: updated.isMastered,
+      nextDueAt: updated.dueAt.toISOString(),
+    };
   }
 
   private async markWord(

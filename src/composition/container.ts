@@ -24,6 +24,12 @@ import { type IReviewItemRepository } from '@/modules/review/domain/repositories
 import { type IReviewSchedulingPolicy } from '@/modules/review/domain/services/review-scheduling-policy';
 import { IntervalLadderPolicy } from '@/modules/review/domain/services/interval-ladder.policy';
 import { SupabaseReviewItemRepository } from '@/modules/review/infrastructure/persistence/supabase/review-item.repository';
+import { type ILessonWriteUnit } from '@/modules/lessons/application/ports/lesson-write-unit';
+import { SupabaseLessonWriteUnit } from '@/modules/lessons/infrastructure/adapters/supabase-lesson-write-unit';
+import { type IClock } from '@/modules/shared/application/ports/clock';
+import { type IIdGenerator } from '@/modules/shared/application/ports/id-generator';
+import { SystemClock } from '@/modules/shared/infrastructure/adapters/system-clock';
+import { UuidGenerator } from '@/modules/shared/infrastructure/adapters/uuid-generator';
 import { toDatabase } from '@/modules/shared/infrastructure/persistence/supabase-database';
 
 /**
@@ -57,6 +63,12 @@ export interface IContainer {
    */
   readonly reviewPolicy: IReviewSchedulingPolicy;
   readonly errorTagger: ErrorTagger;
+
+  /** The writes that must not half-happen — 013 and 014's Postgres functions. */
+  readonly lessonWrites: ILessonWriteUnit;
+
+  readonly clock: IClock;
+  readonly ids: IIdGenerator;
 }
 
 export function createContainer(requestId: string): IContainer {
@@ -82,5 +94,10 @@ export function createContainer(requestId: string): IContainer {
 
     reviewPolicy: new IntervalLadderPolicy(),
     errorTagger: new ErrorTagger(),
+
+    lessonWrites: new SupabaseLessonWriteUnit(db),
+
+    clock: new SystemClock(),
+    ids: new UuidGenerator(),
   };
 }

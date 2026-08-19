@@ -10,7 +10,7 @@ import { type IReviewItemRepository } from '@/modules/review/domain/repositories
 import { type IReviewSchedulingPolicy } from '@/modules/review/domain/services/review-scheduling-policy';
 import { type IClock } from '@/modules/shared/application/ports/clock';
 import { type IIdGenerator } from '@/modules/shared/application/ports/id-generator';
-import { type IUnitOfWork } from '@/modules/shared/application/ports/unit-of-work';
+import { type ILessonWriteUnit } from '../ports/lesson-write-unit';
 import { type ErrorTag } from '@/modules/shared/domain/value-objects/error-tag';
 import { LocalDate } from '@/modules/shared/domain/value-objects/local-date';
 import { ScorePercent } from '@/modules/shared/domain/value-objects/score-percent';
@@ -41,6 +41,11 @@ const NO_MARKS = 0;
  * updated, and the rule family the word demonstrates gains a data point. Doing
  * any of it later — at the end of the lesson, in a cron job — means a learner
  * who abandons the lesson loses the work they actually did.
+ *
+ * "Together" means **one Postgres function** (013), not four writes in a row.
+ * Over PostgREST four writes are four transactions, and a failure after the
+ * second leaves a learner whose review ladder advanced and whose mastery did
+ * not — silent, permanent, and noticed weeks later when the numbers disagree.
  */
 export class SubmitDictationAttemptUseCase {
   private readonly mastery = new MasteryCalculator();
@@ -57,7 +62,7 @@ export class SubmitDictationAttemptUseCase {
     private readonly policy: IReviewSchedulingPolicy,
     private readonly clock: IClock,
     private readonly ids: IIdGenerator,
-    private readonly unitOfWork: IUnitOfWork,
+    private readonly writes: ILessonWriteUnit,
   ) {}
 
   async execute(input: ISubmitDictationAttemptInput): Promise<IAttemptResult> {
@@ -96,76 +101,71 @@ export class SubmitDictationAttemptUseCase {
     const now = this.clock.now();
     const localDay = LocalDate.fromInstant(now, profile.timezone);
 
-    return this.unitOfWork.run(async () => {
-      const attempt = await this.attempts.append(
-        new Attempt({
-          id: this.ids.next(),
-          sessionId: session.id,
-          profileId: profile.id,
-          itemType: 'word',
-          itemId: word.id,
-          mode: 'dictation',
-          submittedValue: input.submittedValue,
-          isCorrect,
-          score: ScorePercent.of(isCorrect ? FULL_MARKS : NO_MARKS),
-          errorTags,
-          latencyMs: input.latencyMs,
-          createdAt: now,
-        }),
-      );
+    const attempt = new Attempt({
+      id: this.ids.next(),
+      sessionId: session.id,
+      profileId: profile.id,
+      itemType: 'word',
+      itemId: word.id,
+      mode: 'dictation',
+      submittedValue: input.submittedValue,
+      isCorrect,
+      score: ScorePercent.of(isCorrect ? FULL_MARKS : NO_MARKS),
+      errorTags,
+      latencyMs: input.latencyMs,
+      createdAt: now,
+    });
 
-      const updated = await this.lessons.save(session.recordItemResult(isCorrect));
+    const existing = await this.reviews.findByItem(profile.id, word.id);
 
-      const existing = await this.reviews.findByItem(profile.id, word.id);
+    const reviewItem = (
+      existing ??
+      new ReviewItem({
+        id: this.ids.next(),
+        profileId: profile.id,
+        itemId: word.id,
+        itemType: 'word',
+        intervalIndex: 0,
+        dueAt: now,
+        timesSeen: 0,
+        timesCorrect: 0,
+        consecutiveCorrect: 0,
+        lastCorrectOn: null,
+        isMastered: false,
+        lastErrorTags: [],
+      })
+    ).recordResult(isCorrect, now, localDay, this.policy, errorTags, profile.timezone);
 
-      await this.reviews.upsert(
-        (
-          existing ??
-          new ReviewItem({
-            id: this.ids.next(),
-            profileId: profile.id,
-            itemId: word.id,
-            itemType: 'word',
-            intervalIndex: 0,
-            dueAt: now,
-            timesSeen: 0,
-            timesCorrect: 0,
-            consecutiveCorrect: 0,
-            lastCorrectOn: null,
-            isMastered: false,
-            lastErrorTags: [],
-          })
-        ).recordResult(isCorrect, now, localDay, this.policy, errorTags, profile.timezone),
-      );
+    // Spelling evidence, so the rule family only. A learner who spells "very"
+    // correctly has demonstrated nothing about saying it, and crediting the
+    // phonemes here would make the pronunciation half of the matrix a lie.
+    const ruleFamilyId = word.ruleFamilyId;
 
-      // Spelling evidence, so the rule family only. A learner who spells "very"
-      // correctly has demonstrated nothing about saying it, and crediting the
-      // phonemes here would make the pronunciation half of the matrix a lie.
-      const ruleFamilyId = word.ruleFamilyId;
-
-      if (ruleFamilyId !== null) {
-        const records = await this.masteryRecords.findByProfile(profile.id);
-
-        await this.masteryRecords.saveMany(
-          this.mastery.apply(
-            records,
+    const mastery =
+      ruleFamilyId === null
+        ? []
+        : this.mastery.apply(
+            await this.masteryRecords.findByProfile(profile.id),
             [{ dimension: 'rule_family', dimensionId: ruleFamilyId, isCorrect }],
             now,
             () => this.ids.next(),
             profile.id,
-          ),
-        );
-      }
+          );
 
-      return {
-        attemptId: attempt.id,
-        isCorrect,
-        score: attempt.score.value,
-        errorTags,
-        correctValue: isCorrect ? null : word.text,
-        itemsTotal: updated.itemsTotal,
-        itemsCorrect: updated.itemsCorrect,
-      };
-    });
+    // One call, one transaction. The session's counters are incremented inside
+    // the function rather than written from a number computed here — two
+    // answers submitted at once would each write "the total as I saw it" and
+    // one of them would be lost.
+    await this.writes.recordAttempt({ attempt, reviewItem, mastery });
+
+    return {
+      attemptId: attempt.id,
+      isCorrect,
+      score: attempt.score.value,
+      errorTags,
+      correctValue: isCorrect ? null : word.text,
+      itemsTotal: session.itemsTotal + 1,
+      itemsCorrect: session.itemsCorrect + (isCorrect ? 1 : 0),
+    };
   }
 }

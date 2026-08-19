@@ -4,7 +4,7 @@ import { StreakRecord } from '@/modules/progress/domain/entities/streak-record';
 import { type IStreakRepository } from '@/modules/progress/domain/repositories/streak-repository';
 import { type IClock } from '@/modules/shared/application/ports/clock';
 import { type IIdGenerator } from '@/modules/shared/application/ports/id-generator';
-import { type IUnitOfWork } from '@/modules/shared/application/ports/unit-of-work';
+import { type ILessonWriteUnit } from '../ports/lesson-write-unit';
 import { SessionNotFoundError } from '../../domain/errors/session-not-found.error';
 import { type ILessonRepository } from '../../domain/repositories/lesson-repository';
 
@@ -29,10 +29,12 @@ export interface ICompleteLessonSessionOutput {
  * answers arrive, not batched up until the end, because a learner who abandons
  * a lesson at `speak` should still have their earlier answers counted.
  *
- * All of it inside one `IUnitOfWork`. A failure between the session closing and
- * the streak registering leaves a learner who finished a day and lost their
- * streak — silent, permanent, and the sort of thing that is only noticed weeks
- * later when the number is wrong.
+ * All of it in **one Postgres function** (014). A failure between the session
+ * closing and the streak registering leaves a learner who finished a day and
+ * lost their streak; a failure before the position moves sends them back
+ * through a day they have already done. Over PostgREST each write is its own
+ * transaction, so the only place this can be made atomic is the database — see
+ * `ILessonWriteUnit` for why `IUnitOfWork` could not be built.
  */
 export class CompleteLessonSessionUseCase {
   constructor(
@@ -41,7 +43,7 @@ export class CompleteLessonSessionUseCase {
     private readonly streaks: IStreakRepository,
     private readonly clock: IClock,
     private readonly ids: IIdGenerator,
-    private readonly unitOfWork: IUnitOfWork,
+    private readonly writes: ILessonWriteUnit,
   ) {}
 
   async execute(input: ICompleteLessonSessionInput): Promise<ICompleteLessonSessionOutput> {
@@ -59,41 +61,42 @@ export class CompleteLessonSessionUseCase {
 
     const now = this.clock.now();
 
-    return this.unitOfWork.run(async () => {
-      // The entity refuses to complete from anywhere but the last stage, so a
-      // learner cannot finish a day they have not spoken or built a sentence in.
-      const completed = await this.lessons.save(session.complete(now));
+    // The entity refuses to complete from anywhere but the last stage, so a
+    // learner cannot finish a day they have not spoken or built a sentence in.
+    const completed = session.complete(now);
 
-      // Only advances when the finished day *is* where the learner is. A
-      // learner revisiting day 3 to practise has not earned day 5.
-      const moved =
-        completed.dayIndex.value === profile.currentDayIndex.value
-          ? await this.profiles.save(profile.advanceDay())
-          : profile;
+    // Only advances when the finished day *is* where the learner is. A learner
+    // revisiting day 3 to practise has not earned day 5. Decided here and sent
+    // as null otherwise, so the database never has to know what a revisit is.
+    const isCurrentDay = completed.dayIndex.value === profile.currentDayIndex.value;
+    const moved = isCurrentDay ? profile.advanceDay() : profile;
 
-      const existing = await this.streaks.findByProfile(profile.id);
+    const existing = await this.streaks.findByProfile(profile.id);
 
-      const streak = await this.streaks.save(
-        (
-          existing ??
-          new StreakRecord({
-            id: this.ids.next(),
-            profileId: profile.id,
-            currentStreak: 0,
-            longestStreak: 0,
-            lastActiveDate: null,
-            freezesRemaining: 0,
-          })
-        ).registerActivity(now, profile.timezone),
-      );
+    const streak = (
+      existing ??
+      new StreakRecord({
+        id: this.ids.next(),
+        profileId: profile.id,
+        currentStreak: 0,
+        longestStreak: 0,
+        lastActiveDate: null,
+        freezesRemaining: 0,
+      })
+    ).registerActivity(now, profile.timezone);
 
-      return {
-        sessionId: completed.id,
-        itemsTotal: completed.itemsTotal,
-        itemsCorrect: completed.itemsCorrect,
-        currentDayIndex: moved.currentDayIndex.value,
-        currentStreak: streak.currentStreak,
-      };
+    await this.writes.completeSession({
+      session: completed,
+      streak,
+      advanceToDayIndex: isCurrentDay ? moved.currentDayIndex.value : null,
     });
+
+    return {
+      sessionId: completed.id,
+      itemsTotal: completed.itemsTotal,
+      itemsCorrect: completed.itemsCorrect,
+      currentDayIndex: moved.currentDayIndex.value,
+      currentStreak: streak.currentStreak,
+    };
   }
 }

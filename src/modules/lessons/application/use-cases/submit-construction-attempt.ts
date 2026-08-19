@@ -10,7 +10,7 @@ import { type IReviewItemRepository } from '@/modules/review/domain/repositories
 import { type IReviewSchedulingPolicy } from '@/modules/review/domain/services/review-scheduling-policy';
 import { type IClock } from '@/modules/shared/application/ports/clock';
 import { type IIdGenerator } from '@/modules/shared/application/ports/id-generator';
-import { type IUnitOfWork } from '@/modules/shared/application/ports/unit-of-work';
+import { type ILessonWriteUnit } from '../ports/lesson-write-unit';
 import { type ErrorTag } from '@/modules/shared/domain/value-objects/error-tag';
 import { LocalDate } from '@/modules/shared/domain/value-objects/local-date';
 import { ScorePercent } from '@/modules/shared/domain/value-objects/score-percent';
@@ -39,6 +39,10 @@ const NO_MARKS = 0;
  * rules — an article, a preposition and a tense in one line — and each of them
  * gets a data point from the same answer. That fan-out is why
  * `MasteryCalculator.apply` takes a list rather than a single observation.
+ *
+ * All of it lands in **one Postgres function** (013). Four separate writes over
+ * PostgREST are four transactions, and a failure between them corrupts a
+ * learner's history in a way nothing later can detect.
  */
 export class SubmitConstructionAttemptUseCase {
   private readonly mastery = new MasteryCalculator();
@@ -55,7 +59,7 @@ export class SubmitConstructionAttemptUseCase {
     private readonly policy: IReviewSchedulingPolicy,
     private readonly clock: IClock,
     private readonly ids: IIdGenerator,
-    private readonly unitOfWork: IUnitOfWork,
+    private readonly writes: ILessonWriteUnit,
   ) {}
 
   async execute(input: ISubmitConstructionAttemptInput): Promise<IAttemptResult> {
@@ -91,54 +95,46 @@ export class SubmitConstructionAttemptUseCase {
     const now = this.clock.now();
     const localDay = LocalDate.fromInstant(now, profile.timezone);
 
-    return this.unitOfWork.run(async () => {
-      const attempt = await this.attempts.append(
-        new Attempt({
-          id: this.ids.next(),
-          sessionId: session.id,
-          profileId: profile.id,
-          itemType: 'sentence',
-          itemId: sentence.id,
-          mode: 'construction',
-          submittedValue: input.submittedValue,
-          isCorrect,
-          score: ScorePercent.of(isCorrect ? FULL_MARKS : NO_MARKS),
-          errorTags,
-          latencyMs: input.latencyMs,
-          createdAt: now,
-        }),
-      );
+    const attempt = new Attempt({
+      id: this.ids.next(),
+      sessionId: session.id,
+      profileId: profile.id,
+      itemType: 'sentence',
+      itemId: sentence.id,
+      mode: 'construction',
+      submittedValue: input.submittedValue,
+      isCorrect,
+      score: ScorePercent.of(isCorrect ? FULL_MARKS : NO_MARKS),
+      errorTags,
+      latencyMs: input.latencyMs,
+      createdAt: now,
+    });
 
-      const updated = await this.lessons.save(session.recordItemResult(isCorrect));
+    const existing = await this.reviews.findByItem(profile.id, sentence.id);
 
-      const existing = await this.reviews.findByItem(profile.id, sentence.id);
+    const reviewItem = (
+      existing ??
+      new ReviewItem({
+        id: this.ids.next(),
+        profileId: profile.id,
+        itemId: sentence.id,
+        itemType: 'sentence',
+        intervalIndex: 0,
+        dueAt: now,
+        timesSeen: 0,
+        timesCorrect: 0,
+        consecutiveCorrect: 0,
+        lastCorrectOn: null,
+        isMastered: false,
+        lastErrorTags: [],
+      })
+    ).recordResult(isCorrect, now, localDay, this.policy, errorTags, profile.timezone);
 
-      await this.reviews.upsert(
-        (
-          existing ??
-          new ReviewItem({
-            id: this.ids.next(),
-            profileId: profile.id,
-            itemId: sentence.id,
-            itemType: 'sentence',
-            intervalIndex: 0,
-            dueAt: now,
-            timesSeen: 0,
-            timesCorrect: 0,
-            consecutiveCorrect: 0,
-            lastCorrectOn: null,
-            isMastered: false,
-            lastErrorTags: [],
-          })
-        ).recordResult(isCorrect, now, localDay, this.policy, errorTags, profile.timezone),
-      );
-
-      if (sentence.grammarRuleFamilyIds.length > 0) {
-        const records = await this.masteryRecords.findByProfile(profile.id);
-
-        await this.masteryRecords.saveMany(
-          this.mastery.apply(
-            records,
+    const mastery =
+      sentence.grammarRuleFamilyIds.length === 0
+        ? []
+        : this.mastery.apply(
+            await this.masteryRecords.findByProfile(profile.id),
             sentence.grammarRuleFamilyIds.map((id) => ({
               dimension: 'rule_family' as const,
               dimensionId: id,
@@ -147,22 +143,21 @@ export class SubmitConstructionAttemptUseCase {
             now,
             () => this.ids.next(),
             profile.id,
-          ),
-        );
-      }
+          );
 
-      return {
-        attemptId: attempt.id,
-        isCorrect,
-        score: attempt.score.value,
-        errorTags,
-        // The target rendering, not the learner's nearest accepted alternative:
-        // showing "the" answer keeps the feedback one sentence rather than a
-        // list, and the alternatives exist to accept input, not to teach.
-        correctValue: isCorrect ? null : sentence.englishText,
-        itemsTotal: updated.itemsTotal,
-        itemsCorrect: updated.itemsCorrect,
-      };
-    });
+    await this.writes.recordAttempt({ attempt, reviewItem, mastery });
+
+    return {
+      attemptId: attempt.id,
+      isCorrect,
+      score: attempt.score.value,
+      errorTags,
+      // The target rendering, not the learner's nearest accepted alternative:
+      // showing "the" answer keeps the feedback one sentence rather than a
+      // list, and the alternatives exist to accept input, not to teach.
+      correctValue: isCorrect ? null : sentence.englishText,
+      itemsTotal: session.itemsTotal + 1,
+      itemsCorrect: session.itemsCorrect + (isCorrect ? 1 : 0),
+    };
   }
 }
