@@ -221,6 +221,70 @@ describe('protected by default', () => {
   });
 });
 
+describe('identity comes only from the session (F3.12)', () => {
+  const OTHER = 'profile-of-somebody-else';
+
+  it('ignores a profileId in the body — the session names the learner', async () => {
+    harness.user = LEARNER;
+    let seen: IAuthenticatedUser | null = null;
+
+    await withApi(
+      (ctx) => {
+        seen = ctx.user;
+        return Promise.resolve({ ok: true });
+      },
+      { bodySchema: z.object({ profileId: z.string() }) },
+    )(post({ profileId: OTHER }));
+
+    expect(seen).toStrictEqual(LEARNER);
+  });
+
+  it('keeps the two apart, so the body value can never be mistaken for the user', async () => {
+    harness.user = LEARNER;
+    let body: unknown = null;
+    let user: IAuthenticatedUser | null = null;
+
+    await withApi(
+      (ctx) => {
+        body = ctx.body;
+        user = ctx.user;
+        return Promise.resolve({ ok: true });
+      },
+      { bodySchema: z.object({ profileId: z.string() }) },
+    )(post({ profileId: OTHER }));
+
+    // Two separate fields, never merged. A handler that wants the body's value
+    // has to reach for it by name and see what it is doing.
+    expect(body).toStrictEqual({ profileId: OTHER });
+    expect(user).toStrictEqual(LEARNER);
+  });
+
+  it('ignores a userId in the query string', async () => {
+    harness.user = LEARNER;
+    let seen: IAuthenticatedUser | null = null;
+
+    await withApi(
+      (ctx) => {
+        seen = ctx.user;
+        return Promise.resolve({ ok: true });
+      },
+      { querySchema: z.object({ userId: z.string() }) },
+    )(new NextRequest('https://shuddhospell.test/api/v1/thing?userId=somebody-else'));
+
+    expect(seen).toStrictEqual(LEARNER);
+  });
+
+  it('does not let a body conjure a user on a route with no session', async () => {
+    harness.user = null;
+
+    const response = await withApi(() => Promise.resolve({ ok: true }), {
+      bodySchema: z.object({ userId: z.string() }),
+    })(post({ userId: 'user-1' }));
+
+    expect(response.status).toBe(401);
+  });
+});
+
 describe('withApi ordering', () => {
   it('checks the session before it parses the body', async () => {
     // Otherwise an anonymous caller learns the shape of a schema they have no
