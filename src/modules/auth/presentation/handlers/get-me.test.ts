@@ -44,6 +44,7 @@ const handler = createGetMeHandler(
         return Promise.resolve(harness.profile);
       },
       insertIfAbsent: () => Promise.reject(new Error('GET must not write')),
+      save: () => Promise.reject(new Error('GET must not write')),
     }),
 );
 

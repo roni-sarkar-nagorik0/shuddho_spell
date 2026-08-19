@@ -56,3 +56,12 @@ export class PostgresRateLimiter implements IRateLimiter {
     };
   }
 }
+
+/**
+ * The default limiter. A factory rather than an exported instance so that
+ * importing this module — which `withApi` only does when a route declares a
+ * rate limit — is still what decides when the Supabase environment is read.
+ */
+export function createPostgresRateLimiter(): IRateLimiter {
+  return new PostgresRateLimiter();
+}

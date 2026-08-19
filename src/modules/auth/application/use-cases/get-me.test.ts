@@ -10,6 +10,11 @@ import { GetMeUseCase } from './get-me';
 class FakeProfiles implements ILearnerProfileRepository {
   rows: LearnerProfile[] = [];
 
+  save(profile: LearnerProfile): Promise<LearnerProfile> {
+    this.rows = this.rows.map((row) => (row.id === profile.id ? profile : row));
+    return Promise.resolve(profile);
+  }
+
   findByUserId(userId: string): Promise<LearnerProfile | null> {
     return Promise.resolve(this.rows.find((row) => row.userId === userId) ?? null);
   }

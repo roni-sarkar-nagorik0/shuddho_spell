@@ -66,4 +66,46 @@ export class SupabaseLearnerProfileRepository implements ILearnerProfileReposito
 
     return stored;
   }
+
+  /**
+   * Writes the changeable columns and reads the row back.
+   *
+   * Reading back rather than trusting the entity it was handed: 003 has check
+   * constraints this code does not restate — `current_day_index between 1 and
+   * 28`, `playback_rate between 0.50 and 1.50` — and returning what was
+   * actually stored is what stops the application believing a write that the
+   * database narrowed or refused.
+   */
+  async save(profile: LearnerProfile): Promise<LearnerProfile> {
+    const { error } = await this.client
+      .from('learner_profiles')
+      .update({
+        display_name: profile.displayName,
+        track: profile.track,
+        daily_minutes: profile.dailyMinutes,
+        timezone: profile.timezone,
+        ui_language: profile.uiLanguage,
+        current_day_index: profile.currentDayIndex.value,
+        accent_preference: profile.accentPreference,
+        playback_rate: profile.playbackRate,
+        onboarding_completed_at:
+          profile.onboardingCompletedAt === null
+            ? null
+            : profile.onboardingCompletedAt.toISOString(),
+      })
+      .eq('id', profile.id)
+      .maybeSingle();
+
+    if (error !== null) {
+      throw new Error(`could not save the learner profile: ${error.message}`);
+    }
+
+    const stored = await this.findByUserId(profile.userId);
+
+    if (stored === null) {
+      throw new Error(`the learner profile for ${profile.userId} vanished during save`);
+    }
+
+    return stored;
+  }
 }

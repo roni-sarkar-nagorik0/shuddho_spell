@@ -29,7 +29,15 @@ interface IRow {
  * ignoring it is the difference between a learner's first screen working and
  * returning 500, and no behavioural test further up can see which one was sent.
  */
+interface IUpdateCall {
+  readonly values: unknown;
+  readonly column: string;
+  readonly value: string;
+}
+
 interface IStore {
+  readonly updates: IUpdateCall[];
+  updateError: IError | null;
   readonly upserts: IUpsertCall[];
   rows: IRow[];
   selectError: IError | null;
@@ -45,6 +53,21 @@ interface IError {
 function fakeDatabase(store: IStore): IProfileDatabase {
   return {
     from: () => ({
+      // F4.12 added `save`. Recorded rather than ignored: what is worth pinning
+      // is that an update filters by id and writes only the changeable columns.
+      update: (values) => ({
+        eq: (column, value) => {
+          store.updates.push({ values, column, value });
+          return {
+            maybeSingle: () =>
+              Promise.resolve(
+                store.updateError !== null
+                  ? { data: null, error: store.updateError }
+                  : { data: null, error: null },
+              ),
+          };
+        },
+      }),
       select: (columns) => {
         store.selectedColumns = columns;
         return {
@@ -89,6 +112,8 @@ const STORED: IRow = {
 
 beforeEach(() => {
   store = {
+    updates: [],
+    updateError: null,
     upserts: [],
     rows: [],
     selectError: null,

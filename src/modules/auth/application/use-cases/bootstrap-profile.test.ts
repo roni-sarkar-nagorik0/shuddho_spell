@@ -25,6 +25,10 @@ class FakeProfiles implements ILearnerProfileRepository {
     return Promise.resolve(this.rows.find((row) => row.userId === userId) ?? null);
   }
 
+  save(): Promise<LearnerProfile> {
+    return Promise.reject(new Error('bootstrap must not update an existing profile'));
+  }
+
   /** Atomic, as the port demands: the store decides, not the caller. */
   insertIfAbsent(profile: INewLearnerProfile): Promise<LearnerProfile> {
     this.inserts += 1;

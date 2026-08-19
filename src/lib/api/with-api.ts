@@ -11,7 +11,6 @@ import {
 } from '@/contracts';
 import { readUser } from '../auth/current-user';
 import { logger } from '../logger';
-import { PostgresRateLimiter } from '../rate-limit/postgres-rate-limiter';
 import { ApiError, problem } from './problem';
 
 export interface IHandlerContext<TBody, TQuery> {
@@ -99,7 +98,6 @@ export function withApi<TBody = undefined, TQuery = undefined>(
 ): (request: NextRequest) => Promise<NextResponse> {
   const requireAuth = (options.auth ?? 'required') === 'required';
   const rule = options.rateLimit;
-  const limiter = options.rateLimiter ?? new PostgresRateLimiter();
 
   return async function route(request: NextRequest): Promise<NextResponse> {
     const requestId = crypto.randomUUID();
@@ -130,6 +128,13 @@ export function withApi<TBody = undefined, TQuery = undefined>(
       // learner id wherever there is one, and never an address standing in for
       // several people.
       if (rule !== undefined) {
+        // Imported here rather than at module scope, and it matters: the
+        // Postgres limiter reaches the service client, which validates the
+        // Supabase environment the moment it is loaded. A static import would
+        // make every route module — `/api/health` included — refuse to load
+        // without credentials it never uses.
+        const limiter = options.rateLimiter ?? (await import('../rate-limit/postgres-rate-limiter')).createPostgresRateLimiter();
+
         const decision = await limiter.consume(rule, rateLimitSubject(request, user));
 
         if (!decision.allowed) {

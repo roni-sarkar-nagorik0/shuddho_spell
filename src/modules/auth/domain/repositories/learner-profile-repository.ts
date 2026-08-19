@@ -22,4 +22,15 @@ export interface ILearnerProfileRepository {
    * run this twice with the same result.
    */
   readonly insertIfAbsent: (profile: INewLearnerProfile) => Promise<LearnerProfile>;
+
+  /**
+   * Writes a changed profile back.
+   *
+   * Added in F4.12 — completing a day advances `current_day_index`, and until
+   * now nothing in the application had a reason to change a profile at all.
+   * Whole-entity rather than a field patch: the entity is what enforces "never
+   * past the end of the track", and a `setCurrentDay(n)` would let a caller
+   * skip it.
+   */
+  readonly save: (profile: LearnerProfile) => Promise<LearnerProfile>;
 }

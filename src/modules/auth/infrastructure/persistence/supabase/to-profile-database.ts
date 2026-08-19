@@ -17,6 +17,11 @@ export function toProfileDatabase(client: SupabaseClient): IProfileDatabase {
           maybeSingle: () => client.from(table).select(columns).eq(column, value).maybeSingle(),
         }),
       }),
+      update: (values) => ({
+        eq: (column, value) => ({
+          maybeSingle: () => client.from(table).update(values).eq(column, value).maybeSingle(),
+        }),
+      }),
       upsert: (values, options) => client.from(table).upsert(values, options),
     }),
   };
