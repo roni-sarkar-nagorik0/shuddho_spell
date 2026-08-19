@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { NextIntlClientProvider } from 'next-intl';
 import { getLocale, getMessages } from 'next-intl/server';
 import { Bricolage_Grotesque, IBM_Plex_Mono, Noto_Sans_Bengali, Public_Sans } from 'next/font/google';
+import { SessionBoundary } from '@/lib/auth/session-boundary';
 import './globals.css';
 
 const display = Bricolage_Grotesque({ subsets: ['latin'], variable: '--font-display' });
@@ -28,7 +29,9 @@ export default async function RootLayout({
       className={`${display.variable} ${body.variable} ${mono.variable} ${bengali.variable}`}
     >
       <body>
-        <NextIntlClientProvider messages={messages}>{children}</NextIntlClientProvider>
+        <NextIntlClientProvider messages={messages}>
+          <SessionBoundary>{children}</SessionBoundary>
+        </NextIntlClientProvider>
       </body>
     </html>
   );
