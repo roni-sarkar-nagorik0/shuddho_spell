@@ -70,6 +70,10 @@ export class ReviewItem {
    * the same learner-local day leave it where it was, which is what stops a
    * learner drilling one word five times in a session and being told they have
    * mastered it. `06-spaced-repetition.md` makes that a mandatory case.
+   *
+   * Mastery follows from the same counter: three correct answers on three
+   * different local days, judged by the policy rather than decided here. It is
+   * granted once and not taken back — see below.
    */
   recordResult(
     isCorrect: boolean,
@@ -95,10 +99,18 @@ export class ReviewItem {
       timesCorrect: this.timesCorrect + (isCorrect ? 1 : 0),
       consecutiveCorrect,
       lastCorrectOn: isCorrect ? localDay : this.lastCorrectOn,
-      // Mastery is not revoked by a later wrong answer — the item drops to rung
-      // 0 and comes back tomorrow, which is the correction. F4.6 owns the rule
-      // that grants it.
-      isMastered: this.isMastered,
+      // Granted once, never revoked. A mastered item that is later missed drops
+      // to rung 0 and comes back tomorrow like anything else — that is the
+      // correction, and it is enough. Taking the badge back as well would tell
+      // a learner they have un-learned something, which is both untrue and the
+      // kind of thing that makes people stop.
+      //
+      // Both arguments are `consecutiveCorrect` because, by construction above,
+      // it *is* the distinct-day count: it only moves when the local day
+      // changes. The policy still takes the pair separately, so a future caller
+      // that counts answers rather than days cannot buy mastery in one sitting.
+      isMastered:
+        this.isMastered || policy.isMastered(consecutiveCorrect, consecutiveCorrect),
       // Only a wrong answer carries tags; a correct one clears them, because
       // "what went wrong last time" is answered by the last time it went wrong.
       lastErrorTags: isCorrect ? [] : errorTags,
