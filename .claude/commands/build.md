@@ -1,17 +1,22 @@
 ---
-description: The single entry point — preflight, then build, test, fix and ship five features one at a time, stop
+description: The single entry point — preflight, then build, test, fix and ship every remaining feature in one phase, close the phase, stop
 ---
 
-Build ShuddhoSpell. **Five features per invocation, one at a time.** Run this command again for
-the next five.
+Build ShuddhoSpell. **One whole phase per invocation.**
 
-Steps 0–2 run **once**. Step 3 is a loop you go round **five times** — a full pick, build, test,
-fix and ship for each feature, exactly as if it were the only one. Step 4 reports all of them.
+Steps 0–3 run **once**. Step 4 is a loop you go round for **every feature the phase has left** —
+a full pick, build, test, fix and ship for each, exactly as if it were the only one. Step 5
+closes the phase. Step 6 reports all of it.
+
+A phase that is already part-built is resumed, not restarted: you take whatever is still `[ ]`
+and finish the phase off.
 
 **Stop at the first failure — do not continue past a red step**, and never carry a red feature
-into the next lap. Five is a ceiling, not a quota: the stop conditions in step 3f beat it.
+into the next lap. The whole phase is the target, not a quota: the stop conditions in step 4f
+beat it.
 
-If `$ARGUMENTS` names a number, build that many instead of five.
+If `$ARGUMENTS` names a number, stop after that many features instead of finishing the phase.
+Use it for a short session; the phase stays `IN PROGRESS` and the next `/build` picks it up.
 
 ---
 
@@ -36,62 +41,88 @@ Do not scaffold. Do not start "the parts that don't need env".
 Read, in this order:
 
 1. `CLAUDE.md` — the stack, the rules checklist, the git rules, the working rhythm
-2. `PROGRESS.md` — which features are next
-3. `BUILD-ORDER-COMPLETE.md` — the current phase's deliverables and exit gate
-4. every doc listed under that phase's *Reads* in `.claude/docs/`
+2. `PROGRESS.md` — the live state: which phases are open and what is left in each
+3. `BUILD-ORDER-COMPLETE.md` — every phase's branch, deliverables and exit gate
 
-Read them once, at the top. Re-read a doc mid-run only when a later feature reaches into a
-phase whose *Reads* you have not loaded yet.
+`PROGRESS.md` wins where the two disagree. If `BUILD-ORDER-COMPLETE.md`'s **Status** for a phase
+contradicts it, fix the stale one as you go — a drifted status sends the next run at the wrong phase.
 
 ---
 
-## Step 2 — Branch
+## Step 2 — Pick the phase
+
+In this priority order:
+
+1. any feature marked `[!]`, or any row in **Blocked / failed** → **that feature's phase**
+2. any feature marked `[~]` (left mid-flight) → **that feature's phase**
+3. otherwise the **topmost phase that still has at least one `[ ]`**
+
+A phase whose only remaining rows are `[-]` is finished. Set its **Status** and move down.
+
+Then read **every doc listed under that phase's *Reads*** in `.claude/docs/`. Re-read one
+mid-run only if a feature reaches into a phase whose *Reads* you have not loaded.
+
+Announce in one line: the phase, its title, which features remain, and how many.
+
+### A feature that depends on a phase that has not happened
+
+It happens — a rate limiter needs a table that arrives three phases later. Do **not** leave it
+`[~]`; that means *in flight* and it blocks the tracker and every later run.
+
+Mark it `[-]`, and on the same row write the reason **and the phase it returns in**. Add a line
+to that later phase's feature list pointing back at it. Say so in the report. Then carry on with
+the rest of the phase — one deferred feature does not stop the other nine.
+
+Defer only for a real missing dependency. "Awkward", "big" and "I'd rather do it later" are not
+dependencies.
+
+---
+
+## Step 3 — Branch
+
+The phase's **Branch** value in `BUILD-ORDER-COMPLETE.md` is the target.
 
 ```bash
 git branch --show-current
 ```
 
+- Already on the phase's branch → continue.
 - On `main` → **stop**, stash, `git checkout dev && git pull origin dev`, cut the phase branch, pop, and say it happened.
-- On `dev` → cut the phase branch from it (the **Branch** value on the phase in `BUILD-ORDER-COMPLETE.md`).
-- Already on the correct phase branch → continue.
+- On any other branch (`dev`, or the *previous* phase's branch after it closed) → cut the phase branch from an up-to-date `dev`:
 
 ```bash
 git checkout dev && git pull origin dev
 git checkout -b <phase branch>
 ```
 
-All five features land on this one branch. Do not cut a second branch mid-run.
+Every feature in this phase lands on this one branch. Do not cut a second branch mid-run.
 
 ---
 
-## Step 3 — The loop: five features, one at a time
+## Step 4 — The loop: every feature the phase has left
 
-Go round this loop five times. **Finish a lap completely — committed and pushed — before
-starting the next.** There is never more than one feature in flight.
+Go round this loop until no `[ ]` remains in the phase. **Finish a lap completely — committed,
+pushed and merged into `dev` — before starting the next.** There is never more than one feature
+in flight.
 
-### 3a — Pick exactly one feature
+### 4a — Pick exactly one feature
 
-From `PROGRESS.md`, in this priority order:
+The **first `[ ]`** in this phase (or the `[!]`/`[~]` that sent you here). Mark it `[~]` and
+update the **NEXT** block at the top of `PROGRESS.md`.
 
-1. any feature marked `[!]` (failed), or any row in **Blocked / failed** → **that is your work**
-2. any feature marked `[~]` (left mid-flight) → finish it
-3. otherwise the **first `[ ]`** in the topmost unfinished phase
-
-Mark it `[~]`. Update the **NEXT** block at the top of `PROGRESS.md`.
-
-Announce it in one line: the lap number, the feature id, its title, and its phase.
+Announce it in one line: lap number, feature id, title.
 
 **One `[~]` in the file at any moment.** Marking the next feature is the first act of the next
 lap, never something you do in advance.
 
-### 3b — Build only that feature
+### 4b — Build only that feature
 
 Nothing from the next feature. No stubs for later phases. No "while I'm here" refactors.
 If you spot something else that needs doing, write it down and keep going.
 
-Building five in a row is not licence to widen any one of them, and a later lap is not a reason
-to reach forward from an earlier one. If feature 2 would be easier with something from feature 4,
-that is still scope creep — build 4 in lap 4.
+Owning the whole phase is not licence to widen any one feature, and a later lap is not a reason
+to reach forward from an earlier one. If F4.2 would be easier with something from F4.9, that is
+still scope creep — build F4.9 in its own lap.
 
 Obey without exception:
 
@@ -101,10 +132,10 @@ Obey without exception:
 - identity from the session only; nothing client-trusted
 - no `process.env` outside `src/lib/env.ts`
 
-### 3c — Test it
+### 4c — Test it
 
 The feature's test cases are listed beneath it in `PROGRESS.md`. Write them. Run them.
-**Paste the real output — every lap.** A summary of five runs is not evidence; five outputs are.
+**Paste the real output — every lap.** A summary of ten runs is not evidence; ten outputs are.
 
 ```bash
 pnpm typecheck
@@ -114,7 +145,7 @@ pnpm test
 
 Plus `pnpm test:e2e` when the feature touches sign-in, a lesson or an exam.
 
-### 3d — If anything is red
+### 4d — If anything is red
 
 1. Mark the feature `[!]` and add a row to **Blocked / failed** in `PROGRESS.md`.
 2. **Debug it.** Find the actual cause, not a symptom. State the diagnosis in one line.
@@ -125,10 +156,12 @@ weaken a test, and **do not** disable a lint rule, to go green.
 A red test is information; a deleted red test is a lie.
 
 If it cannot be fixed — it needs the user, a credential, or something that does not exist yet —
-**end the whole run here**, laps remaining or not. Report what shipped, and leave the `[!]` and
-its **Blocked / failed** row standing for the next invocation.
+**end the whole run here**, features remaining or not. Report what shipped, and leave the `[!]`
+and its **Blocked / failed** row standing for the next invocation. This is a failure, not a
+deferral: `[-]` in step 2 is for a dependency you knew about before you started, never for a
+test you could not get green.
 
-### 3e — Finish it and ship it
+### 4e — Finish it and ship it
 
 Only once everything is green:
 
@@ -143,27 +176,27 @@ Then check the diff and ship:
 git diff --staged        # no key, token, .env file, service-role credential or VAPID key
 git add -A
 git commit -m "<type>(<scope>): <what changed>"
-git push -u origin <feature branch>
+git push -u origin <phase branch>
 ```
 
-**One commit per feature**, every lap — never one commit for the batch. The history has to stay
-bisectable, and a five-feature commit hides which one broke something.
+**One commit per feature**, every lap — never one commit for the phase. The history has to stay
+bisectable, and a ten-feature commit hides which one broke something.
 
 Then land it on `dev` — every lap, not once at the end:
 
 ```bash
 git checkout dev && git pull origin dev
-git merge <feature branch>          # --ff-only when it fast-forwards
+git merge <phase branch>            # --ff-only when it fast-forwards
 git push origin dev
-git checkout <feature branch>
+git checkout <phase branch>
 git merge --ff-only dev             # bring the branch back up, so the next lap merges clean
 ```
 
 **The user asked for this on 2026-08-19**, overriding the older "feature work lands on `dev`
 via PR" rule. No PR, no waiting for a review.
 
-Merging per lap, not per run, is deliberate: a run that dies on lap 4 still leaves laps 1–3
-in `dev` instead of stranding them on a branch.
+Merging per lap, not per phase, is deliberate: a run that dies on lap 8 still leaves laps 1–7
+in `dev` instead of stranding a phase's worth of work on a branch.
 
 If the merge is not a fast-forward, a plain merge commit is correct. **Never rebase a branch
 you have already pushed and never force-push** to keep the graph linear — a merge commit is
@@ -171,21 +204,38 @@ the cheaper price. If the merge conflicts, stop the run and report it; do not gu
 
 Never touch `main`. Never force-push. Never delete a branch — not even a merged one.
 
-### 3f — Next lap, or stop
+### 4f — Next lap, or stop
 
-Go back to 3a, unless one of these is true — then stop the run and go to step 4:
+Go back to 4a, unless one of these is true:
 
-- **five features are done** (or the count `$ARGUMENTS` asked for)
-- **a feature could not be made green** (3d)
-- **the feature just shipped completed its phase** — run the phase's full exit gate, flip its
-  **Status** to `DONE`, append any unspecified decision to `ARCHITECTURE.md`, and stop. The next
-  phase needs its own branch cut from a `dev` that carries this one, and that is a merge decision
-  for the user, not something to do mid-run.
-- **there is nothing left to pick** in the topmost unfinished phase
+- **no `[ ]` remains in the phase** → go to step 5 and close it
+- **a feature could not be made green** (4d) → go to step 6, phase still `IN PROGRESS`
+- **`$ARGUMENTS` capped the count and you have hit it** → go to step 6, phase still `IN PROGRESS`
+
+Never roll into the next phase. That needs its own branch off a `dev` carrying this one, and
+this run's `dev` merges have to be seen before the next phase starts.
 
 ---
 
-## Step 4 — Stop
+## Step 5 — Close the phase
+
+Only when every feature is `[x]` or `[-]`:
+
+1. **Run the phase's full exit gate** from `BUILD-ORDER-COMPLETE.md` — every checkbox, real
+   output, no checkbox ticked from memory. A gate item you cannot run (it needs the user's live
+   project, a credential, a device) is **not** a pass: say which, say why, and say what proves
+   it instead.
+2. Flip **Status** to `DONE` in **both** `PROGRESS.md` and `BUILD-ORDER-COMPLETE.md`, and fill
+   in **Completed:** with the date, the feature range, and any item the gate could not prove.
+3. Append any decision you made that the docs did not specify to `ARCHITECTURE.md`, with the
+   feature id that forced it.
+4. Commit that, push, and merge it into `dev` the same way as a lap.
+
+Do **not** cut the next phase's branch. The next `/build` does that from an up-to-date `dev`.
+
+---
+
+## Step 6 — Stop
 
 Report **one block per feature built**, in order:
 
@@ -195,14 +245,17 @@ Tests:     <the actual output>
 Committed: feat/01-app-scaffold @ <sha>
 ```
 
-Then close with a single:
+Then close with:
 
 ```
-Next:      F1.9 — the first feature you did not build
+Phase:     3 — Authentication (Google only) · DONE, exit gate 7/7 green
+Deferred:  F3.9 — needs the profiles table from Phase 4 (marked [-])
+Next:      Phase 4 — Domain and application layers
 ```
 
-If the run stopped early, say which of 3f's conditions ended it, in one line.
+If the run stopped early, say which of 4f's conditions ended it and what is left, in one line.
+If a gate item could not be run, say so here too — never fold it into a pass.
 
-**Do not roll into the next five.** Run `/build` again for that.
+**Do not roll into the next phase.** Run `/build` again for that.
 
 $ARGUMENTS

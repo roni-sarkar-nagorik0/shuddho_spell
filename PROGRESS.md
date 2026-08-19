@@ -40,8 +40,10 @@ and 2. No feature starts without it. **Never read the file** — existence check
 6. When tests are green: mark it `[x]`, add the date, add a one-line note in the **Log**.
 7. Commit and push the feature branch (see `.claude/docs/15-git-workflow.md`).
 8. Move the **NEXT** pointer to the following `[ ]`, then go back to 1 and do the next
-   feature. Five features per `/build`, one at a time — a feature is picked only once the
-   one before it is committed and pushed. Then stop and report all five.
+   feature. **One whole phase per `/build`**, one feature at a time — a feature is picked only
+   once the one before it is committed, pushed and merged into `dev`. When the phase has no
+   `[ ]` left, run its exit gate, flip its **Status**, and stop. The next phase is the next
+   `/build`.
 
 ### Absolute rules
 
@@ -57,19 +59,24 @@ and 2. No feature starts without it. **Never read the file** — existence check
 
 ## NEXT
 
-> **Phase 3 · F3.3 — `/auth/callback`: code exchange + new-vs-existing routing**
-> Branch: `feat/03-google-auth`
-> **F3.2 is done.** `/login` posts a plain HTML form to `POST /auth/signin`, which calls
-> `signInWithOAuth` on the **server** client and 303s to Google. Two consequences F3.3 inherits:
+> **Phase 3 · Authentication (Google only) — F3.3 through F3.12, ten features left**
+> Branch: `feat/03-google-auth` (already cut, already carrying F3.1–F3.2)
+> `/build` now finishes a whole phase per invocation, so this run closes Phase 3: F3.3 first,
+> then straight on through F3.12, one feature at a time, each committed and merged into `dev`
+> before the next is picked. Then the phase's seven-item exit gate.
+>
+> **F3.3 — `/auth/callback` — starts here.** What F3.2 left it:
 > - The PKCE code verifier was written by *our* cookie adapter, so it is httpOnly and only the
 >   server can read it back. Exchange the code with `createSessionClient()`, never a browser client.
 > - `redirectTo` is `${NEXT_PUBLIC_APP_URL}/auth/callback`, so that url must also be registered in
->   the Supabase dashboard (Authentication → URL Configuration) or Google will refuse the round trip.
->   That is the user's to set, not the code's.
-> `/login?error=google` renders a `role="alert"` line; the sign-in route bounces there when the url
-> cannot be built. F3.3 should reuse that shape rather than invent a second failure surface.
+>   the Supabase dashboard (Authentication → URL Configuration) or Google will refuse the round
+>   trip. **That one is the user's to set, not the code's.**
+> - `/login?error=google` already renders a `role="alert"` line; reuse that surface rather than
+>   inventing a second failure path.
 > Still true from F3.1: the session cookie is httpOnly, `createBrowserClient` is dead (D21), and
-> `secure` is unset and belongs to F3.4's middleware.
+> `secure` is unset and belongs to F3.4's middleware. D22 records why sign-in is a plain form.
+> For F3.11: `grep -ri "password" src/` hits `src/lib/logger.ts:7`, a pino **redaction** path —
+> a guard, not an auth path. Decide there whether the grep or the config moves.
 > Environment, not code — both still bite on this machine:
 > - `pnpm test:e2e` needs `pnpm exec playwright install chromium` on a fresh machine.
 > - `playwright.config.ts` has `reuseExistingServer: true`, so **anything** already listening on
@@ -77,11 +84,8 @@ and 2. No feature starts without it. **Never read the file** — existence check
 >   `PORT=3100 NEXT_PUBLIC_APP_URL=http://localhost:3100 pnpm test:e2e`.
 > One thing Phase 2's gate could not prove here: `pnpm db:migrate` against the hosted project. It
 > writes to a live database, so it is the user's to run; the from-empty proof is PGlite in CI.
-> For F3.11 later: `grep -ri "password" src/` still hits `src/lib/logger.ts:7`, a pino **redaction**
-> path. That is a guard, not an auth path — decide there whether the grep or the config should move.
-> Phase 1's two carry-overs are still open and still correctly deferred: F1.9 (rate limiter — the
-> `rate_limits` table is **not** in the schema Phase 2 shipped; it arrives with that feature) and
-> F1.11 (OpenAPI, needs the v1 Zod schemas from Phase 4/5).
+> Phase 1's two carry-overs are no longer `[~]`: they are `[-]` with their dependency named, and
+> they re-open as **F4.10a** (rate limiter + `rate_limits` table) and **F5.9a** (OpenAPI).
 
 Update this block every time a feature is finished.
 
@@ -100,7 +104,8 @@ Branch `docs/00-architecture-record` · Status: `COMPLETE`
 ---
 
 ## Phase 1 — App scaffold, tooling, contracts
-Branch `feat/01-app-scaffold` · Status: `IN PROGRESS`
+Branch `feat/01-app-scaffold` · Status: `DONE` (12/14 built 2026-08-18; F1.9 and F1.11 each
+have one part deferred to a later phase — see their rows)
 
 - [x] **F1.1** (2026-08-18) Single Next.js 15 app at the repo root — one `package.json`, no monorepo, no separate server project
   - Test: `pnpm dev`, `build`, `lint`, `typecheck`, `test` all run; `git ls-files | grep -c "^apps/"` is 0
@@ -118,15 +123,18 @@ Branch `feat/01-app-scaffold` · Status: `IN PROGRESS`
   - Test: removing a required var stops boot and names it; importing the server env from a Client Component fails the build
 - [x] **F1.8** (2026-08-18) `src/lib/supabase/` — session client + `server-only` service client
   - Test: grep finds exactly two `createClient` call sites; the service client cannot be imported client-side
-- [~] **F1.9** `withApi` wrapper — auth, Zod body/query/params, rate limit, request id, pino, problem+json
-  - Built: auth, Zod body/query, request id, pino, problem+json. **Remaining: rate limiting**, which
-    needs the Postgres-backed `IRateLimiter` and therefore Phase 2. Finish it there, not here.
+- [-] **F1.9** `withApi` wrapper — rate limiting only · **deferred to Phase 4**, needs `IRateLimiter`
+  - Shipped in Phase 1 and green: auth, Zod body/query, request id, pino, problem+json.
+  - **Deferred:** rate limiting needs the `IRateLimiter` port (F4.10) and a `rate_limits` table
+    that Phase 2 did **not** ship. Re-opens as F4.10a. Was `[~]` until 2026-08-19; a dependency
+    on a later phase is `[-]`, not in-flight.
   - Test: a bad body returns problem+json with a stable `code`; a request id appears in the log line
 - [x] **F1.10** (2026-08-18) `src/composition/` — per-request container factory
   - Test: a use case can be constructed with fakes and no container at all
-- [~] **F1.11** `/api/health`, `/api/ready`, `/api/v1/openapi.json`
-  - Built: `/api/health` and `/api/ready`, both unauthenticated. **Remaining: `/api/v1/openapi.json`**,
-    which must be generated from the v1 Zod schemas — none exist until Phase 4/5.
+- [-] **F1.11** `/api/v1/openapi.json` only · **deferred to Phase 5**, needs the v1 Zod schemas
+  - Shipped in Phase 1 and green: `/api/health` and `/api/ready`, both unauthenticated.
+  - **Deferred:** the OpenAPI doc must be generated from the v1 request/response schemas, and
+    none exist until the presentation DTOs land. Re-opens as F5.9a. Was `[~]` until 2026-08-19.
   - Test: all three respond 200 unauthenticated; the OpenAPI doc is generated from the Zod schemas
 - [x] **F1.12** (2026-08-18) Tailwind with the exact tokens and four fonts
   - Test: every token from `12-design-system.md` resolves in the Tailwind theme
@@ -269,6 +277,11 @@ Branch `feat/04-domain-application` · Status: `NOT STARTED`
   - Test: every port has a token; no concrete class is injected anywhere
 - [ ] **F4.10** Application ports — `IClock`, `IIdGenerator`, `ISpeechScorer`, `IUnitOfWork`
   - Test: no `Date.now()` / `new Date()` outside a clock adapter (grep)
+- [ ] **F4.10a** `IRateLimiter` port + the `rate_limits` table, then finish `withApi`'s rate limiting
+  - **Carried from F1.9**, deferred out of Phase 1 because neither the port nor the table existed.
+    Phase 2 did not ship `rate_limits`, so this feature adds the migration as well as the port.
+  - Test: the 61st request in a 60-second window returns 429 problem+json with `RATE_LIMITED`;
+    the window resets; two learners do not share a bucket
 - [ ] **F4.11** Program use cases — `GetProgramOverview`, `GetProgramDay`
   - Test: unit tests with in-memory fakes, no Nest `TestingModule`
 - [ ] **F4.12** Lesson use cases — `StartLessonSession`, `AdvanceLessonStage`, `CompleteLessonSession`
@@ -301,6 +314,11 @@ Branch `feat/05-infrastructure` · Status: `NOT STARTED`
   - Test: each handler invoked directly with a constructed `Request`; no business conditional in any handler; `runtime = 'nodejs'` declared
 - [ ] **F5.8** Server Component read path calls the same use cases
   - Test: the dashboard Server Component and `GET /api/v1/progress/summary` run one implementation, not two
+- [ ] **F5.9a** `/api/v1/openapi.json`, generated from the v1 Zod schemas
+  - **Carried from F1.11**, deferred out of Phase 1 because no v1 schema existed to generate from.
+    The presentation DTOs land in F5.7, so this comes after them.
+  - Test: responds 200 unauthenticated; every v1 route appears; the doc is generated from the
+    Zod schemas, never hand-maintained alongside them
 
 ---
 

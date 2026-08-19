@@ -175,9 +175,11 @@ Full rules are at the top of it; these are the ones you may never break:
 
 1. **Work on exactly one feature at a time.** Find the first `[ ]` in the topmost unfinished
    phase of `PROGRESS.md`, mark it `[~]`, and build only that. There is never more than one
-   `[~]` in the file. `/build` does five of these in sequence per invocation, but the next one
-   is picked only after the previous is `[x]`, committed, pushed and merged — never in
-   parallel, never in advance.
+   `[~]` in the file. `/build` finishes a **whole phase** per invocation, but strictly in
+   sequence: the next feature is picked only after the previous is `[x]`, committed, pushed
+   and merged — never in parallel, never in advance.
+   A feature blocked on a phase that has not happened yet is `[-]` with the reason and the id
+   it re-opens under, never `[~]`. `[~]` means in flight, and a stale one blocks every run.
 2. **Never start a second feature** because the current one is awkward, blocked in your head,
    or "mostly done". Mostly done is not done.
 3. **Every feature ships with tests.** Each feature in `PROGRESS.md` lists its test cases.

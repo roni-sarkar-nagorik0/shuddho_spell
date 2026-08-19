@@ -39,8 +39,9 @@ Status values: `NOT STARTED` · `IN PROGRESS` · `BLOCKED — <reason>` · `DONE
 ## Phase 0 — Specification and architecture record
 
 - **Branch:** `docs/00-architecture-record` (from `dev`)
-- **Status:** NOT STARTED
-- **Completed:**
+- **Status:** DONE
+- **Completed:** 2026-08-18 — the architecture record, the docs set and the tracker.
+  Status corrected 2026-08-19: it had read NOT STARTED while `PROGRESS.md` said COMPLETE.
 - **Reads:** all of `.claude/docs/`
 - **Deliverables:**
   - `ARCHITECTURE.md` — layer dependency diagram, full folder tree, token/port table,
@@ -56,8 +57,12 @@ Status values: `NOT STARTED` · `IN PROGRESS` · `BLOCKED — <reason>` · `DONE
 ## Phase 1 — App scaffold, tooling, contracts
 
 - **Branch:** `feat/01-app-scaffold` (from `dev`)
-- **Status:** NOT STARTED
-- **Completed:**
+- **Status:** DONE
+- **Completed:** 2026-08-18 — F1.1 … F1.14, 12 of 14 built in full. Two parts are deferred to
+  the phase that owns their dependency, and each re-opens with an id there: F1.9's rate limiting
+  needs `IRateLimiter` and a `rate_limits` table Phase 2 did not ship (→ **F4.10a**), and F1.11's
+  `/api/v1/openapi.json` needs v1 Zod schemas that do not exist until the presentation DTOs
+  (→ **F5.9a**). Status corrected 2026-08-19: it had read NOT STARTED.
 - **Reads:** `01-architecture`, `02-typescript-rules`, `11-api-surface`, `12-design-system`, `14-quality-gates`, `16-environment`
 - **Deliverables:**
   - **A single Next.js 15 app at the repo root.** One `package.json`. No monorepo, no
@@ -127,8 +132,9 @@ Status values: `NOT STARTED` · `IN PROGRESS` · `BLOCKED — <reason>` · `DONE
 ## Phase 3 — Authentication (Google only)
 
 - **Branch:** `feat/03-google-auth` (from `dev`)
-- **Status:** NOT STARTED
-- **Completed:**
+- **Status:** IN PROGRESS
+- **Completed:** F3.1 and F3.2 shipped 2026-08-19; F3.3 … F3.12 remain.
+  Status corrected 2026-08-19: it had read NOT STARTED.
 - **Reads:** `04-authentication`, `01-architecture`
 - **Deliverables:** `@supabase/ssr` cookie sessions; `/login` (one heading, one line, one Google
   button); `/auth/callback` code exchange routing to `/onboarding` or `/dashboard`;
