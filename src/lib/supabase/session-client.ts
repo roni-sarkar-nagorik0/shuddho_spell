@@ -1,6 +1,7 @@
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 import { publicEnv } from '../env.public';
+import { toSessionCookieOptions } from './session-cookie-options';
 
 /**
  * The learner's own client — anon key, RLS applies. One of exactly two
@@ -19,7 +20,7 @@ export async function createSessionClient() {
         },
         setAll(cookiesToSet) {
           for (const { name, value, options } of cookiesToSet) {
-            cookieStore.set(name, value, options);
+            cookieStore.set(name, value, toSessionCookieOptions(options));
           }
         },
       },
