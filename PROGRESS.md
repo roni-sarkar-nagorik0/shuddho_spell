@@ -81,7 +81,7 @@ and 2. No feature starts without it. **Never read the file** — existence check
 ## NEXT
 
 > **Phase 5 · Infrastructure and presentation wiring — not started**
-> Cut `feat/05-infrastructure-presentation` from an up-to-date `dev`. Phase 4 is closed and
+> Cut `feat/05-infrastructure` from an up-to-date `dev`. Phase 4 is closed and
 > merged; do not reuse its branch.
 >
 > **What Phase 4 leaves Phase 5**
