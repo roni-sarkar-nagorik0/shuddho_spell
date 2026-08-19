@@ -384,3 +384,78 @@ describe('correct_answer is never handed to a client (F2.7)', () => {
     }
   });
 });
+
+describe('009 functions and triggers', () => {
+  const functions = files.find((file) => file.version === '009');
+  const sql = functions === undefined ? '' : functions.sql;
+
+  function createdFunctionNames(source: string): readonly string[] {
+    const pattern = /create or replace function public\.(\w+)/gi;
+    return [...source.matchAll(pattern)]
+      .map((match) => match[1])
+      .filter((name): name is string => name !== undefined);
+  }
+
+  it('revokes execute from the client roles on every function it creates', () => {
+    // Postgres grants execute to PUBLIC on a new function, so 008's revoke
+    // sweep does not reach anything created here. Each revoke is load-bearing.
+    for (const name of createdFunctionNames(sql)) {
+      const revoke = new RegExp(`revoke all on function public\\.${name}\\b[\\s\\S]*?from public, anon, authenticated`);
+      expect(sql, `${name} is left executable by the client`).toMatch(revoke);
+    }
+  });
+
+  it('pins the search path on every security definer function', () => {
+    // Comments are stripped first: the file header discusses `security definer`
+    // in prose, and slicing on the raw text would test the prose.
+    const definers = withoutComments(sql)
+      .split('create or replace function')
+      .slice(1)
+      .filter((block) => /security definer/.test(block));
+    expect(definers.length).toBeGreaterThan(0);
+    for (const block of definers) {
+      expect(block, 'a security definer function has an unpinned search_path').toMatch(
+        /set search_path = public, pg_temp/,
+      );
+    }
+  });
+
+  it('leaves the domain rules to the domain', () => {
+    // `CLAUDE.md` §10: no business logic in a Postgres function that a domain
+    // service should own. The ladder, the mastery rule and the streak day
+    // boundary are Phase 4 services; this file persists their output. The tell
+    // would be arithmetic on those columns rather than assignment from a payload.
+    const body = withoutComments(sql);
+    expect(body, 'the interval ladder is being computed in SQL').not.toMatch(
+      /interval_index\s*[+-]\s*\d/,
+    );
+    expect(body, 'the streak is being computed in SQL').not.toMatch(/current_streak\s*[+-]\s*\d/);
+    // Accuracy is copied from the payload MasteryCalculator produced, never
+    // derived here. Asserting the copy is precise; asserting the absence of
+    // arithmetic is not.
+    expect(body, 'mastery accuracy is not taken from the payload').toMatch(
+      /accuracy\s*=\s*excluded\.accuracy/,
+    );
+    expect(body, 'mastery accuracy is being computed in SQL').not.toMatch(
+      /accuracy\s*=\s*\(?\s*(correct|attempts)\b/,
+    );
+    expect(body, 'a timezone boundary is being decided in SQL').not.toMatch(/at time zone/i);
+  });
+
+  it('does not fail the migration on a database without pg_cron', () => {
+    // 001 downgrades a failed `create extension pg_cron` to a notice, so this
+    // file must not assume it succeeded. Phase 7 needs the job; Phase 2 does not.
+    expect(sql).toMatch(/if exists \(select 1 from pg_extension where extname = 'pg_cron'\)/);
+    expect(sql).toMatch(/raise notice/);
+  });
+
+  it('marks an auto-submitted attempt submitted, never graded', () => {
+    // The deadline passing is not a grade. Scoring is the exam engine's.
+    const fn = sql.match(/function public\.autosubmit_expired_exam_attempts[\s\S]*?\$\$;/);
+    expect(fn).not.toBeNull();
+    const body = fn?.[0] ?? '';
+    expect(body).toMatch(/status\s*=\s*'submitted'/);
+    expect(body, 'auto-submit writes a score').not.toMatch(/score_percent\s*=/);
+    expect(body, 'auto-submit decides pass or fail').not.toMatch(/passed\s*=/);
+  });
+});

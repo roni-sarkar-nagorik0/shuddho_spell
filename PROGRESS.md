@@ -55,7 +55,7 @@ and 2. No feature starts without it. **Never read the file** — existence check
 
 ## NEXT
 
-> **Phase 2 · F2.8 — `009_functions_triggers`**
+> **Phase 2 · F2.9 — `010_seed_reference` (44 real phonemes, 24 real rule families)**
 > Branch: `feat/02-database-schema`
 > Migrations now run for real: `pnpm db:migrate` against hosted Supabase, and every migration
 > is applied from empty inside a WASM Postgres (PGlite) by `migrations.apply.test.ts` in CI.
@@ -166,7 +166,13 @@ Branch `feat/02-database-schema` · Status: `IN PROGRESS`
     column; no view carries the column; a static sweep fails any future migration that
     grants, polices or views it.
   - Test: a client-role select of `correct_answer` is denied
-- [ ] **F2.8** `009_functions_triggers` — `updated_at`, profile-on-signup, session-completion function, exam auto-submit
+- [x] **F2.8** (2026-08-19) `009_functions_triggers` — `updated_at`, profile-on-signup, session-completion function, exam auto-submit
+  - `updated_at` attached by catalogue loop, so a table added in Phase 8 cannot be the one
+    without a trigger. Signup trigger is `security definer` and idempotent. 
+    `complete_lesson_session` is the `IUnitOfWork` boundary only — jsonb in, four tables
+    written atomically, no domain arithmetic (D16). Auto-submit marks `submitted`, never
+    graded, and is pg_cron-guarded so a database without the extension still migrates.
+    All four functions revoked from the client roles (D17).
   - Test: inserting into `auth.users` creates a `learner_profiles` row
 - [ ] **F2.9** `010_seed_reference` — 44 real phonemes, 24 real rule families
   - Test: counts are exactly 44 and 24; no placeholder text
@@ -494,6 +500,7 @@ Newest first. One line per finished feature: date · id · what · test result.
 
 | Date | Feature | What landed | Tests |
 | --- | --- | --- | --- |
+| 2026-08-19 | F2.8 | `009_functions_triggers` — updated_at by catalogue loop, idempotent signup trigger, `complete_lesson_session` as a pure transaction boundary, pg_cron auto-submit, execute revoked from every client role | `pnpm test` 145/145 — 20 new · typecheck, lint green |
 | 2026-08-18 | F2.7 | `correct_answer` protection — already unreachable after 008, so this ships the regression lock instead of redundant SQL: privilege sweep over every column and role, no-view assertion, static sweep of every migration | `pnpm test` 125/125 — 9 new · typecheck, lint green |
 | 2026-08-18 | F2.6 | `008_rls_policies` — revoke-first grants, one policy shape per learner table, no client delete, `exam_questions` unreachable, public certificate view | `pnpm test` 116/116 — 17 new, incl. the two-user script run as real `authenticated` roles · typecheck, lint green |
 | 2026-08-18 | F2.5 | `007_indexes` — five indexes for the queries that run; the two already served by a `unique (...)` btree are documented, not duplicated; every index names its query in a `comment on index` | `pnpm test` 99/99 — 11 new cases, 5 of them `explain` against seeded PGlite · typecheck, lint green |

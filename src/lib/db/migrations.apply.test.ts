@@ -30,8 +30,11 @@ const migrations: readonly string[] = readdirSync(MIGRATIONS_DIR)
 const AUTH_SHIM = `
   create schema if not exists auth;
   create table if not exists auth.users (
-    id     uuid primary key default gen_random_uuid(),
-    email  text unique
+    id                   uuid primary key default gen_random_uuid(),
+    email                text unique,
+    -- Supabase stores the OAuth profile here; 009's signup trigger reads the
+    -- display name out of it.
+    raw_user_meta_data   jsonb not null default '{}'::jsonb
   );
 
   -- The three roles every Supabase project ships with. 008 revokes from and
@@ -288,7 +291,9 @@ describe('migrations against an empty database', () => {
 
       const profile = await db.query<{ readonly id: string }>(
         `insert into public.learner_profiles (user_id, display_name)
-         values ($1, 'Cascade Test') returning id`,
+         values ($1, 'Cascade Test')
+         on conflict (user_id) do update set display_name = excluded.display_name
+         returning id`,
         [userId],
       );
       const profileId = profile.rows[0]?.id;
@@ -360,7 +365,9 @@ describe('migrations against an empty database', () => {
       );
       const profile = await db.query<{ readonly id: string }>(
         `insert into public.learner_profiles (user_id, display_name)
-         values ($1, 'Tag Test') returning id`,
+         values ($1, 'Tag Test')
+         on conflict (user_id) do update set display_name = excluded.display_name
+         returning id`,
         [user.rows[0]?.id],
       );
       const session = await db.query<{ readonly id: string }>(
@@ -394,7 +401,9 @@ describe('migrations against an empty database', () => {
       );
       const profile = await db.query<{ readonly id: string }>(
         `insert into public.learner_profiles (user_id, display_name)
-         values ($1, 'Review Test') returning id`,
+         values ($1, 'Review Test')
+         on conflict (user_id) do update set display_name = excluded.display_name
+         returning id`,
         [user.rows[0]?.id],
       );
       const profileId = profile.rows[0]?.id;
@@ -420,7 +429,9 @@ describe('migrations against an empty database', () => {
       );
       const profile = await db.query<{ readonly id: string }>(
         `insert into public.learner_profiles (user_id, display_name)
-         values ($1, 'Ladder Test') returning id`,
+         values ($1, 'Ladder Test')
+         on conflict (user_id) do update set display_name = excluded.display_name
+         returning id`,
         [user.rows[0]?.id],
       );
       await expect(
@@ -450,7 +461,9 @@ describe('migrations against an empty database', () => {
       );
       const profile = await db.query<{ readonly id: string }>(
         `insert into public.learner_profiles (user_id, display_name)
-         values ($1, 'Exam Test') returning id`,
+         values ($1, 'Exam Test')
+         on conflict (user_id) do update set display_name = excluded.display_name
+         returning id`,
         [user.rows[0]?.id],
       );
       const definition = await db.query<{ readonly id: string }>(
@@ -581,7 +594,9 @@ describe('migrations against an empty database', () => {
       );
       const profile = await db.query<{ readonly id: string }>(
         `insert into public.learner_profiles (user_id, display_name)
-         values ($1, 'Notify Test') returning id`,
+         values ($1, 'Notify Test')
+         on conflict (user_id) do update set display_name = excluded.display_name
+         returning id`,
         [user.rows[0]?.id],
       );
       return profile.rows[0]?.id;
@@ -770,7 +785,9 @@ describe('migrations against an empty database', () => {
       );
       const profile = await db.query<{ readonly id: string }>(
         `insert into public.learner_profiles (user_id, display_name)
-         values ($1, 'Certificate Test') returning id`,
+         values ($1, 'Certificate Test')
+         on conflict (user_id) do update set display_name = excluded.display_name
+         returning id`,
         [user.rows[0]?.id],
       );
       const definition = await db.query<{ readonly id: string }>(
@@ -893,7 +910,8 @@ describe('migrations against an empty database', () => {
         insert into public.learner_profiles (user_id, display_name)
         select id, 'Index Fixture'
           from auth.users
-         where email like 'idx-fixture-%';
+         where email like 'idx-fixture-%'
+        on conflict (user_id) do update set display_name = excluded.display_name;
 
         insert into public.review_items (profile_id, item_id, item_type, due_at)
         select p.id, gen_random_uuid(), 'word', now() + ((g - 10) || ' hours')::interval
@@ -1082,7 +1100,9 @@ describe('migrations against an empty database', () => {
       const userId = user.rows[0]?.id ?? '';
 
       const profile = await db.query<{ readonly id: string }>(
-        `insert into public.learner_profiles (user_id, display_name) values ($1, $2) returning id`,
+        `insert into public.learner_profiles (user_id, display_name) values ($1, $2)
+         on conflict (user_id) do update set display_name = excluded.display_name
+         returning id`,
         [userId, name],
       );
       const profileId = profile.rows[0]?.id ?? '';
@@ -1363,7 +1383,9 @@ describe('migrations against an empty database', () => {
       const userId = user.rows[0]?.id ?? '';
       const profile = await db.query<{ readonly id: string }>(
         `insert into public.learner_profiles (user_id, display_name)
-         values ($1, 'Answer Key') returning id`,
+         values ($1, 'Answer Key')
+         on conflict (user_id) do update set display_name = excluded.display_name
+         returning id`,
         [userId],
       );
       const definition = await db.query<{ readonly id: string }>(
@@ -1482,6 +1504,473 @@ describe('migrations against an empty database', () => {
         [learner.questionId],
       );
       expect(result.rows[0]?.correct_answer).toEqual({ answer: 'necessary' });
+    });
+  });
+
+  /** F2.8 — the four pieces of behaviour 009 puts in the database. */
+  describe('009 functions and triggers', () => {
+    describe('a new auth.users row becomes a learner', () => {
+      it('creates the learner_profiles row, which is the feature test', async () => {
+        const user = await db.query<{ readonly id: string }>(
+          `insert into auth.users (email) values ('signup@example.com') returning id`,
+        );
+        const userId = user.rows[0]?.id ?? '';
+
+        const profile = await db.query<{ readonly display_name: string }>(
+          `select display_name from public.learner_profiles where user_id = $1`,
+          [userId],
+        );
+        expect(profile.rows.length, 'no profile was created for the new user').toBe(1);
+      });
+
+      it('takes the display name from the Google profile when it is there', async () => {
+        const user = await db.query<{ readonly id: string }>(
+          `insert into auth.users (email, raw_user_meta_data)
+           values ('named@example.com', '{"full_name":"Roni Sarkar"}'::jsonb) returning id`,
+        );
+        const profile = await db.query<{ readonly display_name: string }>(
+          `select display_name from public.learner_profiles where user_id = $1`,
+          [user.rows[0]?.id],
+        );
+        expect(profile.rows[0]?.display_name).toBe('Roni Sarkar');
+      });
+
+      it('falls back to the email local part, then to a placeholder, never to blank', async () => {
+        // display_name is not null with a non-blank check, so a signup that
+        // could not resolve a name would fail the signup itself.
+        const withEmail = await db.query<{ readonly id: string }>(
+          `insert into auth.users (email) values ('fallback@example.com') returning id`,
+        );
+        const first = await db.query<{ readonly display_name: string }>(
+          `select display_name from public.learner_profiles where user_id = $1`,
+          [withEmail.rows[0]?.id],
+        );
+        expect(first.rows[0]?.display_name).toBe('fallback');
+
+        const withNothing = await db.query<{ readonly id: string }>(
+          `insert into auth.users (email) values (null) returning id`,
+        );
+        const second = await db.query<{ readonly display_name: string }>(
+          `select display_name from public.learner_profiles where user_id = $1`,
+          [withNothing.rows[0]?.id],
+        );
+        expect(second.rows[0]?.display_name).toBe('Learner');
+      });
+
+      it('is idempotent, so BootstrapProfileUseCase can run on top of it', async () => {
+        const user = await db.query<{ readonly id: string }>(
+          `insert into auth.users (email) values ('signup-idempotent@example.com') returning id`,
+        );
+        const userId = user.rows[0]?.id ?? '';
+
+        // What the use case does: insert, expecting the trigger may have won.
+        await db.query(
+          `insert into public.learner_profiles (user_id, display_name)
+           values ($1, 'Bootstrapped') on conflict (user_id) do nothing`,
+          [userId],
+        );
+        const count = await db.query<{ readonly n: number }>(
+          `select count(*)::int as n from public.learner_profiles where user_id = $1`,
+          [userId],
+        );
+        expect(count.rows[0]?.n).toBe(1);
+      });
+    });
+
+    describe('updated_at', () => {
+      it('is stamped by the trigger, overriding whatever the writer claimed', async () => {
+        const user = await db.query<{ readonly id: string }>(
+          `insert into auth.users (email) values ('touch@example.com') returning id`,
+        );
+        const profileId = (
+          await db.query<{ readonly id: string }>(
+            `select id from public.learner_profiles where user_id = $1`,
+            [user.rows[0]?.id],
+          )
+        ).rows[0]?.id;
+
+        // A writer setting updated_at by hand is the case that matters: the
+        // trigger has to win, or the column records whatever the caller felt like.
+        const updated = await db.query<{ readonly updated_at: string }>(
+          `update public.learner_profiles
+              set display_name = 'Touched', updated_at = timestamptz '2020-01-01 00:00:00+00'
+            where id = $1
+            returning updated_at`,
+          [profileId],
+        );
+        expect(new Date(updated.rows[0]?.updated_at ?? 0).getUTCFullYear()).toBeGreaterThan(2020);
+      });
+
+      it('is attached to every table that has the column', async () => {
+        const missing = await db.query<{ readonly table_name: string }>(
+          `select c.table_name
+             from information_schema.columns c
+             join information_schema.tables t
+               on t.table_schema = c.table_schema and t.table_name = c.table_name
+            where c.table_schema = 'public'
+              and c.column_name = 'updated_at'
+              and t.table_type = 'BASE TABLE'
+              and not exists (
+                select 1 from pg_trigger tr
+                  join pg_class cl on cl.oid = tr.tgrelid
+                  join pg_namespace n on n.oid = cl.relnamespace
+                 where n.nspname = 'public'
+                   and cl.relname = c.table_name
+                   and not tr.tgisinternal
+              )`,
+        );
+        expect(missing.rows.map((row) => row.table_name), 'tables with no updated_at trigger')
+          .toEqual([]);
+      });
+    });
+
+    describe('complete_lesson_session', () => {
+      async function sessionFor(email: string): Promise<{
+        readonly profileId: string;
+        readonly sessionId: string;
+      }> {
+        const user = await db.query<{ readonly id: string }>(
+          `insert into auth.users (email) values ($1) returning id`,
+          [email],
+        );
+        const profile = await db.query<{ readonly id: string }>(
+          `select id from public.learner_profiles where user_id = $1`,
+          [user.rows[0]?.id],
+        );
+        const profileId = profile.rows[0]?.id ?? '';
+        const session = await db.query<{ readonly id: string }>(
+          `insert into public.lesson_sessions (profile_id, day_index) values ($1, 5) returning id`,
+          [profileId],
+        );
+        return { profileId, sessionId: session.rows[0]?.id ?? '' };
+      }
+
+      const ITEM = '11111111-1111-4111-8111-111111111111';
+
+      it('writes all four tables and closes the session in one call', async () => {
+        const { profileId, sessionId } = await sessionFor('complete@example.com');
+
+        const written = await db.query<{ readonly complete_lesson_session: number }>(
+          `select public.complete_lesson_session(
+             $1, 2, 1,
+             $2::jsonb, $3::jsonb, $4::jsonb, $5::jsonb
+           )`,
+          [
+            sessionId,
+            JSON.stringify([
+              {
+                item_type: 'word',
+                item_id: ITEM,
+                mode: 'dictation',
+                submitted_value: 'beautifull',
+                is_correct: false,
+                score: 40,
+                error_tags: ['DOUBLE_CONSONANT'],
+                latency_ms: 3200,
+              },
+              {
+                item_type: 'word',
+                item_id: ITEM,
+                mode: 'pronunciation',
+                submitted_value: 'beautiful',
+                is_correct: true,
+                score: 91,
+                error_tags: [],
+                latency_ms: 1800,
+              },
+            ]),
+            JSON.stringify([
+              {
+                item_id: ITEM,
+                item_type: 'word',
+                interval_index: 1,
+                due_at: '2026-08-19T06:00:00Z',
+                times_seen: 2,
+                times_correct: 1,
+                consecutive_correct: 1,
+                last_correct_on: '2026-08-18',
+                is_mastered: false,
+                last_error_tags: ['DOUBLE_CONSONANT'],
+              },
+            ]),
+            JSON.stringify([
+              {
+                dimension: 'rule_family',
+                dimension_id: ITEM,
+                attempts: 2,
+                correct: 1,
+                accuracy: 50.0,
+              },
+            ]),
+            JSON.stringify({
+              current_streak: 3,
+              longest_streak: 7,
+              last_active_date: '2026-08-18',
+              freezes_remaining: 1,
+            }),
+          ],
+        );
+        expect(written.rows[0]?.complete_lesson_session, 'attempts written').toBe(2);
+
+        const attempts = await db.query<{ readonly n: number }>(
+          `select count(*)::int as n from public.attempts where session_id = $1`,
+          [sessionId],
+        );
+        expect(attempts.rows[0]?.n).toBe(2);
+
+        const review = await db.query<{ readonly interval_index: number; readonly due_at: string }>(
+          `select interval_index, due_at from public.review_items
+            where profile_id = $1 and item_id = $2`,
+          [profileId, ITEM],
+        );
+        expect(review.rows[0]?.interval_index, 'the ladder position the domain decided').toBe(1);
+
+        const mastery = await db.query<{ readonly accuracy: string }>(
+          `select accuracy from public.mastery_records where profile_id = $1`,
+          [profileId],
+        );
+        expect(Number(mastery.rows[0]?.accuracy)).toBe(50);
+
+        const streak = await db.query<{ readonly current_streak: number }>(
+          `select current_streak from public.streak_records where profile_id = $1`,
+          [profileId],
+        );
+        expect(streak.rows[0]?.current_streak).toBe(3);
+
+        const session = await db.query<{
+          readonly completed_at: string | null;
+          readonly items_correct: number;
+        }>(`select completed_at, items_correct from public.lesson_sessions where id = $1`, [
+          sessionId,
+        ]);
+        expect(session.rows[0]?.completed_at).not.toBeNull();
+        expect(session.rows[0]?.items_correct).toBe(1);
+      });
+
+      it('updates the ladder on a second pass instead of forking the review item', async () => {
+        const { profileId, sessionId } = await sessionFor('secondpass@example.com');
+        const call = (intervalIndex: number): Promise<unknown> =>
+          db.query(
+            `select public.complete_lesson_session($1, 1, 1, '[]'::jsonb, $2::jsonb, '[]'::jsonb, null)`,
+            [
+              sessionId,
+              JSON.stringify([
+                {
+                  item_id: ITEM,
+                  item_type: 'word',
+                  interval_index: intervalIndex,
+                  due_at: '2026-08-20T06:00:00Z',
+                  times_seen: intervalIndex + 1,
+                  times_correct: intervalIndex + 1,
+                  consecutive_correct: intervalIndex + 1,
+                  last_correct_on: '2026-08-18',
+                  is_mastered: false,
+                  last_error_tags: [],
+                },
+              ]),
+            ],
+          );
+
+        await call(1);
+        await call(2);
+
+        const rows = await db.query<{ readonly n: number; readonly interval_index: number }>(
+          `select count(*)::int as n, max(interval_index) as interval_index
+             from public.review_items where profile_id = $1 and item_id = $2`,
+          [profileId, ITEM],
+        );
+        expect(rows.rows[0]?.n, 'the review item forked').toBe(1);
+        expect(rows.rows[0]?.interval_index).toBe(2);
+      });
+
+      it('writes nothing at all when any part of the payload is bad', async () => {
+        // The whole reason this is one function: a learner whose streak advanced
+        // but whose review items did not is corruption nobody notices until the
+        // spaced repetition stops making sense.
+        const { profileId, sessionId } = await sessionFor('atomic@example.com');
+
+        await expect(
+          db.query(
+            `select public.complete_lesson_session($1, 1, 1, $2::jsonb, '[]'::jsonb, '[]'::jsonb, $3::jsonb)`,
+            [
+              sessionId,
+              JSON.stringify([
+                {
+                  item_type: 'word',
+                  item_id: ITEM,
+                  mode: 'telepathy',
+                  submitted_value: 'x',
+                  is_correct: true,
+                  score: 100,
+                  error_tags: [],
+                },
+              ]),
+              JSON.stringify({
+                current_streak: 9,
+                longest_streak: 9,
+                last_active_date: '2026-08-18',
+                freezes_remaining: 0,
+              }),
+            ],
+          ),
+        ).rejects.toThrow(/attempts_mode_check/);
+
+        const streak = await db.query<{ readonly n: number }>(
+          `select count(*)::int as n from public.streak_records where profile_id = $1`,
+          [profileId],
+        );
+        expect(streak.rows[0]?.n, 'the streak survived a rolled-back call').toBe(0);
+
+        const session = await db.query<{ readonly completed_at: string | null }>(
+          `select completed_at from public.lesson_sessions where id = $1`,
+          [sessionId],
+        );
+        expect(session.rows[0]?.completed_at, 'the session was closed anyway').toBeNull();
+      });
+
+      it('refuses a session that does not exist rather than writing orphans', async () => {
+        await expect(
+          db.query(
+            `select public.complete_lesson_session($1, 0, 0, '[]'::jsonb, '[]'::jsonb, '[]'::jsonb, null)`,
+            ['22222222-2222-4222-8222-222222222222'],
+          ),
+        ).rejects.toThrow(/does not exist/);
+      });
+
+      it('files every row under the session\'s own learner, whatever the payload says', async () => {
+        // profile_id is never read from the payload — it is resolved from the
+        // session — so a caller cannot write into someone else's history.
+        const mine = await sessionFor('mine@example.com');
+        const theirs = await sessionFor('theirs@example.com');
+
+        await db.query(
+          `select public.complete_lesson_session($1, 1, 1, $2::jsonb, '[]'::jsonb, '[]'::jsonb, null)`,
+          [
+            mine.sessionId,
+            JSON.stringify([
+              {
+                profile_id: theirs.profileId,
+                item_type: 'word',
+                item_id: ITEM,
+                mode: 'dictation',
+                submitted_value: 'x',
+                is_correct: true,
+                score: 100,
+                error_tags: [],
+              },
+            ]),
+          ],
+        );
+
+        const landed = await db.query<{ readonly profile_id: string }>(
+          `select profile_id from public.attempts where session_id = $1`,
+          [mine.sessionId],
+        );
+        expect(landed.rows[0]?.profile_id).toBe(mine.profileId);
+        expect(landed.rows[0]?.profile_id).not.toBe(theirs.profileId);
+      });
+    });
+
+    describe('exam auto-submit', () => {
+      async function attempt(email: string, deadline: string): Promise<string> {
+        const user = await db.query<{ readonly id: string }>(
+          `insert into auth.users (email) values ($1) returning id`,
+          [email],
+        );
+        const profile = await db.query<{ readonly id: string }>(
+          `select id from public.learner_profiles where user_id = $1`,
+          [user.rows[0]?.id],
+        );
+        const definition = await db.query<{ readonly id: string }>(
+          `insert into public.exam_definitions
+             (code, title, duration_seconds, question_count, pass_percent, max_attempts,
+              cooldown_hours, unlock_day_standard, unlock_day_sprint)
+           values ('milestone1', 'Autosubmit Fixture', 3600, 40, 70.00, 3, 24, 7, 5)
+           on conflict (code) do update set title = excluded.title
+           returning id`,
+        );
+        const row = await db.query<{ readonly id: string }>(
+          `insert into public.exam_attempts
+             (profile_id, definition_id, attempt_number, status, started_at, server_deadline_at, seed)
+           values ($1, $2, 1, 'in_progress', now() - interval '2 hours', ${deadline}, $3)
+           returning id`,
+          [profile.rows[0]?.id, definition.rows[0]?.id, email],
+        );
+        return row.rows[0]?.id ?? '';
+      }
+
+      it('submits an attempt abandoned past its deadline, and grades nothing', async () => {
+        const expired = await attempt('expired@example.com', `now() - interval '1 hour'`);
+        const moved = await db.query<{ readonly autosubmit_expired_exam_attempts: number }>(
+          `select public.autosubmit_expired_exam_attempts()`,
+        );
+        expect(moved.rows[0]?.autosubmit_expired_exam_attempts).toBeGreaterThanOrEqual(1);
+
+        const row = await db.query<{
+          readonly status: string;
+          readonly submitted_at: string | null;
+          readonly score_percent: string | null;
+          readonly passed: boolean | null;
+        }>(
+          `select status, submitted_at, score_percent, passed
+             from public.exam_attempts where id = $1`,
+          [expired],
+        );
+        expect(row.rows[0]?.status).toBe('submitted');
+        expect(row.rows[0]?.submitted_at).not.toBeNull();
+        // The deadline passing is not a grade. The exam engine scores it.
+        expect(row.rows[0]?.score_percent).toBeNull();
+        expect(row.rows[0]?.passed).toBeNull();
+      });
+
+      it('leaves a live attempt alone', async () => {
+        const live = await attempt('live@example.com', `now() + interval '30 minutes'`);
+        await db.query(`select public.autosubmit_expired_exam_attempts()`);
+        const row = await db.query<{ readonly status: string }>(
+          `select status from public.exam_attempts where id = $1`,
+          [live],
+        );
+        expect(row.rows[0]?.status).toBe('in_progress');
+      });
+
+      it('frees the slot, which is the whole point', async () => {
+        // The partial unique index allows one in_progress attempt per exam. An
+        // abandoned one would block every retake forever.
+        const blocked = await attempt('blocked@example.com', `now() - interval '5 minutes'`);
+        const owner = await db.query<{ readonly profile_id: string; readonly definition_id: string }>(
+          `select profile_id, definition_id from public.exam_attempts where id = $1`,
+          [blocked],
+        );
+        await db.query(`select public.autosubmit_expired_exam_attempts()`);
+        await db.query(
+          `insert into public.exam_attempts
+             (profile_id, definition_id, attempt_number, status, started_at, server_deadline_at, seed)
+           values ($1, $2, 2, 'in_progress', now(), now() + interval '60 minutes', 'retake')`,
+          [owner.rows[0]?.profile_id, owner.rows[0]?.definition_id],
+        );
+      });
+    });
+
+    describe('none of these functions belong to the client', () => {
+      it('refuses every client role execute, which the default grant would have given', async () => {
+        // Postgres grants execute to PUBLIC on a new function, so 008's revoke
+        // sweep does not reach anything created in 009. Without the explicit
+        // revokes, an anon visitor could complete a lesson for any session id.
+        for (const role of ['anon', 'authenticated']) {
+          for (const fn of [
+            'public.complete_lesson_session(uuid, integer, integer, jsonb, jsonb, jsonb, jsonb)',
+            'public.autosubmit_expired_exam_attempts()',
+            'public.handle_new_user()',
+            'public.set_updated_at()',
+          ]) {
+            const result = await db.query<{ readonly allowed: boolean }>(
+              `select has_function_privilege($1, $2, 'execute') as allowed`,
+              [role, fn],
+            );
+            expect(result.rows[0]?.allowed, `${role} can execute ${fn}`).toBe(false);
+          }
+        }
+      });
     });
   });
 });

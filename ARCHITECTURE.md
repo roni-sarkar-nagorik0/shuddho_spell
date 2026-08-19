@@ -542,6 +542,41 @@ that F2.7 decided not to build. The comments are wrong and must stay wrong — t
 checksum is what makes the migration ledger forward-only, and editing a comment changes it
 exactly as much as editing a policy. This entry is the correction.
 
+**D16 — `complete_lesson_session` takes jsonb and computes nothing (F2.8).** `03-database.md`
+asks for "one Postgres function writing `attempts`, `review_items`, `mastery_records` and
+`streak_records` in a single transaction, invoked through `IUnitOfWork`" but does not give it
+a signature. `CLAUDE.md` §10 forbids business logic a domain service should own from living
+in a Postgres function, and the interval ladder, the mastery rule and the streak day boundary
+are all Phase 4 domain services. So the function is the transaction boundary and nothing
+else: it receives rows the domain has already decided on and writes them atomically.
+
+It takes jsonb rather than a pile of scalars because the shapes belong to the domain, and
+flattening them into SQL parameters would drag those rules into the database — the parameter
+list would have to know what a review item is. `profile_id` is never read from the payload;
+it is resolved from the session row under `for update`, so a caller cannot file attempts into
+someone else's history. The function returns the attempt count so `IUnitOfWork` can assert
+the payload it sent is the payload that landed.
+
+Auto-submit marks an expired attempt `submitted`, never `passed` or `failed`. A deadline
+passing is not a grade; the exam engine scores it. This is why `exam_attempts_finished_has_
+outcome` demands an outcome only for the two graded statuses.
+
+**D17 — Every function created after `008` has to revoke itself (F2.8).** Postgres grants
+`execute` to `PUBLIC` on a newly created function, and `008`'s revoke sweep is a one-time
+statement over the functions that existed when it ran. Without the four explicit revokes at
+the foot of `009`, an anonymous visitor could call `complete_lesson_session` directly and
+write a finished lesson, a mastery rollup and a streak for any session id they could guess —
+the function is `security definer`, so it would run with the owner's rights. The runtime test
+asserts `has_function_privilege` is false for `anon` and `authenticated` on all four. Any
+migration adding a function from here on carries the same obligation.
+
+**D18 — The signup trigger changed what a test fixture means (F2.8).** Once `auth.users`
+insert creates the profile, a fixture that inserts its own is a duplicate-key error. Ten
+fixtures predating the trigger were converted to upsert on `user_id`. This is worth recording
+because the same collision will hit the application: `BootstrapProfileUseCase` must be
+idempotent *on top of* the trigger, not a substitute for it, and the test proving that is in
+`migrations.apply.test.ts` rather than waiting for Phase 3.
+
 ### Open — needs the user, not me
 
 **O1 — `02-typescript-rules.md` still says `packages/config` base tsconfig.** That is a
