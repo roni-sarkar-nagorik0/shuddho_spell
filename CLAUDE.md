@@ -2,7 +2,8 @@
 
 Read this file at the start of **every** session, before writing a single line of code.
 **Run the preflight in section 2 once, then build.**
-Then read **`PROGRESS.md`** — it tells you the one feature you are allowed to work on next —
+Then read **`PROGRESS.md`** — it names the features that come next, which you build strictly
+one at a time —
 and `BUILD-ORDER-COMPLETE.md` for that phase's gate, and the `.claude/docs/` files it points at.
 
 ---
@@ -136,17 +137,23 @@ Full detail: [`.claude/docs/15-git-workflow.md`](.claude/docs/15-git-workflow.md
 
 ```
 main   ← protected. Never commit, never push, never merge into it. Human-merged PR from dev only.
-dev    ← integration branch. Feature work lands here via PR.
-feat/… ← one branch per feature. Where you work.
+dev    ← integration branch. You merge feature branches straight in — see rule 2.
+feat/… ← one branch per phase, carrying every feature in it. Where you work.
 ```
 
 1. **Never touch `main`.** No commit, no push, no merge, no force-push, no rebase onto it.
    Not for a hotfix, not for a typo. If something must reach `main`, say so and stop —
    a human merges the `dev` → `main` PR.
-2. **Always work on a feature branch, always push to `dev` through it.**
-   `feat/<phase>-<slug>`, branched from an up-to-date `dev`, never from `main`.
-3. **One feature, one branch.** A phase in `BUILD-ORDER-COMPLETE.md` is one feature.
-   Never stack two features on one branch, never reuse a merged branch.
+2. **Always work on a feature branch, then merge it into `dev` yourself.**
+   `feat/<phase>-<slug>`, branched from an up-to-date `dev`, never from `main`. Push the
+   branch, then `git checkout dev && git pull origin dev`, merge it in, push `dev`, and
+   `git merge --ff-only dev` back onto the branch so the next merge stays simple.
+   **The user asked for this on 2026-08-19**, overriding the older "lands here via PR" rule.
+   A merge commit is fine when it will not fast-forward. **Never rebase a pushed branch and
+   never force-push** to make the graph linear. On a conflict, stop and report.
+3. **One phase, one branch.** `feat/<phase>-<slug>` carries every feature of that phase —
+   F3.1 through F3.12 all land on `feat/03-google-auth`. Never open a second branch mid-phase,
+   never reuse a branch after its phase is done.
 4. **Test before every push.** `pnpm typecheck && pnpm lint && pnpm test`, plus
    `pnpm test:e2e` when the feature touches sign-in, a lesson or an exam, plus the phase's
    exit gate. A failing gate means **do not push** — report the failure instead.
@@ -166,9 +173,11 @@ and tell the user it happened.
 `PROGRESS.md` is the live state of the build. It is the file that answers "what next".
 Full rules are at the top of it; these are the ones you may never break:
 
-1. **Work on exactly one feature.** Find the first `[ ]` in the topmost unfinished phase of
-   `PROGRESS.md`, mark it `[~]`, and build only that. There is never more than one `[~]` in
-   the file.
+1. **Work on exactly one feature at a time.** Find the first `[ ]` in the topmost unfinished
+   phase of `PROGRESS.md`, mark it `[~]`, and build only that. There is never more than one
+   `[~]` in the file. `/build` does five of these in sequence per invocation, but the next one
+   is picked only after the previous is `[x]`, committed, pushed and merged — never in
+   parallel, never in advance.
 2. **Never start a second feature** because the current one is awkward, blocked in your head,
    or "mostly done". Mostly done is not done.
 3. **Every feature ships with tests.** Each feature in `PROGRESS.md` lists its test cases.
@@ -218,7 +227,7 @@ Full rules are at the top of it; these are the ones you may never break:
 
 | Doc | Read it when |
 | --- | --- |
-| [`PROGRESS.md`](PROGRESS.md) | **Every session, first** — it names the one feature you may work on |
+| [`PROGRESS.md`](PROGRESS.md) | **Every session, first** — it names the features you work on, in order |
 | [`docs/00-overview.md`](.claude/docs/00-overview.md) | Always, once, first |
 | [`docs/01-architecture.md`](.claude/docs/01-architecture.md) | Any backend work |
 | [`docs/02-typescript-rules.md`](.claude/docs/02-typescript-rules.md) | Any code at all |

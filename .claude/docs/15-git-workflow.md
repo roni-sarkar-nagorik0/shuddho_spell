@@ -7,21 +7,22 @@ and they outrank a phase deadline. Breaking one is worse than shipping the phase
 
 ```
 main   ← protected. Integration only, via reviewed PR from dev. Never touched directly.
-dev    ← the shared integration branch. All feature work lands here.
+dev    ← the shared integration branch. All feature work lands here, merged straight in.
 feat/… ← one branch per feature. Where you actually work.
 ```
 
 | Branch | Who writes to it | How |
 | --- | --- | --- |
 | `main` | **nobody, directly** | PR from `dev`, reviewed and merged by a human |
-| `dev` | you | PR or merge from a feature branch, **after tests pass** |
+| `dev` | you | merged directly from a feature branch, **after tests pass** — no PR |
 | `feat/*` | you | direct commits while building |
 
 ## The five hard rules
 
 1. **Never commit to `main`. Never push to `main`. Never merge into `main`.**
    Not a hotfix, not a typo, not a README change. If something must reach `main`, it goes
-   `feat/* → dev → PR → human merges`. Say so and stop; do not do it yourself.
+   `feat/* → dev` (you merge that part) `→ PR → a human merges dev into main`. Say so and
+   stop; do not do the last step yourself.
 
 2. **Never force-push.** No `git push --force`, no `git push -f`, no `--force-with-lease`
    on `main` or `dev`. On your own feature branch a force-push is tolerable only if that
@@ -70,15 +71,27 @@ pnpm test:e2e        # when the feature touches a critical flow
 git add -A
 git commit -m "feat(exams): server-authoritative exam engine"
 
-# 6. push the FEATURE branch — never dev directly, never main
+# 6. push the FEATURE branch first — never straight onto dev, never main
 git push -u origin feat/07-exam-engine
 
-# 7. open a PR into dev
-gh pr create --base dev --head feat/07-exam-engine
+# 7. land it on dev yourself
+git checkout dev && git pull origin dev
+git merge feat/07-exam-engine        # --ff-only when it fast-forwards
+git push origin dev
+
+# 8. bring the feature branch back up, so the next merge stays simple
+git checkout feat/07-exam-engine
+git merge --ff-only dev
+git push origin feat/07-exam-engine
 ```
 
-`dev` receives work through a PR from a feature branch. `main` receives work through a PR
-from `dev`, merged by a human. There is no other path.
+`dev` receives work by direct merge from a feature branch — **the user asked for this on
+2026-08-19**, replacing the PR step that used to sit here. `main` still receives work only
+through a PR from `dev`, merged by a human. There is no other path onto `main`.
+
+A merge commit is correct when the merge will not fast-forward. **Never rebase a branch you
+have already pushed, and never force-push,** to keep the graph linear. On a conflict: stop,
+report it, and let the user decide — do not guess a resolution.
 
 ## The pre-push gate
 
@@ -90,7 +103,7 @@ from `dev`, merged by a human. There is no other path.
 - [ ] `pnpm test:e2e` — green, when the feature touches sign-in, a lesson, or an exam
 - [ ] the current phase's exit gate in `BUILD-ORDER-COMPLETE.md` — every checkbox
 - [ ] no secret, key, token or `.env` in the diff — check `git diff --staged` before committing
-- [ ] the branch is not `main` and not `dev`
+- [ ] the work was committed on a feature branch, not typed straight onto `dev` or `main`
 
 If any of these fails: **do not push.** Report the failure with its output and fix it.
 A red test is information. A deleted red test is a lie.

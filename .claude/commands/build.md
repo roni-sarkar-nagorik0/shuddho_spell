@@ -149,7 +149,27 @@ git push -u origin <feature branch>
 **One commit per feature**, every lap — never one commit for the batch. The history has to stay
 bisectable, and a five-feature commit hides which one broke something.
 
-Never push to `dev` directly. Never touch `main`. Never force-push. Never delete a branch.
+Then land it on `dev` — every lap, not once at the end:
+
+```bash
+git checkout dev && git pull origin dev
+git merge <feature branch>          # --ff-only when it fast-forwards
+git push origin dev
+git checkout <feature branch>
+git merge --ff-only dev             # bring the branch back up, so the next lap merges clean
+```
+
+**The user asked for this on 2026-08-19**, overriding the older "feature work lands on `dev`
+via PR" rule. No PR, no waiting for a review.
+
+Merging per lap, not per run, is deliberate: a run that dies on lap 4 still leaves laps 1–3
+in `dev` instead of stranding them on a branch.
+
+If the merge is not a fast-forward, a plain merge commit is correct. **Never rebase a branch
+you have already pushed and never force-push** to keep the graph linear — a merge commit is
+the cheaper price. If the merge conflicts, stop the run and report it; do not guess a resolution.
+
+Never touch `main`. Never force-push. Never delete a branch — not even a merged one.
 
 ### 3f — Next lap, or stop
 
