@@ -52,6 +52,18 @@ export class ApiError extends Error {
     return new ApiError(401, PROBLEM_CODES.UNAUTHENTICATED, 'Sign in to continue.');
   }
 
+  /**
+   * No user is involved, so there is nothing to sign in as. The detail says
+   * what is actually wrong, and says nothing at all about the secret.
+   */
+  static cronUnauthorised(): ApiError {
+    return new ApiError(
+      401,
+      PROBLEM_CODES.CRON_UNAUTHORISED,
+      'This endpoint is called by the scheduler.',
+    );
+  }
+
   static forbidden(): ApiError {
     return new ApiError(403, PROBLEM_CODES.FORBIDDEN, 'You cannot access this resource.');
   }

@@ -20,6 +20,8 @@ const PUBLIC_ROUTES: readonly string[] = [
   // Readiness, same — and it must answer while the database is down, which is
   // exactly when a session lookup would not.
   'src/app/api/ready/route.ts',
+  // Cron routes go here as they land (Phase 8 onward). They have no user; the
+  // `withCron` bearer check is what stands in for one.
 ];
 
 function routeFiles(directory: string): readonly string[] {
@@ -38,7 +40,12 @@ describe('api routes', () => {
   });
 
   it('has no public endpoint that is not on the list', () => {
-    const opting = routes.filter((path) => readFileSync(path, 'utf8').includes("auth: 'public'"));
+    // `withCron` opts out too — it authenticates with a shared secret instead
+    // of a session — so a cron route has to be listed like any other.
+    const opting = routes.filter((path) => {
+      const source = readFileSync(path, 'utf8');
+      return source.includes("auth: 'public'") || source.includes('withCron(');
+    });
 
     expect([...opting].sort()).toStrictEqual([...PUBLIC_ROUTES].sort());
   });
