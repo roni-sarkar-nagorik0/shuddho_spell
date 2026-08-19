@@ -83,11 +83,10 @@ describe('SessionBoundary', () => {
  */
 describe('the three ways in, and only three', () => {
   const ALLOWED: readonly string[] = [
-    // requireUser() — Server Components
+    // The one resolver. requireUser() and withApi({ auth }) both go through it.
     'src/lib/auth/current-user.ts',
-    // withApi({ auth }) — route handlers
-    'src/lib/api/with-api.ts',
-    // and the middleware, which refreshes rather than reads for identity
+    // And the middleware, which refreshes the session rather than reading an
+    // identity out of it — the only other place allowed to ask.
     'src/middleware.ts',
   ];
 

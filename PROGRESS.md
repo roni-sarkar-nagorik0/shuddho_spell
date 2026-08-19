@@ -59,21 +59,21 @@ and 2. No feature starts without it. **Never read the file** — existence check
 
 ## NEXT
 
-> **Phase 3 · Authentication (Google only) — F3.6 through F3.12, seven features left**
-> Branch: `feat/03-google-auth`, carrying F3.1–F3.5.
+> **Phase 3 · Authentication (Google only) — F3.7 through F3.12, six features left**
+> Branch: `feat/03-google-auth`, carrying F3.1–F3.6.
 > This run closes the phase: one feature at a time, each committed and merged into `dev` before
 > the next is picked, then the seven-item exit gate.
 >
-> **F3.6 — `withApi` session resolution — starts here.** What F3.5 left it:
-> - `with-api.ts` declares its **own** `IAuthenticatedUser` — `{ id, email }` — which now
->   collides by name with the real contract in `src/contracts`. F3.6 deletes the local one and
->   injects the contract shape, which means reusing `readUser()` rather than calling
->   `getUser()` inline. The `auth.getUser(` sweep in `session-boundary.test.tsx` has to keep
->   passing, so if the call moves, update the allow-list with it.
-> - The three cases the gate names: no session → 401 problem+json; expired cookie → refreshed
->   or 401, never 500; tampered cookie → 401. The refresh already happens in the cookie adapter.
-> - `MissingProfileError` currently escapes as a 500. In a handler it should be caught and
->   mapped, or left to F3.9's bootstrap to make impossible — decide there.
+> **F3.7 — protected by default, `auth: 'public'` the explicit opt-out — starts here.**
+> What F3.6 left it:
+> - `withApi` still takes `auth?: boolean`, defaulting to true. F3.7 is where that becomes
+>   `auth?: 'required' | 'public'` — the shape `01-architecture.md` and the exit gate both use.
+>   Two call sites move with it: `src/app/api/health/route.ts` and `src/app/api/ready/route.ts`,
+>   which pass `{ auth: false }` today.
+> - `false` and `'public'` must not both work. A boolean left accepted is a silent second
+>   spelling of the opt-out, and the point of the feature is that opting out is visible.
+> - Worth a sweep test, the same shape as the `auth.getUser(` one: every `withApi` call site
+>   that opts out has to be countable, so a new public route cannot appear unnoticed.
 >
 > **Carried into the rest of the phase**
 > - Migration 011 added `learner_profiles.onboarding_completed_at`, null until Phase 11's
@@ -259,7 +259,7 @@ Branch `feat/03-google-auth` · Status: `IN PROGRESS`
   - Test: an unauthenticated request to `/dashboard` redirects to `/login`
 - [x] **F3.5** (2026-08-19) `useSession()` + `requireUser()`
   - Test: `requireUser()` throws/redirects with no session
-- [ ] **F3.6** `withApi({ auth: 'required' })` session resolution
+- [x] **F3.6** (2026-08-19) `withApi({ auth: 'required' })` session resolution
   - Test: no session → 401 problem+json; expired cookie → refreshed or 401, never 500; tampered cookie → 401
 - [ ] **F3.7** Protected-by-default routing; `auth: 'public'` as the explicit opt-out
   - Test: a protected handler 401s without a session; a public one returns 200
@@ -575,6 +575,7 @@ Newest first. One line per finished feature: date · id · what · test result.
 
 | Date | Feature | What landed | Tests |
 | --- | --- | --- | --- |
+| 2026-08-19 | F3.6 | `withApi` stops calling `getUser()` inline and goes through the same `readUser()` a Server Component does — a handler and a page can no longer disagree about who is signed in. Its private two-field `IAuthenticatedUser` is gone in favour of the contract. Absent, expired and tampered cookies all arrive as null and leave as one 401 problem+json that names none of them; the session is checked **before** the body is parsed, so an anonymous caller cannot map a schema one 422 at a time | `pnpm test` 246/246 — 12 new, all five mutations caught · `pnpm test:e2e` 8/8 · typecheck, lint green |
 | 2026-08-19 | F3.5 | `requireUser()` and `useSession()`, over one `IAuthenticatedUser` contract — the client is handed exactly what the server verified, so there is no second, looser shape. `useSession()` throws outside its boundary rather than reporting nobody: a missing provider and a signed-out learner must not look alike. A verified session with no profile is loud, never "signed out" — that redirect would loop through `/login` forever — and a sweep pins `auth.getUser(` to exactly three files | `pnpm test` 234/234 — 17 new, all seven mutations caught · `pnpm test:e2e` 8/8 · typecheck, lint green |
 | 2026-08-19 | F3.4 | `src/middleware.ts` — `getUser()` refresh on every page, then protect-by-default: a page nobody listed is private, and an unauthenticated request for one is a redirect, never a 401. `/api/` is outside the matcher on purpose — a `fetch` answered with login markup is a 200 the caller cannot branch on, so that 401 stays `withApi`'s (F3.6). `secure` finally lands on the session cookie, off `NEXT_PUBLIC_APP_URL` rather than the spoofable `x-forwarded-proto`. One session client, two cookie transports, so neither can skip the hardening | `pnpm test` 217/217 — 15 new, all eight mutations caught · `pnpm test:e2e` 8/8 · typecheck, lint green |
 | 2026-08-19 | F3.3 | `/auth/callback` — server-side PKCE exchange, then routing on `learner_profiles.onboarding_completed_at`, a column 003 never had (migration 011). The row's *existence* cannot mean "has been here before": 009's signup trigger creates it before the learner sees a screen. Every failure — refusal, missing code, stale code, unreadable profile — lands on `/login?error=google`, and a refusal carrying a code is still never exchanged | `pnpm test` 202/202 — 10 new, all six mutations caught (one survived first: the refusal guard was untested against a code) · `pnpm test:e2e` 5/5 · typecheck, lint green |

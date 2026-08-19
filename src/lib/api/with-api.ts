@@ -1,15 +1,15 @@
 import 'server-only';
 import { NextResponse, type NextRequest } from 'next/server';
 import { ZodError, type z } from 'zod';
-import { PROBLEM_CODES, type IApiResponse, type IFieldError } from '@/contracts';
+import {
+  PROBLEM_CODES,
+  type IApiResponse,
+  type IAuthenticatedUser,
+  type IFieldError,
+} from '@/contracts';
+import { readUser } from '../auth/current-user';
 import { logger } from '../logger';
-import { createSessionClient } from '../supabase/session-client';
 import { ApiError, problem } from './problem';
-
-export interface IAuthenticatedUser {
-  readonly id: string;
-  readonly email: string;
-}
 
 export interface IHandlerContext<TBody, TQuery> {
   readonly request: NextRequest;
@@ -51,14 +51,20 @@ export function withApi<TBody = undefined, TQuery = undefined>(
     const startedAt = Date.now();
 
     try {
+      // One resolver, shared with `requireUser()`. A handler and a page must
+      // never be able to disagree about who is signed in, and they would the
+      // first time one of them grew a rule the other did not.
+      //
+      // Every way this can fail — no cookie, a cookie the auth server rejects,
+      // a refresh that did not work — arrives here as `null` and leaves as the
+      // same 401 problem+json. Nothing about which one it was reaches the
+      // caller: that is a probe answered, not an error explained.
       let user: IAuthenticatedUser | null = null;
       if (requireAuth) {
-        const supabase = await createSessionClient();
-        const { data } = await supabase.auth.getUser();
-        if (data.user === null || typeof data.user.email !== 'string') {
+        user = await readUser();
+        if (user === null) {
           throw ApiError.unauthenticated();
         }
-        user = { id: data.user.id, email: data.user.email };
       }
 
       let body = undefined as TBody;
