@@ -631,6 +631,32 @@ attribute now enforces rather than merely asks for.
 the choice belongs with the middleware that owns the response (F3.4), which knows the request
 protocol. It is listed in this file rather than left implicit so it cannot be forgotten.
 
+**D22 — Sign-in is a plain HTML form to a route handler, not a Server Action (F3.2).**
+`01-architecture.md` allows Server Actions for simple form mutations, and starting sign-in
+looks exactly like one. It is not, for two reasons that both come from decisions already made.
+
+First, the test: `/login` must contain **zero input elements**. React renders a hidden
+`<input name="$ACTION_ID_…">` inside every Server Action form so the form still works without
+JavaScript. An action form therefore cannot satisfy the requirement, whatever the visible
+markup says.
+
+Second, D21: the OAuth url must be built by the *server* Supabase client, because
+`signInWithOAuth` writes the PKCE code verifier through the cookie adapter and that cookie is
+httpOnly. A browser client cannot participate in this flow at all any more.
+
+So `/login` posts a plain form to `POST /auth/signin`, which builds the url and answers 303.
+The consequences, recorded so nobody re-litigates them:
+
+- Sign-in works with JavaScript disabled — a real gain, not a consolation.
+- `POST`, not `GET`: each press mints a code verifier and discards the previous one, so the
+  route must be unreachable by a prefetch, a link or an image tag.
+- The form's `action` is a string literal, so a rename of the route silently breaks the button.
+  The e2e test posts to `/auth/signin` directly to keep that honest; if a third caller ever
+  appears, promote the path to a shared constant.
+- `/login?error=google` renders a `role="alert"` line. It exists because the alternative was a
+  button that does nothing when url construction fails. `/auth/callback` (F3.3) should reuse
+  this surface rather than invent a second one.
+
 ### Open — needs the user, not me
 
 **O1 — `02-typescript-rules.md` still says `packages/config` base tsconfig.** That is a

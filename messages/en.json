@@ -7,6 +7,12 @@
     "bangla": "বাংলা (অআ)",
     "continue": "Continue"
   },
+  "login": {
+    "heading": "Sign in.",
+    "subtitle": "One tap with Google. It is the only way in — nothing to remember, nothing to reset.",
+    "google": "Continue with Google",
+    "failed": "Google sign-in could not start. Try again."
+  },
   "nav": {
     "home": "Home",
     "course": "Course",
