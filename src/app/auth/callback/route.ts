@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from 'next/server';
-import { z } from 'zod';
+import { createContainer } from '@/composition/container';
+import { makeBootstrapProfile } from '@/composition/use-cases';
 import { publicEnv } from '@/lib/env.public';
 import { logger } from '@/lib/logger';
 import { createSessionClient } from '@/lib/supabase/session-client';
@@ -11,49 +12,25 @@ const SIGN_IN_FAILED = '/login?error=google';
 const ONBOARDING = '/onboarding';
 const DASHBOARD = '/dashboard';
 
-type SessionClient = Awaited<ReturnType<typeof createSessionClient>>;
-
-/**
- * A Supabase query result is an external response, so it is parsed at the edge
- * like any other. Exactly the one column the routing decision needs — reading
- * the whole profile here would make this handler look like it owns the profile,
- * which it does not.
- */
-const onboardingStateSchema = z.object({
-  onboarding_completed_at: z.string().nullable(),
-});
-
 function goTo(path: string): NextResponse {
   // 303: whatever the browser arrived with, it continues with GET.
   return NextResponse.redirect(new URL(path, publicEnv.NEXT_PUBLIC_APP_URL), 303);
 }
 
-/**
- * `/onboarding` is the safe end of this decision. Sending an already-onboarded
- * learner through it costs them a screen; sending a brand-new one to a dashboard
- * that has no answers to render is a broken first impression. So anything short
- * of a profile that says otherwise routes to onboarding.
- */
-async function resolveDestination(supabase: SessionClient, userId: string): Promise<string> {
-  const { data, error } = await supabase
-    .from('learner_profiles')
-    .select('onboarding_completed_at')
-    .eq('user_id', userId)
-    .maybeSingle();
-
-  if (error !== null) {
-    logger.error({ err: error }, 'signed in, but could not read the onboarding state');
-    return ONBOARDING;
+function readMetadata(metadata: unknown): string | undefined {
+  if (typeof metadata !== 'object' || metadata === null) {
+    return undefined;
   }
 
-  // `data` is null when the signup trigger has not produced a profile yet.
-  // F3.9's bootstrap reconciles that; onboarding is where it is noticed.
-  const parsed = onboardingStateSchema.safeParse(data);
-  if (!parsed.success) {
-    return ONBOARDING;
+  // Google supplies one or the other depending on the account; 009 reads both.
+  for (const key of ['full_name', 'name']) {
+    const value: unknown = Reflect.get(metadata, key);
+    if (typeof value === 'string') {
+      return value;
+    }
   }
 
-  return parsed.data.onboarding_completed_at === null ? ONBOARDING : DASHBOARD;
+  return undefined;
 }
 
 /**
@@ -95,5 +72,27 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
   // `AuthTokenResponse` is a discriminated union: a null error means the session
   // is there. Re-checking it is not defensive, it is unreachable.
 
-  return goTo(await resolveDestination(supabase, data.session.user.id));
+  // The first authenticated request there is, by construction — which is where
+  // `04-authentication.md` puts the reconciler. 009's trigger has almost
+  // certainly made the profile already; this is what makes "almost" survivable,
+  // and it is also what stops `requireUser()` throwing further down the flow.
+  const { user } = data.session;
+  const bootstrap = makeBootstrapProfile(createContainer(crypto.randomUUID()));
+
+  try {
+    const profile = await bootstrap.execute({
+      userId: user.id,
+      fullName: readMetadata(user.user_metadata),
+      email: user.email,
+    });
+
+    // `/onboarding` is the safe end of this decision. Sending an
+    // already-onboarded learner through it costs them a screen; sending a brand
+    // new one to a dashboard with no answers to render is a broken first
+    // impression.
+    return goTo(profile.hasOnboarded() ? DASHBOARD : ONBOARDING);
+  } catch (caught: unknown) {
+    logger.error({ err: caught }, 'signed in, but could not reconcile the learner profile');
+    return goTo(ONBOARDING);
+  }
 }

@@ -59,23 +59,18 @@ and 2. No feature starts without it. **Never read the file** — existence check
 
 ## NEXT
 
-> **Phase 3 · Authentication (Google only) — F3.9 through F3.12, four features left**
-> Branch: `feat/03-google-auth`, carrying F3.1–F3.8.
+> **Phase 3 · Authentication (Google only) — F3.10 through F3.12, three features left**
+> Branch: `feat/03-google-auth`, carrying F3.1–F3.9.
 > This run closes the phase: one feature at a time, each committed and merged into `dev` before
 > the next is picked, then the seven-item exit gate.
 >
-> **F3.9 — `BootstrapProfileUseCase`, idempotent — starts here.** What F3.8 left it:
-> - This is the phase's first real module: `src/modules/auth/` gets a domain port, an
->   application use case and a Supabase adapter, wired in `src/composition/`. Everything so far
->   has been `lib`, so this is the first lap the boundaries lint actually has an opinion about.
-> - It must remove `MissingProfileError` as a reachable state. Two concurrent first requests
->   produce exactly one profile and no 500 — `insert … on conflict (user_id) do nothing` in 009
->   is the shape to lean on, not a read-then-write.
-> - The learner's client cannot insert: 008 gives `authenticated` select and update on
->   `learner_profiles` and no insert policy at all. The bootstrap therefore needs the **service
->   client**, which is the second of the two Supabase clients and `server-only`.
-> - Coverage floor is 90% on `domain` and `application`, and this is the first code the
->   threshold applies to — `pnpm vitest run --coverage` before calling it done.
+> **F3.10 — `GET /api/v1/me` — starts here.** What F3.9 left it:
+> - The module now has all four layers. `/api/v1/me` is the first `presentation/` code: a
+>   handler factory plus its response DTO, re-exported by a three-line `route.ts`.
+> - `withApi` already injects the whole `IAuthenticatedUser`, so the endpoint may not need a use
+>   case at all — but "profile **plus program position**" (`04-authentication.md`) means
+>   `current_day_index`, which no port exposes yet. Read it through the repository, not inline.
+> - Add the route to `PUBLIC_ROUTES` only if it opts out, which it must not.
 >
 > **Carried into the rest of the phase**
 > - Migration 011 added `learner_profiles.onboarding_completed_at`, null until Phase 11's
@@ -267,7 +262,7 @@ Branch `feat/03-google-auth` · Status: `IN PROGRESS`
   - Test: a protected handler 401s without a session; a public one returns 200
 - [x] **F3.8** (2026-08-19) `CRON_SECRET` bearer check for `/api/cron/*`, constant-time compare
   - Test: a request without the secret → 401; the secret never appears in a log line
-- [ ] **F3.9** `BootstrapProfileUseCase`, idempotent
+- [x] **F3.9** (2026-08-19) `BootstrapProfileUseCase`, idempotent
   - Test: two concurrent first requests produce exactly one profile, no 500
 - [ ] **F3.10** `GET /api/v1/me`
   - Test: returns profile + program position for a valid token
@@ -577,6 +572,7 @@ Newest first. One line per finished feature: date · id · what · test result.
 
 | Date | Feature | What landed | Tests |
 | --- | --- | --- | --- |
+| 2026-08-19 | F3.9 | The phase's first real module — `src/modules/auth/` across all four layers, wired in `src/composition/`. Idempotence lives in the port, not the caller: `insertIfAbsent` is `on conflict do nothing` and reads back, so Postgres decides the race and the loser reads what the winner wrote. The use case owns the display-name chain, reproducing 009's so the two cannot disagree. Called from `/auth/callback` — the first authenticated request by construction, and the only layer allowed to reach the composition root. Found and fixed a build-breaker: an empty `CRON_SECRET=` is present, not absent, so `.optional()` never applied | `pnpm test` 300/300 — 33 new, all eleven mutations caught · coverage 100% on domain and application (the 90% floor had never been runnable — `@vitest/coverage-v8` was missing) · `pnpm test:e2e` 8/8 · typecheck, lint green |
 | 2026-08-19 | F3.8 | `withCron` — the guard every scheduled route is built by, a `withApi` route underneath so it keeps the request id and the problem+json. Both sides are sha256'd before `timingSafeEqual`, because that function throws on a length mismatch and throwing early leaks the length one guess at a time. Header only, never the query string. A missing `CRON_SECRET` refuses rather than waving through. `CRON_UNAUTHORISED` is its own code so an operator is not sent to fix a login. **No cron route exists yet** (Phase 8), so the gate item is proven at the wrapper | `pnpm test` 268/268 — 14 new, all seven mutations caught (the constant-time one needed a structural guard — no assertion on a result can see timing) · typecheck, lint green |
 | 2026-08-19 | F3.7 | `auth?: 'required' \| 'public'` replaces the boolean, and the boolean stops compiling — two spellings of the opt-out is one too many. A word can also be counted, which is the real gain: a sweep over `src/app/api/**/route.ts` holds every public endpoint against a written list, so a new one fails the suite until someone adds it deliberately. Saying `'required'` out loud is banned too; its absence is the rule | `pnpm test` 254/254 — 8 new, all three mutations caught including a planted unlisted public route · `pnpm test:e2e` 8/8 · typecheck, lint green |
 | 2026-08-19 | F3.6 | `withApi` stops calling `getUser()` inline and goes through the same `readUser()` a Server Component does — a handler and a page can no longer disagree about who is signed in. Its private two-field `IAuthenticatedUser` is gone in favour of the contract. Absent, expired and tampered cookies all arrive as null and leave as one 401 problem+json that names none of them; the session is checked **before** the body is parsed, so an anonymous caller cannot map a schema one 422 at a time | `pnpm test` 246/246 — 12 new, all five mutations caught · `pnpm test:e2e` 8/8 · typecheck, lint green |

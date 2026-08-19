@@ -2,41 +2,51 @@
 import { NextRequest } from 'next/server';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
+interface ISessionUser {
+  readonly id: string;
+  readonly email?: string;
+  readonly user_metadata?: Record<string, unknown>;
+}
+
 interface IExchangeResult {
-  readonly data: { readonly session: { readonly user: { readonly id: string } } | null };
+  readonly data: { readonly session: { readonly user: ISessionUser } | null };
   readonly error: { readonly message: string } | null;
 }
 
-interface IProfileResult {
-  readonly data: { readonly onboarding_completed_at: string | null } | null;
-  readonly error: { readonly message: string } | null;
-}
-
-interface IQuery {
-  readonly table: string;
-  readonly columns: string;
-  readonly column: string;
-  readonly value: unknown;
+interface IBootstrapCall {
+  readonly userId: string;
+  readonly fullName: string | undefined;
+  readonly email: string | undefined;
 }
 
 interface IHarness {
   exchangedCode: string | null;
   exchange: IExchangeResult;
-  query: IQuery | null;
-  profile: IProfileResult;
+  bootstrapped: IBootstrapCall | null;
+  onboardedAt: Date | null;
+  bootstrapFails: boolean;
   readonly logged: unknown[];
 }
 
 const SESSION: IExchangeResult = {
-  data: { session: { user: { id: 'user-1' } } },
+  data: {
+    session: {
+      user: {
+        id: 'user-1',
+        email: 'learner@example.com',
+        user_metadata: { full_name: 'Ayesha Rahman' },
+      },
+    },
+  },
   error: null,
 };
 
 const harness = vi.hoisted<IHarness>(() => ({
   exchangedCode: null,
-  exchange: { data: { session: { user: { id: 'user-1' } } }, error: null },
-  query: null,
-  profile: { data: { onboarding_completed_at: null }, error: null },
+  exchange: { data: { session: null }, error: null },
+  bootstrapped: null,
+  onboardedAt: null,
+  bootstrapFails: false,
   logged: [],
 }));
 
@@ -64,17 +74,29 @@ vi.mock('@/lib/supabase/session-client', () => ({
           return Promise.resolve(harness.exchange);
         },
       },
-      from: (table: string) => ({
-        select: (columns: string) => ({
-          eq: (column: string, value: unknown) => ({
-            maybeSingle: (): Promise<IProfileResult> => {
-              harness.query = { table, columns, column, value };
-              return Promise.resolve(harness.profile);
-            },
-          }),
-        }),
-      }),
     }),
+}));
+
+vi.mock('@/composition/container', () => ({
+  createContainer: (requestId: string) => ({ requestId }),
+}));
+
+vi.mock('@/composition/use-cases', () => ({
+  makeBootstrapProfile: () => ({
+    execute: (input: IBootstrapCall) => {
+      harness.bootstrapped = input;
+      if (harness.bootstrapFails) {
+        return Promise.reject(new Error('the database is unreachable'));
+      }
+      return Promise.resolve({
+        id: 'profile-1',
+        userId: input.userId,
+        displayName: input.fullName ?? 'Learner',
+        onboardingCompletedAt: harness.onboardedAt,
+        hasOnboarded: () => harness.onboardedAt !== null,
+      });
+    },
+  }),
 }));
 
 const { GET } = await import('./route');
@@ -92,8 +114,9 @@ describe('GET /auth/callback', () => {
   beforeEach(() => {
     harness.exchangedCode = null;
     harness.exchange = SESSION;
-    harness.query = null;
-    harness.profile = { data: { onboarding_completed_at: null }, error: null };
+    harness.bootstrapped = null;
+    harness.onboardedAt = null;
+    harness.bootstrapFails = false;
     harness.logged.length = 0;
   });
 
@@ -104,36 +127,54 @@ describe('GET /auth/callback', () => {
   });
 
   it('sends a brand-new profile to onboarding', async () => {
-    harness.profile = { data: { onboarding_completed_at: null }, error: null };
+    harness.onboardedAt = null;
 
     expect(await destinationOf('?code=the-code')).toBe('https://shuddhospell.test/onboarding');
   });
 
   it('sends a learner who has already onboarded to the dashboard', async () => {
-    harness.profile = { data: { onboarding_completed_at: '2026-08-01T10:00:00Z' }, error: null };
+    harness.onboardedAt = new Date('2026-08-01T10:00:00Z');
 
     expect(await destinationOf('?code=the-code')).toBe('https://shuddhospell.test/dashboard');
   });
 
-  it('asks only for the one column it routes on, for this session and no other', async () => {
+  it('reconciles the profile on the first authenticated request', async () => {
     await GET(callback('?code=the-code'));
 
-    expect(harness.query).toEqual({
-      table: 'learner_profiles',
-      columns: 'onboarding_completed_at',
-      column: 'user_id',
-      value: 'user-1',
+    expect(harness.bootstrapped).toStrictEqual({
+      userId: 'user-1',
+      fullName: 'Ayesha Rahman',
+      email: 'learner@example.com',
     });
   });
 
-  it('treats a missing profile row as brand new rather than as a failure', async () => {
-    harness.profile = { data: null, error: null };
+  it('takes the identity from the session, never from the url', async () => {
+    await GET(callback('?code=the-code&userId=somebody-else'));
 
-    expect(await destinationOf('?code=the-code')).toBe('https://shuddhospell.test/onboarding');
+    expect(harness.bootstrapped?.userId).toBe('user-1');
   });
 
-  it('keeps a signed-in learner signed in when the profile read fails, and logs it', async () => {
-    harness.profile = { data: null, error: { message: 'permission denied' } };
+  it('passes on Google\'s other spelling of the name', async () => {
+    harness.exchange = {
+      data: { session: { user: { id: 'user-1', user_metadata: { name: 'Rahim' } } } },
+      error: null,
+    };
+
+    await GET(callback('?code=the-code'));
+
+    expect(harness.bootstrapped?.fullName).toBe('Rahim');
+  });
+
+  it('asks for no name at all when the session carries none', async () => {
+    harness.exchange = { data: { session: { user: { id: 'user-1' } } }, error: null };
+
+    await GET(callback('?code=the-code'));
+
+    expect(harness.bootstrapped?.fullName).toBeUndefined();
+  });
+
+  it('keeps a signed-in learner signed in when the reconciler fails, and logs it', async () => {
+    harness.bootstrapFails = true;
 
     expect(await destinationOf('?code=the-code')).toBe('https://shuddhospell.test/onboarding');
     expect(harness.logged).toHaveLength(1);
