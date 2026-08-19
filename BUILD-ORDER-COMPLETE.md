@@ -100,8 +100,11 @@ Status values: `NOT STARTED` · `IN PROGRESS` · `BLOCKED — <reason>` · `DONE
 ## Phase 2 — Database schema, migrations, RLS
 
 - **Branch:** `feat/02-database-schema` (from `dev`)
-- **Status:** NOT STARTED
-- **Completed:**
+- **Status:** DONE
+- **Completed:** 2026-08-19 — F2.1 … F2.10, exit gate run and green. The one item not provable
+  in CI is the hosted apply: `pnpm db:migrate` writes to the user's live Supabase project, so it
+  is theirs to run. Apply-from-empty is proved on every `pnpm test` against a real Postgres
+  (PGlite/WASM) instead.
 - **Reads:** `03-database`, `05-domain-model`
 - **Deliverables:** numbered, idempotent, forward-only SQL in `supabase/migrations`:
   `001_extensions` · `002_content_tables` · `003_learner_tables` · `004_exam_tables` ·

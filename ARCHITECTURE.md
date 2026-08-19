@@ -361,15 +361,19 @@ lesson_sessions (profile_id, day_index)
 ### Row interfaces
 
 Hand-written from the SQL, in `src/modules/*/infrastructure/rows/`, **never** in `domain/`.
-`supabase gen types` is used to *verify* them, never as the source of truth. A row interface
-never leaves `infrastructure/`; the mapper is the only file that knows snake_case exists.
+Twenty-two of them, one per table, each in the module that owns the table. They are *verified*
+against the Postgres catalogue and never generated from it (D20). A row interface never leaves
+`infrastructure/`; the mapper is the only file that knows snake_case exists.
 
 ### The two-user proof
 
-`supabase/tests/rls-two-user.sql` connects as two real users and proves user A cannot read
-user B's `attempts`, `review_items`, `exam_attempts`, `exam_answers` or `notifications`.
-It runs at the Phase 2 exit gate and again in Phase 13. Not optional, not replaceable by a
-unit test.
+The proof connects as two real `authenticated` roles — `set_config('request.jwt.claims', ...)`
+per user, exactly as PostgREST does — and shows user A cannot read user B's `attempts`,
+`review_items`, `exam_attempts`, `exam_answers` or `notifications`. It ships as the
+`008 RLS policies — the two-user proof` block in `src/lib/db/migrations.apply.test.ts`, not as
+a standalone `.sql` file, so it runs on every `pnpm test` rather than only when someone
+remembers to. It ran at the Phase 2 exit gate and runs again in Phase 13. Not optional, and
+not replaceable by a unit test — it exercises the real policies against a real Postgres.
 
 ---
 
@@ -592,6 +596,21 @@ the condition production is actually in.
 Idempotency comes from `on conflict (symbol) / (code) do update`, not from `if not exists`,
 which cannot guard an insert. A correction to a Bangla annotation therefore ships as a new
 numbered migration that re-states the row — forward-only survives intact.
+
+**D20 — The Postgres catalogue verifies the row interfaces, not the Supabase CLI (F2.10).**
+`03-database.md` says to use `supabase gen types` to *verify* the hand-written interfaces. The
+CLI is deliberately not installed — F2.1 established the no-Docker, no-Supabase-CLI migration
+path — and it additionally needs live project credentials, so a gate built on it could not run
+in CI and would be skipped in practice. What `gen types` does is read the Postgres catalogue
+and map each column to a TypeScript type. `src/lib/db/rows.test.ts` reads the same catalogue,
+produced by the same migrations inside PGlite, and applies the same mapping. It is the stricter
+of the two: it also checks column *order*, `readonly` on every member, the interface-to-filename
+rule, which module owns which table, and that no row interface has escaped `infrastructure/`.
+The intent of the doc is met; the tool named in it is not the thing that meets it.
+
+`jsonb` maps to `Json` (`src/lib/db/json.ts`) and never to a narrower shape. A row interface
+describes what the database guarantees, and the database guarantees well-formed JSON and no
+more. Narrowing happens in the mapper, which is allowed to fail and say why.
 
 ### Open — needs the user, not me
 

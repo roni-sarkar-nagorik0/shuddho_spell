@@ -55,13 +55,14 @@ and 2. No feature starts without it. **Never read the file** — existence check
 
 ## NEXT
 
-> **Phase 2 · F2.10 — hand-written row interfaces in `infrastructure/`**
-> Branch: `feat/02-database-schema`
-> The last feature of Phase 2, and the one that closes its exit gate. Row interfaces are written
-> from the SQL by hand and only *verified* against `supabase gen types` — the generated output is
-> never the source of truth, and no row interface may live outside `infrastructure/`.
-> Phase 1's only open items are the two carry-overs that genuinely need later phases:
-> F1.9 (rate limiter, needs the Phase 2 tables) and F1.11 (OpenAPI, needs the v1 schemas).
+> **Phase 3 · F3.1 — `@supabase/ssr` cookie session client**
+> Branch: `feat/03-google-auth` (cut from `dev`)
+> **Phase 2 is DONE** — schema, RLS, functions, seed and row interfaces, exit gate run and green.
+> One thing the gate could not prove here: `pnpm db:migrate` against the hosted project. It writes
+> to a live database, so it is the user's to run; the from-empty proof is PGlite in CI.
+> Phase 1's two carry-overs are still open and still correctly deferred: F1.9 (rate limiter — the
+> `rate_limits` table is **not** in the schema yet; it arrives with that feature) and F1.11
+> (OpenAPI, needs the v1 Zod schemas from Phase 4/5).
 
 Update this block every time a feature is finished.
 
@@ -122,7 +123,7 @@ Branch `feat/01-app-scaffold` · Status: `IN PROGRESS`
 ---
 
 ## Phase 2 — Database schema, migrations, RLS
-Branch `feat/02-database-schema` · Status: `IN PROGRESS`
+Branch `feat/02-database-schema` · Status: `DONE` (exit gate run 2026-08-19)
 
 - [x] **F2.1** (2026-08-18) `001_extensions` + `002_content_tables`
   - Applied by `pnpm db:migrate` over `DATABASE_URL` — plain SQL, forward-only, checksum ledger
@@ -184,7 +185,14 @@ Branch `feat/02-database-schema` · Status: `IN PROGRESS`
     of duplicating. The migration asserts its own completeness by naming every symbol and
     code, which catches a mistyped IPA character that a count never could (D19).
   - Test: counts are exactly 44 and 24; no placeholder text
-- [ ] **F2.10** Hand-written row interfaces in `infrastructure/`
+- [x] **F2.10** (2026-08-19) Hand-written row interfaces in `infrastructure/`
+  - One `I*Row` per table, 22 of them, across the nine modules that own the tables. `jsonb` is
+    typed `Json` and nothing narrower — the database guarantees well-formed JSON and no more,
+    and narrowing is the mapper's job. Verified against the Postgres catalogue read out of
+    PGlite rather than against the Supabase CLI, which is not installed by design and needs
+    live credentials: `gen types` reads that same catalogue and applies the same mapping, so
+    this is the CLI's rule without the CLI, plus column order, `readonly`, file naming and
+    placement (D20).
   - Test: `supabase gen types` output matches them; no row interface outside `infrastructure/`
 
 ---
@@ -508,6 +516,7 @@ Newest first. One line per finished feature: date · id · what · test result.
 
 | Date | Feature | What landed | Tests |
 | --- | --- | --- | --- |
+| 2026-08-19 | F2.10 | 22 hand-written row interfaces across the nine owning modules, plus `Json` for jsonb; verified column-for-column against the Postgres catalogue instead of the uninstalled Supabase CLI. **Closes Phase 2** | `pnpm test` 173/173 — 8 new, each mutation-probed · typecheck, lint green |
 | 2026-08-19 | F2.9 | `010_seed_reference` — the 44 English phonemes annotated for a Bengali speaker and the 24 rule families, seeded idempotently on their natural keys; the migration names every symbol and code so a lost or mistyped row fails the deploy | `pnpm test` 165/165 — 20 new · typecheck, lint green |
 | 2026-08-19 | F2.8 | `009_functions_triggers` — updated_at by catalogue loop, idempotent signup trigger, `complete_lesson_session` as a pure transaction boundary, pg_cron auto-submit, execute revoked from every client role | `pnpm test` 145/145 — 20 new · typecheck, lint green |
 | 2026-08-18 | F2.7 | `correct_answer` protection — already unreachable after 008, so this ships the regression lock instead of redundant SQL: privilege sweep over every column and role, no-view assertion, static sweep of every migration | `pnpm test` 125/125 — 9 new · typecheck, lint green |
