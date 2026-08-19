@@ -80,56 +80,33 @@ and 2. No feature starts without it. **Never read the file** — existence check
 
 ## NEXT
 
-> **Phase 4 · Domain and application layers — not started**
-> Cut `feat/04-domain-layer` from an up-to-date `dev`. Phase 3 is closed and merged; do not
-> reuse its branch.
+> **Phase 5 · Infrastructure and presentation wiring — not started**
+> Cut `feat/05-infrastructure-presentation` from an up-to-date `dev`. Phase 4 is closed and
+> merged; do not reuse its branch.
 >
-> **What Phase 3 leaves Phase 4**
-> - `src/modules/auth/` is the worked example of the four layers: entity, port with a `Symbol`
->   token, use case taking interfaces through its constructor, Supabase adapter, and wiring in
->   `src/composition/`. `container.ts`, `use-cases.ts` and `handlers.ts` are the three files a
->   new module registers itself in.
-> - **`LearnerProfile` is deliberately partial.** It carries `id`, `userId`, `displayName`,
->   `track`, `currentDayIndex`, `onboardingCompletedAt`. `05-domain-model.md` gives it ten
->   fields; the rest are 003 defaults nobody has chosen yet. Grow it when there is something to
->   grow it with.
-> - **F4.10a** — `IRateLimiter` **and the `rate_limits` table Phase 2 never shipped**. F1.9 is
->   `[-]` waiting on it. `withApi` has no rate limiting at all until this lands.
-> - `01-architecture.md`'s `withApi({ handler, container })` sketch is not what was built, and
->   cannot be — see **D27**. A handler is a factory; `src/composition/handlers.ts` joins it up.
-> - Coverage is enforced now: 90% on `domain` and `application`, currently 100%.
->   `@vitest/coverage-v8` had to be installed for that to run at all.
+> **What Phase 4 leaves Phase 5**
+> - **Eleven repository ports and four application ports, none of them implemented** except
+>   `ILearnerProfileRepository` (Phase 3) and `IRateLimiter` (F4.10a). Phase 5's job is the
+>   adapters behind them, plus `src/composition/` wiring, plus the route handlers.
+> - `src/modules/shared/` is new — value objects, `LocalDate`, `normaliseAnswer`, the four
+>   application ports. See **D29**.
+> - `LearnerProfile` is now **named-construction with twelve fields** and `currentDayIndex` is a
+>   `DayIndex`, not a number. The Supabase repository has `save`; its narrow `IProfileDatabase`
+>   slice gained `update`.
+> - **`GetLearnerDashboard` is written to be five queries and always five.** The gate's N+1
+>   assertion has something real to assert against.
+> - `IUnitOfWork` has no implementation. Four use cases call `run()`; until an adapter exists,
+>   a failure part-way through a lesson completion is not actually rolled back.
+> - Migration **012** ships `rate_limits` and `consume_rate_limit`.
 >
-> **Spotted, still open — none of these belonged to a Phase 3 feature**
-> - `src/lib/logger.ts:14` reads `process.env['LOG_LEVEL']` directly, against the "no
->   `process.env` outside the env module" rule. Deliberately left: F3.11 touched that file, but
->   the log level has nothing to do with whether a second sign-in path exists.
-> - 008 grants `authenticated` a table-wide `update` on `learner_profiles`, so a learner can
->   write their own `current_day_index` — and `onboarding_completed_at`. Column-level grants or
->   a trigger guard. It is a Phase 2 RLS decision.
-> - The repo has never been prettier-clean: `pnpm format` rewrites ~40 files no feature touched.
->   Format the files you changed, not the tree, until someone lands a formatting-only commit.
-> - `playwright.config.ts` has `reuseExistingServer: true`, so anything already on :3000 hijacks
->   the run. On this machine an unrelated Docker app does. Run
->   `PORT=3100 NEXT_PUBLIC_APP_URL=http://localhost:3100 pnpm test:e2e`.
-> - `next build` warns that `@supabase/supabase-js` reads `process.version`, unavailable on the
->   Edge runtime the middleware uses. Understood and recorded as **D25** — the only fix is an
->   experimental Next flag.
->
-> **The user's to run, not the code's**
-> - **Supabase dashboard → Authentication → URL Configuration must list
->   `${NEXT_PUBLIC_APP_URL}/auth/callback`,** or Google refuses the round trip. Nothing in the
->   codebase can do this, and sign-in does not work end to end until it is done.
-> - **Authentication → Providers → Google** must be enabled, with the client id and secret.
-> - `pnpm db:migrate` against the hosted project, now including **011**
->   (`learner_profiles.onboarding_completed_at`). It writes to a live database; the from-empty
->   proof is PGlite in CI.
-> - `CRON_SECRET` stays empty until Phase 8. Empty now reads as unset, and every cron route
->   refuses rather than running unguarded.
-
-Update this block every time a feature is finished.
-
----
+> **Spotted, still open — none of these belonged to a Phase 4 feature**
+> - `src/lib/logger.ts:14` still reads `process.env['LOG_LEVEL']` directly. Carried from Phase 3.
+> - 008 still grants `authenticated` a table-wide update on `learner_profiles`, so a learner can
+>   write their own `current_day_index`. F4.12 made that column meaningful, which makes the hole
+>   worth more than it was. Column-level grants or a trigger guard; it is a Phase 2 RLS decision.
+> - The repo has never been prettier-clean: `pnpm format` rewrites files no feature touched.
+> - Phoneme-dimension mastery is never written. Dictation credits rule families only (correctly),
+>   and pronunciation attempts arrive in Phase 6 — the matrix's phoneme axis stays empty until then.
 
 ## Phase 0 — Specification and architecture record
 Branch `docs/00-architecture-record` · Status: `COMPLETE`
@@ -297,7 +274,11 @@ items proven below the level they are written at — see **Completed** in
 ---
 
 ## Phase 4 — Domain and application layers
-Branch `feat/04-domain-application` · Status: `NOT STARTED`
+Branch `feat/04-domain-application` · Status: `DONE` (16/16, 2026-08-19).
+**Exit gate not run — paused by standing instruction 2026-08-19** (`CLAUDE.md` section 0).
+Four of its items were nonetheless proven, by probes kept deliberately: the engine's five
+mandatory cases, all nine error tags reachable from real wrong answers, `consume_rate_limit`,
+and the 40→25 review queue. Coverage was not measured and most use cases have no unit test.
 
 - [x] **F4.1** (2026-08-19) Value objects — `DayIndex`, `ScorePercent`, `IpaTranscription`, `Track`, `ErrorTag`
   - Test: each rejects out-of-range construction

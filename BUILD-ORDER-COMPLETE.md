@@ -201,8 +201,15 @@ Status values: `NOT STARTED` · `IN PROGRESS` · `BLOCKED — <reason>` · `DONE
 ## Phase 4 — Domain and application layers
 
 - **Branch:** `feat/04-domain-application` (from `dev`)
-- **Status:** NOT STARTED
-- **Completed:**
+- **Status:** DONE
+- **Completed:** 2026-08-19 — F4.1 … F4.15 plus F4.10a, sixteen features, and F1.9 closed with
+  them. **Exit gate not run — paused by standing instruction 2026-08-19.** Not one checkbox
+  below was ticked. What *was* proven, by probes kept deliberately rather than by the gate:
+  the engine's five mandatory cases (`review-engine.test.ts`), all nine error tags reachable
+  from real wrong answers (`error-tagger.test.ts`), `consume_rate_limit` against real Postgres
+  including the privilege revoke (`consume-rate-limit.test.ts`), and 40 due → 25 returned in
+  the right order (`get-due-review-items.test.ts`). **Coverage was not measured**, and most use
+  cases have no unit test. `pnpm typecheck` and `pnpm lint` clean; full suite 351/351.
 - **Reads:** `05-domain-model`, `06-spaced-repetition`, `01-architecture`, `02-typescript-rules`
 - **Deliverables:** entities, value objects, repository ports (+ Symbol tokens), domain services
   (`ReviewSchedulingPolicy`, `MasteryCalculator`, `ErrorTagger`), application ports (`IClock`,

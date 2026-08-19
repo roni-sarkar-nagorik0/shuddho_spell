@@ -780,6 +780,90 @@ are written that way on purpose. A rule that is checked only when someone rememb
 is not a rule, and the moment these start mattering is the moment nobody will be thinking about
 them.
 
+**D29 — a `shared` module for what no feature owns (F4.1).**
+`DayIndex`, `ScorePercent`, `IpaTranscription`, `ErrorTag`, `LocalDate`, `normaliseAnswer` and
+the four application ports are used by program, lessons, review, progress and exams alike.
+`05-domain-model.md` does not say where they live. Putting them in whichever module happened to
+need them first would have had four modules importing from a fifth that has no stake in the
+concept — so `src/modules/shared/` exists, below all of them.
+
+`Track` **moved** out of `auth` for the same reason: it says how long the programme is, which is
+a question program, lessons and review all ask and auth does not.
+
+**D30 — `LocalDate` and `zonedDayStart`, rather than a timezone library (F4.4, F4.5).**
+Every learner-facing day boundary — streaks, due dates, the "3 different calendar days" mastery
+rule — is computed in the learner's zone. `Intl` already carries the IANA database, so the two
+operations the domain needs (what day is it there, when does that day begin) are ~40 lines
+rather than a dependency. `zonedDayStart` samples the offset **twice**: the first sample is
+taken at a guessed instant which, on the two days a year a zone shifts, can sit on the wrong
+side of the transition.
+
+**D31 — two additions to `IReviewSchedulingPolicy`'s sketched interface (F4.4).**
+`06-spaced-repetition.md` sketches three methods. Two more things were needed:
+
+- `nextIntervalIndex`, because "a correct answer advances one rung, capped at rung 4" is a fact
+  about the ladder's *length*, and the ladder's length is exactly what `ReviewItem` must not know.
+- a `timezone` parameter on `nextDueAt`. The doc's own signature omits it while the prose two
+  lines above requires the due date to land on the learner's day boundary rather than at the
+  submission instant. The signature cannot deliver what the prose asks for.
+
+**D32 — mastery is granted once and never revoked (F4.6).**
+The spec says when `isMastered` becomes true and never says when it becomes false. A mastered
+item that is later missed already drops to rung 0 and returns tomorrow — that is the correction,
+and it is enough. Taking the badge back as well tells a learner they have un-learned something,
+which is untrue and is how people stop.
+
+**D33 — the streak's fifth case: the local day going backwards (F4.7).**
+`05-domain-model.md` covers first activity, same day, next day and a gap. It does not cover a
+learner active in Dhaka on the 19th opening the app in New York on the 18th, where every
+comparison reads a gap of minus one. Treated as "same day" — nothing changes, and
+`lastActiveDate` is never walked backwards — because resetting the streak of somebody who got on
+a plane is the worse wrong answer.
+
+**D34 — `ErrorTagger` says nothing rather than something wrong (F4.8).**
+Every rule fires on a shape *characteristic* of an error, not on a proof of one. An unrecognised
+wrong answer therefore returns no tags at all. An untagged error is a gap in coverage the content
+team can see; a mis-tagged one teaches the learner the wrong lesson, which is worse than teaching
+them nothing. Word order short-circuits the sentence rules for the same reason — the right words
+in the wrong order also read as a missing article and a wrong preposition, and four tags for one
+mistake is noise.
+
+**D35 — eleven repository ports, not the specified eight (F4.9).**
+`05-domain-model.md` lists one library repository. Phonemes, rule families and sentence items are
+separate tables read by different screens, and one port spanning four aggregates cannot be
+implemented narrowly by anything. What the ports *refuse* carries the design:
+`IAttemptRepository` has `append` and no `save`, because 003 gives the client no update and a
+port offering one routes around it; `IReviewItemRepository.findDue` takes no limit, because the
+cap of 25 and the most-overdue-first ordering are product rules that would be invisible and
+untestable inside SQL.
+
+**D36 — `IRateLimiter` lives in `src/contracts`, not in `application/ports` (F4.10a).**
+`05-domain-model.md` lists it as an application port. Its only caller is `withApi`, which lives
+in `src/lib` — and the boundary rules let `lib` import `contracts` and forbid it importing
+`application`. Declaring the interface where both sides may legally see it beats loosening the
+boundary rule or writing it out twice.
+
+Two further choices in that feature, neither specified. The limiter **fails open and logs
+loudly**: it is abuse protection, not an authorisation control — RLS and the session are what
+stand between a stranger and a learner's data, and locking every learner out because a counter
+table hiccuped is the worse failure. And it is imported **lazily**, inside the request, because a
+static import made every route module read and validate the Supabase environment at load time,
+`/api/health` included.
+
+**D37 — a review answer writes no `attempt` row (F4.14).**
+`attempts.session_id` is `not null` in 003 and a review happens outside a lesson session.
+Inventing a session to hang it off would corrupt every per-session number the product reports, so
+the review item's own counters — `timesSeen`, `timesCorrect`, `consecutiveCorrect` — are the
+record of what happened.
+
+**D38 — verification is paused, and four probes were kept anyway (Phase 4).**
+The user paused test-writing, coverage and every exit gate on 2026-08-19 (`CLAUDE.md` section 0).
+Four test files were still written and kept, each because the claim being made could not be
+settled by reading code: the spaced-repetition engine's five mandatory cases, that all nine error
+tags are reachable from a real wrong answer, that `consume_rate_limit` refuses the 61st request,
+and that the review queue returns 25 of 40 in the right order. Everything else in Phase 4 is
+typechecked and linted and otherwise unverified, which is the trade that was asked for.
+
 ### Open — needs the user, not me
 
 **O1 — `02-typescript-rules.md` still says `packages/config` base tsconfig.** That is a
