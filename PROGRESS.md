@@ -55,11 +55,19 @@ and 2. No feature starts without it. **Never read the file** — existence check
 
 ## NEXT
 
-> **Phase 3 · F3.1 — `@supabase/ssr` cookie session client**
-> Branch: `feat/03-google-auth` (cut from `dev`)
-> **Phase 2 is DONE** — schema, RLS, functions, seed and row interfaces, exit gate run and green.
-> One thing the gate could not prove here: `pnpm db:migrate` against the hosted project. It writes
-> to a live database, so it is the user's to run; the from-empty proof is PGlite in CI.
+> **Phase 3 · F3.2 — `/login`: one heading, one line, one Google button**
+> Branch: `feat/03-google-auth` (already cut from `dev`, which now carries Phase 2)
+> **F3.1 is done.** The session cookie is httpOnly, which closes `createBrowserClient` for good —
+> see D21 in `ARCHITECTURE.md`. `useSession()` in F3.5 must be server-fed through a provider,
+> not a client reading `document.cookie`. `secure` is still unset and belongs to F3.4's middleware.
+> Two environment notes, neither a code defect:
+> - `pnpm test:e2e` needs `pnpm exec playwright install chromium` on a fresh machine.
+> - `playwright.config.ts` has `reuseExistingServer: true`, so **anything** already listening on
+>   :3000 hijacks the run — an unrelated Docker app on this machine made `landing.spec.ts` fail
+>   against a stranger's JSON. Free the port, or run
+>   `PORT=3100 NEXT_PUBLIC_APP_URL=http://localhost:3100 pnpm test:e2e`.
+> One thing Phase 2's gate could not prove here: `pnpm db:migrate` against the hosted project. It
+> writes to a live database, so it is the user's to run; the from-empty proof is PGlite in CI.
 > Phase 1's two carry-overs are still open and still correctly deferred: F1.9 (rate limiter — the
 > `rate_limits` table is **not** in the schema yet; it arrives with that feature) and F1.11
 > (OpenAPI, needs the v1 Zod schemas from Phase 4/5).
@@ -198,9 +206,9 @@ Branch `feat/02-database-schema` · Status: `DONE` (exit gate run 2026-08-19)
 ---
 
 ## Phase 3 — Authentication (Google only)
-Branch `feat/03-google-auth` · Status: `NOT STARTED`
+Branch `feat/03-google-auth` · Status: `IN PROGRESS`
 
-- [ ] **F3.1** `@supabase/ssr` cookie session client
+- [x] **F3.1** (2026-08-19) `@supabase/ssr` cookie session client
   - Test: the session cookie is httpOnly
 - [ ] **F3.2** `/login` — one heading, one line, one Google button
   - Test: the page contains exactly one button and zero input elements
@@ -516,6 +524,7 @@ Newest first. One line per finished feature: date · id · what · test result.
 
 | Date | Feature | What landed | Tests |
 | --- | --- | --- | --- |
+| 2026-08-19 | F3.1 | `@supabase/ssr` cookie session client — `toSessionCookieOptions` overrides the library's own `httpOnly: false` default so the access and refresh tokens are unreadable by script; every cookie in a chunked batch is hardened, the rest of Supabase's attributes pass through | `pnpm test` 182/182 — 9 new, all four mutations caught · `pnpm test:e2e` 1/1 · typecheck, lint green |
 | 2026-08-19 | F2.10 | 22 hand-written row interfaces across the nine owning modules, plus `Json` for jsonb; verified column-for-column against the Postgres catalogue instead of the uninstalled Supabase CLI. **Closes Phase 2** | `pnpm test` 173/173 — 8 new, each mutation-probed · typecheck, lint green |
 | 2026-08-19 | F2.9 | `010_seed_reference` — the 44 English phonemes annotated for a Bengali speaker and the 24 rule families, seeded idempotently on their natural keys; the migration names every symbol and code so a lost or mistyped row fails the deploy | `pnpm test` 165/165 — 20 new · typecheck, lint green |
 | 2026-08-19 | F2.8 | `009_functions_triggers` — updated_at by catalogue loop, idempotent signup trigger, `complete_lesson_session` as a pure transaction boundary, pg_cron auto-submit, execute revoked from every client role | `pnpm test` 145/145 — 20 new · typecheck, lint green |

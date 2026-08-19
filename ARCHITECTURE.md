@@ -612,6 +612,25 @@ The intent of the doc is met; the tool named in it is not the thing that meets i
 describes what the database guarantees, and the database guarantees well-formed JSON and no
 more. Narrowing happens in the mapper, which is allowed to fail and say why.
 
+**D21 — Forcing `httpOnly` closes the browser Supabase client, deliberately (F3.1).**
+`04-authentication.md` requires the session to live in httpOnly cookies. `@supabase/ssr` does
+not do this on its own: its `DEFAULT_COOKIE_OPTIONS` set `httpOnly: false`, because its
+`createBrowserClient` is designed to read the session back out of `document.cookie`. The two
+positions cannot both hold. `src/lib/supabase/session-cookie-options.ts` overrides the library
+default, writing `httpOnly` last so no caller can reopen it.
+
+The consequence, recorded because the doc does not spell it out: **no browser-side Supabase
+client can ever hydrate a session in this app.** `createBrowserClient` is not a third client
+we are yet to write — it is now unusable by construction. `useSession()` (F3.5) must therefore
+be fed by the server, through a provider whose value came from a Server Component that already
+verified the session, and never from a client reading cookies. That is the stricter reading of
+"identity always comes from the server-verified session", and it is the one the cookie
+attribute now enforces rather than merely asks for.
+
+`secure` is deliberately *not* forced here. It would break plain-http local development, and
+the choice belongs with the middleware that owns the response (F3.4), which knows the request
+protocol. It is listed in this file rather than left implicit so it cannot be forgotten.
+
 ### Open — needs the user, not me
 
 **O1 — `02-typescript-rules.md` still says `packages/config` base tsconfig.** That is a
