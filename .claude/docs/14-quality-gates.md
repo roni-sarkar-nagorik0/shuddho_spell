@@ -3,6 +3,16 @@
 Gates are **wired up**, not mentioned. A gate that is documented but not enforced is a lie in
 a markdown file.
 
+> **PAUSED 2026-08-19 by the user — feature-first build mode. Section 0 of `CLAUDE.md` governs.**
+> The **Tests** section below (Vitest, Playwright, the 90% `domain` / `application` coverage
+> floor) and every phase exit gate are **not enforced** right now. Nothing here has been
+> deleted: this document stays the specification of what "done properly" means, and it is what
+> gets re-enforced when the pause is lifted.
+>
+> **The Lint and Types sections are NOT paused.** `pnpm typecheck && pnpm lint` runs before
+> every push, `eslint-plugin-boundaries` still fails a layer violation, and the rule against
+> disabling a rule to unblock work stands exactly as written.
+
 ## Lint
 
 - `eslint-plugin-boundaries` enforcing the four-layer dependency rule.

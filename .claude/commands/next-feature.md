@@ -2,6 +2,13 @@
 description: Pick up the single next feature from PROGRESS.md, build it, test it, finish it
 ---
 
+> **BUILD MODE — feature-first, verification paused. Set by the user 2026-08-19.**
+> Section 0 of `CLAUDE.md` governs. While it stands, everything in this file about **writing
+> tests, running `pnpm test` / `pnpm test:e2e`, coverage floors, and phase exit gates is
+> PAUSED** — not deleted, and it all comes back the moment that block is removed.
+> The check that still runs is **`pnpm typecheck && pnpm lint`**. A feature is `[x]` when it is
+> **built and merged into `dev`**. Never report a skipped gate or an unrun test as a pass.
+
 Work the **next single feature**. One only.
 
 ### 0. Preflight

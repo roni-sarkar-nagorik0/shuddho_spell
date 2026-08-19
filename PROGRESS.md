@@ -2,6 +2,15 @@
 
 **One feature at a time. Test it. Fix it if it fails. Only then move on.**
 
+> **BUILD MODE — feature-first, verification paused. Set by the user 2026-08-19.**
+> See section 0 of `CLAUDE.md`, which governs. Summary for this file:
+> - The `Test:` line under every feature below is now an **acceptance criterion** — what the
+>   feature must *do*. Build to it. You do not have to write it as a test.
+> - `[x]` means **built and merged into `dev`**. No green suite required.
+> - `[!]` is for a feature that could not be built, not for a failing test.
+> - `/build` completes **five phases** per invocation.
+> - Nothing in this file has been deleted. Paused lines are marked, not removed.
+
 This file is the live state of the build. `BUILD-ORDER-COMPLETE.md` says what the phases are;
 this file says exactly where you are inside them.
 
@@ -13,7 +22,7 @@ this file says exactly where you are inside them.
 | --- | --- |
 | `[ ]` | not started |
 | `[~]` | in progress — **only ever one of these in the whole file** |
-| `[x]` | done: built, tested, tests green, merged into `dev` |
+| `[x]` | done: built, tested, tests green, merged into `dev` — *paused → **built and merged into `dev`*** |
 | `[!]` | **failed or blocked** — must be debugged and fixed before anything else starts |
 | `[-]` | deliberately skipped or deferred — needs a one-line reason on the same row |
 
@@ -35,25 +44,37 @@ and 2. No feature starts without it. **Never read the file** — existence check
 2. Mark it `[~]` and update the **NEXT** pointer at the top of this file.
 3. Build it. Only it.
 4. Write and run its **test cases** — they are listed under every feature below.
+   > **PAUSED.** Read the `Test:` line as the definition of done and **build to it**. Do not
+   > author it as a test. Run `pnpm typecheck && pnpm lint` instead.
 5. **If the tests fail:** mark it `[!]`, debug, fix, re-run. Do **not** start another feature.
    Do **not** move on. Do **not** leave it half-done for later.
+   > **PAUSED for tests; live for builds.** `[!]` now means *the feature could not be built* —
+   > typecheck or lint red, or a real blocker. That still stops everything until it is fixed.
 6. When tests are green: mark it `[x]`, add the date, add a one-line note in the **Log**.
+   > **PAUSED →** when it is **built and merged into `dev`**: mark `[x]`, add the date, add
+   > the **Log** line.
 7. Commit and push the feature branch (see `.claude/docs/15-git-workflow.md`).
 8. Move the **NEXT** pointer to the following `[ ]`, then go back to 1 and do the next
    feature. **One whole phase per `/build`**, one feature at a time — a feature is picked only
    once the one before it is committed, pushed and merged into `dev`. When the phase has no
    `[ ]` left, run its exit gate, flip its **Status**, and stop. The next phase is the next
    `/build`.
+   > **PAUSED →** **five whole phases per `/build`**, still one feature at a time, still in
+   > order. When a phase has no `[ ]` left, flip its **Status** to `DONE` (no exit gate) and
+   > roll straight into the next phase — until five are done, then stop.
 
 ### Absolute rules
 
 - **Check the env file once, never read it**, and never block the build on it twice.
 - **Never work on two features at once.** One `[~]` in this file, ever.
 - **Never mark `[x]` without tests written and green.** "It works when I try it" is not a test.
+  > **PAUSED** — `[x]` = built and merged into `dev`.
 - **Never leave a feature incomplete.** A `[!]` blocks the whole build until it is `[x]`.
 - **Never skip ahead** to a more interesting feature because the current one is awkward.
 - **Never delete or weaken a test** to turn `[!]` into `[x]`.
+  > **STILL LIVE.** Writing tests is paused; vandalising the 25 that already exist is not.
 - A feature is done when it is built **and** tested **and** merged into `dev` — not before.
+  > **PAUSED** — built **and** merged into `dev`.
 
 ---
 

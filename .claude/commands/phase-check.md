@@ -2,6 +2,18 @@
 description: Run the current phase's exit gate and report honestly
 ---
 
+> **BUILD MODE — feature-first, verification paused. Set by the user 2026-08-19.**
+> Section 0 of `CLAUDE.md` governs. While it stands, everything in this file about **writing
+> tests, running `pnpm test` / `pnpm test:e2e`, coverage floors, and phase exit gates is
+> PAUSED** — not deleted, and it all comes back the moment that block is removed.
+> The check that still runs is **`pnpm typecheck && pnpm lint`**. A feature is `[x]` when it is
+> **built and merged into `dev`**. Never report a skipped gate or an unrun test as a pass.
+
+> **This command exists only to run an exit gate, so while the pause stands it does nothing
+> but report.** If invoked: say the gate is paused, then list the phase's features from
+> `PROGRESS.md` with their real marks, and run `pnpm typecheck && pnpm lint` for a live
+> signal. Do not tick a single gate checkbox.
+
 Verify the current phase against its exit gate in `BUILD-ORDER-COMPLETE.md`.
 
 For **each** checkbox in the gate:

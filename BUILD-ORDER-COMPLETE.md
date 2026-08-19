@@ -2,6 +2,16 @@
 
 The build contract for ShuddhoSpell: **what each phase must deliver and how it is proved.**
 
+> **BUILD MODE — feature-first, verification paused. Set by the user 2026-08-19.**
+> Governed by section 0 of `CLAUDE.md`. For this file specifically:
+> - **Every *Exit gate* below is paused.** Do not run it, do not let it block a phase, do not
+>   let it block the phase after. Not one checkbox has been deleted — they stand as written,
+>   ready to run the moment the pause is lifted.
+> - A phase is `DONE` when **every feature in it is `[x]` in `PROGRESS.md`** — built and
+>   merged into `dev`.
+> - `/build` completes **five phases** per invocation, in order.
+> - **Phase order is not paused.** Never build a phase before the one under it.
+
 For **which single feature to work on right now**, read [`PROGRESS.md`](PROGRESS.md). This
 file defines the phases; `PROGRESS.md` tracks the features inside them, one at a time.
 
@@ -20,9 +30,14 @@ file defines the phases; `PROGRESS.md` tracks the features inside them, one at a
 5. Build the phase's features **one at a time**, in `PROGRESS.md` order. Each feature: build →
    write its tests → run them → fix any failure before starting the next → mark `[x]`.
    Never two features at once. Never a `[!]` left behind.
+   > **PAUSED →** build → `pnpm typecheck && pnpm lint` → mark `[x]`. One at a time, in order,
+   > never two at once — those parts are untouched.
 6. Run the *Exit gate*. Paste the actual command output.
+   > **PAUSED.** Skip it. Say in the report that it was skipped by standing instruction.
 7. **Only if the gate is fully green:** commit, push the feature branch, open a PR into `dev`.
    Never push to `dev` directly. Never touch `main`. See `.claude/docs/15-git-workflow.md`.
+   > **PAUSED / SUPERSEDED →** commit and push per feature, then merge the branch into `dev`
+   > yourself each lap (the 2026-08-19 no-PR rule, `CLAUDE.md` §5.2). Never touch `main`.
 8. Flip **Status** to `DONE`, fill in the *Completed* line, and append anything unspecified
    you decided to `ARCHITECTURE.md`.
 9. Stop. Report. Wait for the next instruction.
@@ -31,8 +46,12 @@ Status values: `NOT STARTED` · `IN PROGRESS` · `BLOCKED — <reason>` · `DONE
 
 **Never mark a phase `DONE` with a failing or skipped gate item.** A partial phase stays
 `IN PROGRESS` with a written list of what remains.
+> **PAUSED →** `DONE` when every feature is `[x]`. A phase with a `[ ]` or `[!]` left in it
+> still stays `IN PROGRESS` with a written list of what remains — that half is live.
 
 **Never push a phase whose gate is not green.** A red gate means the branch stays local.
+> **PAUSED →** push when `pnpm typecheck && pnpm lint` are clean. Red typecheck or lint still
+> means the branch stays local.
 
 ---
 

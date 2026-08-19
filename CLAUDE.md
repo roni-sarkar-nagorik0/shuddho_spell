@@ -8,6 +8,35 @@ and `BUILD-ORDER-COMPLETE.md` for that phase's gate, and the `.claude/docs/` fil
 
 ---
 
+## 0. ACTIVE BUILD MODE — feature-first, verification paused
+
+> **Set by the user on 2026-08-19. This block overrides any rule below that contradicts it.**
+> The goal right now is **every feature built and visible**, not proved. Nothing in this repo
+> has been deleted — the paused rules stay written exactly as they were, so the moment this
+> block is removed the project is back under full discipline.
+>
+> **Paused — do not enforce, do not treat as a blocker:**
+> - writing test cases for a feature (`PROGRESS.md` lists them; they are now *acceptance
+>   criteria you build to*, not tests you must author)
+> - `pnpm test`, `pnpm test:e2e`, and the 90% coverage floor on `domain` / `application`
+> - every phase **exit gate** in `BUILD-ORDER-COMPLETE.md`
+> - "a feature is `[x]` only when its tests are green"
+> - "one phase per session" — see the run size below
+>
+> **Still live — these are not tests and the build breaks without them:**
+> - `pnpm typecheck && pnpm lint` before every push. Without these the app does not compile
+>   and no feature is visible, which is the whole point of the pause.
+> - every architecture, TypeScript, auth and git rule in sections 3–5 and 10
+> - if a test that already exists goes red, **say so** — never delete, `.skip` or weaken it
+>
+> **Run size while this block stands: `/build` completes FIVE phases per invocation**, in
+> order, one feature at a time within each. See `.claude/commands/build.md`.
+>
+> **A feature is `[x]` when it is built and merged into `dev`.** Then date it, add the **Log**
+> line, move **NEXT**.
+
+---
+
 ## 1. What this project is
 
 ShuddhoSpell is a production web application: a **28-day English precision-training
@@ -120,10 +149,15 @@ state library, a component library, or a CSS-in-JS runtime.
 - [ ] RLS is on for every learner table and written as if the API did not exist.
 
 ### Quality
+> **SUSPENDED 2026-08-19 by the user — the two `[~]` items below are not enforced.**
+> They stay here as the standard to restore, not as a live requirement. Do not delete them.
+> While this note stands: a feature does not need a unit test to ship, and no coverage
+> number blocks anything. Every other item in this checklist is still live.
+
 - [ ] Env vars validated with Zod at boot in `src/lib/env.ts`; the app refuses to start and names the offending var. Nothing else reads `process.env`.
 - [ ] `.env.example` stays complete — a new variable without an entry there is a bug.
-- [ ] Every use case has a unit test constructed directly: `new SomeUseCase(fakeRepo, fakeClock)`. No framework, no container.
-- [ ] Coverage floor 90% on `domain` and `application`.
+- [~] *(suspended)* Every use case has a unit test constructed directly: `new SomeUseCase(fakeRepo, fakeClock)`. No framework, no container.
+- [~] *(suspended)* Coverage floor 90% on `domain` and `application`.
 - [ ] No secret in code, ever, and none in the client bundle.
 
 Detail and rationale: [`.claude/docs/01-architecture.md`](.claude/docs/01-architecture.md) and
@@ -157,6 +191,10 @@ feat/… ← one branch per phase, carrying every feature in it. Where you work.
 4. **Test before every push.** `pnpm typecheck && pnpm lint && pnpm test`, plus
    `pnpm test:e2e` when the feature touches sign-in, a lesson or an exam, plus the phase's
    exit gate. A failing gate means **do not push** — report the failure instead.
+   > **PAUSED per section 0 (2026-08-19).** While the build-mode block stands the pre-push
+   > gate is **`pnpm typecheck && pnpm lint` only**. `pnpm test`, `pnpm test:e2e` and the
+   > phase exit gate are not run and do not block a push. A failing typecheck or lint still
+   > blocks — nothing ships that does not compile.
 5. **Never force-push.** Not `--force`, not `-f`, not `--force-with-lease` on a shared branch.
 6. **Never delete a branch.** Not `main`, not `dev`, not a merged feature branch, not a stale
    one. No `git branch -D`, no `git push origin --delete`. Cleanup is a human decision.
@@ -182,16 +220,28 @@ Full rules are at the top of it; these are the ones you may never break:
    it re-opens under, never `[~]`. `[~]` means in flight, and a stale one blocks every run.
 2. **Never start a second feature** because the current one is awkward, blocked in your head,
    or "mostly done". Mostly done is not done.
-3. **Every feature ships with tests.** Each feature in `PROGRESS.md` lists its test cases.
+> **SUSPENDED 2026-08-19 by the user — rules 3, 4, 5 and 6 below are not enforced.**
+> They stay in the file as the standard to restore. Do not delete them. While this note stands:
+> a feature ships without tests; a missing or failing test never makes a feature `[!]`; nothing
+> here requires a green suite before `[x]`.
+> **Two things survive the suspension, because nothing else covers them:**
+> - The `[x]` bookkeeping from rule 6 — a feature is `[x]` when it is **built and merged into
+>   `dev`**; then add the date, add a **Log** line, and move the **NEXT** pointer.
+> - The "never fake it" half of rule 5 — a test that *is* written and *is* red must not be
+>   deleted, `.skip`ped, weakened, or silenced with an `eslint-disable` to go green. Report it.
+>
+> Rules 1, 2 and 7 are untouched and still live.
+
+3. *(suspended)* **Every feature ships with tests.** Each feature in `PROGRESS.md` lists its test cases.
    Write them, run them, paste the output.
-4. **If a test fails: it becomes `[!]`, and it is now the only thing you work on.** Debug it,
+4. *(suspended)* **If a test fails: it becomes `[!]`, and it is now the only thing you work on.** Debug it,
    find the actual cause, fix it, re-run. Do not move on. Do not park it. Do not "come back
    to it later". The **Blocked / failed** table in `PROGRESS.md` must be empty before any new
    feature starts.
-5. **Never fake a pass.** No deleting a test, no skipping it, no `.skip`, no loosening an
+5. *(suspended, except the clause named above)* **Never fake a pass.** No deleting a test, no skipping it, no `.skip`, no loosening an
    assertion, no disabling a lint rule to go green. A red test is information; a deleted red
    test is a lie.
-6. **Mark `[x]` only when** it is built **and** its tests are green **and** it is merged into
+6. *(suspended, except the bookkeeping named above)* **Mark `[x]` only when** it is built **and** its tests are green **and** it is merged into
    `dev`. Then add the date, add a line to the **Log**, and move the **NEXT** pointer.
 7. **Never leave a feature incomplete at the end of a session.** If you genuinely cannot
    finish, leave it `[~]` with a written note of exactly where it stands and what remains —
@@ -204,13 +254,23 @@ Full rules are at the top of it; these are the ones you may never break:
 1. **Build in phase order.** `BUILD-ORDER-COMPLETE.md` is the contract. Do not start
    phase N+1 while phase N has an unmet exit gate, and do not start feature N+1 while
    feature N is not `[x]` in `PROGRESS.md`.
+   > **PARTLY PAUSED per section 0.** Phase **order** still holds absolutely — phases run
+   > 4, 5, 6, 7, 8, never out of sequence. The **exit gate** precondition is paused: an
+   > ungated phase no longer blocks the next one. Feature order inside a phase still holds.
 2. **One feature at a time; one phase per session.** Finish the feature, test it, mark it,
    then take the next. At the end of the phase run its exit gate, report, stop.
    Do not silently roll into the next phase.
+   > **PAUSED per section 0.** One feature at a time still holds. "One phase per session"
+   > is replaced by **five phases per `/build`**, and rolling into the next phase is now
+   > the expected behaviour, not a violation — up to the five-phase limit.
 3. **Never scaffold ahead.** No placeholder modules "for later", no `// TODO: implement
    in phase 7` stubs outside the current phase's scope.
 4. **Never fake green.** If a test fails, show the failure. If a gate cannot pass, say so
    and say why. Do not delete, skip, or weaken a test to make a gate pass.
+   > **PARTLY PAUSED per section 0.** Gates are not run, so there is no gate to fake. The
+   > honesty half is **not** paused: never claim a feature works when it does not, never
+   > report a phase complete when features are missing, and if an existing test goes red,
+   > say so plainly rather than removing it.
 5. **Never weaken a rule to unblock yourself.** Not the lint boundaries, not `strict`,
    not the coverage floor, not RLS. If a rule genuinely blocks correct work, stop and
    raise it.
@@ -292,6 +352,9 @@ Other commands in `.claude/commands/`: `/next-feature`, `/phase-start`, `/phase-
 - No transliterated "Bangla". Real Bangla script only.
 - No commit, push or merge to `main`. No force-push. No branch deletion. No `--no-verify`.
 - No push with a failing typecheck, lint, test or phase gate.
+  *(Paused per section 0 → **typecheck and lint only**; test and gate do not block a push.)*
 - No second feature started while one is `[~]` or `[!]` in `PROGRESS.md`.
 - No `[x]` without written, passing tests. No skipped, deleted or weakened test to get there.
+  *(Paused per section 0 → `[x]` = **built and merged into `dev`**. The second sentence still
+  stands for tests that already exist: never skip, delete or weaken one.)*
 - No feature left incomplete.

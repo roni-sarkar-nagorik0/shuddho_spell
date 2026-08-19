@@ -2,6 +2,13 @@
 description: Test, commit and push the current feature branch to dev — never to main
 ---
 
+> **BUILD MODE — feature-first, verification paused. Set by the user 2026-08-19.**
+> Section 0 of `CLAUDE.md` governs. While it stands, everything in this file about **writing
+> tests, running `pnpm test` / `pnpm test:e2e`, coverage floors, and phase exit gates is
+> PAUSED** — not deleted, and it all comes back the moment that block is removed.
+> The check that still runs is **`pnpm typecheck && pnpm lint`**. A feature is `[x]` when it is
+> **built and merged into `dev`**. Never report a skipped gate or an unrun test as a pass.
+
 Ship the current feature's work. **Stop at the first failure. Do not continue past a red step.**
 
 ### 1. Check where you are
