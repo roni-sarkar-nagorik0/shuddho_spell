@@ -1,20 +1,21 @@
 // @vitest-environment node
 import { describe, expect, it } from 'vitest';
-import { LearnerProfile } from './learner-profile';
+import { DayIndex } from '@/modules/shared/domain/value-objects/day-index';
+import { type LearnerProfile } from './learner-profile';
+import { makeLearnerProfile } from './learner-profile.fixture';
 
 function profile(
   onboardingCompletedAt: Date | null,
   track: 'standard28' | 'sprint21' = 'standard28',
   currentDayIndex = 1,
 ): LearnerProfile {
-  return new LearnerProfile(
-    'p1',
-    'u1',
-    'Ayesha',
+  return makeLearnerProfile({
+    id: 'p1',
+    userId: 'u1',
     track,
-    currentDayIndex,
+    currentDayIndex: DayIndex.of(currentDayIndex),
     onboardingCompletedAt,
-  );
+  });
 }
 
 describe('hasOnboarded', () => {

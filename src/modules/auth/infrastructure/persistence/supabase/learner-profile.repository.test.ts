@@ -13,7 +13,13 @@ interface IRow {
   readonly user_id: string;
   readonly display_name: string;
   readonly track: string;
+  readonly daily_minutes: number;
+  readonly started_at: string;
+  readonly timezone: string;
+  readonly ui_language: string;
   readonly current_day_index: number;
+  readonly accent_preference: string;
+  readonly playback_rate: number;
   readonly onboarding_completed_at: string | null;
 }
 
@@ -71,7 +77,13 @@ const STORED: IRow = {
   user_id: 'user-1',
   display_name: 'Ayesha',
   track: 'standard28',
+  daily_minutes: 30,
+  started_at: '2026-01-01T00:00:00Z',
+  timezone: 'Asia/Dhaka',
+  ui_language: 'bn',
   current_day_index: 1,
+  accent_preference: 'british',
+  playback_rate: 1,
   onboarding_completed_at: null,
 };
 
@@ -105,7 +117,7 @@ describe('findByUserId', () => {
     await repository.findByUserId('user-1');
 
     expect(store.selectedColumns).toBe(
-      'id, user_id, display_name, track, current_day_index, onboarding_completed_at',
+      'id, user_id, display_name, track, daily_minutes, started_at, timezone, ui_language, current_day_index, accent_preference, playback_rate, onboarding_completed_at',
     );
   });
 

@@ -16,7 +16,7 @@ function toResponse(user: { readonly email: string }, profile: LearnerProfile): 
     displayName: profile.displayName,
     program: {
       track: profile.track,
-      currentDayIndex: profile.currentDayIndex,
+      currentDayIndex: profile.currentDayIndex.value,
       totalDays: profile.totalDays(),
       hasOnboarded: profile.hasOnboarded(),
     },

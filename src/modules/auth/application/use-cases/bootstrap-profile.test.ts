@@ -1,6 +1,7 @@
 // @vitest-environment node
 import { beforeEach, describe, expect, it } from 'vitest';
-import { LearnerProfile } from '../../domain/entities/learner-profile';
+import { type LearnerProfile } from '../../domain/entities/learner-profile';
+import { makeLearnerProfile } from '../../domain/entities/learner-profile.fixture';
 import {
   type ILearnerProfileRepository,
   type INewLearnerProfile,
@@ -33,14 +34,11 @@ class FakeProfiles implements ILearnerProfileRepository {
       return Promise.resolve(existing);
     }
 
-    const created = new LearnerProfile(
-      `profile-${String(this.nextId)}`,
-      profile.userId,
-      profile.displayName,
-      'standard28',
-      1,
-      null,
-    );
+    const created = makeLearnerProfile({
+      id: `profile-${String(this.nextId)}`,
+      userId: profile.userId,
+      displayName: profile.displayName,
+    });
     this.nextId += 1;
     this.rows.push(created);
     return Promise.resolve(created);
@@ -65,7 +63,7 @@ describe('BootstrapProfileUseCase', () => {
   });
 
   it('returns the existing profile without writing anything', async () => {
-    profiles.rows.push(new LearnerProfile('profile-9', 'user-1', 'Ayesha', 'standard28', 1, null));
+    profiles.rows.push(makeLearnerProfile({ id: 'profile-9' }));
 
     const profile = await useCase.execute({ userId: 'user-1', fullName: 'Someone Else' });
 

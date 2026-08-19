@@ -1,6 +1,8 @@
 // @vitest-environment node
 import { beforeEach, describe, expect, it } from 'vitest';
-import { LearnerProfile } from '../../domain/entities/learner-profile';
+import { type LearnerProfile } from '../../domain/entities/learner-profile';
+import { makeLearnerProfile } from '../../domain/entities/learner-profile.fixture';
+import { DayIndex } from '@/modules/shared/domain/value-objects/day-index';
 import { ProfileNotFoundError } from '../../domain/errors/profile-not-found.error';
 import { type ILearnerProfileRepository } from '../../domain/repositories/learner-profile-repository';
 import { GetMeUseCase } from './get-me';
@@ -27,16 +29,23 @@ beforeEach(() => {
 
 describe('GetMeUseCase', () => {
   it('returns the profile behind the session', async () => {
-    profiles.rows = [new LearnerProfile('p1', 'user-1', 'Ayesha', 'standard28', 4, null)];
+    profiles.rows = [makeLearnerProfile({ id: 'p1', currentDayIndex: DayIndex.of(4) })];
 
     const profile = await useCase.execute({ userId: 'user-1' });
 
     expect(profile.id).toBe('p1');
-    expect(profile.currentDayIndex).toBe(4);
+    expect(profile.currentDayIndex.value).toBe(4);
   });
 
   it('never returns somebody else', async () => {
-    profiles.rows = [new LearnerProfile('p1', 'user-2', 'Rahim', 'standard28', 4, null)];
+    profiles.rows = [
+      makeLearnerProfile({
+        id: 'p1',
+        userId: 'user-2',
+        displayName: 'Rahim',
+        currentDayIndex: DayIndex.of(4),
+      }),
+    ];
 
     await expect(useCase.execute({ userId: 'user-1' })).rejects.toBeInstanceOf(
       ProfileNotFoundError,

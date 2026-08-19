@@ -2,7 +2,9 @@
 import { NextRequest } from 'next/server';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { type IAuthenticatedUser } from '@/contracts';
-import { LearnerProfile } from '../../domain/entities/learner-profile';
+import { type LearnerProfile } from '../../domain/entities/learner-profile';
+import { makeLearnerProfile } from '../../domain/entities/learner-profile.fixture';
+import { DayIndex } from '@/modules/shared/domain/value-objects/day-index';
 import { meResponseSchema } from '../dto/me.response';
 
 interface IHarness {
@@ -58,7 +60,7 @@ async function bodyOf(response: Response): Promise<unknown> {
 
 beforeEach(() => {
   harness.user = LEARNER;
-  harness.profile = new LearnerProfile('p1', 'user-1', 'Ayesha', 'standard28', 4, null);
+  harness.profile = makeLearnerProfile({ id: 'p1', currentDayIndex: DayIndex.of(4) });
   harness.askedFor = null;
 });
 
@@ -83,7 +85,11 @@ describe('GET /api/v1/me', () => {
   });
 
   it('carries the total the track implies, not a constant', async () => {
-    harness.profile = new LearnerProfile('p1', 'user-1', 'Ayesha', 'sprint21', 19, null);
+    harness.profile = makeLearnerProfile({
+      id: 'p1',
+      track: 'sprint21',
+      currentDayIndex: DayIndex.of(19),
+    });
 
     const body = meResponseSchema.parse(await bodyOf(await handler(get())));
 
@@ -91,14 +97,11 @@ describe('GET /api/v1/me', () => {
   });
 
   it('reports onboarding as finished once it is', async () => {
-    harness.profile = new LearnerProfile(
-      'p1',
-      'user-1',
-      'Ayesha',
-      'standard28',
-      4,
-      new Date('2026-08-01T10:00:00Z'),
-    );
+    harness.profile = makeLearnerProfile({
+      id: 'p1',
+      currentDayIndex: DayIndex.of(4),
+      onboardingCompletedAt: new Date('2026-08-01T10:00:00Z'),
+    });
 
     const body = meResponseSchema.parse(await bodyOf(await handler(get())));
 
