@@ -61,8 +61,10 @@ export class ReviewItem {
    *
    * Correct climbs one rung; wrong drops to rung 0 from wherever it was,
    * including the top. That asymmetry is the whole design — a deterministic
-   * ladder with no ease factors means the only way back to a 35-day interval is
-   * to earn all five rungs again, and a learner can be told exactly that.
+   * ladder with no ease factors means the only way back to the longest interval
+   * is to earn every rung again, and a learner can be told exactly that. The
+   * length of that interval is the policy's business, not this entity's — which
+   * is why this sentence does not name it.
    *
    * `consecutiveCorrect` counts **days**, not answers. Two correct answers on
    * the same learner-local day leave it where it was, which is what stops a
