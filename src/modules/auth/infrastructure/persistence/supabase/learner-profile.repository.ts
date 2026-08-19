@@ -1,13 +1,16 @@
+import { type IDatabase } from '@/modules/shared/infrastructure/persistence/database';
+import {
+  DatabaseError,
+  PG_CODES,
+} from '@/modules/shared/infrastructure/persistence/database-error';
 import { type LearnerProfile } from '../../../domain/entities/learner-profile';
 import {
   type ILearnerProfileRepository,
   type INewLearnerProfile,
 } from '../../../domain/repositories/learner-profile-repository';
 import { LEARNER_PROFILE_COLUMNS, toLearnerProfile } from '../../mappers/learner-profile.mapper';
-import { type IProfileDatabase } from './profile-database';
 
-/** Postgres unique violation — someone else inserted this profile first. */
-const UNIQUE_VIOLATION = '23505';
+const TABLE = 'learner_profiles';
 
 /**
  * Backed by the **service client**, not the learner's own.
@@ -17,47 +20,58 @@ const UNIQUE_VIOLATION = '23505';
  * client's. The reconciler therefore has to be the one caller that bypasses
  * RLS, and it is safe to be because the only id it ever writes is the one the
  * session verified — it takes a `userId` and cannot be handed a filter.
+ *
+ * Reaches the database through `IDatabase`, the seam every repository shares
+ * since F5.1. It named a Supabase type before that and was the only file in
+ * `src/modules/` that did.
  */
 export class SupabaseLearnerProfileRepository implements ILearnerProfileRepository {
-  constructor(private readonly client: IProfileDatabase) {}
+  constructor(private readonly db: IDatabase) {}
 
   async findByUserId(userId: string): Promise<LearnerProfile | null> {
-    const { data, error } = await this.client
-      .from('learner_profiles')
-      .select(LEARNER_PROFILE_COLUMNS)
-      .eq('user_id', userId)
-      .maybeSingle();
+    try {
+      const row = await this.db.selectOne({
+        table: TABLE,
+        columns: LEARNER_PROFILE_COLUMNS,
+        eq: { user_id: userId },
+      });
 
-    if (error !== null) {
-      throw new Error(`could not read the learner profile: ${error.message}`);
+      return toLearnerProfile(row);
+    } catch (caught: unknown) {
+      // "The read failed" and "there is no profile" are different facts, and
+      // conflating them turns an outage into a signup loop.
+      throw new Error(
+        `could not read the learner profile: ${caught instanceof Error ? caught.message : 'unknown'}`,
+      );
     }
-
-    return toLearnerProfile(data);
   }
 
   /**
    * `on conflict do nothing`, then read back. Postgres decides who wins, so two
    * concurrent first requests produce one row and neither of them a 500 — the
    * loser simply reads what the winner wrote.
-   *
-   * `ignoreDuplicates` makes the insert return no row when it conflicted, which
-   * is why the read-back is unconditional rather than a fallback. A plain
-   * insert would raise 23505 at exactly the moment a learner is least able to
-   * do anything about it.
    */
   async insertIfAbsent(profile: INewLearnerProfile): Promise<LearnerProfile> {
-    const { error } = await this.client
-      .from('learner_profiles')
-      .upsert(
-        { user_id: profile.userId, display_name: profile.displayName },
-        { onConflict: 'user_id', ignoreDuplicates: true },
-      );
-
-    if (error !== null && error.code !== UNIQUE_VIOLATION) {
-      throw new Error(`could not create the learner profile: ${error.message}`);
+    try {
+      await this.db.upsert(TABLE, [{ user_id: profile.userId, display_name: profile.displayName }], {
+        onConflict: 'user_id',
+        // Leave the stored row alone on conflict. Without this the upsert
+        // becomes an update and the loser of the race overwrites the display
+        // name the winner just wrote.
+        ignoreDuplicates: true,
+      });
+    } catch (caught: unknown) {
+      // A unique violation here is the race resolving, not a failure — the
+      // other request won and its row is what this one is about to read.
+      if (!(caught instanceof DatabaseError) || !caught.is(PG_CODES.UniqueViolation)) {
+        throw new Error(
+          `could not create the learner profile: ${caught instanceof Error ? caught.message : 'unknown'}`,
+        );
+      }
     }
 
     const stored = await this.findByUserId(profile.userId);
+
     if (stored === null) {
       // The insert reported success and the row is not there. Nothing sensible
       // follows from that, and inventing a profile would hide it.
@@ -73,13 +87,17 @@ export class SupabaseLearnerProfileRepository implements ILearnerProfileReposito
    * Reading back rather than trusting the entity it was handed: 003 has check
    * constraints this code does not restate — `current_day_index between 1 and
    * 28`, `playback_rate between 0.50 and 1.50` — and returning what was
-   * actually stored is what stops the application believing a write that the
+   * actually stored is what stops the application believing a write the
    * database narrowed or refused.
+   *
+   * `user_id`, `started_at` and `id` are absent from the update by design. A
+   * repository able to overwrite them is one that will eventually reassign a
+   * profile to a different account.
    */
   async save(profile: LearnerProfile): Promise<LearnerProfile> {
-    const { error } = await this.client
-      .from('learner_profiles')
-      .update({
+    await this.db.update(
+      TABLE,
+      {
         display_name: profile.displayName,
         track: profile.track,
         daily_minutes: profile.dailyMinutes,
@@ -92,13 +110,9 @@ export class SupabaseLearnerProfileRepository implements ILearnerProfileReposito
           profile.onboardingCompletedAt === null
             ? null
             : profile.onboardingCompletedAt.toISOString(),
-      })
-      .eq('id', profile.id)
-      .maybeSingle();
-
-    if (error !== null) {
-      throw new Error(`could not save the learner profile: ${error.message}`);
-    }
+      },
+      { id: profile.id },
+    );
 
     const stored = await this.findByUserId(profile.userId);
 

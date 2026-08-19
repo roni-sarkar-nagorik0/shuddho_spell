@@ -1,13 +1,24 @@
 // @vitest-environment node
 import { beforeEach, describe, expect, it } from 'vitest';
+import {
+  type IDatabase,
+  type ISelectQuery,
+  type IUpsertOptions,
+} from '@/modules/shared/infrastructure/persistence/database';
+import { DatabaseError } from '@/modules/shared/infrastructure/persistence/database-error';
 import { SupabaseLearnerProfileRepository } from './learner-profile.repository';
-import { type IProfileDatabase } from './profile-database';
 
-interface IUpsertCall {
-  readonly values: unknown;
-  readonly options: unknown;
-}
-
+/**
+ * A stand-in for the `IDatabase` seam, not for Postgres.
+ *
+ * What is worth pinning here is the *shape of the call*: an upsert that
+ * overwrites on conflict instead of ignoring it is the difference between the
+ * winner of a race keeping their display name and the loser stamping over it,
+ * and no behavioural test further up can see which one was sent.
+ *
+ * F5.1 moved this repository off its own bespoke `IProfileDatabase` onto the
+ * seam every repository shares, so the fake moved with it.
+ */
 interface IRow {
   readonly id: string;
   readonly user_id: string;
@@ -23,77 +34,25 @@ interface IRow {
   readonly onboarding_completed_at: string | null;
 }
 
-/**
- * A stand-in for the query builder, not for Postgres. What is worth pinning
- * here is the *shape of the call*: an insert that raises on conflict instead of
- * ignoring it is the difference between a learner's first screen working and
- * returning 500, and no behavioural test further up can see which one was sent.
- */
+interface IUpsertCall {
+  readonly values: readonly Readonly<Record<string, unknown>>[];
+  readonly options: IUpsertOptions;
+}
+
 interface IUpdateCall {
-  readonly values: unknown;
-  readonly column: string;
-  readonly value: string;
+  readonly values: Readonly<Record<string, unknown>>;
+  readonly match: Readonly<Record<string, string>>;
 }
 
 interface IStore {
-  readonly updates: IUpdateCall[];
-  updateError: IError | null;
   readonly upserts: IUpsertCall[];
+  readonly updates: IUpdateCall[];
   rows: IRow[];
-  selectError: IError | null;
-  upsertError: IError | null;
+  selectError: DatabaseError | null;
+  upsertError: DatabaseError | null;
+  updateError: DatabaseError | null;
   selectedColumns: string | null;
 }
-
-interface IError {
-  readonly message: string;
-  readonly code?: string | undefined;
-}
-
-function fakeDatabase(store: IStore): IProfileDatabase {
-  return {
-    from: () => ({
-      // F4.12 added `save`. Recorded rather than ignored: what is worth pinning
-      // is that an update filters by id and writes only the changeable columns.
-      update: (values) => ({
-        eq: (column, value) => {
-          store.updates.push({ values, column, value });
-          return {
-            maybeSingle: () =>
-              Promise.resolve(
-                store.updateError !== null
-                  ? { data: null, error: store.updateError }
-                  : { data: null, error: null },
-              ),
-          };
-        },
-      }),
-      select: (columns) => {
-        store.selectedColumns = columns;
-        return {
-          eq: (_column, value) => ({
-            maybeSingle: () =>
-              Promise.resolve(
-                store.selectError !== null
-                  ? { data: null, error: store.selectError }
-                  : {
-                      data: store.rows.find((row) => row.user_id === value) ?? null,
-                      error: null,
-                    },
-              ),
-          }),
-        };
-      },
-      upsert: (values, options) => {
-        store.upserts.push({ values, options });
-        return Promise.resolve({ error: store.upsertError });
-      },
-    }),
-  };
-}
-
-let store: IStore;
-let repository: SupabaseLearnerProfileRepository;
 
 const STORED: IRow = {
   id: 'profile-1',
@@ -110,14 +69,55 @@ const STORED: IRow = {
   onboarding_completed_at: null,
 };
 
+function fakeDatabase(store: IStore): IDatabase {
+  const notUsed = (): never => {
+    throw new Error('the profile repository does not use this');
+  };
+
+  return {
+    selectOne: (query: ISelectQuery) => {
+      store.selectedColumns = query.columns;
+
+      if (store.selectError !== null) {
+        return Promise.reject(store.selectError);
+      }
+
+      const userId = query.eq?.['user_id'];
+
+      return Promise.resolve(store.rows.find((row) => row.user_id === userId) ?? null);
+    },
+    upsert: (_table, values, options) => {
+      store.upserts.push({ values, options });
+
+      return store.upsertError === null
+        ? Promise.resolve()
+        : Promise.reject(store.upsertError);
+    },
+    update: (_table, values, match) => {
+      store.updates.push({ values, match });
+
+      return store.updateError === null
+        ? Promise.resolve()
+        : Promise.reject(store.updateError);
+    },
+    select: notUsed,
+    count: notUsed,
+    insert: notUsed,
+    rpc: notUsed,
+  };
+}
+
+let store: IStore;
+let repository: SupabaseLearnerProfileRepository;
+
 beforeEach(() => {
   store = {
-    updates: [],
-    updateError: null,
     upserts: [],
+    updates: [],
     rows: [],
     selectError: null,
     upsertError: null,
+    updateError: null,
     selectedColumns: null,
   };
   repository = new SupabaseLearnerProfileRepository(fakeDatabase(store));
@@ -157,7 +157,7 @@ describe('findByUserId', () => {
   it('throws rather than reporting "no profile" when the read itself failed', async () => {
     // Those are different facts, and conflating them turns an outage into a
     // signup loop.
-    store.selectError = { message: 'connection reset' };
+    store.selectError = new DatabaseError('could not read learner_profiles', null, 'connection reset');
 
     await expect(repository.findByUserId('user-1')).rejects.toThrow('could not read');
   });
@@ -181,10 +181,12 @@ describe('insertIfAbsent', () => {
 
     await repository.insertIfAbsent({ userId: 'user-1', displayName: 'Ayesha' });
 
-    expect(store.upserts[0]?.values).toStrictEqual({
-      user_id: 'user-1',
-      display_name: 'Ayesha',
-    });
+    expect(store.upserts[0]?.values).toStrictEqual([
+      {
+        user_id: 'user-1',
+        display_name: 'Ayesha',
+      },
+    ]);
   });
 
   it('returns the profile the winner of the race wrote', async () => {
@@ -197,7 +199,7 @@ describe('insertIfAbsent', () => {
 
   it('survives a unique violation — that is the race resolving, not an error', async () => {
     store.rows = [STORED];
-    store.upsertError = { message: 'duplicate key', code: '23505' };
+    store.upsertError = new DatabaseError('could not write learner_profiles', '23505', 'duplicate key');
 
     await expect(
       repository.insertIfAbsent({ userId: 'user-1', displayName: 'Ayesha' }),
@@ -205,7 +207,7 @@ describe('insertIfAbsent', () => {
   });
 
   it('throws on any other write failure', async () => {
-    store.upsertError = { message: 'permission denied', code: '42501' };
+    store.upsertError = new DatabaseError('could not write learner_profiles', '42501', 'permission denied');
 
     await expect(
       repository.insertIfAbsent({ userId: 'user-1', displayName: 'Ayesha' }),
