@@ -59,21 +59,19 @@ and 2. No feature starts without it. **Never read the file** — existence check
 
 ## NEXT
 
-> **Phase 3 · Authentication (Google only) — F3.7 through F3.12, six features left**
-> Branch: `feat/03-google-auth`, carrying F3.1–F3.6.
+> **Phase 3 · Authentication (Google only) — F3.8 through F3.12, five features left**
+> Branch: `feat/03-google-auth`, carrying F3.1–F3.7.
 > This run closes the phase: one feature at a time, each committed and merged into `dev` before
 > the next is picked, then the seven-item exit gate.
 >
-> **F3.7 — protected by default, `auth: 'public'` the explicit opt-out — starts here.**
-> What F3.6 left it:
-> - `withApi` still takes `auth?: boolean`, defaulting to true. F3.7 is where that becomes
->   `auth?: 'required' | 'public'` — the shape `01-architecture.md` and the exit gate both use.
->   Two call sites move with it: `src/app/api/health/route.ts` and `src/app/api/ready/route.ts`,
->   which pass `{ auth: false }` today.
-> - `false` and `'public'` must not both work. A boolean left accepted is a silent second
->   spelling of the opt-out, and the point of the feature is that opting out is visible.
-> - Worth a sweep test, the same shape as the `auth.getUser(` one: every `withApi` call site
->   that opts out has to be countable, so a new public route cannot appear unnoticed.
+> **F3.8 — `CRON_SECRET` bearer check for `/api/cron/*` — starts here.** What F3.7 left it:
+> - A cron route has no user, so it opts out with `auth: 'public'` and guards itself. Every
+>   such route must be added to `PUBLIC_ROUTES` in `src/lib/api/public-routes.test.ts` or the
+>   suite fails — which is the intended friction, not an obstacle.
+> - `CRON_SECRET` is already in `src/lib/env.server.ts`, `min(16)` and **optional**. A cron
+>   route that reads it must handle it being unset: refuse, never wave through.
+> - `04-authentication.md`: constant-time compare, never log it, never accept it in a query
+>   string — query strings end up in access logs.
 >
 > **Carried into the rest of the phase**
 > - Migration 011 added `learner_profiles.onboarding_completed_at`, null until Phase 11's
@@ -261,7 +259,7 @@ Branch `feat/03-google-auth` · Status: `IN PROGRESS`
   - Test: `requireUser()` throws/redirects with no session
 - [x] **F3.6** (2026-08-19) `withApi({ auth: 'required' })` session resolution
   - Test: no session → 401 problem+json; expired cookie → refreshed or 401, never 500; tampered cookie → 401
-- [ ] **F3.7** Protected-by-default routing; `auth: 'public'` as the explicit opt-out
+- [x] **F3.7** (2026-08-19) Protected-by-default routing; `auth: 'public'` as the explicit opt-out
   - Test: a protected handler 401s without a session; a public one returns 200
 - [ ] **F3.8** `CRON_SECRET` bearer check for `/api/cron/*`, constant-time compare
   - Test: a request without the secret → 401; the secret never appears in a log line
@@ -575,6 +573,7 @@ Newest first. One line per finished feature: date · id · what · test result.
 
 | Date | Feature | What landed | Tests |
 | --- | --- | --- | --- |
+| 2026-08-19 | F3.7 | `auth?: 'required' \| 'public'` replaces the boolean, and the boolean stops compiling — two spellings of the opt-out is one too many. A word can also be counted, which is the real gain: a sweep over `src/app/api/**/route.ts` holds every public endpoint against a written list, so a new one fails the suite until someone adds it deliberately. Saying `'required'` out loud is banned too; its absence is the rule | `pnpm test` 254/254 — 8 new, all three mutations caught including a planted unlisted public route · `pnpm test:e2e` 8/8 · typecheck, lint green |
 | 2026-08-19 | F3.6 | `withApi` stops calling `getUser()` inline and goes through the same `readUser()` a Server Component does — a handler and a page can no longer disagree about who is signed in. Its private two-field `IAuthenticatedUser` is gone in favour of the contract. Absent, expired and tampered cookies all arrive as null and leave as one 401 problem+json that names none of them; the session is checked **before** the body is parsed, so an anonymous caller cannot map a schema one 422 at a time | `pnpm test` 246/246 — 12 new, all five mutations caught · `pnpm test:e2e` 8/8 · typecheck, lint green |
 | 2026-08-19 | F3.5 | `requireUser()` and `useSession()`, over one `IAuthenticatedUser` contract — the client is handed exactly what the server verified, so there is no second, looser shape. `useSession()` throws outside its boundary rather than reporting nobody: a missing provider and a signed-out learner must not look alike. A verified session with no profile is loud, never "signed out" — that redirect would loop through `/login` forever — and a sweep pins `auth.getUser(` to exactly three files | `pnpm test` 234/234 — 17 new, all seven mutations caught · `pnpm test:e2e` 8/8 · typecheck, lint green |
 | 2026-08-19 | F3.4 | `src/middleware.ts` — `getUser()` refresh on every page, then protect-by-default: a page nobody listed is private, and an unauthenticated request for one is a redirect, never a 401. `/api/` is outside the matcher on purpose — a `fetch` answered with login markup is a 200 the caller cannot branch on, so that 401 stays `withApi`'s (F3.6). `secure` finally lands on the session cookie, off `NEXT_PUBLIC_APP_URL` rather than the spoofable `x-forwarded-proto`. One session client, two cookie transports, so neither can skip the hardening | `pnpm test` 217/217 — 15 new, all eight mutations caught · `pnpm test:e2e` 8/8 · typecheck, lint green |

@@ -140,7 +140,7 @@ describe('withApi session resolution', () => {
   });
 
   it('skips resolution entirely for a route that opted out', async () => {
-    const route = withApi(() => Promise.resolve({ status: 'ok' }), { auth: false });
+    const route = withApi(() => Promise.resolve({ status: 'ok' }), { auth: 'public' });
 
     const response = await route(get());
 
@@ -153,7 +153,7 @@ describe('withApi session resolution', () => {
     await withApi((ctx) => {
       seen = ctx.user;
       return Promise.resolve({ ok: true });
-    }, { auth: false })(get());
+    }, { auth: 'public' })(get());
 
     expect(seen).toBeNull();
   });
@@ -176,6 +176,48 @@ describe('withApi session resolution', () => {
 
     expect(body.detail).not.toContain('learner profile');
     expect(body.requestId, 'the request id is how the failure is looked up').not.toBe('');
+  });
+});
+
+describe('protected by default', () => {
+  it('protects a handler that says nothing about auth', async () => {
+    const response = await withApi(() => Promise.resolve({ ok: true }))(get());
+
+    expect(response.status).toBe(401);
+  });
+
+  it('means the same thing when a route says it out loud', async () => {
+    const response = await withApi(() => Promise.resolve({ ok: true }), { auth: 'required' })(
+      get(),
+    );
+
+    expect(response.status).toBe(401);
+    expect(harness.reads).toBe(1);
+  });
+
+  it('opens only for the one word that opts out', async () => {
+    harness.user = null;
+
+    const response = await withApi(() => Promise.resolve({ ok: true }), { auth: 'public' })(get());
+
+    expect(response.status).toBe(200);
+  });
+
+  it('still lets a signed-in learner through a public route, identified', async () => {
+    // Public means "no session required", not "no session read". A public
+    // endpoint that greets a signed-in learner by name is a normal thing to
+    // want, and the wrapper must not make it impossible — it just must not
+    // demand it. Today the user is null on a public route by design; this
+    // pins that so a change to it is a decision, not a drift.
+    harness.user = LEARNER;
+    let seen: IAuthenticatedUser | null = LEARNER;
+
+    await withApi((ctx) => {
+      seen = ctx.user;
+      return Promise.resolve({ ok: true });
+    }, { auth: 'public' })(get());
+
+    expect(seen).toBeNull();
   });
 });
 

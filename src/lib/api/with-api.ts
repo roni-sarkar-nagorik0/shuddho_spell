@@ -19,9 +19,23 @@ export interface IHandlerContext<TBody, TQuery> {
   readonly user: IAuthenticatedUser | null;
 }
 
+/**
+ * Two spellings, not three. A boolean would work just as well and that is the
+ * problem: `auth: false` reads as a flag someone flipped, while `auth: 'public'`
+ * reads as a claim about the route, and one of those is harder to write by
+ * accident. It is also greppable — `04-authentication.md` says routes are
+ * protected by default and public by explicit opt-out, and a word can be
+ * counted across the tree in a way a boolean cannot.
+ */
+export type AuthRequirement = 'required' | 'public';
+
 export interface IWithApiOptions<TBody, TQuery> {
-  /** `true` (the default) returns 401 unless a session cookie resolves to a user. */
-  readonly auth?: boolean;
+  /**
+   * Omitted means `'required'`. Protection is never something a route has to
+   * remember to ask for: a handler written tomorrow is closed until its author
+   * writes down, in this one word, that it should not be.
+   */
+  readonly auth?: AuthRequirement;
   readonly bodySchema?: z.ZodType<TBody>;
   readonly querySchema?: z.ZodType<TQuery>;
 }
@@ -43,7 +57,7 @@ export function withApi<TBody = undefined, TQuery = undefined>(
   handler: Handler<TBody, TQuery>,
   options: IWithApiOptions<TBody, TQuery> = {},
 ): (request: NextRequest) => Promise<NextResponse> {
-  const requireAuth = options.auth ?? true;
+  const requireAuth = (options.auth ?? 'required') === 'required';
 
   return async function route(request: NextRequest): Promise<NextResponse> {
     const requestId = crypto.randomUUID();

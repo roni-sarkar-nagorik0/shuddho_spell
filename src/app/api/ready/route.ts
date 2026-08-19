@@ -9,5 +9,5 @@ export const GET = withApi(
     const database = error === null || error.code === 'PGRST205' ? 'up' : 'down';
     return { status: database === 'up' ? ('ready' as const) : ('degraded' as const), database };
   },
-  { auth: false },
+  { auth: 'public' },
 );
