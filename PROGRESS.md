@@ -39,7 +39,9 @@ and 2. No feature starts without it. **Never read the file** — existence check
    Do **not** move on. Do **not** leave it half-done for later.
 6. When tests are green: mark it `[x]`, add the date, add a one-line note in the **Log**.
 7. Commit and push the feature branch (see `.claude/docs/15-git-workflow.md`).
-8. Move the **NEXT** pointer to the following `[ ]`. Stop and report.
+8. Move the **NEXT** pointer to the following `[ ]`, then go back to 1 and do the next
+   feature. Five features per `/build`, one at a time — a feature is picked only once the
+   one before it is committed and pushed. Then stop and report all five.
 
 ### Absolute rules
 
