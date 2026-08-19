@@ -239,6 +239,9 @@ describe('hand-written row interfaces (F2.10)', () => {
       notification_preferences: 'notifications',
       push_subscriptions: 'notifications',
       certificates: 'certificates',
+      // A platform counter rather than a feature's data — no learner and no
+      // content owns it, so it sits with the other cross-cutting pieces.
+      rate_limits: 'shared',
     };
     for (const file of rowFiles) {
       expect(OWNER[file.table], `no module is recorded as owning ${file.table}`).toBeDefined();

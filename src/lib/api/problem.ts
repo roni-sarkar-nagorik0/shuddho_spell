@@ -64,6 +64,19 @@ export class ApiError extends Error {
     );
   }
 
+  /**
+   * The retry window is in the message as well as the `Retry-After` header,
+   * because a person reading a JSON body in a console should not have to know
+   * to look at headers to find out how long to wait.
+   */
+  static rateLimited(retryAfterSeconds: number): ApiError {
+    return new ApiError(
+      429,
+      PROBLEM_CODES.RATE_LIMITED,
+      `Too many requests. Try again in ${String(retryAfterSeconds)} seconds.`,
+    );
+  }
+
   static forbidden(): ApiError {
     return new ApiError(403, PROBLEM_CODES.FORBIDDEN, 'You cannot access this resource.');
   }

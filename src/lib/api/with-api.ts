@@ -6,9 +6,12 @@ import {
   type IApiResponse,
   type IAuthenticatedUser,
   type IFieldError,
+  type IRateLimiter,
+  type IRateLimitRule,
 } from '@/contracts';
 import { readUser } from '../auth/current-user';
 import { logger } from '../logger';
+import { PostgresRateLimiter } from '../rate-limit/postgres-rate-limiter';
 import { ApiError, problem } from './problem';
 
 export interface IHandlerContext<TBody, TQuery> {
@@ -38,6 +41,43 @@ export interface IWithApiOptions<TBody, TQuery> {
   readonly auth?: AuthRequirement;
   readonly bodySchema?: z.ZodType<TBody>;
   readonly querySchema?: z.ZodType<TQuery>;
+
+  /**
+   * Opt-in, per `11-api-surface.md`: "rate limits on every write route".
+   *
+   * Not a default applied to everything. A ceiling on reads would put a
+   * database round trip in front of `/api/health`, and the threat model does
+   * not call for one — a learner refreshing a dashboard is not an attacker,
+   * and `11` says as much about exam answers.
+   */
+  readonly rateLimit?: IRateLimitRule;
+
+  /**
+   * Overridable so the wrapper is testable without a database. Production never
+   * passes it, and there is exactly one implementation behind it.
+   */
+  readonly rateLimiter?: IRateLimiter;
+}
+
+/**
+ * Who the allowance belongs to.
+ *
+ * A signed-in learner is counted by their own id, which is what stops two
+ * learners behind one office NAT from spending each other's budget. Only an
+ * anonymous caller falls back to an address, and `x-forwarded-for` is spoofable
+ * — worth stating plainly rather than trusting: for a public route it is the
+ * best subject available, and the consequence of a forged one is a stranger
+ * getting their own bucket rather than reaching anybody's data.
+ */
+function rateLimitSubject(request: NextRequest, user: IAuthenticatedUser | null): string {
+  if (user !== null) {
+    return `user:${user.userId}`;
+  }
+
+  const forwarded = request.headers.get('x-forwarded-for');
+  const first = forwarded?.split(',')[0]?.trim();
+
+  return `ip:${first === undefined || first.length === 0 ? 'unknown' : first}`;
 }
 
 type Handler<TBody, TQuery> = (ctx: IHandlerContext<TBody, TQuery>) => Promise<unknown>;
@@ -58,11 +98,14 @@ export function withApi<TBody = undefined, TQuery = undefined>(
   options: IWithApiOptions<TBody, TQuery> = {},
 ): (request: NextRequest) => Promise<NextResponse> {
   const requireAuth = (options.auth ?? 'required') === 'required';
+  const rule = options.rateLimit;
+  const limiter = options.rateLimiter ?? new PostgresRateLimiter();
 
   return async function route(request: NextRequest): Promise<NextResponse> {
     const requestId = crypto.randomUUID();
     const instance = new URL(request.url).pathname;
     const startedAt = Date.now();
+    let retryAfterSeconds: number | null = null;
 
     try {
       // One resolver, shared with `requireUser()`. A handler and a page must
@@ -78,6 +121,20 @@ export function withApi<TBody = undefined, TQuery = undefined>(
         user = await readUser();
         if (user === null) {
           throw ApiError.unauthenticated();
+        }
+      }
+
+      // **After** the session, deliberately. On a protected route an anonymous
+      // flood is answered 401 without touching the limiter's table, so the
+      // cheapest rejection stays the cheapest. It also means the subject is a
+      // learner id wherever there is one, and never an address standing in for
+      // several people.
+      if (rule !== undefined) {
+        const decision = await limiter.consume(rule, rateLimitSubject(request, user));
+
+        if (!decision.allowed) {
+          retryAfterSeconds = decision.retryAfterSeconds;
+          throw ApiError.rateLimited(decision.retryAfterSeconds);
         }
       }
 
@@ -143,7 +200,13 @@ export function withApi<TBody = undefined, TQuery = undefined>(
 
       return NextResponse.json(details, {
         status: details.status,
-        headers: { 'content-type': 'application/problem+json', 'x-request-id': requestId },
+        headers: {
+          'content-type': 'application/problem+json',
+          'x-request-id': requestId,
+          // RFC 9110 says a 429 should say when to come back. A client that has
+          // to guess will guess badly, and usually immediately.
+          ...(retryAfterSeconds === null ? {} : { 'retry-after': String(retryAfterSeconds) }),
+        },
       });
     }
   };

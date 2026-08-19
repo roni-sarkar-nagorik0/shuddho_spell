@@ -100,6 +100,9 @@ const EXPECTED_TABLES: readonly string[] = [
   ...EXAM_TABLES,
   // The root of the learner graph: owned by an auth.users row, not by a profile.
   'learner_profiles',
+  // Not learner data and not content: a platform counter, added by 012 for the
+  // rate limiting `11-api-surface.md` requires on every write route.
+  'rate_limits',
 ]
   .slice()
   .sort();
