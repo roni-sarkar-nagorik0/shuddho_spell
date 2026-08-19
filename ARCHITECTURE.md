@@ -723,6 +723,23 @@ pass against the real build. The only fix is `experimental.nodeMiddleware`, and 
 experimental Next flag in a production app is worse than a warning that is written down.
 Revisit when Node middleware is stable.
 
+**D26 — pino stops redacting a credential this app cannot have (F3.11).**
+The exit gate is a grep over `src/` for `password`, `magic.link` and `signInWithOtp`, and it had
+exactly one hit: `'*.password'` in the logger's redaction paths.
+
+Two ways to resolve that, and only one of them is honest. Keeping the path means the gate needs
+an exception list, and an exception list is how a real hit gets waved through — the next person
+sees a known-good match and moves on. Removing the path costs nothing real: Google is the only
+provider, no field anywhere accepts a password, no schema has one, and nothing in the codebase can
+produce an object carrying one. Redaction is defence in depth against values you hold, and this
+is not one of them. The other three paths — `authorization`, `cookie`, `accessToken` — stay,
+because those are real.
+
+The grep is now `src/lib/auth/one-door.test.ts` rather than a command someone remembers
+to run, and it sweeps test files too: a test that types a password into a form is a form that
+accepts one. It also means the explanation cannot live in a comment beside the code it explains,
+which is why it is here — and why the test is not named after the thing it forbids.
+
 ### Open — needs the user, not me
 
 **O1 — `02-typescript-rules.md` still says `packages/config` base tsconfig.** That is a

@@ -59,21 +59,20 @@ and 2. No feature starts without it. **Never read the file** — existence check
 
 ## NEXT
 
-> **Phase 3 · Authentication (Google only) — F3.11 and F3.12, two features left**
-> Branch: `feat/03-google-auth`, carrying F3.1–F3.10.
-> This run closes the phase: one feature at a time, each committed and merged into `dev` before
-> the next is picked, then the seven-item exit gate.
+> **Phase 3 · Authentication (Google only) — F3.12, one feature left**
+> Branch: `feat/03-google-auth`, carrying F3.1–F3.11.
+> One more, then the seven-item exit gate closes the phase.
 >
-> **F3.11 — no email/password path exists — starts here.** What F3.10 left it:
-> - The gate's grep is `grep -ri "password\|magic.link\|signInWithOtp" src/`. It has exactly one
->   hit: `src/lib/logger.ts:7`, `'*.password'` in pino's **redact** list. That is a guard against
->   leaking a password the app never has, not an auth path — decide whether the grep narrows or
->   the redaction moves, and write down which and why.
-> - `src/lib/logger.ts:7` also reads `process.env['LOG_LEVEL']` directly, against the "no
->   `process.env` outside the env module" rule. If the file is being touched anyway, that is the
->   moment.
-> - Make it a test, not a one-off command. The gate item is a property of the tree and belongs
->   in the suite like the `auth.getUser(` and public-route sweeps.
+> **F3.12 — identity comes only from the session — starts here.** What F3.11 left it:
+> - Most of it is already true and tested piecemeal: `withApi` injects the user, `/api/v1/me`
+>   ignores a `userId` in the query, `/auth/callback` ignores one too. What is missing is the
+>   rule stated as a rule — a sweep, like the `auth.getUser(` and public-route ones.
+> - The shape to catch: a handler or use case taking a `profileId` or `userId` out of a body or
+>   a query schema. Today no v1 body schema exists at all, so the sweep starts vacuous and
+>   earns its keep from Phase 5 onward. Say so rather than implying it caught something.
+> - `01-architecture.md`: a use case receives ids through its input from `withApi`'s `user`.
+>   `GetMeUseCase` and `BootstrapProfileUseCase` both take `userId` — that is correct, and the
+>   sweep must not flag it. What it flags is where the id *came from*.
 >
 > **Carried into the rest of the phase**
 > - Migration 011 added `learner_profiles.onboarding_completed_at`, null until Phase 11's
@@ -269,7 +268,7 @@ Branch `feat/03-google-auth` · Status: `IN PROGRESS`
   - Test: two concurrent first requests produce exactly one profile, no 500
 - [x] **F3.10** (2026-08-19) `GET /api/v1/me`
   - Test: returns profile + program position for a valid token
-- [ ] **F3.11** No email/password path exists
+- [x] **F3.11** (2026-08-19) No email/password path exists
   - Test: `grep -ri "password\|magic.link\|signInWithOtp" src/` returns nothing in app code
 - [ ] **F3.12** Identity comes only from the session
   - Test: a body carrying another user's `profileId` is ignored; the session's profile is used
@@ -575,6 +574,7 @@ Newest first. One line per finished feature: date · id · what · test result.
 
 | Date | Feature | What landed | Tests |
 | --- | --- | --- | --- |
+| 2026-08-19 | F3.11 | The gate's grep is now a test, `src/lib/auth/one-door.test.ts`, and it sweeps test files too — a test that types a credential into a form is a form that accepts one. Its single hit was pino's fourth redaction path, guarding a value this app cannot hold; removed rather than excepted, because an exception list is how a real hit gets waved through (D26). The other three paths are real and stay. The reasoning had to move to `ARCHITECTURE.md` — a comment explaining the ban trips the ban | `pnpm test` 318/318 — 3 new, all four mutations caught (redaction restored, OTP mention, an email field on `/login`, and the sweep itself blinded) · `pnpm test:e2e` 9/9 · typecheck, lint green |
 | 2026-08-19 | F3.10 | `GET /api/v1/me` — the module's first `presentation/` code, and the first three-line `route.ts`. `presentation` may not reach the composition root, so the handler is a factory taking the use case it needs and `src/composition/handlers.ts` is the one file that knows where that comes from. Position travels with its total: `track` decides 28 or 21, and the entity answers it rather than the client. `Track` is a checked union at the mapper, so a value added to 003's constraint cannot arrive in the domain unnoticed | `pnpm test` 315/315 — 15 new, all eight mutations caught · coverage 100% on domain and application · `pnpm test:e2e` 9/9 · typecheck, lint green |
 | 2026-08-19 | F3.9 | The phase's first real module — `src/modules/auth/` across all four layers, wired in `src/composition/`. Idempotence lives in the port, not the caller: `insertIfAbsent` is `on conflict do nothing` and reads back, so Postgres decides the race and the loser reads what the winner wrote. The use case owns the display-name chain, reproducing 009's so the two cannot disagree. Called from `/auth/callback` — the first authenticated request by construction, and the only layer allowed to reach the composition root. Found and fixed a build-breaker: an empty `CRON_SECRET=` is present, not absent, so `.optional()` never applied | `pnpm test` 300/300 — 33 new, all eleven mutations caught · coverage 100% on domain and application (the 90% floor had never been runnable — `@vitest/coverage-v8` was missing) · `pnpm test:e2e` 8/8 · typecheck, lint green |
 | 2026-08-19 | F3.8 | `withCron` — the guard every scheduled route is built by, a `withApi` route underneath so it keeps the request id and the problem+json. Both sides are sha256'd before `timingSafeEqual`, because that function throws on a length mismatch and throwing early leaks the length one guess at a time. Header only, never the query string. A missing `CRON_SECRET` refuses rather than waving through. `CRON_UNAUTHORISED` is its own code so an operator is not sent to fix a login. **No cron route exists yet** (Phase 8), so the gate item is proven at the wrapper | `pnpm test` 268/268 — 14 new, all seven mutations caught (the constant-time one needed a structural guard — no assertion on a result can see timing) · typecheck, lint green |
