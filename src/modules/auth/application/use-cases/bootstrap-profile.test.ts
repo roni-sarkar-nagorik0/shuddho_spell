@@ -37,6 +37,8 @@ class FakeProfiles implements ILearnerProfileRepository {
       `profile-${String(this.nextId)}`,
       profile.userId,
       profile.displayName,
+      'standard28',
+      1,
       null,
     );
     this.nextId += 1;
@@ -63,7 +65,7 @@ describe('BootstrapProfileUseCase', () => {
   });
 
   it('returns the existing profile without writing anything', async () => {
-    profiles.rows.push(new LearnerProfile('profile-9', 'user-1', 'Ayesha', null));
+    profiles.rows.push(new LearnerProfile('profile-9', 'user-1', 'Ayesha', 'standard28', 1, null));
 
     const profile = await useCase.execute({ userId: 'user-1', fullName: 'Someone Else' });
 

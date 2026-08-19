@@ -28,3 +28,16 @@ test('an api route answers rather than redirecting — a redirect is not an erro
 
   expect(response.status()).toBe(200);
 });
+
+test('the me endpoint answers 401 problem+json to a stranger, not a redirect', async ({
+  page,
+  baseURL,
+}) => {
+  const response = await page.request.get(`${baseURL ?? ''}/api/v1/me`, { maxRedirects: 0 });
+
+  expect(response.status()).toBe(401);
+  expect(response.headers()['content-type']).toContain('application/problem+json');
+
+  const body: unknown = await response.json();
+  expect(body).toMatchObject({ code: 'UNAUTHENTICATED' });
+});

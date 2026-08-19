@@ -1,5 +1,6 @@
 import 'server-only';
 import { BootstrapProfileUseCase } from '@/modules/auth/application/use-cases/bootstrap-profile';
+import { GetMeUseCase } from '@/modules/auth/application/use-cases/get-me';
 import { type IContainer } from './container';
 
 /**
@@ -9,4 +10,8 @@ import { type IContainer } from './container';
  */
 export function makeBootstrapProfile(container: IContainer): BootstrapProfileUseCase {
   return new BootstrapProfileUseCase(container.learnerProfiles);
+}
+
+export function makeGetMe(container: IContainer): GetMeUseCase {
+  return new GetMeUseCase(container.learnerProfiles);
 }

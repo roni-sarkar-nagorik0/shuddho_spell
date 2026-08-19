@@ -12,6 +12,8 @@ interface IRow {
   readonly id: string;
   readonly user_id: string;
   readonly display_name: string;
+  readonly track: string;
+  readonly current_day_index: number;
   readonly onboarding_completed_at: string | null;
 }
 
@@ -68,6 +70,8 @@ const STORED: IRow = {
   id: 'profile-1',
   user_id: 'user-1',
   display_name: 'Ayesha',
+  track: 'standard28',
+  current_day_index: 1,
   onboarding_completed_at: null,
 };
 
@@ -97,10 +101,20 @@ describe('findByUserId', () => {
     await expect(repository.findByUserId('user-1')).resolves.toBeNull();
   });
 
-  it('reads the four columns the entity is made of, and no more', async () => {
+  it('reads the columns the entity is made of, and no more', async () => {
     await repository.findByUserId('user-1');
 
-    expect(store.selectedColumns).toBe('id, user_id, display_name, onboarding_completed_at');
+    expect(store.selectedColumns).toBe(
+      'id, user_id, display_name, track, current_day_index, onboarding_completed_at',
+    );
+  });
+
+  it('is null when the row carries a track the domain does not know', async () => {
+    // 003 has a check constraint saying the same thing. This is what stops a
+    // third value added there from arriving in the domain unnoticed.
+    store.rows = [{ ...STORED, track: 'marathon90' }];
+
+    await expect(repository.findByUserId('user-1')).resolves.toBeNull();
   });
 
   it('throws rather than reporting "no profile" when the read itself failed', async () => {
