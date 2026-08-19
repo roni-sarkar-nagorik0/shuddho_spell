@@ -16,6 +16,15 @@ export interface ILessonRepository {
    */
   readonly findOpenForDay: (profileId: string, dayIndex: DayIndex) => Promise<LessonSession | null>;
 
+  /**
+   * Which days this learner has finished, as day numbers.
+   *
+   * Numbers rather than sessions: the overview renders 28 tiles and needs to
+   * know which are ticked, and loading 28 full sessions to answer that is the
+   * N+1 the Phase 5 gate asserts against.
+   */
+  readonly findCompletedDayIndexes: (profileId: string) => Promise<readonly number[]>;
+
   readonly create: (session: LessonSession) => Promise<LessonSession>;
 
   readonly save: (session: LessonSession) => Promise<LessonSession>;
