@@ -5,6 +5,8 @@ import { createStartSessionHandler } from '@/modules/lessons/presentation/handle
 import { createSubmitAttemptHandler } from '@/modules/lessons/presentation/handlers/submit-attempt';
 import { createGetProgramDayHandler } from '@/modules/program/presentation/handlers/get-program-day';
 import { createGetProgramHandler } from '@/modules/program/presentation/handlers/get-program';
+import { createGetMasteryHandler } from '@/modules/progress/presentation/handlers/get-mastery';
+import { createGetProgressSummaryHandler } from '@/modules/progress/presentation/handlers/get-progress-summary';
 import { createGetDueHandler } from '@/modules/review/presentation/handlers/get-due';
 import { createSubmitReviewAttemptHandler } from '@/modules/review/presentation/handlers/submit-review-attempt';
 import { createContainer } from './container';
@@ -13,7 +15,9 @@ import {
   makeGetDueReviewItems,
   makeGetMe,
   makeGetProgramDay,
+  makeGetMasterySnapshot,
   makeGetProgramOverview,
+  makeGetProgressSummary,
   makeStartLessonSession,
   makeSubmitConstructionAttempt,
   makeSubmitDictationAttempt,
@@ -71,3 +75,9 @@ export const getDueReviewHandler = createGetDueHandler(() => makeGetDueReviewIte
 export const submitReviewAttemptHandler = createSubmitReviewAttemptHandler(() =>
   makeSubmitReviewAttempt(container()),
 );
+
+export const getProgressSummaryHandler = createGetProgressSummaryHandler(() =>
+  makeGetProgressSummary(container()),
+);
+
+export const getMasteryHandler = createGetMasteryHandler(() => makeGetMasterySnapshot(container()));
