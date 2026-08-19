@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { LearnerProfile } from '../../domain/entities/learner-profile';
-import { TRACKS } from '../../domain/value-objects/track';
+import { TRACKS } from '@/modules/shared/domain/value-objects/track';
 
 /**
  * The boundary that is allowed to be wrong about the data, and to say so.

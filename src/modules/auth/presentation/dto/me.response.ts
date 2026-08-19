@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { TRACKS } from '../../domain/value-objects/track';
+import { TRACKS } from '@/modules/shared/domain/value-objects/track';
 
 /**
  * What `GET /api/v1/me` returns, interface first.

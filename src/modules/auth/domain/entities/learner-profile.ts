@@ -1,4 +1,4 @@
-import { totalDaysIn, type Track } from '../value-objects/track';
+import { totalDaysIn, type Track } from '@/modules/shared/domain/value-objects/track';
 
 /**
  * The learner behind a session.
