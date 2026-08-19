@@ -225,11 +225,19 @@ describe('migrations against an empty database', () => {
   });
 
   it('is idempotent — applying every migration a second time changes nothing', async () => {
+    // Counted before and after rather than against a constant: 010 seeds 44
+    // phonemes, the tests above add fixtures, and both numbers are free to
+    // move. What must not move is the difference a second run makes.
+    const countRows = async (): Promise<string> => {
+      const result = await db.query<{ readonly count: string }>(
+        `select count(*)::text as count from public.phonemes`,
+      );
+      return result.rows[0]?.count ?? '';
+    };
+    const before = await countRows();
+    expect(before, 'nothing has been inserted, so the check would prove nothing').not.toBe('0');
     await applyAll(db);
-    const result = await db.query<{ readonly count: string }>(
-      `select count(*)::text as count from public.phonemes`,
-    );
-    expect(result.rows[0]?.count, 'a re-run dropped or duplicated data').toBe('1');
+    expect(await countRows(), 'a re-run dropped or duplicated data').toBe(before);
   }, 60_000);
 
   describe('learner tables', () => {
@@ -1971,6 +1979,237 @@ describe('migrations against an empty database', () => {
           }
         }
       });
+    });
+  });
+
+  describe('010 seed reference', () => {
+    /**
+     * The counts are asserted by the migration itself, so a wrong count fails
+     * `pnpm db:migrate` before it fails here. These tests exist for the half of
+     * F2.9 a count cannot see: that the rows say something true about Bangla and
+     * about English, rather than filling the column so the constraint passes.
+     */
+
+    /** Bangla script, U+0980..U+09FF. A transliteration would pass a not-null check. */
+    const BANGLA_ONLY = /^[ঀ-৿‌‍]+$/u;
+
+    /** The shapes a placeholder takes when someone means to come back to it. */
+    const PLACEHOLDER = /\b(tbd|todo|fixme|placeholder|lorem|ipsum|n\/a|xxx+|\?\?\?)\b/i;
+
+    interface IPhonemeRow {
+      readonly symbol: string;
+      readonly type: string;
+      readonly bangla_equivalent: string | null;
+      readonly articulation_note: string;
+      readonly common_bengali_substitution: string | null;
+    }
+
+    interface IRuleFamilyRow {
+      readonly code: string;
+      readonly statement: string;
+      readonly examples: readonly string[];
+      readonly counterexamples: readonly string[];
+    }
+
+    /**
+     * Its own database, not the shared one. The suites above insert content
+     * fixtures — a `/v/` phoneme, a run of `IDX_RF_%` rule families — into `db`
+     * to exercise constraints and index plans, and a seed assertion counted
+     * against those would be measuring the fixtures. This applies every
+     * migration to an empty instance and asks what 010 alone produced.
+     */
+    let seedDb: PGlite;
+    let phonemes: readonly IPhonemeRow[] = [];
+    let ruleFamilies: readonly IRuleFamilyRow[] = [];
+
+    beforeAll(async () => {
+      seedDb = new PGlite({ extensions: { pgcrypto, uuid_ossp } });
+      await seedDb.exec(AUTH_SHIM);
+      await applyAll(seedDb);
+      const phonemeResult = await seedDb.query<IPhonemeRow>(
+        `select symbol, type, bangla_equivalent, articulation_note, common_bengali_substitution
+           from public.phonemes order by symbol`,
+      );
+      phonemes = phonemeResult.rows;
+      const ruleResult = await seedDb.query<IRuleFamilyRow>(
+        `select code, statement, examples, counterexamples
+           from public.rule_families order by code`,
+      );
+      ruleFamilies = ruleResult.rows;
+    }, 60_000);
+
+    it('seeds exactly 44 phonemes and 24 rule families', () => {
+      expect(phonemes.length).toBe(44);
+      expect(ruleFamilies.length).toBe(24);
+    });
+
+    it('splits the 44 into 12 vowels, 8 diphthongs and 24 consonants', () => {
+      const count = (type: string): number =>
+        phonemes.filter((phoneme) => phoneme.type === type).length;
+      expect({
+        vowel: count('vowel'),
+        diphthong: count('diphthong'),
+        consonant: count('consonant'),
+      }).toEqual({ vowel: 12, diphthong: 8, consonant: 24 });
+    });
+
+    it('gives every phoneme a distinct IPA symbol', () => {
+      const symbols = phonemes.map((phoneme) => phoneme.symbol);
+      expect(new Set(symbols).size).toBe(symbols.length);
+      for (const symbol of symbols) {
+        expect(symbol.trim(), 'a symbol is blank').not.toBe('');
+        expect(symbol, `${symbol} carries slash delimiters`).not.toMatch(/\//);
+      }
+    });
+
+    it('writes the Bangla equivalent in Bangla script, never transliterated', () => {
+      // CLAUDE.md §10. A latin-letter "sh" in this column would render as
+      // nonsense next to the Bangla UI and teach the wrong grapheme.
+      for (const phoneme of phonemes) {
+        if (phoneme.bangla_equivalent === null) continue;
+        expect(
+          phoneme.bangla_equivalent,
+          `${phoneme.symbol} has a non-Bangla equivalent: ${phoneme.bangla_equivalent}`,
+        ).toMatch(BANGLA_ONLY);
+      }
+    });
+
+    it('says what a learner produces instead wherever Bangla lacks the sound', () => {
+      // A null equivalent with a null substitution is a hole, not a fact: the
+      // Phase 6 scorer would have nothing to say about the commonest errors.
+      const silent = phonemes.filter(
+        (phoneme) =>
+          phoneme.bangla_equivalent === null && phoneme.common_bengali_substitution === null,
+      );
+      expect(silent.map((phoneme) => phoneme.symbol)).toEqual([]);
+    });
+
+    it('covers the sounds Bangla does not have', () => {
+      // The five that cost a Bengali speaker the most marks. Each must be
+      // recorded as absent, not quietly mapped onto a near-enough letter.
+      const absent = new Set(
+        phonemes
+          .filter((phoneme) => phoneme.bangla_equivalent === null)
+          .map((phoneme) => phoneme.symbol),
+      );
+      for (const symbol of ['v', 'z', 'θ', 'ð', 'w']) {
+        expect(absent.has(symbol), `${symbol} is marked as having a Bangla equivalent`).toBe(true);
+      }
+    });
+
+    it('writes an articulation note for every phoneme, not a stub', () => {
+      for (const phoneme of phonemes) {
+        expect(
+          phoneme.articulation_note.length,
+          `${phoneme.symbol} has a stub articulation note`,
+        ).toBeGreaterThan(24);
+      }
+    });
+
+    it('holds every rule family to three examples and two counterexamples', () => {
+      for (const family of ruleFamilies) {
+        expect(family.examples.length, `${family.code} has the wrong example count`).toBe(3);
+        expect(
+          family.counterexamples.length,
+          `${family.code} has the wrong counterexample count`,
+        ).toBe(2);
+      }
+    });
+
+    it('never repeats an example as its own counterexample', () => {
+      // The cheapest way to satisfy `cardinality(...) = 2` is to copy a row up.
+      // A rule whose counterexample is one of its examples teaches nothing.
+      for (const family of ruleFamilies) {
+        const shared = family.counterexamples.filter((item) => family.examples.includes(item));
+        expect(shared, `${family.code} reuses an example as a counterexample`).toEqual([]);
+      }
+    });
+
+    it('gives every rule family a snake_case code and a full statement', () => {
+      const codes = ruleFamilies.map((family) => family.code);
+      expect(new Set(codes).size).toBe(codes.length);
+      for (const family of ruleFamilies) {
+        expect(family.code, `${family.code} is not snake_case`).toMatch(/^[a-z][a-z0-9_]*$/);
+        expect(family.statement.length, `${family.code} has a stub statement`).toBeGreaterThan(30);
+        expect(family.statement, `${family.code} does not end in a full stop`).toMatch(/\.$/);
+      }
+    });
+
+    it('contains no placeholder text in any seeded column', () => {
+      const offending: string[] = [];
+      for (const phoneme of phonemes) {
+        for (const value of [
+          phoneme.symbol,
+          phoneme.bangla_equivalent,
+          phoneme.articulation_note,
+          phoneme.common_bengali_substitution,
+        ]) {
+          if (value !== null && PLACEHOLDER.test(value)) offending.push(`${phoneme.symbol}: ${value}`);
+        }
+      }
+      for (const family of ruleFamilies) {
+        for (const value of [family.statement, ...family.examples, ...family.counterexamples]) {
+          if (PLACEHOLDER.test(value)) offending.push(`${family.code}: ${value}`);
+        }
+      }
+      expect(offending).toEqual([]);
+    });
+
+    it('refuses to apply when a seeded row is missing', async () => {
+      /**
+       * The guard is the whole point of the feature: 44 and 24 are quoted
+       * across the design docs and Phase 6 turns each phoneme into a scoring
+       * dimension, so a row lost to a bad merge has to stop the deploy.
+       *
+       * It is also the check most easily written as dead code. The first draft
+       * aliased only the table — `unnest(expected_symbols) as symbol` — so the
+       * bare `symbol` in the subquery bound to `p.symbol`, the condition read
+       * `p.symbol = p.symbol`, and every missing row passed. Nothing static
+       * catches that; applying a deliberately broken seed does.
+       */
+      const applyBrokenSeed = async (breakIt: (sql: string) => string): Promise<unknown> => {
+        const scratch = new PGlite({ extensions: { pgcrypto, uuid_ossp } });
+        await scratch.exec(AUTH_SHIM);
+        for (const name of migrations) {
+          const sql = readFileSync(join(MIGRATIONS_DIR, name), 'utf8');
+          await scratch.exec(name === '010_seed_reference.sql' ? breakIt(sql) : sql);
+        }
+        await scratch.close();
+        return undefined;
+      };
+
+      const withoutTheta = (sql: string): string => {
+        const next = sql.replace(
+          /^ {2}\('θ', 'consonant', null,\n(?: {3}.*\n)*? {3}'[^']*'\),\n/m,
+          '',
+        );
+        expect(next, 'the phoneme row was not removed, so the test proves nothing').not.toBe(sql);
+        return next;
+      };
+      const withoutFewerLess = (sql: string): string => {
+        const next = sql.replace(/^ {2}\('fewer_less',\n(?: {3}.*\n)*? {3}.*\]\),\n\n/m, '');
+        expect(next, 'the rule family row was not removed, so the test proves nothing').not.toBe(
+          sql,
+        );
+        return next;
+      };
+
+      await expect(applyBrokenSeed(withoutTheta)).rejects.toThrow(/phonemes absent after seeding/);
+      await expect(applyBrokenSeed(withoutFewerLess)).rejects.toThrow(
+        /rule families absent after seeding/,
+      );
+    }, 60_000);
+
+    it('re-applies without duplicating a row or drifting a count', async () => {
+      // The seed is keyed on `symbol` and `code`, not guarded by `if not
+      // exists`, so re-running is the only way to prove the conflict targets
+      // are the natural keys and not something that happens to be unique today.
+      await seedDb.exec(readFileSync(join(MIGRATIONS_DIR, '010_seed_reference.sql'), 'utf8'));
+      const after = await seedDb.query<{ readonly phonemes: string; readonly families: string }>(
+        `select (select count(*)::text from public.phonemes)      as phonemes,
+                (select count(*)::text from public.rule_families) as families`,
+      );
+      expect(after.rows[0]).toEqual({ phonemes: '44', families: '24' });
     });
   });
 });

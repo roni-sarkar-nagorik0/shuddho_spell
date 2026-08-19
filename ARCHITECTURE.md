@@ -577,6 +577,22 @@ because the same collision will hit the application: `BootstrapProfileUseCase` m
 idempotent *on top of* the trigger, not a substitute for it, and the test proving that is in
 `migrations.apply.test.ts` rather than waiting for Phase 3.
 
+**D19 — The seed asserts what it wrote, not what the table holds (F2.9).**
+`03-database.md` says `010_seed_reference` carries "the 44 phonemes and 24 rule families —
+real data, not placeholders" but does not say how a deploy proves it. The obvious guard,
+`count(*) = 44`, is wrong twice over: it is a permanent table-wide invariant expressed in a
+block that runs once, and it makes the migration unre-runnable against any database holding
+a row the seed did not write. So the guard lists every IPA symbol and every rule-family code
+and asserts each is present, then checks the 12/8/24 type split across exactly those rows.
+That is strictly stronger — it catches a mistyped IPA character, which no count can see —
+and the closed-set claim (the table holds 44 and only 44) moved to
+`migrations.apply.test.ts`, where it runs against a database migrated from empty, which is
+the condition production is actually in.
+
+Idempotency comes from `on conflict (symbol) / (code) do update`, not from `if not exists`,
+which cannot guard an insert. A correction to a Bangla annotation therefore ships as a new
+numbered migration that re-states the row — forward-only survives intact.
+
 ### Open — needs the user, not me
 
 **O1 — `02-typescript-rules.md` still says `packages/config` base tsconfig.** That is a

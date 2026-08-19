@@ -55,10 +55,11 @@ and 2. No feature starts without it. **Never read the file** — existence check
 
 ## NEXT
 
-> **Phase 2 · F2.9 — `010_seed_reference` (44 real phonemes, 24 real rule families)**
+> **Phase 2 · F2.10 — hand-written row interfaces in `infrastructure/`**
 > Branch: `feat/02-database-schema`
-> Migrations now run for real: `pnpm db:migrate` against hosted Supabase, and every migration
-> is applied from empty inside a WASM Postgres (PGlite) by `migrations.apply.test.ts` in CI.
+> The last feature of Phase 2, and the one that closes its exit gate. Row interfaces are written
+> from the SQL by hand and only *verified* against `supabase gen types` — the generated output is
+> never the source of truth, and no row interface may live outside `infrastructure/`.
 > Phase 1's only open items are the two carry-overs that genuinely need later phases:
 > F1.9 (rate limiter, needs the Phase 2 tables) and F1.11 (OpenAPI, needs the v1 schemas).
 
@@ -174,7 +175,14 @@ Branch `feat/02-database-schema` · Status: `IN PROGRESS`
     graded, and is pg_cron-guarded so a database without the extension still migrates.
     All four functions revoked from the client roles (D17).
   - Test: inserting into `auth.users` creates a `learner_profiles` row
-- [ ] **F2.9** `010_seed_reference` — 44 real phonemes, 24 real rule families
+- [x] **F2.9** (2026-08-19) `010_seed_reference` — 44 real phonemes, 24 real rule families
+  - 12 vowels, 8 diphthongs, 24 consonants, each annotated for a Bengali speaker: a null
+    `bangla_equivalent` means Bangla lacks the sound, and the substitution column then says
+    what learners produce instead. 24 rule families, each with three examples and two
+    counterexamples that are genuinely counter — the counterexample is the lesson.
+    Idempotent on the natural keys (`symbol`, `code`), so a re-run corrects drift instead
+    of duplicating. The migration asserts its own completeness by naming every symbol and
+    code, which catches a mistyped IPA character that a count never could (D19).
   - Test: counts are exactly 44 and 24; no placeholder text
 - [ ] **F2.10** Hand-written row interfaces in `infrastructure/`
   - Test: `supabase gen types` output matches them; no row interface outside `infrastructure/`
@@ -500,6 +508,7 @@ Newest first. One line per finished feature: date · id · what · test result.
 
 | Date | Feature | What landed | Tests |
 | --- | --- | --- | --- |
+| 2026-08-19 | F2.9 | `010_seed_reference` — the 44 English phonemes annotated for a Bengali speaker and the 24 rule families, seeded idempotently on their natural keys; the migration names every symbol and code so a lost or mistyped row fails the deploy | `pnpm test` 165/165 — 20 new · typecheck, lint green |
 | 2026-08-19 | F2.8 | `009_functions_triggers` — updated_at by catalogue loop, idempotent signup trigger, `complete_lesson_session` as a pure transaction boundary, pg_cron auto-submit, execute revoked from every client role | `pnpm test` 145/145 — 20 new · typecheck, lint green |
 | 2026-08-18 | F2.7 | `correct_answer` protection — already unreachable after 008, so this ships the regression lock instead of redundant SQL: privilege sweep over every column and role, no-view assertion, static sweep of every migration | `pnpm test` 125/125 — 9 new · typecheck, lint green |
 | 2026-08-18 | F2.6 | `008_rls_policies` — revoke-first grants, one policy shape per learner table, no client delete, `exam_questions` unreachable, public certificate view | `pnpm test` 116/116 — 17 new, incl. the two-user script run as real `authenticated` roles · typecheck, lint green |

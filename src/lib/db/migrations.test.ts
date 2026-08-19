@@ -459,3 +459,77 @@ describe('009 functions and triggers', () => {
     expect(body, 'auto-submit decides pass or fail').not.toMatch(/passed\s*=/);
   });
 });
+
+describe('010 seed reference (F2.9)', () => {
+  const seed = files.find((file) => file.version === '010');
+  const sql = seed === undefined ? '' : seed.sql;
+
+  it('is a seed, not a schema change', () => {
+    // Reference data belongs in a migration because Phase 4 keys its mastery
+    // dimensions off it; a table does not. A create here would mean 002 was
+    // wrong, and the fix for that is a new numbered migration, not this one.
+    expect(sql).not.toBe('');
+    expect(tableBlocks(sql)).toEqual([]);
+    expect(withoutComments(sql), '010 alters the schema').not.toMatch(/\balter table\b/i);
+  });
+
+  it('touches only the two reference tables', () => {
+    const targets = [...withoutComments(sql).matchAll(/insert into public\.(\w+)/gi)]
+      .map((match) => match[1])
+      .filter((name): name is string => name !== undefined);
+    expect([...new Set(targets)].sort()).toEqual(['phonemes', 'rule_families']);
+  });
+
+  it('is idempotent by natural key rather than by insert-and-hope', () => {
+    // `if not exists` cannot guard an insert, so re-runnability has to come
+    // from the unique columns 002 already declares.
+    expect(sql).toMatch(/on conflict \(symbol\) do update set/);
+    expect(sql).toMatch(/on conflict \(code\) do update set/);
+    expect(sql, 'a re-run leaves updated_at stale').toMatch(/updated_at\s+= now\(\)/);
+  });
+
+  it('seeds 44 phoneme rows and 24 rule family rows', () => {
+    // Counted from the file so a row lost to a bad edit fails here, without a
+    // database. `migrations.apply.test.ts` counts them again after applying.
+    const phonemeBlock = sql.match(
+      /insert into public\.phonemes[\s\S]*?\nvalues\n([\s\S]*?)\non conflict \(symbol\)/,
+    );
+    expect(phonemeBlock).not.toBeNull();
+    const phonemeRows = (phonemeBlock?.[1] ?? '').match(/^\s{2}\('/gm) ?? [];
+    expect(phonemeRows.length, 'the phoneme count drifted from 44').toBe(44);
+
+    const ruleBlock = sql.match(
+      /insert into public\.rule_families[\s\S]*?\nvalues\n([\s\S]*?)\non conflict \(code\)/,
+    );
+    expect(ruleBlock).not.toBeNull();
+    const ruleRows = (ruleBlock?.[1] ?? '').match(/^\s{2}\('/gm) ?? [];
+    expect(ruleRows.length, 'the rule family count drifted from 24').toBe(24);
+  });
+
+  it('asserts its own completeness, so a bad deploy fails at migrate time', () => {
+    // Named symbols and codes, not a table-wide count: the count cannot see a
+    // mistyped IPA character, and it would break on any database holding a row
+    // this seed did not write.
+    expect(sql).toMatch(/raise exception 'expected 44 phonemes, the seed lists/);
+    expect(sql).toMatch(/raise exception 'expected 24 rule families, the seed lists/);
+    expect(sql).toMatch(/raise exception 'phonemes absent after seeding/);
+    expect(sql).toMatch(/raise exception 'rule families absent after seeding/);
+    expect(sql).toMatch(/raise exception 'expected 12 vowels, 8 diphthongs and 24 consonants/);
+    expect(sql, 'the guard counts the whole table instead of naming its own rows').not.toMatch(
+      /count\(\*\) into phoneme_count/,
+    );
+  });
+
+  it('carries no placeholder text', () => {
+    const offending = withoutComments(sql)
+      .split('\n')
+      .filter((line) => /\b(tbd|todo|fixme|placeholder|lorem|ipsum|n\/a|xxx+|\?\?\?)\b/i.test(line));
+    expect(offending).toEqual([]);
+  });
+
+  it('writes Bangla in Bangla script, never transliterated', () => {
+    // CLAUDE.md §10. Every non-null bangla_equivalent literal must be Bangla.
+    const banglaCharacter = /[ঀ-৿]/u;
+    expect(sql, '010 contains no Bangla at all').toMatch(banglaCharacter);
+  });
+});
