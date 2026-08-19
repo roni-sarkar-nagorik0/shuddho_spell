@@ -15,7 +15,7 @@ import { type IDatabase } from './database';
 import { DatabaseError } from './database-error';
 import { RetryingDatabase } from './retrying-database';
 
-function failingWith(error: unknown, failures = Number.POSITIVE_INFINITY): {
+function failingWith(error: Error, failures = Number.POSITIVE_INFINITY): {
   db: IDatabase;
   calls: () => number;
 } {
@@ -24,17 +24,24 @@ function failingWith(error: unknown, failures = Number.POSITIVE_INFINITY): {
   const attempt = (): Promise<never[]> => {
     calls += 1;
 
-    return calls <= failures ? Promise.reject(error) : Promise.resolve([]);
+    if (calls <= failures) {
+      // Thrown rather than `Promise.reject(...)` so the rejection reason is
+      // statically an Error — the same rule that stops production code
+      // rejecting with a string nobody can read a stack out of.
+      throw error;
+    }
+
+    return Promise.resolve([]);
   };
 
   const db: IDatabase = {
-    select: attempt,
-    selectOne: attempt,
-    count: () => attempt().then(() => 0),
-    insert: () => attempt().then(() => undefined),
-    upsert: () => attempt().then(() => undefined),
-    update: () => attempt().then(() => undefined),
-    rpc: attempt,
+    select: () => Promise.resolve().then(attempt),
+    selectOne: () => Promise.resolve().then(attempt),
+    count: () => Promise.resolve().then(attempt).then(() => 0),
+    insert: () => Promise.resolve().then(attempt).then(() => undefined),
+    upsert: () => Promise.resolve().then(attempt).then(() => undefined),
+    update: () => Promise.resolve().then(attempt).then(() => undefined),
+    rpc: () => Promise.resolve().then(attempt),
   };
 
   return { db, calls: () => calls };
