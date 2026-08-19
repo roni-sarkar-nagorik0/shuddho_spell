@@ -13,12 +13,22 @@ import { readUser } from '../auth/current-user';
 import { logger } from '../logger';
 import { ApiError, problem } from './problem';
 
-export interface IHandlerContext<TBody, TQuery> {
+export interface IHandlerContext<TBody, TQuery, TParams> {
   readonly request: NextRequest;
   readonly requestId: string;
   readonly body: TBody;
   readonly query: TQuery;
+  /** Validated path segments — `:dayIndex`, `:id`. Never raw strings. */
+  readonly params: TParams;
   readonly user: IAuthenticatedUser | null;
+}
+
+/**
+ * Next 15 hands a route handler its dynamic segments as a promise. Named here
+ * so a handler factory's signature says so rather than every route repeating it.
+ */
+export interface IRouteContext {
+  readonly params: Promise<Record<string, string | readonly string[] | undefined>>;
 }
 
 /**
@@ -31,7 +41,7 @@ export interface IHandlerContext<TBody, TQuery> {
  */
 export type AuthRequirement = 'required' | 'public';
 
-export interface IWithApiOptions<TBody, TQuery> {
+export interface IWithApiOptions<TBody, TQuery, TParams> {
   /**
    * Omitted means `'required'`. Protection is never something a route has to
    * remember to ask for: a handler written tomorrow is closed until its author
@@ -40,6 +50,12 @@ export interface IWithApiOptions<TBody, TQuery> {
   readonly auth?: AuthRequirement;
   readonly bodySchema?: z.ZodType<TBody>;
   readonly querySchema?: z.ZodType<TQuery>;
+  /**
+   * Path segments are as untrusted as a body. `:dayIndex` arrives as the string
+   * `"99"` or `"../../etc"` just as readily as `"3"`, and a handler that
+   * coerced it itself would be the business logic `withApi` exists to keep out.
+   */
+  readonly paramsSchema?: z.ZodType<TParams>;
 
   /**
    * Opt-in, per `11-api-surface.md`: "rate limits on every write route".
@@ -79,7 +95,9 @@ function rateLimitSubject(request: NextRequest, user: IAuthenticatedUser | null)
   return `ip:${first === undefined || first.length === 0 ? 'unknown' : first}`;
 }
 
-type Handler<TBody, TQuery> = (ctx: IHandlerContext<TBody, TQuery>) => Promise<unknown>;
+type Handler<TBody, TQuery, TParams> = (
+  ctx: IHandlerContext<TBody, TQuery, TParams>,
+) => Promise<unknown>;
 
 function toFieldErrors(error: ZodError): readonly IFieldError[] {
   return error.issues.map((issue) => ({
@@ -92,14 +110,17 @@ function toFieldErrors(error: ZodError): readonly IFieldError[] {
  * The one route-handler wrapper. Owns request ids, auth, Zod parsing, logging,
  * and the mapping from any thrown value to RFC 7807 problem+json.
  */
-export function withApi<TBody = undefined, TQuery = undefined>(
-  handler: Handler<TBody, TQuery>,
-  options: IWithApiOptions<TBody, TQuery> = {},
-): (request: NextRequest) => Promise<NextResponse> {
+export function withApi<TBody = undefined, TQuery = undefined, TParams = undefined>(
+  handler: Handler<TBody, TQuery, TParams>,
+  options: IWithApiOptions<TBody, TQuery, TParams> = {},
+): (request: NextRequest, context?: IRouteContext) => Promise<NextResponse> {
   const requireAuth = (options.auth ?? 'required') === 'required';
   const rule = options.rateLimit;
 
-  return async function route(request: NextRequest): Promise<NextResponse> {
+  return async function route(
+    request: NextRequest,
+    context?: IRouteContext,
+  ): Promise<NextResponse> {
     const requestId = crypto.randomUUID();
     const instance = new URL(request.url).pathname;
     const startedAt = Date.now();
@@ -155,7 +176,12 @@ export function withApi<TBody = undefined, TQuery = undefined>(
         query = options.querySchema.parse(raw);
       }
 
-      const data = await handler({ request, requestId, body, query, user });
+      let params = undefined as TParams;
+      if (options.paramsSchema !== undefined) {
+        params = options.paramsSchema.parse((await context?.params) ?? {});
+      }
+
+      const data = await handler({ request, requestId, body, query, params, user });
 
       logger.info(
         { requestId, method: request.method, path: instance, ms: Date.now() - startedAt },

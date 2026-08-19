@@ -77,6 +77,16 @@ export class ApiError extends Error {
     );
   }
 
+  /**
+   * The request is well-formed and the resource is simply not in a state where
+   * it makes sense. Distinct from 422, which says the input was malformed —
+   * telling a client its body was invalid when the body was fine sends them
+   * looking in the wrong place.
+   */
+  static conflict(detail: string): ApiError {
+    return new ApiError(409, PROBLEM_CODES.CONFLICT, detail);
+  }
+
   static forbidden(): ApiError {
     return new ApiError(403, PROBLEM_CODES.FORBIDDEN, 'You cannot access this resource.');
   }

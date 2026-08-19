@@ -6,7 +6,9 @@ import { logger } from '../logger';
 import { ApiError } from './problem';
 import { withApi, type IHandlerContext } from './with-api';
 
-type CronHandler = (ctx: IHandlerContext<undefined, undefined>) => Promise<unknown>;
+// A cron route has no body, no query and no path segments — it is called by
+// a scheduler at a fixed url, and the bearer check is its whole input.
+type CronHandler = (ctx: IHandlerContext<undefined, undefined, undefined>) => Promise<unknown>;
 
 /**
  * Constant time, and length-independent.
