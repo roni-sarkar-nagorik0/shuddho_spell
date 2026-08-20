@@ -66,6 +66,20 @@ export interface IDatabase {
     match: Readonly<Record<string, string>>,
   ) => Promise<void>;
 
+  /**
+   * Deletes the rows matching an equality filter.
+   *
+   * Added for push subscriptions, which are the first rows in the product a
+   * **delete** is the right answer for. Everywhere else a learner's history is
+   * kept — an attempt, a review item, an exam answer is evidence — but a dead
+   * push endpoint is not history, it is a browser that no longer exists, and
+   * leaving it in the table means failing on every tick forever. 008 grants no
+   * client delete on any learner table and this does not change that: it runs
+   * through the service client, from the server, on a row the caller has
+   * already established belongs to the learner.
+   */
+  readonly delete: (table: string, match: Readonly<Record<string, string>>) => Promise<void>;
+
   /** A Postgres function. The only route to a multi-table atomic write. */
   readonly rpc: (fn: string, args: Readonly<Record<string, unknown>>) => Promise<unknown>;
 }

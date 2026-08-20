@@ -153,6 +153,20 @@ export function toDatabase(): IDatabase {
       }
     },
 
+    delete: async (table, match) => {
+      let builder = client.from(table).delete();
+
+      for (const [column, value] of Object.entries(match)) {
+        builder = builder.eq(column, value);
+      }
+
+      const { error } = await builder;
+
+      if (error !== null) {
+        raise(`could not delete from ${table}`, error);
+      }
+    },
+
     rpc: async (fn, args) => {
       const { data, error } = rpcEnvelopeSchema.parse(await client.rpc(fn, args));
 

@@ -103,6 +103,7 @@ function fakeDatabase(store: IStore): IDatabase {
     select: notUsed,
     count: notUsed,
     insert: notUsed,
+    delete: notUsed,
     rpc: notUsed,
   };
 }

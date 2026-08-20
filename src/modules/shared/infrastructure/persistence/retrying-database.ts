@@ -42,6 +42,9 @@ export class RetryingDatabase implements IDatabase {
   update: IDatabase['update'] = (table, values, match) =>
     this.run(table, () => this.inner.update(table, values, match));
 
+  delete: IDatabase['delete'] = (table, match) =>
+    this.run(table, () => this.inner.delete(table, match));
+
   rpc: IDatabase['rpc'] = (fn, args) => this.run(fn, () => this.inner.rpc(fn, args));
 
   private async run<T>(what: string, work: () => Promise<T>): Promise<T> {

@@ -21,6 +21,20 @@ const serverEnvSchema = z.object({
   SUPABASE_SERVICE_ROLE_KEY: z.string().min(1),
   DATABASE_URL: z.string().min(1),
   CRON_SECRET: z.string().min(16).optional(),
+  /**
+   * The VAPID keypair's private half and the contact the push services are
+   * told to reach if something goes wrong. Optional as a set: the app runs
+   * perfectly well with push switched off, and `IPushSender` reports itself
+   * unconfigured rather than throwing — a learner not getting a push is a
+   * degraded feature, and taking the whole application down over it would be a
+   * far worse outcome than the one it prevents.
+   *
+   * The **public** half is `NEXT_PUBLIC_VAPID_PUBLIC_KEY`: the browser needs it
+   * to subscribe, so it is public by design rather than by accident. The
+   * private half is here and never leaves the server.
+   */
+  VAPID_PRIVATE_KEY: z.string().min(1).optional(),
+  VAPID_SUBJECT: z.string().min(1).optional(),
 });
 
 export interface IServerEnv {
@@ -28,6 +42,8 @@ export interface IServerEnv {
   readonly SUPABASE_SERVICE_ROLE_KEY: string;
   readonly DATABASE_URL: string;
   readonly CRON_SECRET?: string | undefined;
+  readonly VAPID_PRIVATE_KEY?: string | undefined;
+  readonly VAPID_SUBJECT?: string | undefined;
 }
 
 const parsed = serverEnvSchema.safeParse({
@@ -35,6 +51,8 @@ const parsed = serverEnvSchema.safeParse({
   SUPABASE_SERVICE_ROLE_KEY: process.env['SUPABASE_SERVICE_ROLE_KEY'],
   DATABASE_URL: process.env['DATABASE_URL'],
   CRON_SECRET: absentIfBlank(process.env['CRON_SECRET']),
+  VAPID_PRIVATE_KEY: absentIfBlank(process.env['VAPID_PRIVATE_KEY']),
+  VAPID_SUBJECT: absentIfBlank(process.env['VAPID_SUBJECT']),
 });
 
 if (!parsed.success) {

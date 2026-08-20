@@ -41,6 +41,10 @@ function failingWith(error: Error, failures = Number.POSITIVE_INFINITY): {
     insert: () => Promise.resolve().then(attempt).then(() => undefined),
     upsert: () => Promise.resolve().then(attempt).then(() => undefined),
     update: () => Promise.resolve().then(attempt).then(() => undefined),
+    delete: () =>
+      Promise.resolve()
+        .then(attempt)
+        .then(() => undefined),
     rpc: () => Promise.resolve().then(attempt),
   };
 
