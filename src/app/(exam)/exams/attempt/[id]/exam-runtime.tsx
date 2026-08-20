@@ -10,6 +10,7 @@ import { ConfirmDialog } from '@/components/overlays/confirm-dialog';
 import { apiFetch } from '@/lib/api/client';
 import { useSaveExamAnswer } from '@/lib/query/use-save-exam-answer';
 import { QuestionView } from './question-view';
+import { useAnswerAutosave } from './use-answer-autosave';
 import { useExamGuard } from './use-exam-guard';
 
 const sectionSubmittedSchema = z.object({
@@ -20,6 +21,9 @@ const sectionSubmittedSchema = z.object({
   isPaperComplete: z.boolean(),
   remainingSeconds: z.number(),
 });
+
+/** A minute. Often enough to catch drift, rare enough not to be a poll. */
+const RESYNC_INTERVAL_MS = 60_000;
 
 const outcomeSchema = z.object({
   attemptId: z.string(),
@@ -102,13 +106,61 @@ export function ExamRuntime({ attemptId }: { readonly attemptId: string }): Reac
 
   const current = sectionQuestions[index] ?? null;
 
-  const setAnswer = useCallback(
+  const write = useCallback(
     (questionId: string, value: string) => {
-      setDrafts((existing) => ({ ...existing, [questionId]: value }));
       save.mutate({ questionId, submittedValue: value, timeSpentMs: null });
     },
     [save],
   );
+
+  const autosave = useAnswerAutosave({ save: write });
+
+  const setAnswer = useCallback(
+    (questionId: string, value: string) => {
+      // The draft moves first — the learner must never wait on the network to
+      // see their own typing, let alone to move on.
+      setDrafts((existing) => ({ ...existing, [questionId]: value }));
+      autosave.queue(questionId, value);
+    },
+    [autosave],
+  );
+
+  /**
+   * Re-anchor the clock and the saved answers whenever the tab comes back.
+   *
+   * A suspended tab is the one case a locally interpolated countdown gets
+   * badly wrong, and it is exactly the case a learner creates by switching
+   * away. Asking the server on return costs one request and makes the
+   * displayed time true again.
+   */
+  useEffect(() => {
+    if (attempt === null || finished) {
+      return undefined;
+    }
+
+    const resync = (): void => {
+      if (document.visibilityState !== 'visible') {
+        return;
+      }
+
+      void apiFetch('/api/v1/exams/attempts/active', { schema: examAttemptSchema.nullable() })
+        .then((active) => {
+          if (active !== null && active.attemptId === attemptId) {
+            setAttempt(active);
+            setSyncToken((token) => token + 1);
+          }
+        })
+        .catch(() => undefined);
+    };
+
+    document.addEventListener('visibilitychange', resync);
+    const handle = window.setInterval(resync, RESYNC_INTERVAL_MS);
+
+    return () => {
+      document.removeEventListener('visibilitychange', resync);
+      window.clearInterval(handle);
+    };
+  }, [attempt, attemptId, finished]);
 
   /**
    * Flagging is a write like any other, and the same rule applies: the local
@@ -141,6 +193,9 @@ export function ExamRuntime({ attemptId }: { readonly attemptId: string }): Reac
     setConfirming(false);
     setError(null);
 
+    // Nothing half-typed goes unsaved into a section that cannot be reopened.
+    autosave.flush();
+
     void apiFetch(
       `/api/v1/exams/attempts/${attemptId}/sections/${attempt.currentSectionCode}/submit`,
       { method: 'POST', schema: sectionSubmittedSchema },
@@ -170,7 +225,7 @@ export function ExamRuntime({ attemptId }: { readonly attemptId: string }): Reac
       .catch(() => {
         setError('That section could not be submitted. Your answers are saved — try again.');
       });
-  }, [attempt, attemptId, router]);
+  }, [attempt, attemptId, router, autosave]);
 
   /**
    * The clock reached zero on the learner's screen.
@@ -237,8 +292,18 @@ export function ExamRuntime({ attemptId }: { readonly attemptId: string }): Reac
             <p className="text-primary-100">This section has no questions.</p>
           ) : (
             <>
-              <p className="num text-primary-100">
-                Question {index + 1} of {sectionQuestions.length}
+              <p className="num flex items-center gap-3 text-primary-100">
+                <span>
+                  Question {index + 1} of {sectionQuestions.length}
+                </span>
+                {/*
+                  Saving state, said plainly. A learner who cannot tell whether
+                  their answer is safe will not leave the page — and this is a
+                  timed paper.
+                */}
+                <span aria-live="polite">
+                  {autosave.pendingCount > 0 ? 'saving…' : 'all answers saved'}
+                </span>
               </p>
 
               <QuestionView
@@ -261,7 +326,7 @@ export function ExamRuntime({ attemptId }: { readonly attemptId: string }): Reac
                 <button
                   className="h-9 rounded-control border border-primary-100 px-3 text-primary-100 disabled:border-primary-700 disabled:text-primary-700"
                   disabled={index === 0}
-                  onClick={() => { setIndex((position) => position - 1); }}
+                  onClick={() => { autosave.flush(); setIndex((position) => position - 1); }}
                   type="button"
                 >
                   Previous
@@ -269,7 +334,7 @@ export function ExamRuntime({ attemptId }: { readonly attemptId: string }): Reac
                 <button
                   className="h-9 rounded-control border border-primary-100 px-3 text-primary-100 disabled:border-primary-700 disabled:text-primary-700"
                   disabled={index + 1 >= sectionQuestions.length}
-                  onClick={() => { setIndex((position) => position + 1); }}
+                  onClick={() => { autosave.flush(); setIndex((position) => position + 1); }}
                   type="button"
                 >
                   Next
@@ -292,7 +357,7 @@ export function ExamRuntime({ attemptId }: { readonly attemptId: string }): Reac
                     answered: (drafts[question.id] ?? '') !== '',
                     flagged: flags[question.id] ?? false,
                   }))}
-                  onJump={setIndex}
+                  onJump={(next) => { autosave.flush(); setIndex(next); }}
                 />
               </div>
             </>

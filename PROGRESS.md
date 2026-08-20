@@ -81,7 +81,7 @@ and 2. No feature starts without it. **Never read the file** — existence check
 ## NEXT
 
 > **Phase 12 · Exam and marketing screens — in progress on `feat/12-exam-marketing-screens`**
-> Current: **F12.6** — refresh and resume.
+> Current: **F12.7** — `/exams/result/[id]`.
 >
 > **What Phase 11 leaves Phase 12**
 > - `useSaveExamAnswer` (F10.7) is the optimistic template for the exam runtime; writes never retry.
@@ -580,7 +580,7 @@ Branch `feat/12-exam-marketing-screens` · Status: `IN PROGRESS`
   - Test: driven by server remaining seconds; `secondary-500` at 5:00, `tertiary-500` at 0:60, each with `aria-live`
 - [x] **F12.5** (2026-08-20) Question navigator
   - Test: answered / current / flagged / blank states; fully keyboard operable
-- [ ] **F12.6** Refresh and resume
+- [x] **F12.6** (2026-08-20) Refresh and resume
   - Test: a refresh mid-attempt loses no answers and no elapsed time
 - [ ] **F12.7** `/exams/result/[id]` — pass and fail variants
   - Test: the fail variant renders its prescription block
@@ -631,6 +631,7 @@ Out of scope for this build. Do not start these, and do not leave stubs for them
 Newest first. One line per finished feature: date · id · what · test result.
 
 | Date | Feature | What landed | Tests |
+| 2026-08-20 | F12.6 | Refresh and resume — debounced autosave flushed on question change, section submit, tab-hide and `pagehide`; clock and answers re-anchored on visibility change and every 60s; a plain saving indicator | typecheck + lint green (tests paused) |
 | 2026-08-20 | F12.5 | Question navigator — answered / current / flagged / blank, each named in words as well as filled; roving-focus grid with arrows, Home/End and Enter; flagging wired to the real endpoint | typecheck + lint green (tests paused) |
 | 2026-08-20 | F12.4 | The countdown — anchored to the server's `remainingSeconds` and re-anchored on every response, `secondary-500` at 5:00 and `tertiary-500` at 0:60, each announced once via `aria-live` | typecheck + lint green (tests paused) |
 | 2026-08-20 | F12.3 | `/exams/attempt/[id]` — `(exam)` route group on flat `primary-900`, `beforeunload` + back-button guard, optimistic never-retried answer saving, one-way section submission | typecheck + lint green (tests paused) |
