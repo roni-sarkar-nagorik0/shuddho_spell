@@ -8,7 +8,11 @@ import {
   type ILearnerProfileRepository,
   type INewLearnerProfile,
 } from '../../../domain/repositories/learner-profile-repository';
-import { LEARNER_PROFILE_COLUMNS, toLearnerProfile } from '../../mappers/learner-profile.mapper';
+import {
+  LEARNER_PROFILE_COLUMNS,
+  toLearnerProfile,
+  toLearnerProfiles,
+} from '../../mappers/learner-profile.mapper';
 
 const TABLE = 'learner_profiles';
 
@@ -32,6 +36,14 @@ export class SupabaseLearnerProfileRepository implements ILearnerProfileReposito
     return toLearnerProfile(
       await this.db.selectOne({ table: TABLE, columns: LEARNER_PROFILE_COLUMNS, eq: { id } }),
     );
+  }
+
+  async listAll(limit: number): Promise<LearnerProfile[]> {
+    return [
+      ...toLearnerProfiles(
+        await this.db.select({ table: TABLE, columns: LEARNER_PROFILE_COLUMNS, limit }),
+      ),
+    ];
   }
 
   async findByUserId(userId: string): Promise<LearnerProfile | null> {

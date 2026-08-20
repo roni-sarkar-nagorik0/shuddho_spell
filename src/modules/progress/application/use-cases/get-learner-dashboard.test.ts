@@ -45,6 +45,7 @@ function counted(): {
       record('profiles.findByUserId', makeLearnerProfile({ id: 'p1', timezone: 'Asia/Dhaka' })),
     findById: () =>
       Promise.reject(new Error('the dashboard resolves a profile by session, not by id')),
+    listAll: () => Promise.reject(new Error('only the hourly notification job walks the roster')),
     insertIfAbsent: () => Promise.reject(new Error('not used')),
     save: () => Promise.reject(new Error('not used')),
   };

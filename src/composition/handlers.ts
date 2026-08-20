@@ -21,6 +21,7 @@ import {
   createUnsubscribePushHandler,
   createUpdatePreferencesHandler,
 } from '@/modules/notifications/presentation/handlers/notification-handlers';
+import { createNotificationsCronHandler } from '@/modules/notifications/presentation/handlers/notifications-cron';
 import { createGetProgramDayHandler } from '@/modules/program/presentation/handlers/get-program-day';
 import { createGetProgramHandler } from '@/modules/program/presentation/handlers/get-program';
 import { createGetMasteryHandler } from '@/modules/progress/presentation/handlers/get-mastery';
@@ -39,6 +40,7 @@ import {
   makeMarkNotificationRead,
   makeRegisterPushSubscription,
   makeRevokePushSubscription,
+  makeRunHourlyNotifications,
   makeUpdateNotificationPreferences,
   makeGetMasterySnapshot,
   makeGetProgramOverview,
@@ -182,4 +184,8 @@ export const subscribePushHandler = createSubscribePushHandler(() =>
 
 export const unsubscribePushHandler = createUnsubscribePushHandler(() =>
   makeRevokePushSubscription(container()),
+);
+
+export const notificationsCronHandler = createNotificationsCronHandler(() =>
+  makeRunHourlyNotifications(container()),
 );

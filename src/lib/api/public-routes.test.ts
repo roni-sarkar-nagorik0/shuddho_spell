@@ -26,6 +26,7 @@ const PUBLIC_ROUTES: readonly string[] = [
   // Cron routes. They have no user; the `withCron` bearer check — a constant-
   // time compare against `CRON_SECRET`, header only — is what stands in for one.
   'src/app/api/cron/exam-autosubmit/route.ts',
+  'src/app/api/cron/notifications/route.ts',
 ];
 
 function routeFiles(directory: string): readonly string[] {

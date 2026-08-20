@@ -15,6 +15,10 @@ class FakeProfiles implements ILearnerProfileRepository {
     return Promise.resolve(profile);
   }
 
+  listAll(): Promise<readonly LearnerProfile[]> {
+    return Promise.reject(new Error('only the hourly notification job walks the roster'));
+  }
+
   findById(): Promise<LearnerProfile | null> {
     return Promise.reject(new Error('the request path resolves a profile by session, not by id'));
   }

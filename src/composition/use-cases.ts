@@ -31,6 +31,7 @@ import { MarkAllNotificationsReadUseCase } from '@/modules/notifications/applica
 import { MarkNotificationReadUseCase } from '@/modules/notifications/application/use-cases/mark-notification-read';
 import { RegisterPushSubscriptionUseCase } from '@/modules/notifications/application/use-cases/register-push-subscription';
 import { RevokePushSubscriptionUseCase } from '@/modules/notifications/application/use-cases/revoke-push-subscription';
+import { RunHourlyNotificationsUseCase } from '@/modules/notifications/application/use-cases/run-hourly-notifications';
 import { UpdateNotificationPreferencesUseCase } from '@/modules/notifications/application/use-cases/update-notification-preferences';
 import { GetProgramDayUseCase } from '@/modules/program/application/use-cases/get-program-day';
 import { GetProgramOverviewUseCase } from '@/modules/program/application/use-cases/get-program-overview';
@@ -373,4 +374,18 @@ export function makeSendExamResult(c: IContainer): SendExamResultUseCase {
 
 export function makeSendWeeklyReport(c: IContainer): SendWeeklyReportUseCase {
   return new SendWeeklyReportUseCase(c.notificationDispatcher);
+}
+
+export function makeRunHourlyNotifications(c: IContainer): RunHourlyNotificationsUseCase {
+  return new RunHourlyNotificationsUseCase(
+    c.learnerProfiles,
+    c.notificationPreferences,
+    c.reviewItems,
+    c.streaks,
+    c.clock,
+    c.ids,
+    makeSendDailyReminder(c),
+    makeSendReviewItemsDue(c),
+    makeSendStreakAtRisk(c),
+  );
 }

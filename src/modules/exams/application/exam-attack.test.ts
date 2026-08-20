@@ -182,6 +182,7 @@ function wire(world: IWorld): {
       Promise.resolve(userId === world.profile.userId ? world.profile : null),
     findById: (id) => Promise.resolve(id === world.profile.id ? world.profile : null),
     insertIfAbsent: () => Promise.reject(new Error('not used')),
+    listAll: () => Promise.reject(new Error('only the hourly notification job walks the roster')),
     save: () => Promise.reject(new Error('not used')),
   };
 

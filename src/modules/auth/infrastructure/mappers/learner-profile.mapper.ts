@@ -36,6 +36,20 @@ const rowSchema = z.object({
 export const LEARNER_PROFILE_COLUMNS =
   'id, user_id, display_name, track, daily_minutes, started_at, timezone, ui_language, current_day_index, accent_preference, playback_rate, onboarding_completed_at';
 
+/**
+ * A batch, dropping rows that do not fit — the same call `parseRows` makes
+ * everywhere else. A malformed profile in the notification job's roster is one
+ * learner who misses a reminder, and failing the whole tick over it would cost
+ * everyone else theirs.
+ */
+export function toLearnerProfiles(rows: readonly unknown[]): readonly LearnerProfile[] {
+  return rows.flatMap((row) => {
+    const profile = toLearnerProfile(row);
+
+    return profile === null ? [] : [profile];
+  });
+}
+
 export function toLearnerProfile(row: unknown): LearnerProfile | null {
   const parsed = rowSchema.safeParse(row);
   if (!parsed.success) {

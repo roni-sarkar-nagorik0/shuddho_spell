@@ -21,6 +21,23 @@ export interface ILearnerProfileRepository {
   readonly findById: (id: string) => Promise<LearnerProfile | null>;
 
   /**
+   * Every learner, capped.
+   *
+   * The hourly notification job's only read, and the only thing in the
+   * application that walks the whole table. It is a deliberate compromise:
+   * the *right* query is "learners whose `reminder_time` hour equals the
+   * current hour **in their own timezone**", and that is
+   * `(now() at time zone timezone)::time`, which `IDatabase` cannot express and
+   * which no repository seam of this shape ever will. Rather than widen the
+   * seam for one caller, the job reads the roster and decides per learner in
+   * the domain, where the rule is testable.
+   *
+   * The cap is what stops that being unbounded. When it starts to bite, the
+   * answer is a Postgres function like 013's, not a bigger number.
+   */
+  readonly listAll: (limit: number) => Promise<readonly LearnerProfile[]>;
+
+  /**
    * Creates the profile if this user has none, and returns the profile either
    * way — the one that already existed, or the one this call made.
    *
