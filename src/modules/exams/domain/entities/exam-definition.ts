@@ -1,5 +1,5 @@
 import { InvalidValueError } from '@/modules/shared/domain/errors/invalid-value.error';
-import { type Track } from '@/modules/shared/domain/value-objects/track';
+import { totalDaysIn, type Track } from '@/modules/shared/domain/value-objects/track';
 import { type ExamCode } from '../value-objects/exam-code';
 import { type ExamSectionCode } from '../value-objects/exam-section-code';
 
@@ -29,6 +29,9 @@ export interface IExamDefinitionProps {
 
 /** 35 + 20 + 30 + 15. `08-exam-engine.md` fixes them and 004 cannot check them. */
 const REQUIRED_WEIGHT_TOTAL = 100;
+
+/** The course is four weeks of content on either track. */
+const COURSE_WEEKS = 4;
 
 /**
  * One of the five exams, and everything about it that is not a learner's.
@@ -98,6 +101,30 @@ export class ExamDefinition {
    */
   passes(scorePercent: number): boolean {
     return this.passPercent !== null && scorePercent >= this.passPercent;
+  }
+
+  /**
+   * How much of the course this exam may draw on, in weeks.
+   *
+   * Derived from **the fraction of the track** the unlock day sits at, not from
+   * `day / 7`. The sprint compresses the same four weeks of content into 21
+   * days, so its day 11 is two weeks in and `ceil(11 / 7)` would say three —
+   * an exam asking about material the learner has not reached.
+   *
+   * The diagnostic unlocks on day 0 and covers everything: it exists to find
+   * out where somebody already is, and a placement test that only asks week-one
+   * questions places everybody in week one.
+   */
+  coverageWeeks(track: Track): number {
+    const day = this.unlockDayFor(track);
+
+    if (day === 0) {
+      return COURSE_WEEKS;
+    }
+
+    const fraction = (day / totalDaysIn(track)) * COURSE_WEEKS;
+
+    return Math.min(COURSE_WEEKS, Math.max(1, Math.round(fraction)));
   }
 
   sectionAt(index: number): IExamSectionDefinition | null {

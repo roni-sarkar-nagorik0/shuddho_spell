@@ -33,6 +33,18 @@ export class SupabaseReviewItemRepository implements IReviewItemRepository {
     );
   }
 
+  /** No due filter: an exam is interested in what the learner is bad at, not
+   * in what is scheduled today. */
+  async findByProfile(profileId: string): Promise<readonly ReviewItem[]> {
+    return toReviewItems(
+      await this.db.select({
+        table: TABLE,
+        columns: REVIEW_ITEM_COLUMNS,
+        eq: { profile_id: profileId },
+      }),
+    );
+  }
+
   async findByItem(profileId: string, itemId: string): Promise<ReviewItem | null> {
     return toReviewItem(
       await this.db.selectOne({

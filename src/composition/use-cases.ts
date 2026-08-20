@@ -1,6 +1,7 @@
 import 'server-only';
 import { BootstrapProfileUseCase } from '@/modules/auth/application/use-cases/bootstrap-profile';
 import { GetMeUseCase } from '@/modules/auth/application/use-cases/get-me';
+import { StartExamAttemptUseCase } from '@/modules/exams/application/use-cases/start-exam-attempt';
 import { AdvanceLessonStageUseCase } from '@/modules/lessons/application/use-cases/advance-lesson-stage';
 import { CompleteLessonSessionUseCase } from '@/modules/lessons/application/use-cases/complete-lesson-session';
 import { StartLessonSessionUseCase } from '@/modules/lessons/application/use-cases/start-lesson-session';
@@ -174,5 +175,20 @@ export function makeGetMasterySnapshot(c: IContainer): GetMasterySnapshotUseCase
     c.mastery,
     c.phonemes,
     c.ruleFamilies,
+  );
+}
+
+export function makeStartExamAttempt(c: IContainer): StartExamAttemptUseCase {
+  return new StartExamAttemptUseCase(
+    c.learnerProfiles,
+    c.examDefinitions,
+    c.examAttempts,
+    c.examQuestions,
+    c.words,
+    c.sentenceItems,
+    c.reviewItems,
+    c.clock,
+    c.ids,
+    c.examWrites,
   );
 }

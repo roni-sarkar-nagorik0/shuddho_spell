@@ -70,6 +70,8 @@ function counted(): {
     findByItem: () => Promise.reject(new Error('not used')),
     upsert: () => Promise.reject(new Error('not used')),
     countDue: () => record('reviews.countDue', 7),
+    findByProfile: () =>
+      Promise.reject(new Error('the dashboard counts due items, it does not fetch them')),
   };
 
   const streaks: IStreakRepository = {

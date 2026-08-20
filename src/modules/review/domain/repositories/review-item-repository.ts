@@ -25,4 +25,13 @@ export interface IReviewItemRepository {
   readonly upsert: (item: ReviewItem) => Promise<ReviewItem>;
 
   readonly countDue: (profileId: string, now: Date) => Promise<number>;
+
+  /**
+   * Everything the learner has ever reviewed, due or not.
+   *
+   * The exam blueprint's evidence: an item's accuracy is how weak the learner
+   * is on it, and an item absent from this list is one they have never been
+   * tested on. Read whole and once, at attempt start.
+   */
+  readonly findByProfile: (profileId: string) => Promise<readonly ReviewItem[]>;
 }

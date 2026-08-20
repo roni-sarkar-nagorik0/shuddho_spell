@@ -11,6 +11,7 @@ import {
   startSessionBodySchema,
   submitAttemptBodySchema,
 } from '@/modules/lessons/presentation/dto/lesson-requests';
+import { examCodeParamsSchema } from '@/modules/exams/presentation/dto/exam-requests';
 import { programDayParamsSchema } from '@/modules/program/presentation/dto/program-params';
 import { submitReviewBodySchema } from '@/modules/review/presentation/dto/review-requests';
 import { meResponseSchema } from '@/modules/auth/presentation/dto/me.response';
@@ -155,6 +156,16 @@ registry.registerPath({
   path: '/api/v1/progress/mastery',
   summary: 'The mastery matrix — per phoneme and per rule family.',
   responses: ok(z.unknown(), 'The matrix.'),
+});
+
+registry.registerPath({
+  method: 'post',
+  path: '/api/v1/exams/{code}/attempts',
+  summary: 'Start an exam, or resume the one already running.',
+  description:
+    'Returns the live attempt when one exists rather than creating a second — the deadline on it is never extended. No response from this route carries a correct answer.',
+  request: { params: examCodeParamsSchema },
+  responses: ok(z.unknown(), 'The attempt, its paper and the seconds left on the server clock.'),
 });
 
 export function buildOpenApiDocument(): ReturnType<OpenApiGeneratorV3['generateDocument']> {

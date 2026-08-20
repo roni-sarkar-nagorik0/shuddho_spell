@@ -11,4 +11,11 @@ export interface IWordRepository {
    * for a day has to be a constant, not a function of how many words it holds.
    */
   readonly findByIds: (ids: readonly string[]) => Promise<readonly Word[]>;
+
+  /**
+   * Every word the course has taught by a given week — the pool an exam draws
+   * from. `week_index` is on the row, so this is one filtered read rather than
+   * a walk over the programme's days collecting ids.
+   */
+  readonly findUpToWeek: (weekIndex: number) => Promise<readonly Word[]>;
 }

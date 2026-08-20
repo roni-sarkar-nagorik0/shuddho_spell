@@ -25,4 +25,14 @@ export class SupabaseSentenceItemRepository implements ISentenceItemRepository {
       }),
     );
   }
+
+  async listAll(limit: number): Promise<readonly SentenceItem[]> {
+    return toSentenceItems(
+      await this.db.select({
+        table: 'sentence_items',
+        columns: SENTENCE_ITEM_COLUMNS,
+        limit,
+      }),
+    );
+  }
 }

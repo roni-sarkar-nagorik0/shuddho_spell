@@ -24,4 +24,19 @@ export class SupabaseWordRepository implements IWordRepository {
       }),
     );
   }
+
+  /**
+   * `week_index <= n`. Expressed through `lte` rather than a list of weeks
+   * because `IDatabase.whereIn` takes strings and a week is a number — and
+   * because "everything up to here" is what an exam actually wants.
+   */
+  async findUpToWeek(weekIndex: number): Promise<readonly Word[]> {
+    return toWords(
+      await this.db.select({
+        table: 'words',
+        columns: WORD_COLUMNS,
+        lte: { column: 'week_index', value: String(weekIndex) },
+      }),
+    );
+  }
 }

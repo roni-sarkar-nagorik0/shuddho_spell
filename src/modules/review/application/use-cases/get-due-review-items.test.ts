@@ -55,14 +55,17 @@ function useCaseOver(items: readonly ReviewItem[]): GetDueReviewItemsUseCase {
     findByItem: () => Promise.resolve(null),
     upsert: (item) => Promise.resolve(item),
     countDue: () => Promise.resolve(items.length),
+    findByProfile: () => Promise.resolve(items),
   };
   const words: IWordRepository = {
     findById: () => Promise.resolve(null),
     findByIds: (ids) => Promise.resolve(ids.map(word)),
+    findUpToWeek: () => Promise.resolve([] as readonly Word[]),
   };
   const sentences: ISentenceItemRepository = {
     findById: () => Promise.resolve(null),
     findByIds: () => Promise.resolve([] as readonly SentenceItem[]),
+    listAll: () => Promise.resolve([] as readonly SentenceItem[]),
   };
 
   return new GetDueReviewItemsUseCase(profiles, reviews, words, sentences, clock);

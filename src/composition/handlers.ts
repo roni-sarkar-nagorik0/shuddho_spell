@@ -1,5 +1,6 @@
 import 'server-only';
 import { createGetMeHandler } from '@/modules/auth/presentation/handlers/get-me';
+import { createStartAttemptHandler } from '@/modules/exams/presentation/handlers/start-attempt';
 import { createAdvanceStageHandler } from '@/modules/lessons/presentation/handlers/advance-stage';
 import { createStartSessionHandler } from '@/modules/lessons/presentation/handlers/start-session';
 import { createSubmitAttemptHandler } from '@/modules/lessons/presentation/handlers/submit-attempt';
@@ -18,6 +19,7 @@ import {
   makeGetMasterySnapshot,
   makeGetProgramOverview,
   makeGetProgressSummary,
+  makeStartExamAttempt,
   makeStartLessonSession,
   makeSubmitConstructionAttempt,
   makeSubmitDictationAttempt,
@@ -83,3 +85,7 @@ export const getProgressSummaryHandler = createGetProgressSummaryHandler(() =>
 );
 
 export const getMasteryHandler = createGetMasteryHandler(() => makeGetMasterySnapshot(container()));
+
+export const startExamAttemptHandler = createStartAttemptHandler(() =>
+  makeStartExamAttempt(container()),
+);

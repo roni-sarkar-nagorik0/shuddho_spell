@@ -2,6 +2,21 @@ import { type JsonValue } from '@/modules/shared/domain/value-objects/json-value
 import { type ExamQuestionType } from '../value-objects/exam-question-type';
 import { type ExamSectionCode } from '../value-objects/exam-section-code';
 
+/**
+ * A question as a learner may see it. **No `correctAnswer` field exists here**,
+ * which is what makes rule 3 structural rather than procedural: there is no
+ * key to forget to delete, and a handler cannot leak a field its type does not
+ * have.
+ */
+export interface IExamQuestionForLearner {
+  readonly id: string;
+  readonly sectionCode: ExamSectionCode;
+  readonly orderIndex: number;
+  readonly type: ExamQuestionType;
+  readonly payload: JsonValue;
+  readonly weight: number;
+}
+
 export interface IExamQuestionProps {
   readonly id: string;
   readonly attemptId: string;
@@ -57,14 +72,7 @@ export class ExamQuestion {
    * somebody adds is as likely to be `explanation` as `hint`. Anything that must
    * not leak has to be **absent by construction**, not removed afterwards.
    */
-  forLearner(): {
-    readonly id: string;
-    readonly sectionCode: ExamSectionCode;
-    readonly orderIndex: number;
-    readonly type: ExamQuestionType;
-    readonly payload: JsonValue;
-    readonly weight: number;
-  } {
+  forLearner(): IExamQuestionForLearner {
     return {
       id: this.id,
       sectionCode: this.sectionCode,

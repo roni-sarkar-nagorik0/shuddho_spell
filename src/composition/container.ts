@@ -1,5 +1,13 @@
 import 'server-only';
 import { type ILearnerProfileRepository } from '@/modules/auth/domain/repositories/learner-profile-repository';
+import { type IExamAttemptRepository } from '@/modules/exams/domain/repositories/exam-attempt-repository';
+import { type IExamDefinitionRepository } from '@/modules/exams/domain/repositories/exam-definition-repository';
+import { type IExamQuestionRepository } from '@/modules/exams/domain/repositories/exam-question-repository';
+import { type IExamWriteUnit } from '@/modules/exams/application/ports/exam-write-unit';
+import { SupabaseExamAttemptRepository } from '@/modules/exams/infrastructure/persistence/supabase/exam-attempt.repository';
+import { SupabaseExamDefinitionRepository } from '@/modules/exams/infrastructure/persistence/supabase/exam-definition.repository';
+import { SupabaseExamQuestionRepository } from '@/modules/exams/infrastructure/persistence/supabase/exam-question.repository';
+import { SupabaseExamWriteUnit } from '@/modules/exams/infrastructure/adapters/supabase-exam-write-unit';
 import { SupabaseLearnerProfileRepository } from '@/modules/auth/infrastructure/persistence/supabase/learner-profile.repository';
 import { type IAttemptRepository } from '@/modules/lessons/domain/repositories/attempt-repository';
 import { type ILessonRepository } from '@/modules/lessons/domain/repositories/lesson-repository';
@@ -63,6 +71,10 @@ export interface IContainer {
   readonly mastery: IMasteryRepository;
   readonly streaks: IStreakRepository;
 
+  readonly examDefinitions: IExamDefinitionRepository;
+  readonly examAttempts: IExamAttemptRepository;
+  readonly examQuestions: IExamQuestionRepository;
+
   /**
    * Domain services. Stateless and pure, so one instance per request costs
    * nothing and keeps the rule that a use case is handed what it needs rather
@@ -76,6 +88,9 @@ export interface IContainer {
 
   /** The writes that must not half-happen — 013 and 014's Postgres functions. */
   readonly lessonWrites: ILessonWriteUnit;
+
+  /** The same, for exams — 015. An attempt and its paper, or neither. */
+  readonly examWrites: IExamWriteUnit;
 
   readonly clock: IClock;
   readonly ids: IIdGenerator;
@@ -107,11 +122,16 @@ export function createContainer(requestId: string): IContainer {
     mastery: new SupabaseMasteryRepository(db),
     streaks: new SupabaseStreakRepository(db),
 
+    examDefinitions: new SupabaseExamDefinitionRepository(db),
+    examAttempts: new SupabaseExamAttemptRepository(db),
+    examQuestions: new SupabaseExamQuestionRepository(db),
+
     reviewPolicy: new IntervalLadderPolicy(),
     errorTagger: new ErrorTagger(),
     speechScorer: new ConfusionMapSpeechScorer(),
 
     lessonWrites: new SupabaseLessonWriteUnit(db),
+    examWrites: new SupabaseExamWriteUnit(db),
 
     clock: new SystemClock(),
     ids: new UuidGenerator(),
