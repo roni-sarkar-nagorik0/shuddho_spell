@@ -18,6 +18,13 @@ function absentIfBlank(value: string | undefined): string | undefined {
 /** Server-only variables. Importing this from a Client Component fails the build. */
 const serverEnvSchema = z.object({
   NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
+  /**
+   * Pino's level. Added by F13.6: `logger.ts` read `process.env` directly from
+   * Phase 3 until the security sweep found it. Nothing outside this file reads
+   * the environment, and "nothing" has to mean nothing or the rule is a
+   * suggestion.
+   */
+  LOG_LEVEL: z.enum(['trace', 'debug', 'info', 'warn', 'error', 'fatal']).default('info'),
   SUPABASE_SERVICE_ROLE_KEY: z.string().min(1),
   DATABASE_URL: z.string().min(1),
   CRON_SECRET: z.string().min(16).optional(),
@@ -39,6 +46,7 @@ const serverEnvSchema = z.object({
 
 export interface IServerEnv {
   readonly NODE_ENV: 'development' | 'test' | 'production';
+  readonly LOG_LEVEL: 'trace' | 'debug' | 'info' | 'warn' | 'error' | 'fatal';
   readonly SUPABASE_SERVICE_ROLE_KEY: string;
   readonly DATABASE_URL: string;
   readonly CRON_SECRET?: string | undefined;
@@ -48,6 +56,7 @@ export interface IServerEnv {
 
 const parsed = serverEnvSchema.safeParse({
   NODE_ENV: process.env['NODE_ENV'],
+  LOG_LEVEL: process.env['LOG_LEVEL'],
   SUPABASE_SERVICE_ROLE_KEY: process.env['SUPABASE_SERVICE_ROLE_KEY'],
   DATABASE_URL: process.env['DATABASE_URL'],
   CRON_SECRET: absentIfBlank(process.env['CRON_SECRET']),

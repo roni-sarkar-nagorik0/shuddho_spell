@@ -15,6 +15,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
+    "security:rls": "node --env-file-if-exists=.env.local --env-file-if-exists=.env scripts/rls-two-user.mjs",
     "format": "prettier --write .",
     "setup:check": "node scripts/check-setup.mjs",
     "db:migrate": "node --env-file-if-exists=.env.local --env-file-if-exists=.env scripts/migrate.mjs",

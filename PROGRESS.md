@@ -128,7 +128,6 @@ and 2. No feature starts without it. **Never read the file** — existence check
 >   and nothing reads it. Per-phoneme scoring needs a repository method that does.
 >
 > **Spotted, still open — none of these belonged to a Phase 5 feature**
-> - `src/lib/logger.ts:14` still reads `process.env['LOG_LEVEL']` directly. Carried from Phase 3.
 > - 008 still grants `authenticated` a table-wide update on `learner_profiles`, so a learner can
 >   write their own `current_day_index`. F4.12 made that column meaningful and 014 now writes it
 >   inside a transaction, which makes the hole worth more than it was.
@@ -618,7 +617,7 @@ Branch `feat/13-hardening` · Status: `IN PROGRESS`
 - [x] **F13.3** (2026-08-20) Playwright — a complete day-12 lesson. **Written, not executed** (no live Supabase here).
 - [x] **F13.4** (2026-08-20) Playwright — a full `milestone2` exam **including a mid-exam refresh**. **Written, not executed.**
 - [x] **F13.5** (2026-08-20) Playwright — a failed exam producing its drill prescription. **Written, not executed.**
-- [ ] **F13.6** Security pass — RLS two-user script, `correct_answer` snapshot, rate limits, headers + CSP, no secret in the bundle
+- [x] **F13.6** (2026-08-20) Security pass — CSP + 5 headers, 14-assertion sweep (rate limits, client-bundle isolation, `process.env` containment), `pnpm security:rls` two-user script. **The RLS script was not executed** — no live database here. The `correct_answer` snapshot already existed from F7.9 and is green.
 - [ ] **F13.7** Performance pass — index review, N+1 query counting, p95 ≤ 200ms reads, bundle budget
 - [ ] **F13.8** Observability — request ids, Sentry both apps, `/metrics`
 - [ ] **F13.9** CI — typecheck, lint, unit, integration (Supabase service container), e2e, build
@@ -643,6 +642,7 @@ Out of scope for this build. Do not start these, and do not leave stubs for them
 Newest first. One line per finished feature: date · id · what · test result.
 
 | Date | Feature | What landed | Tests |
+| 2026-08-20 | F13.6 | CSP + X-Frame-Options/nosniff/Referrer-Policy/Permissions-Policy/HSTS; `security-sweep.test.ts` (14 assertions); `scripts/rls-two-user.mjs`. Found and fixed the Phase-3 `process.env` read in `logger.ts` | 14 new assertions green; RLS script **not executed** (no live DB) |
 | 2026-08-20 | F13.3–F13.5 | Three e2e specs: the whole five-stage day-12 lesson, `milestone2` with a mid-exam refresh, and a failed exam producing its prescription | typecheck + lint green; **none executed** — no live Supabase in this environment |
 | 2026-08-20 | F13.2 | `e2e/fixtures/session.ts` (mints a session via Supabase rather than driving Google) + `sign-in-to-dashboard.spec.ts`, incl. an assertion that the dashboard makes **no** call to its own API | typecheck + lint green; **spec not executed** — no live Supabase here |
 | 2026-08-20 | F13.1 | Fixed 3 red tests (2 mine, 1 red since Phase 7); covered the weakest three modules — `program/application` 0→100%, `library/application` 0→98.5%, `lessons/application` 0→14.1% | **501→533 tests, all green.** Coverage 50.57→57.20% lines. **Floor of 90% NOT met** |

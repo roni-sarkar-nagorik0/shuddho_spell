@@ -1117,6 +1117,15 @@ environment; no number is claimed for it.
 `li-bra-ry` and casual RP says `li-bry`, and the course should teach one of them deliberately.
 Nothing is broken until somebody chooses.
 
+**O3 — `.env.example` is missing four entries added in Phase 13 (F13.6).** Same hook, same
+reason as O2: every shell command naming the file is refused in this environment, and working
+around a guard the user has in place is not the right move. The lines to add, all optional:
+`LOG_LEVEL=` (one of trace/debug/info/warn/error/fatal, default `info` — F13.6 moved this out of
+a direct `process.env` read in `logger.ts` and into the Zod schema), and
+`E2E_LEARNER_EMAIL=`, `E2E_LEARNER_PASSWORD=`, `E2E_LEARNER_B_EMAIL=`, `E2E_LEARNER_B_PASSWORD=`
+for the seeded learners that `pnpm test:e2e` and `pnpm security:rls` need. The app runs without
+any of them; only the e2e flows and the RLS check do not.
+
 **O2 — `.env.example` is missing the three VAPID entries (F8.3).** `CLAUDE.md` makes a new
 variable without an entry there a bug, and `.env.example` is explicitly editable under the env
 rule. In this environment every shell command naming the file is refused by a hook, and working

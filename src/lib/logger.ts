@@ -1,5 +1,6 @@
 import 'server-only';
 import pino from 'pino';
+import { serverEnv } from './env.server';
 
 /**
  * Redaction covers what this app actually holds: the bearer token on an
@@ -11,7 +12,8 @@ import pino from 'pino';
  * `src/lib/auth/one-door.test.ts` will fail if you do.
  */
 export const logger = pino({
-  level: process.env['LOG_LEVEL'] ?? 'info',
+  // From the validated schema, never from `process.env` — F13.6.
+  level: serverEnv.LOG_LEVEL,
   redact: {
     paths: ['req.headers.authorization', 'req.headers.cookie', '*.accessToken'],
     censor: '[redacted]',
