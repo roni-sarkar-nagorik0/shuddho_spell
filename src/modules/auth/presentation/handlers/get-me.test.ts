@@ -39,6 +39,7 @@ const { createGetMeHandler } = await import('./get-me');
 const handler = createGetMeHandler(
   () =>
     new GetMeUseCase({
+      findById: () => Promise.reject(new Error('not used')),
       findByUserId: (userId: string) => {
         harness.askedFor = userId;
         return Promise.resolve(harness.profile);

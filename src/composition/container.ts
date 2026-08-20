@@ -5,6 +5,7 @@ import { type IExamAttemptRepository } from '@/modules/exams/domain/repositories
 import { type IExamDefinitionRepository } from '@/modules/exams/domain/repositories/exam-definition-repository';
 import { type IExamQuestionRepository } from '@/modules/exams/domain/repositories/exam-question-repository';
 import { type IExamWriteUnit } from '@/modules/exams/application/ports/exam-write-unit';
+import { ExamSubmissionService } from '@/modules/exams/application/services/exam-submission.service';
 import { SupabaseExamAnswerRepository } from '@/modules/exams/infrastructure/persistence/supabase/exam-answer.repository';
 import { SupabaseExamAttemptRepository } from '@/modules/exams/infrastructure/persistence/supabase/exam-attempt.repository';
 import { SupabaseExamDefinitionRepository } from '@/modules/exams/infrastructure/persistence/supabase/exam-definition.repository';
@@ -104,6 +105,13 @@ export interface IContainer {
   /** The same, for exams — 015. An attempt and its paper, or neither. */
   readonly examWrites: IExamWriteUnit;
 
+  /**
+   * Marking, scoring and acting on the result — shared by the learner's submit
+   * and the cron backstop, so an abandoned attempt is graded by exactly the
+   * same rules as one handed in on time.
+   */
+  readonly examSubmissions: ExamSubmissionService;
+
   readonly clock: IClock;
   readonly ids: IIdGenerator;
 }
@@ -122,6 +130,11 @@ export function createContainer(requestId: string): IContainer {
   // judge wraps the scorer, and both are handed out.
   const phonemes = new SupabasePhonemeRepository(db);
   const speechScorer = new ConfusionMapSpeechScorer();
+
+  const examWrites = new SupabaseExamWriteUnit(db);
+  const reviewPolicy = new IntervalLadderPolicy();
+  const ids = new UuidGenerator();
+  const pronunciationJudge = new SpeechScorerPronunciationJudge(phonemes, speechScorer);
 
   return {
     requestId,
@@ -144,15 +157,16 @@ export function createContainer(requestId: string): IContainer {
     examQuestions: new SupabaseExamQuestionRepository(db),
     examAnswers: new SupabaseExamAnswerRepository(db),
 
-    reviewPolicy: new IntervalLadderPolicy(),
+    reviewPolicy,
     errorTagger: new ErrorTagger(),
     speechScorer,
-    pronunciationJudge: new SpeechScorerPronunciationJudge(phonemes, speechScorer),
+    pronunciationJudge,
 
     lessonWrites: new SupabaseLessonWriteUnit(db),
-    examWrites: new SupabaseExamWriteUnit(db),
+    examWrites,
+    examSubmissions: new ExamSubmissionService(pronunciationJudge, reviewPolicy, ids, examWrites),
 
     clock: new SystemClock(),
-    ids: new UuidGenerator(),
+    ids,
   };
 }

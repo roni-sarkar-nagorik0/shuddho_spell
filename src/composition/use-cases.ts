@@ -5,6 +5,7 @@ import { GetActiveExamAttemptUseCase } from '@/modules/exams/application/use-cas
 import { GetExamAnswerReviewUseCase } from '@/modules/exams/application/use-cases/get-exam-answer-review';
 import { GetExamReadinessUseCase } from '@/modules/exams/application/use-cases/get-exam-readiness';
 import { GetExamResultUseCase } from '@/modules/exams/application/use-cases/get-exam-result';
+import { AutoSubmitAbandonedExamsUseCase } from '@/modules/exams/application/use-cases/auto-submit-abandoned-exams';
 import { FlagExamQuestionUseCase } from '@/modules/exams/application/use-cases/flag-exam-question';
 import { SaveExamAnswerUseCase } from '@/modules/exams/application/use-cases/save-exam-answer';
 import { StartExamAttemptUseCase } from '@/modules/exams/application/use-cases/start-exam-attempt';
@@ -247,11 +248,21 @@ export function makeSubmitExamAttempt(c: IContainer): SubmitExamAttemptUseCase {
     c.examQuestions,
     c.examAnswers,
     c.reviewItems,
-    c.reviewPolicy,
     c.clock,
-    c.ids,
-    c.examWrites,
-    c.pronunciationJudge,
+    c.examSubmissions,
+  );
+}
+
+export function makeAutoSubmitAbandonedExams(c: IContainer): AutoSubmitAbandonedExamsUseCase {
+  return new AutoSubmitAbandonedExamsUseCase(
+    c.learnerProfiles,
+    c.examDefinitions,
+    c.examAttempts,
+    c.examQuestions,
+    c.examAnswers,
+    c.reviewItems,
+    c.clock,
+    c.examSubmissions,
   );
 }
 

@@ -28,6 +28,12 @@ const TABLE = 'learner_profiles';
 export class SupabaseLearnerProfileRepository implements ILearnerProfileRepository {
   constructor(private readonly db: IDatabase) {}
 
+  async findById(id: string): Promise<LearnerProfile | null> {
+    return toLearnerProfile(
+      await this.db.selectOne({ table: TABLE, columns: LEARNER_PROFILE_COLUMNS, eq: { id } }),
+    );
+  }
+
   async findByUserId(userId: string): Promise<LearnerProfile | null> {
     try {
       const row = await this.db.selectOne({

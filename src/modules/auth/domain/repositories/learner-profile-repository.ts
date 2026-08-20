@@ -11,6 +11,16 @@ export interface ILearnerProfileRepository {
   readonly findByUserId: (userId: string) => Promise<LearnerProfile | null>;
 
   /**
+   * By profile id rather than by session.
+   *
+   * The scheduled paths need this and no request path does: a cron job holds a
+   * row that names a `profile_id` and there is nobody signed in to resolve it
+   * from. Every learner-facing use case still starts at `findByUserId`, which
+   * is why identity there can only ever come from the verified session.
+   */
+  readonly findById: (id: string) => Promise<LearnerProfile | null>;
+
+  /**
    * Creates the profile if this user has none, and returns the profile either
    * way — the one that already existed, or the one this call made.
    *

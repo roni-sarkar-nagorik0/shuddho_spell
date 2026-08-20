@@ -75,14 +75,25 @@ export class SupabaseExamAttemptRepository implements IExamAttemptRepository {
    * product's success.
    */
   async findAbandoned(now: Date): Promise<readonly ExamAttempt[]> {
-    return toExamAttempts(
-      await this.db.select({
+    // Two queries because `IDatabase` cannot express an OR, and deliberately
+    // not one query over `status <> 'passed'`: the filters differ in kind. One
+    // is "open and out of time", the other is "handed in by pg_cron and never
+    // marked", and a single loose predicate would sweep up live attempts.
+    const [expired, unmarked] = await Promise.all([
+      this.db.select({
         table: TABLE,
         columns: EXAM_ATTEMPT_COLUMNS,
         eq: { status: 'in_progress' },
         lte: { column: 'server_deadline_at', value: now.toISOString() },
       }),
-    );
+      this.db.select({
+        table: TABLE,
+        columns: EXAM_ATTEMPT_COLUMNS,
+        eq: { status: 'submitted', score_percent: null },
+      }),
+    ]);
+
+    return toExamAttempts([...expired, ...unmarked]);
   }
 
   /**

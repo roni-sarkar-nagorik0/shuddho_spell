@@ -34,8 +34,14 @@ export interface IExamAttemptRepository {
   readonly findAllForProfile: (profileId: string) => Promise<readonly ExamAttempt[]>;
 
   /**
-   * Every attempt anywhere that is past its deadline and still open — the cron
-   * backstop's only read. Not scoped to a profile on purpose: nobody owns it.
+   * Every attempt anywhere that still needs finishing — the cron backstop's
+   * read. Not scoped to a profile on purpose: nobody owns it.
+   *
+   * **Two states, not one.** An attempt is still `in_progress` past its
+   * deadline when pg_cron is not scheduled, and already `submitted` with no
+   * score when 009's job got there first — that function deliberately hands the
+   * paper in without grading it, because a deadline passing is not a grade.
+   * Both need marking, so both come back.
    */
   readonly findAbandoned: (now: Date) => Promise<readonly ExamAttempt[]>;
 

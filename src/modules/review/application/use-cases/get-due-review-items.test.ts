@@ -27,6 +27,7 @@ const clock: IClock = { now: () => NOW };
 
 const profiles: ILearnerProfileRepository = {
   findByUserId: () => Promise.resolve(makeLearnerProfile({ id: 'p1', timezone: TZ })),
+  findById: () => Promise.reject(new Error('the request path resolves a profile by session, not by id')),
   insertIfAbsent: () => Promise.reject(new Error('not used')),
   save: () => Promise.reject(new Error('not used')),
 };

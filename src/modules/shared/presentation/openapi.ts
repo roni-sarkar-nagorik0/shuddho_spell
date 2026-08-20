@@ -245,6 +245,13 @@ registry.registerPath({
   responses: ok(z.unknown(), 'The prediction, per section, and the three costliest topics.'),
 });
 
+// `/api/cron/*` is deliberately **not** registered. This document describes the
+// v1 API — the surface a client consumes — and a cron route has no client: it
+// is called by a scheduler holding a shared secret, and `11-api-surface.md`
+// keeps the scheduled endpoints in their own table for that reason. The sweep
+// below reads `src/app/api/v1/` for the same reason, so documenting one here
+// would fail it, which is the check noticing correctly rather than being wrong.
+
 export function buildOpenApiDocument(): ReturnType<OpenApiGeneratorV3['generateDocument']> {
   return new OpenApiGeneratorV3(registry.definitions).generateDocument({
     openapi: '3.0.3',

@@ -43,6 +43,8 @@ function counted(): {
   const profiles: ILearnerProfileRepository = {
     findByUserId: () =>
       record('profiles.findByUserId', makeLearnerProfile({ id: 'p1', timezone: 'Asia/Dhaka' })),
+    findById: () =>
+      Promise.reject(new Error('the dashboard resolves a profile by session, not by id')),
     insertIfAbsent: () => Promise.reject(new Error('not used')),
     save: () => Promise.reject(new Error('not used')),
   };

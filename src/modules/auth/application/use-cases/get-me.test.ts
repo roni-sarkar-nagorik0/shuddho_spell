@@ -15,6 +15,10 @@ class FakeProfiles implements ILearnerProfileRepository {
     return Promise.resolve(profile);
   }
 
+  findById(): Promise<LearnerProfile | null> {
+    return Promise.reject(new Error('the request path resolves a profile by session, not by id'));
+  }
+
   findByUserId(userId: string): Promise<LearnerProfile | null> {
     return Promise.resolve(this.rows.find((row) => row.userId === userId) ?? null);
   }

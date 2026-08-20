@@ -1,5 +1,6 @@
 import 'server-only';
 import { createGetMeHandler } from '@/modules/auth/presentation/handlers/get-me';
+import { createAutoSubmitCronHandler } from '@/modules/exams/presentation/handlers/auto-submit-cron';
 import { createGetActiveAttemptHandler } from '@/modules/exams/presentation/handlers/get-active-attempt';
 import { createGetAnswerReviewHandler } from '@/modules/exams/presentation/handlers/get-answer-review';
 import { createGetReadinessHandler } from '@/modules/exams/presentation/handlers/get-readiness';
@@ -26,6 +27,7 @@ import {
   makeGetMasterySnapshot,
   makeGetProgramOverview,
   makeGetProgressSummary,
+  makeAutoSubmitAbandonedExams,
   makeFlagExamQuestion,
   makeGetActiveExamAttempt,
   makeGetExamAnswerReview,
@@ -132,4 +134,8 @@ export const getExamAnswerReviewHandler = createGetAnswerReviewHandler(() =>
 
 export const getExamReadinessHandler = createGetReadinessHandler(() =>
   makeGetExamReadiness(container()),
+);
+
+export const examAutoSubmitCronHandler = createAutoSubmitCronHandler(() =>
+  makeAutoSubmitAbandonedExams(container()),
 );

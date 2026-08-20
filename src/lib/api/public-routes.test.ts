@@ -23,8 +23,9 @@ const PUBLIC_ROUTES: readonly string[] = [
   // The API description. It describes shapes, not data, and documentation that
   // needs a session to read is a puzzle rather than documentation.
   'src/app/api/v1/openapi.json/route.ts',
-  // Cron routes go here as they land (Phase 8 onward). They have no user; the
-  // `withCron` bearer check is what stands in for one.
+  // Cron routes. They have no user; the `withCron` bearer check — a constant-
+  // time compare against `CRON_SECRET`, header only — is what stands in for one.
+  'src/app/api/cron/exam-autosubmit/route.ts',
 ];
 
 function routeFiles(directory: string): readonly string[] {
@@ -40,43 +41,100 @@ function routeFiles(directory: string): readonly string[] {
  * nothing — the `auth: 'public'` that matters lives in the handler it points
  * at, one or two hops away.
  *
- * This was a real hole. Until F5.9a every handler that opted out happened to be
- * written inline in its `route.ts`, so the sweep looked exhaustive and was not:
- * a module handler could have gone public without ever appearing on the list.
- * Following the re-export is what makes "every public endpoint is written down"
- * true rather than merely tested.
+ * This was a real hole twice over.
  *
- * Two hops, because `route.ts` → `src/composition/handlers.ts` → the module's
- * handler factory is the deepest this codebase's convention goes.
+ * Until F5.9a every handler that opted out happened to be written inline in its
+ * `route.ts`, so the sweep looked exhaustive and was not: a module handler could
+ * have gone public without appearing on the list.
+ *
+ * Then F7.13 exposed the opposite failure. Following *every* import of
+ * `src/composition/handlers.ts` and joining the text meant one cron handler in
+ * the barrel made **every** route in the application look like an opt-out — a
+ * sweep that fails for all routes is as useless as one that passes for all of
+ * them, and it fails in the direction that gets it disabled.
+ *
+ * So the walk follows the **specific handler**, not the barrel: the symbol the
+ * route re-exports, the one `export const` that defines it, and the factory
+ * that declaration calls. Nothing else in the barrel is read.
  */
-function sourceBehind(routePath: string, depth = 2): string {
-  const source = readFileSync(routePath, 'utf8');
+function resolveModule(specifier: string, fromFile: string): string | null {
+  const base = specifier.startsWith('@/')
+    ? join('src', specifier.slice('@/'.length))
+    : join(fromFile, '..', specifier);
 
-  if (depth === 0) {
-    return source;
+  for (const candidate of [`${base}.ts`, `${base}.tsx`, join(base, 'index.ts')]) {
+    if (existsSync(candidate)) {
+      return candidate;
+    }
   }
 
-  const imported = [...source.matchAll(/from '([^']+)'/gu)].flatMap((match) => {
-    const specifier = match[1];
+  return null;
+}
 
-    if (specifier === undefined) {
-      return [];
+/** The `export const <name> = …;` statement, and nothing around it. */
+function declarationOf(source: string, name: string): string | null {
+  const start = source.indexOf(`export const ${name} =`);
+
+  if (start === -1) {
+    return null;
+  }
+
+  const rest = source.slice(start + 1);
+  const next = rest.indexOf('\nexport ');
+
+  return next === -1 ? source.slice(start) : source.slice(start, start + 1 + next);
+}
+
+function sourceBehind(routePath: string): string {
+  const route = readFileSync(routePath, 'utf8');
+  const parts: string[] = [route];
+
+  for (const match of route.matchAll(/export\s*\{\s*(\w+)\s+as\s+\w+\s*\}\s*from\s*'([^']+)'/gu)) {
+    const symbol = match[1];
+    const specifier = match[2];
+
+    if (symbol === undefined || specifier === undefined) {
+      continue;
     }
 
-    const resolved = specifier.startsWith('@/')
-      ? join('src', specifier.slice('@/'.length))
-      : join(routePath, '..', specifier);
+    const modulePath = resolveModule(specifier, routePath);
 
-    for (const candidate of [`${resolved}.ts`, `${resolved}.tsx`, join(resolved, 'index.ts')]) {
-      if (existsSync(candidate)) {
-        return [sourceBehind(candidate, depth - 1)];
+    if (modulePath === null) {
+      continue;
+    }
+
+    const moduleSource = readFileSync(modulePath, 'utf8');
+    const declaration = declarationOf(moduleSource, symbol);
+
+    if (declaration === null) {
+      // Not a barrel re-export — the handler is defined here in full.
+      parts.push(moduleSource);
+      continue;
+    }
+
+    parts.push(declaration);
+
+    // The factory the declaration calls, wherever it was imported from.
+    for (const call of declaration.matchAll(/\b(create\w+)\s*\(/gu)) {
+      const factory = call[1];
+
+      if (factory === undefined) {
+        continue;
+      }
+
+      const importLine = new RegExp(`import\\s*\\{[^}]*\\b${factory}\\b[^}]*\\}\\s*from\\s*'([^']+)'`, 'u').exec(
+        moduleSource,
+      );
+
+      const factoryPath = importLine?.[1] === undefined ? null : resolveModule(importLine[1], modulePath);
+
+      if (factoryPath !== null) {
+        parts.push(readFileSync(factoryPath, 'utf8'));
       }
     }
+  }
 
-    return [];
-  });
-
-  return [source, ...imported].join('\n');
+  return parts.join('\n');
 }
 
 const routes = routeFiles(API_DIR);
