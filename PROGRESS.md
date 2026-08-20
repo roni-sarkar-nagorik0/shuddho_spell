@@ -622,7 +622,7 @@ Branch `feat/13-hardening` · Status: `IN PROGRESS`
 - [x] **F13.8** (2026-08-20) Observability — inbound request-id continuity (validated), Sentry behind an optional DSN, `/metrics` behind `withCron`. **`/metrics` answers JSON, not Prometheus text** — `renderMetrics` produces the exposition format for a scrape adapter.
 - [x] **F13.9** (2026-08-20) CI — `.github/workflows/ci.yml`: typecheck, lint, content + i18n gates, tests with a Postgres service, coverage (reported, **not** gated — see below), build, and a Playwright job gated on `dev`. **Never executed** — no GitHub Actions runner here.
 - [x] **F13.10** (2026-08-20) `.github/workflows/deploy.yml` — migrations behind a required-reviewer environment, then verify + build. **The publish command is deliberately absent** (ARCHITECTURE.md O4: no host has been chosen) and the step exits 1 rather than pretending. **Never executed.**
-- [ ] **F13.11** `README.md` + `DECISIONS.md`
+- [x] **F13.11** (2026-08-20) `README.md` brought to the finished state with a *Verification that has not been run* section; `DECISIONS.md` — the twelve shaping decisions, each with its cost.
 - [ ] **F13.12** The honest closing report — what is incomplete, what is fragile, what is next
 
 ---
@@ -642,6 +642,7 @@ Out of scope for this build. Do not start these, and do not leave stubs for them
 Newest first. One line per finished feature: date · id · what · test result.
 
 | Date | Feature | What landed | Tests |
+| 2026-08-20 | F13.11 | `DECISIONS.md` (12 decisions, each with what it costs, pointing at ARCHITECTURE.md's 67 for the full record); README de-staled and given an explicit unproven list | typecheck + lint green |
 | 2026-08-20 | F13.10 | Two jobs with a human gate between them: `migrate` (dry-run printed before the approval, then apply) → `release` (typecheck, lint, test, build). `cancel-in-progress: false`, because cancelling between the two is how a schema gets ahead of its code | YAML parses; **workflow not executed** |
 | 2026-08-20 | F13.9 | One `verify` job (cheapest gate first) + a `playwright` job that only runs where the secrets exist; coverage printed with `continue-on-error` so the 57%→90% gap stays visible without a permanently red pipeline | YAML parses; **workflow not executed** |
 | 2026-08-20 | F13.8 | `instrumentation.ts` (inert without a DSN), request ids honoured from upstream **only when a valid UUID**, `IMetricsReader` port + `/api/metrics`. Three sweeps caught my own work and all three were fixed properly | **553 tests green**, typecheck + lint clean |

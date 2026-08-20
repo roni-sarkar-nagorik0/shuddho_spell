@@ -6,8 +6,12 @@ pronunciation and sentence construction, diagnosed per phoneme and per rule fami
 **One Next.js 15 app** — UI and API in the same project. TypeScript (interface-first) ·
 Supabase · Clean Architecture · Google-only auth.
 
-> **Phase 1 is in progress.** The app scaffold boots; the database schema is Phase 2.
-> [`PROGRESS.md`](PROGRESS.md) is the live state.
+> **Phases 0–13 are built.** Every feature in [`PROGRESS.md`](PROGRESS.md) is `[x]`, and that
+> file remains the live state. What is **built** and what is **proved** are not the same thing
+> here, and the difference is written down rather than glossed: see
+> [`DECISIONS.md`](DECISIONS.md) and the closing report at the end of `PROGRESS.md` for the
+> exact list of what has never been run — Lighthouse, the four Playwright flows, the RLS
+> two-user check, the CI and deploy workflows, and the app itself in a browser.
 
 ## Working on this project with Claude Code
 
@@ -178,7 +182,7 @@ pnpm dev
 | `pnpm db:migrate` fails with `ENOTFOUND db.<ref>.supabase.co` | that is the direct host, which Supabase serves over IPv6 only. Use the **Session pooler** URI from Project Settings → Database as `DATABASE_URL` |
 | port 3000 is taken | `PORT=3311 pnpm dev` |
 
-## Repository layout (once built)
+## Repository layout
 
 ```
 src/
@@ -197,7 +201,7 @@ content/                 typed course content, one file per week
 
 There is **no separate backend project**. One `package.json`, one build, one deploy.
 
-## Commands (once built)
+## Commands
 
 ```bash
 pnpm dev              # UI and API together
@@ -209,3 +213,30 @@ pnpm test:e2e         # Playwright
 pnpm setup:check      # node version, dependencies, env file present
 pnpm db:migrate       # apply supabase/migrations over DATABASE_URL
 ```
+
+## Where the honest picture is
+
+Three files, and they say different things on purpose:
+
+| File | What it is |
+| --- | --- |
+| [`PROGRESS.md`](PROGRESS.md) | every feature, its date, and — at the end — the closing report naming what is incomplete and what is fragile |
+| [`DECISIONS.md`](DECISIONS.md) | the twelve decisions that shape the system, with what each one costs |
+| [`ARCHITECTURE.md`](ARCHITECTURE.md) | the full record: 67 numbered decisions, the layer diagram, the port table, and the open items nobody has resolved |
+
+## Verification that has not been run
+
+Written down here because a README that implies otherwise is the most-read lie in a
+repository:
+
+- **Lighthouse** on `/` — the ≥95/100 target in `13-frontend.md` is unmeasured. Static
+  rendering is additionally blocked by the root layout's cookie reads (ARCHITECTURE.md D67).
+- **The four Playwright flows** and **`pnpm security:rls`** — written, never executed. They
+  need a live Supabase project and two seeded learners.
+- **The CI and deploy workflows** — their YAML parses; no runner has ever run them. The deploy
+  workflow's publish step is deliberately absent (ARCHITECTURE.md O4).
+- **Coverage** — 57.20% lines against a 90% floor. Reported on every CI run, not gated.
+- **The application in a browser** — Phases 10 through 12 are typecheck- and lint-clean and
+  have not been rendered.
+
+`pnpm typecheck`, `pnpm lint` and `pnpm test` (553 tests) are green, and those have been run.
