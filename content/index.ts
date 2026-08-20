@@ -1,3 +1,4 @@
+import { EXAMS } from './exams';
 import { PHONEMES } from './phonemes';
 import { RULE_FAMILIES } from './rule-families';
 import { validateContent, type IValidationResult } from './validate';
@@ -8,7 +9,7 @@ import { WEEK_04 } from './week-04';
 
 export const WEEKS = [WEEK_01, WEEK_02, WEEK_03, WEEK_04] as const;
 
-export { PHONEMES, RULE_FAMILIES };
+export { EXAMS, PHONEMES, RULE_FAMILIES };
 
 /**
  * Validates the whole corpus, every time it is imported.
@@ -20,5 +21,10 @@ export { PHONEMES, RULE_FAMILIES };
  * script.
  */
 export function readContent(): IValidationResult {
-  return validateContent({ phonemes: PHONEMES, ruleFamilies: RULE_FAMILIES, weeks: WEEKS });
+  return validateContent({
+    phonemes: PHONEMES,
+    ruleFamilies: RULE_FAMILIES,
+    weeks: WEEKS,
+    exams: EXAMS,
+  });
 }

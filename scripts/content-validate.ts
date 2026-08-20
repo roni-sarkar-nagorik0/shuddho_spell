@@ -22,6 +22,7 @@ process.stdout.write(
     `  phonemes        ${String(counts.phonemes)}`,
     `  rule families   ${String(counts.ruleFamilies)}`,
     `  programme days  ${String(counts.days)}`,
+    `  exams           ${String(counts.exams)}`,
     '',
   ].join('\n'),
 );
@@ -39,9 +40,7 @@ if (counts.ipaNeedsReview.length > 0) {
 }
 
 if (counts.phonemesNeedReview.length > 0) {
-  process.stdout.write(
-    `phonemes flagged for review: ${counts.phonemesNeedReview.join(', ')}\n\n`,
-  );
+  process.stdout.write(`phonemes flagged for review: ${counts.phonemesNeedReview.join(', ')}\n\n`);
 }
 
 if (issues.length > 0) {
