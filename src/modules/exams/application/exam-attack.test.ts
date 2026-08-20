@@ -14,6 +14,7 @@
  * a real thing to test and not this thing. The two writes that genuinely need a
  * transaction (015, 017) are asserted at the SQL level by their own guards.
  */
+import { type ICertificateRepository } from '@/modules/certificates/domain/repositories/certificate-repository';
 import { describe, expect, it } from 'vitest';
 import { makeLearnerProfile } from '@/modules/auth/domain/entities/learner-profile.fixture';
 import { DayIndex } from '@/modules/shared/domain/value-objects/day-index';
@@ -298,7 +299,27 @@ function wire(world: IWorld): {
   const judge: IPronunciationJudge = { scorePercent: () => Promise.resolve(100) };
   const ids = new CountingIds();
 
-  const submissions = new ExamSubmissionService(judge, new IntervalLadderPolicy(), ids, writes);
+  /**
+   * F12.9 moved certificate issuance into the shared submission path, so the
+   * service takes a certificate repository. None of the attacks in this file
+   * sits a final exam, so this fake records nothing and is never read — it
+   * satisfies the port and no more.
+   */
+  const certificates: ICertificateRepository = {
+    findById: () => Promise.resolve(null),
+    findByAttempt: () => Promise.resolve(null),
+    findByProfile: () => Promise.resolve([]),
+    findByVerificationCode: () => Promise.resolve(null),
+    create: (certificate) => Promise.resolve(certificate),
+  };
+
+  const submissions = new ExamSubmissionService(
+    judge,
+    new IntervalLadderPolicy(),
+    ids,
+    writes,
+    certificates,
+  );
 
   return {
     start: new StartExamAttemptUseCase(

@@ -2,6 +2,10 @@ import 'server-only';
 import { cache } from 'react';
 import { type AccentPreference } from '@/modules/auth/domain/value-objects/accent-preference';
 import { type IExamResultView, type IExamAnswerReviewView } from '@/modules/exams/application/dto/exam-result-view';
+import {
+  type ICertificateVerification,
+  type ICertificateView,
+} from '@/modules/certificates/application/dto/certificate-view';
 import { type IExamCatalogue } from '@/modules/exams/application/dto/exam-catalogue';
 import { type IExamMilestone } from '@/modules/exams/application/dto/exam-milestone';
 import { type INextExam } from '@/modules/exams/application/dto/next-exam';
@@ -26,6 +30,7 @@ import {
   makeGetProgramOverview,
   makeGetProgressSummary,
   makeGetMe,
+  makeGetCertificate,
   makeGetExamAnswerReview,
   makeGetExamCatalogue,
   makeGetExamResult,
@@ -34,6 +39,7 @@ import {
   makeGetPracticeQueue,
   makeGetWeakSpots,
   makeGetWeeklyActivity,
+  makeVerifyCertificate,
   makeListExamMilestones,
 } from './use-cases';
 
@@ -162,6 +168,23 @@ export const readWeakSpots = cache(
 export const readExamCatalogue = cache(
   async (userId: string): Promise<IExamCatalogue> =>
     makeGetExamCatalogue(createContainer(crypto.randomUUID())).execute({ userId }),
+);
+
+export const readCertificate = cache(
+  async (userId: string, certificateId: string): Promise<ICertificateView | null> =>
+    makeGetCertificate(createContainer(crypto.randomUUID())).execute({ userId, certificateId }),
+);
+
+/**
+ * The one read here that takes **no learner**.
+ *
+ * `/verify/[code]` is a public page, so it has no session to pass and must not
+ * need one. It still goes through the composition root rather than fetching its
+ * own API, exactly like every other Server Component.
+ */
+export const readCertificateVerification = cache(
+  async (code: string): Promise<ICertificateVerification | null> =>
+    makeVerifyCertificate(createContainer(crypto.randomUUID())).execute({ code }),
 );
 
 export const readExamResult = cache(

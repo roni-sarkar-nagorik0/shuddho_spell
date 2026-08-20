@@ -38,6 +38,8 @@ import { GetProgramOverviewUseCase } from '@/modules/program/application/use-cas
 import { GetLearnerDashboardUseCase } from '@/modules/progress/application/use-cases/get-learner-dashboard';
 import { GetMasterySnapshotUseCase } from '@/modules/progress/application/use-cases/get-mastery-snapshot';
 import { GetWeeklyActivityUseCase } from '@/modules/progress/application/use-cases/get-weekly-activity';
+import { GetCertificateUseCase } from '@/modules/certificates/application/use-cases/get-certificate';
+import { VerifyCertificateUseCase } from '@/modules/certificates/application/use-cases/verify-certificate';
 import { GetExamCatalogueUseCase } from '@/modules/exams/application/use-cases/get-exam-catalogue';
 import { GetNextExamUseCase } from '@/modules/exams/application/use-cases/get-next-exam';
 import { ListExamMilestonesUseCase } from '@/modules/exams/application/use-cases/list-exam-milestones';
@@ -209,6 +211,23 @@ export function makeGetWeeklyActivity(c: IContainer): GetWeeklyActivityUseCase {
 export function makeGetNextExam(c: IContainer): GetNextExamUseCase {
   return new GetNextExamUseCase(c.learnerProfiles, c.examDefinitions, c.examAttempts, c.mastery);
 }
+
+export function makeGetCertificate(c: IContainer): GetCertificateUseCase {
+  return new GetCertificateUseCase(c.learnerProfiles, c.certificates);
+}
+
+/** The only use case with no learner behind it — see `VerifyCertificateUseCase`. */
+export function makeVerifyCertificate(c: IContainer): VerifyCertificateUseCase {
+  return new VerifyCertificateUseCase(c.certificates);
+}
+
+/*
+ * There is no `makeIssueCertificate`. Issuance lives inside
+ * `ExamSubmissionService`, which is the one path both the learner's submit
+ * button and 009's cron backstop run through — a second implementation here
+ * would be the version that drifts, and it would be the one that only fires
+ * when somebody clicks.
+ */
 
 export function makeGetExamCatalogue(c: IContainer): GetExamCatalogueUseCase {
   return new GetExamCatalogueUseCase(

@@ -9,6 +9,7 @@ import { createSaveAnswerHandler } from '@/modules/exams/presentation/handlers/s
 import { createStartAttemptHandler } from '@/modules/exams/presentation/handlers/start-attempt';
 import { createSubmitAttemptHandler as createSubmitExamAttemptHandler } from '@/modules/exams/presentation/handlers/submit-attempt';
 import { createSubmitSectionHandler } from '@/modules/exams/presentation/handlers/submit-section';
+import { createVerifyCertificateHandler } from '@/modules/certificates/presentation/handlers/verify-certificate';
 import { createGetLibraryHandler } from '@/modules/library/presentation/handlers/get-library';
 import { createCompleteSessionHandler } from '@/modules/lessons/presentation/handlers/complete-session';
 import { createAdvanceStageHandler } from '@/modules/lessons/presentation/handlers/advance-stage';
@@ -36,6 +37,7 @@ import {
   makeCompleteLessonSession,
   makeGetDueReviewItems,
   makeGetLibraryPage,
+  makeVerifyCertificate,
   makeGetMe,
   makeGetNotificationPreferences,
   makeGetProgramDay,
@@ -116,6 +118,11 @@ export const submitLessonAttemptHandler = createSubmitAttemptHandler(() => {
     construction: makeSubmitConstructionAttempt(c),
   };
 });
+
+/** Public by design. See the handler for why, and `public-routes.test.ts` for the ledger. */
+export const verifyCertificateHandler = createVerifyCertificateHandler(() =>
+  makeVerifyCertificate(container()),
+);
 
 export const getLibraryHandler = createGetLibraryHandler(() => makeGetLibraryPage(container()));
 

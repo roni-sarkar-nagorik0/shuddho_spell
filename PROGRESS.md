@@ -81,7 +81,7 @@ and 2. No feature starts without it. **Never read the file** — existence check
 ## NEXT
 
 > **Phase 12 · Exam and marketing screens — in progress on `feat/12-exam-marketing-screens`**
-> Current: **F12.9** — `/certificate/[id]` and public verification.
+> Current: **F12.10** — `/` marketing landing.
 >
 > **What Phase 11 leaves Phase 12**
 > - `useSaveExamAnswer` (F10.7) is the optimistic template for the exam runtime; writes never retry.
@@ -586,7 +586,7 @@ Branch `feat/12-exam-marketing-screens` · Status: `IN PROGRESS`
   - Test: the fail variant renders its prescription block
 - [x] **F12.8** (2026-08-20) `/exams/review/[id]`
   - Test: master-detail with diffs; unreachable before submission
-- [ ] **F12.9** `/certificate/[id]` + public verification
+- [x] **F12.9** (2026-08-20) `/certificate/[id]` + public verification
   - Test: verification works unauthenticated
 - [ ] **F12.10** `/` marketing landing
   - Test: Server Component, statically rendered, **Lighthouse ≥95 performance / 100 accessibility** — report attached
@@ -631,6 +631,7 @@ Out of scope for this build. Do not start these, and do not leave stubs for them
 Newest first. One line per finished feature: date · id · what · test result.
 
 | Date | Feature | What landed | Tests |
+| 2026-08-20 | F12.9 | Certificates end to end — entity, `VerificationCode`, repository, owner and public use cases, a rate-limited `auth: 'public'` verify route, `/certificate/[id]` and an unauthenticated `/verify/[code]`; issuance moved into the shared submission path so the cron backstop issues too | typecheck + lint green (tests paused) |
 | 2026-08-20 | F12.8 | `/exams/review/[id]` — master-detail with a **character** diff by longest common subsequence; unreachable before submission because `GetExamAnswerReview` refuses, not because the page guards | typecheck + lint green (tests paused) |
 | 2026-08-20 | F12.7 | `/exams/result/[id]` — one page, two variants; by-section table showing **marks lost** rather than accuracy; the fail variant carries the prescription block and links into `/practice` | typecheck + lint green (tests paused) |
 | 2026-08-20 | F12.6 | Refresh and resume — debounced autosave flushed on question change, section submit, tab-hide and `pagehide`; clock and answers re-anchored on visibility change and every 60s; a plain saving indicator | typecheck + lint green (tests paused) |

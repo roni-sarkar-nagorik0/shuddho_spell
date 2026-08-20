@@ -1,5 +1,7 @@
 import 'server-only';
 import { type ILearnerProfileRepository } from '@/modules/auth/domain/repositories/learner-profile-repository';
+import { type ICertificateRepository } from '@/modules/certificates/domain/repositories/certificate-repository';
+import { SupabaseCertificateRepository } from '@/modules/certificates/infrastructure/persistence/supabase/certificate.repository';
 import { type INotificationPreferenceRepository } from '@/modules/notifications/domain/repositories/notification-preference-repository';
 import { type INotificationRepository } from '@/modules/notifications/domain/repositories/notification-repository';
 import { type IPushSubscriptionRepository } from '@/modules/notifications/domain/repositories/push-subscription-repository';
@@ -92,6 +94,8 @@ export interface IContainer {
   readonly examQuestions: IExamQuestionRepository;
   readonly examAnswers: IExamAnswerRepository;
 
+  readonly certificates: ICertificateRepository;
+
   readonly notifications: INotificationRepository;
   readonly notificationPreferences: INotificationPreferenceRepository;
   readonly pushSubscriptions: IPushSubscriptionRepository;
@@ -161,6 +165,7 @@ export function createContainer(requestId: string): IContainer {
   const ids = new UuidGenerator();
   const pronunciationJudge = new SpeechScorerPronunciationJudge(phonemes, speechScorer);
   const notifications = new SupabaseNotificationRepository(db);
+  const certificates = new SupabaseCertificateRepository(db);
   const pushSubscriptions = new SupabasePushSubscriptionRepository(db);
   const notificationPreferences = new SupabaseNotificationPreferenceRepository(db);
   const inAppNotifier = new NotificationWriter(notifications);
@@ -187,6 +192,7 @@ export function createContainer(requestId: string): IContainer {
     examQuestions: new SupabaseExamQuestionRepository(db),
     examAnswers: new SupabaseExamAnswerRepository(db),
 
+    certificates,
     notifications,
     notificationPreferences,
     pushSubscriptions,
@@ -209,7 +215,13 @@ export function createContainer(requestId: string): IContainer {
 
     lessonWrites: new SupabaseLessonWriteUnit(db),
     examWrites,
-    examSubmissions: new ExamSubmissionService(pronunciationJudge, reviewPolicy, ids, examWrites),
+    examSubmissions: new ExamSubmissionService(
+      pronunciationJudge,
+      reviewPolicy,
+      ids,
+      examWrites,
+      certificates,
+    ),
 
     clock: new SystemClock(),
     ids,

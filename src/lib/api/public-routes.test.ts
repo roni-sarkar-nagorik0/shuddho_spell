@@ -27,6 +27,12 @@ const PUBLIC_ROUTES: readonly string[] = [
   // time compare against `CRON_SECRET`, header only — is what stands in for one.
   'src/app/api/cron/exam-autosubmit/route.ts',
   'src/app/api/cron/notifications/route.ts',
+  // Certificate verification. A certificate is a claim its holder publishes and
+  // a verifier is by definition a stranger — requiring an account to check one
+  // would make it unverifiable by the people it exists to convince. 008 already
+  // grants `select` on `certificate_verifications` to `anon` for the same
+  // reason. Rate-limited, and it returns only the public view's fields.
+  'src/app/api/v1/certificates/verify/[code]/route.ts',
 ];
 
 function routeFiles(directory: string): readonly string[] {

@@ -1,4 +1,7 @@
 import { type LearnerProfile } from '@/modules/auth/domain/entities/learner-profile';
+import { Certificate } from '@/modules/certificates/domain/entities/certificate';
+import { type ICertificateRepository } from '@/modules/certificates/domain/repositories/certificate-repository';
+import { VerificationCode } from '@/modules/certificates/domain/value-objects/verification-code';
 import { type ReviewItem } from '@/modules/review/domain/entities/review-item';
 import { type IReviewSchedulingPolicy } from '@/modules/review/domain/services/review-scheduling-policy';
 import { type IIdGenerator } from '@/modules/shared/application/ports/id-generator';
@@ -53,6 +56,7 @@ export class ExamSubmissionService {
     private readonly policy: IReviewSchedulingPolicy,
     private readonly ids: IIdGenerator,
     private readonly writes: IExamWriteUnit,
+    private readonly certificates: ICertificateRepository,
   ) {
     this.marker = new ExamAnswerMarker(judge);
   }
@@ -116,6 +120,8 @@ export class ExamSubmissionService {
       advanceToDayIndex,
     });
 
+    await this.issueCertificateIfEarned(graded, definition, profile, now);
+
     return {
       attemptId: graded.id,
       scorePercent: score.scorePercent.value,
@@ -126,4 +132,75 @@ export class ExamSubmissionService {
       prescribedItems: prescription.length,
     };
   }
+
+  /**
+   * A passed **final** earns a certificate — here, not on the result screen.
+   *
+   * It sits inside the shared submission path rather than in
+   * `SubmitExamAttemptUseCase` for the same reason marking does: a learner who
+   * passes the final and lets the clock run out is finished by 009's cron
+   * backstop, and a certificate issued only on the button would be a
+   * qualification they earned and never received.
+   *
+   * Idempotent by lookup, and by 006's unique `exam_attempt_id` behind that. A
+   * failure to issue is swallowed on purpose — the exam is marked, the position
+   * has moved and the writes are committed. Throwing here would turn a
+   * successfully passed final into an error page, and the certificate can be
+   * re-issued from the same attempt at any time because nothing about it
+   * depends on when it was asked for.
+   */
+  private async issueCertificateIfEarned(
+    attempt: ExamAttempt,
+    definition: ExamDefinition,
+    profile: LearnerProfile,
+    now: Date,
+  ): Promise<void> {
+    if (attempt.passed !== true || definition.code !== 'final') {
+      return;
+    }
+
+    try {
+      const existing = await this.certificates.findByAttempt(attempt.id);
+
+      if (existing !== null) {
+        return;
+      }
+
+      await this.certificates.create(
+        new Certificate({
+          id: this.ids.next(),
+          profileId: profile.id,
+          examAttemptId: attempt.id,
+          verificationCode: VerificationCode.fromBytes(codeBytes(this.ids.next())),
+          // Snapshotted, never joined later — 006's rule, so the document keeps
+          // saying what it said on the day it was issued.
+          learnerName: profile.displayName,
+          track: profile.track,
+          scorePercent: attempt.scorePercent?.value ?? 0,
+          issuedAt: now,
+          comparison: {},
+          revokedAt: null,
+          revokedReason: null,
+        }),
+      );
+    } catch {
+      // Deliberately silent. See the doc comment above.
+    }
+  }
+}
+
+/**
+ * Bytes for a verification code, from a generated id.
+ *
+ * A UUID v4 carries far more entropy than the twelve alphabet positions need,
+ * and folding by code point rather than parsing hex means a fake generator
+ * returning `attempt-1` still yields a well-formed code instead of throwing
+ * inside a submission.
+ */
+function codeBytes(id: string): Uint8Array {
+  const source = id.repeat(Math.ceil(24 / Math.max(1, id.length)));
+
+  return Uint8Array.from(
+    Array.from(source).slice(0, 24).map((character) => (character.codePointAt(0) ?? 0) % 256),
+  );
 }
