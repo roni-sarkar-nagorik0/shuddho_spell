@@ -1055,7 +1055,43 @@ entire deliverable is `09-notifications.md`'s "proven by test", so there was not
 build. Its fake notification store enforces the unique key the way Postgres does, which is the
 only reason the suite means anything.
 
+**D62 — `content/` holds a generated `.ts` beside a committed authoring table (F9.5–F9.8).**
+`10-content-pipeline.md` asks for typed source files and says nothing about how they are
+written. The TS object form is ten lines per word and there are 1,240 of them; a review that has
+to scroll past 12,000 lines of punctuation is a review nobody does. So each week is authored as
+a pipe-separated table (`week-01.words.txt`), `pnpm content:author` generates the `.ts`, and
+**both are committed** — the generated file is still the source of truth the app imports, and
+the table is how a human reads and edits it. Regenerating is idempotent.
+
+**D63 — the pacing constants, and the promise they have to keep (F9.5).**
+Nothing specifies how long an item takes, and the number decides whether `estimatedMinutes` is
+honest. A first guess of 45s per word and 75s per sentence made an honest day — the spec's own
+1,240 and 560 divided by 28 — claim **58 minutes** against a `daily_minutes` default of 30 and a
+product that sells a fifteen-to-thirty-minute habit. Either the numbers or the promise had to
+give. They are 25s and 45s, a day lands at 33–34 minutes, and the validator fails a day that
+claims more than 1.5× or less than 1/1.5× of what it holds.
+
+**D64 — a word may carry one capital (F9.8).**
+The word schema required lower case, which the month and weekday names fail. Lowercasing them
+would have taught a learner that `february` is how the word is spelled — the quiet kind of
+wrongness a spelling product cannot afford. The rule is now "lower case, or a proper noun with
+one capital"; marking is unaffected because `normaliseAnswer` folds case before comparing.
+
+**D65 — 24 transcriptions are flagged as uncertain, on purpose (F9.9).**
+`CLAUDE.md` §7.6 says never guess and present it as data. The compressed **-ary/-ory/-ery**
+family — `library`, `secretary`, `February`, `restaurant`, `medicine`, `comfortable` — is
+pronounced with a syllable more in careful RP than in casual RP, and my syllable splits follow
+the compressed form. Which register the course teaches is an editorial decision, not a fact I
+can settle, so those 24 carry `ipaNeedsReview: true` and `pnpm content:report` lists them.
+`stationary` and `stationery` are flagged together and identically, which is the point of the
+pair.
+
 ### Open — needs the user, not me
+
+**O3 — the 24 flagged transcriptions need a human ear (F9.9).** They are listed by
+`pnpm content:report`. The decision is one of register rather than correctness: careful RP says
+`li-bra-ry` and casual RP says `li-bry`, and the course should teach one of them deliberately.
+Nothing is broken until somebody chooses.
 
 **O2 — `.env.example` is missing the three VAPID entries (F8.3).** `CLAUDE.md` makes a new
 variable without an entry there a bug, and `.env.example` is explicitly editable under the env

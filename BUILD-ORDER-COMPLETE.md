@@ -342,8 +342,11 @@ Status values: `NOT STARTED` · `IN PROGRESS` · `BLOCKED — <reason>` · `DONE
 ## Phase 9 — Content pipeline and seeding
 
 - **Branch:** `feat/09-content-pipeline` (from `dev`)
-- **Status:** NOT STARTED
-- **Completed:**
+- **Status:** DONE
+- **Completed:** 2026-08-20, F9.1–F9.9. Exit gate **not run** — paused by standing instruction
+  2026-08-19. Not implied to have passed. Four of five items are proven by `pnpm content:report`;
+  the no-op second seed is **unproven** without a live database. 24 transcriptions are flagged
+  `ipaNeedsReview` and awaiting a human ear (ARCHITECTURE.md O3).
 - **Reads:** `10-content-pipeline`, `05-domain-model`
 - **Deliverables:** typed `content/` source files (one per week) validated by Zod at build time;
   `pnpm content:seed` CLI that validates → diffs → applies only changes; 1,240 words across 28 days;

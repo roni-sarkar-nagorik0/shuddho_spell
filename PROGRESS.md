@@ -81,7 +81,7 @@ and 2. No feature starts without it. **Never read the file** — existence check
 ## NEXT
 
 > **Phase 10 · Web shell and core components — not started**
-> Working on `feat/09-content-pipeline`, cut from an up-to-date `dev`.
+> Cut `feat/10-web-shell` from an up-to-date `dev`. Phase 9 is closed and merged.
 >
 > **What Phase 5 leaves Phase 6**
 > - `ISpeechScorer` is declared (F4.10) and **has no implementation**. Phase 6 is that, plus the
@@ -451,7 +451,13 @@ guard it is built on has its own 14 tests from F3.8, re-run green).
 ---
 
 ## Phase 9 — Content pipeline and seeding
-Branch `feat/09-content-pipeline` · Status: `NOT STARTED`
+Branch `feat/09-content-pipeline` · Status: `DONE` (9/9, 2026-08-20). Exit gate **not run** —
+paused by standing instruction 2026-08-19. Four of its five items are proven by
+`pnpm content:report` and are in the Log: a malformed entry fails the build naming the file and
+entry, the counts are exact (1,240 / 560 / 44 / 24 / 28), every word has ≥2 realistic
+misspellings and every sentence ≥2 alternatives (schema-enforced), and the 24 uncertain
+transcriptions are flagged and listed. The fifth — **re-running the seed is a no-op diff** — is
+written and **unproven**: it needs a live database, and there is none in this environment.
 
 - [x] **F9.1** (2026-08-20) `content/` Zod schemas + build-time validation
   - Test: a malformed entry fails the build naming the exact file and line
