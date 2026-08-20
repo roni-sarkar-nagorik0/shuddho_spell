@@ -81,7 +81,7 @@ and 2. No feature starts without it. **Never read the file** — existence check
 ## NEXT
 
 > **Phase 10 · Web shell and core components — in progress on `feat/10-web-shell`**
-> Current: **F10.8** — i18n key-parity CI check.
+> Current: **F10.9** — accessibility baseline.
 >
 > **What Phase 5 leaves Phase 6**
 > - `ISpeechScorer` is declared (F4.10) and **has no implementation**. Phase 6 is that, plus the
@@ -502,7 +502,7 @@ Branch `feat/10-web-shell` · Status: `IN PROGRESS`
   - Test: focus trap, Escape closes, focus returns to the trigger
 - [x] **F10.7** (2026-08-20) TanStack Query wiring + optimistic answer saving
   - Test: **exam writes are not retried**; other reads retry
-- [ ] **F10.8** i18n key-parity CI check
+- [x] **F10.8** (2026-08-20) i18n key-parity CI check
   - Test: deleting a `bn` key fails CI (paste output, restore key)
 - [ ] **F10.9** Accessibility baseline
   - Test: focus rings 2px secondary-500 / 2px offset; `prefers-reduced-motion` respected; no colour-only cue
@@ -603,6 +603,7 @@ Out of scope for this build. Do not start these, and do not leave stubs for them
 Newest first. One line per finished feature: date · id · what · test result.
 
 | Date | Feature | What landed | Tests |
+| 2026-08-20 | F10.8 | `pnpm i18n:check` — missing, orphaned and placeholder-mismatched keys; wired into `prebuild`. Proved by deleting `nav.weakSpots` and breaking `dashboard.dayOf`, then restoring both | typecheck + lint green; check exits 1 on a deleted key (output in the run report) |
 | 2026-08-20 | F10.7 | TanStack Query: per-tab client, read retry policy (never on 4xx, always on 429/5xx), `NEVER_RETRY` on every mutation, optimistic `useSaveExamAnswer` | typecheck + lint green (tests paused) |
 | 2026-08-20 | F10.6 | Overlays: `Toast` (moved from notifications, upgraded and mounted in the shell), `Popover`, `Drawer`, `ConfirmDialog`, all on one `useDismissable` hook | typecheck + lint green (tests paused) |
 | 2026-08-20 | F10.5 | Primitives: `MonoValue`, `StatCell`, `PanelHeader`, `HeatCell`, `StatusBadge`, `Sparkline` — tabular figures on every numeric one | typecheck + lint green (tests paused) |
