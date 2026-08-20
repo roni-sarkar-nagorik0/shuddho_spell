@@ -1,10 +1,23 @@
 import { PhonemeSequence, type IPhonemeSlot } from '@/modules/library/domain/value-objects/phoneme-sequence';
 import { type BengaliConfusionMap } from '../data/bengali-confusion-map';
 import { type IPhonemeConfusion } from '../value-objects/phoneme-confusion';
-import { textSimilarity } from './levenshtein';
+import { editDistance, graphemes, textSimilarity } from './levenshtein';
 
-/** English vowel letters. Used only to tell a final cluster from a final vowel. */
-const VOWEL_LETTERS = new Set(['a', 'e', 'i', 'o', 'u', 'y']);
+/**
+ * The IPA vowel letters, by first character.
+ *
+ * A dropped final cluster has to be judged on **sounds, not spelling**: `asked`
+ * ends in the letters `e` and `d` and in the sounds /k/ and /t/, and only the
+ * second pair is a cluster anybody can drop. Reading the spelling here was a
+ * real bug — it made the commonest example of this confusion undetectable.
+ */
+const VOWEL_SYMBOL_STARTS = new Set([
+  'a', 'e', 'i', 'o', 'u', 'æ', 'ɑ', 'ɒ', 'ɔ', 'ə', 'ɜ', 'ɪ', 'ʊ', 'ʌ', 'ɛ', 'ɐ', 'ø', 'y',
+]);
+
+function isVowelSymbol(symbol: string): boolean {
+  return VOWEL_SYMBOL_STARTS.has(symbol.charAt(0));
+}
 
 /** What a Bengali speaker inserts in front of a word-initial /s/ cluster. */
 const EPENTHETIC_VOWEL = 'ɪ';
@@ -21,6 +34,15 @@ export interface IConfusionDetection {
    * read as evidence that those sounds were correct.
    */
   readonly isHypothesis: boolean;
+  /**
+   * How far the best explanation still falls short of the transcript, in edits.
+   *
+   * Zero means the map predicted the transcript exactly. It is what separates
+   * "said `very` with a /w/" from "said a different word that happens to start
+   * with one", and the clamp in the blend turns on it — without it, a wholly
+   * wrong answer that any row improves *slightly* would be floored at 65.
+   */
+  readonly residualEdits: number;
 }
 
 export interface IConfusionDetectionInput {
@@ -57,25 +79,48 @@ export class ConfusionDetector {
     const scored = this.map
       .all()
       .flatMap((confusion) => {
-        const best = this.bestCandidate(confusion, input.expectedText, input.heardToken);
+        const best = this.bestCandidate(
+          confusion,
+          input.expectedText,
+          input.heardToken,
+          input.expected,
+        );
 
-        return best === null || best <= baseline ? [] : [{ confusion, strength: best }];
+        return best === null || best.similarity <= baseline ? [] : [{ confusion, best }];
       })
-      .sort((left, right) => right.strength - left.strength);
+      .sort((left, right) => right.best.similarity - left.best.similarity);
 
-    const strongest = scored[0]?.strength ?? 0;
-    const confusions = scored
-      .filter((entry) => entry.strength === strongest)
-      .map((entry) => entry.confusion);
+    const strongest = scored[0]?.best.similarity ?? 0;
+    const winners = scored
+      .filter((entry) => entry.best.similarity === strongest)
+      .filter((entry) => explainsTranscript(entry.best.candidate, input.heardToken));
+    const confusions = winners.map((entry) => entry.confusion);
 
     const stress = this.detectStress(input);
     const all = stress === null ? confusions : [...confusions, stress];
 
+    // With no substitution to measure against, the residual is simply how far
+    // the transcript sits from the word — zero for a stress error, which is the
+    // only confusion that leaves the spelling alone.
+    const residualEdits =
+      winners.length === 0
+        ? editDistance(graphemes(input.expectedText), graphemes(input.heardToken))
+        : Math.min(
+            ...winners.map((entry) =>
+              editDistance(graphemes(entry.best.candidate), graphemes(input.heardToken)),
+            ),
+          );
+
     if (input.observed !== null) {
-      return { confusions: all, heard: input.observed, isHypothesis: false };
+      return { confusions: all, heard: input.observed, isHypothesis: false, residualEdits };
     }
 
-    return { confusions: all, heard: this.deduce(input.expected, all), isHypothesis: true };
+    return {
+      confusions: all,
+      heard: this.deduce(input.expected, all),
+      isHypothesis: true,
+      residualEdits,
+    };
   }
 
   /**
@@ -86,10 +131,11 @@ export class ConfusionDetector {
     confusion: IPhonemeConfusion,
     expectedText: string,
     heardToken: string,
-  ): number | null {
+    expected: PhonemeSequence,
+  ): { readonly candidate: string; readonly similarity: number } | null {
     const candidates =
       confusion.kind === 'cluster-drop'
-        ? droppedClusterCandidates(expectedText)
+        ? droppedClusterCandidates(expectedText, expected)
         : confusion.graphemeShifts.flatMap((shift) =>
             expectedText.includes(shift.from)
               ? [
@@ -99,11 +145,17 @@ export class ConfusionDetector {
               : [],
           );
 
-    if (candidates.length === 0) {
-      return null;
+    let best: { candidate: string; similarity: number } | null = null;
+
+    for (const candidate of candidates) {
+      const similarity = textSimilarity(candidate, heardToken);
+
+      if (best === null || similarity > best.similarity) {
+        best = { candidate, similarity };
+      }
     }
 
-    return Math.max(...candidates.map((candidate) => textSimilarity(candidate, heardToken)));
+    return best;
   }
 
   /**
@@ -169,14 +221,44 @@ export class ConfusionDetector {
 }
 
 /**
- * `asked` said as `ask`, `texts` as `tex`. Only a word ending in two consonants
- * can lose one, which is what keeps this from firing on every short answer.
+ * Whether the prediction is close enough to what was heard to be believed.
+ *
+ * Without this the map improves *something* about almost any wrong answer:
+ * `very` heard as `wall` is nudged closer by the /v/→/w/ row, and left
+ * unchecked that becomes a confident, wrong, and rather insulting diagnosis
+ * — the learner is told to move their lip when they said a different word
+ * entirely. `07-speech-scoring.md` asks for the opposite: an unrelated word
+ * scores low **and says nothing**.
+ *
+ * The tolerance grows with the word because a recogniser spelling a nonword is
+ * approximating: one edit in four letters is noise, three is a different word.
  */
-function droppedClusterCandidates(expectedText: string): readonly string[] {
-  const last = expectedText.slice(-1);
-  const penultimate = expectedText.slice(-2, -1);
+function explainsTranscript(candidate: string, heardToken: string): boolean {
+  const tolerance = Math.max(1, Math.round(candidate.length / 4));
 
-  if (VOWEL_LETTERS.has(last) || VOWEL_LETTERS.has(penultimate) || expectedText.length < 3) {
+  return editDistance(graphemes(candidate), graphemes(heardToken)) <= tolerance;
+}
+
+/**
+ * `asked` said as `ask`, `texts` as `tex`. Only a word whose last two *sounds*
+ * are both consonants can lose one, which is what keeps this from firing on
+ * every short answer.
+ */
+function droppedClusterCandidates(
+  expectedText: string,
+  expected: PhonemeSequence,
+): readonly string[] {
+  const symbols = expected.symbols();
+  const last = symbols[symbols.length - 1];
+  const penultimate = symbols[symbols.length - 2];
+
+  const endsInCluster =
+    last !== undefined &&
+    penultimate !== undefined &&
+    !isVowelSymbol(last) &&
+    !isVowelSymbol(penultimate);
+
+  if (!endsInCluster || expectedText.length < 3) {
     return [];
   }
 
