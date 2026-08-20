@@ -1,5 +1,6 @@
 import 'server-only';
 import { createGetMeHandler } from '@/modules/auth/presentation/handlers/get-me';
+import { createSaveAnswerHandler } from '@/modules/exams/presentation/handlers/save-answer';
 import { createStartAttemptHandler } from '@/modules/exams/presentation/handlers/start-attempt';
 import { createAdvanceStageHandler } from '@/modules/lessons/presentation/handlers/advance-stage';
 import { createStartSessionHandler } from '@/modules/lessons/presentation/handlers/start-session';
@@ -19,6 +20,8 @@ import {
   makeGetMasterySnapshot,
   makeGetProgramOverview,
   makeGetProgressSummary,
+  makeFlagExamQuestion,
+  makeSaveExamAnswer,
   makeStartExamAttempt,
   makeStartLessonSession,
   makeSubmitConstructionAttempt,
@@ -89,3 +92,10 @@ export const getMasteryHandler = createGetMasteryHandler(() => makeGetMasterySna
 export const startExamAttemptHandler = createStartAttemptHandler(() =>
   makeStartExamAttempt(container()),
 );
+
+export const saveExamAnswerHandler = createSaveAnswerHandler(() => {
+  // One container, so both use cases in this request share a database handle.
+  const c = container();
+
+  return { save: makeSaveExamAnswer(c), flag: makeFlagExamQuestion(c) };
+});

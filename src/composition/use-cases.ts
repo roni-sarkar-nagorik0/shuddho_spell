@@ -1,6 +1,8 @@
 import 'server-only';
 import { BootstrapProfileUseCase } from '@/modules/auth/application/use-cases/bootstrap-profile';
 import { GetMeUseCase } from '@/modules/auth/application/use-cases/get-me';
+import { FlagExamQuestionUseCase } from '@/modules/exams/application/use-cases/flag-exam-question';
+import { SaveExamAnswerUseCase } from '@/modules/exams/application/use-cases/save-exam-answer';
 import { StartExamAttemptUseCase } from '@/modules/exams/application/use-cases/start-exam-attempt';
 import { AdvanceLessonStageUseCase } from '@/modules/lessons/application/use-cases/advance-lesson-stage';
 import { CompleteLessonSessionUseCase } from '@/modules/lessons/application/use-cases/complete-lesson-session';
@@ -190,5 +192,27 @@ export function makeStartExamAttempt(c: IContainer): StartExamAttemptUseCase {
     c.clock,
     c.ids,
     c.examWrites,
+  );
+}
+
+export function makeSaveExamAnswer(c: IContainer): SaveExamAnswerUseCase {
+  return new SaveExamAnswerUseCase(
+    c.learnerProfiles,
+    c.examAttempts,
+    c.examQuestions,
+    c.examAnswers,
+    c.clock,
+    c.ids,
+  );
+}
+
+export function makeFlagExamQuestion(c: IContainer): FlagExamQuestionUseCase {
+  return new FlagExamQuestionUseCase(
+    c.learnerProfiles,
+    c.examAttempts,
+    c.examQuestions,
+    c.examAnswers,
+    c.clock,
+    c.ids,
   );
 }

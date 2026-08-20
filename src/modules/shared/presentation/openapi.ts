@@ -11,7 +11,11 @@ import {
   startSessionBodySchema,
   submitAttemptBodySchema,
 } from '@/modules/lessons/presentation/dto/lesson-requests';
-import { examCodeParamsSchema } from '@/modules/exams/presentation/dto/exam-requests';
+import {
+  attemptParamsSchema,
+  examCodeParamsSchema,
+  saveAnswerBodySchema,
+} from '@/modules/exams/presentation/dto/exam-requests';
 import { programDayParamsSchema } from '@/modules/program/presentation/dto/program-params';
 import { submitReviewBodySchema } from '@/modules/review/presentation/dto/review-requests';
 import { meResponseSchema } from '@/modules/auth/presentation/dto/me.response';
@@ -166,6 +170,19 @@ registry.registerPath({
     'Returns the live attempt when one exists rather than creating a second — the deadline on it is never extended. No response from this route carries a correct answer.',
   request: { params: examCodeParamsSchema },
   responses: ok(z.unknown(), 'The attempt, its paper and the seconds left on the server clock.'),
+});
+
+registry.registerPath({
+  method: 'patch',
+  path: '/api/v1/exams/attempts/{id}/answers',
+  summary: 'Save an answer, or flag a question to come back to.',
+  description:
+    'Refused with 409 EXAM_TIME_EXPIRED once the server deadline has passed. The response carries the remaining seconds from the server clock, so the runtime resynchronises on every save.',
+  request: {
+    params: attemptParamsSchema,
+    body: { content: { 'application/json': { schema: saveAnswerBodySchema } } },
+  },
+  responses: ok(z.unknown(), 'The saved answer and the time left.'),
 });
 
 export function buildOpenApiDocument(): ReturnType<OpenApiGeneratorV3['generateDocument']> {

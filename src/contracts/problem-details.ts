@@ -31,6 +31,15 @@ export const PROBLEM_CODES = Object.freeze({
   NOT_FOUND: 'NOT_FOUND',
   CONFLICT: 'CONFLICT',
   RATE_LIMITED: 'RATE_LIMITED',
+  /**
+   * A write arrived after the exam's server deadline — `08-exam-engine.md`
+   * rule 2. Its own code rather than a `CONFLICT`, because the client's
+   * response to it is specific and immediate: stop accepting input, stop the
+   * countdown, and tell the learner the paper has closed. A generic conflict
+   * would be indistinguishable from a replayed request, which needs no such
+   * reaction.
+   */
+  EXAM_TIME_EXPIRED: 'EXAM_TIME_EXPIRED',
   INTERNAL: 'INTERNAL',
 });
 

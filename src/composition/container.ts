@@ -1,9 +1,11 @@
 import 'server-only';
 import { type ILearnerProfileRepository } from '@/modules/auth/domain/repositories/learner-profile-repository';
+import { type IExamAnswerRepository } from '@/modules/exams/domain/repositories/exam-answer-repository';
 import { type IExamAttemptRepository } from '@/modules/exams/domain/repositories/exam-attempt-repository';
 import { type IExamDefinitionRepository } from '@/modules/exams/domain/repositories/exam-definition-repository';
 import { type IExamQuestionRepository } from '@/modules/exams/domain/repositories/exam-question-repository';
 import { type IExamWriteUnit } from '@/modules/exams/application/ports/exam-write-unit';
+import { SupabaseExamAnswerRepository } from '@/modules/exams/infrastructure/persistence/supabase/exam-answer.repository';
 import { SupabaseExamAttemptRepository } from '@/modules/exams/infrastructure/persistence/supabase/exam-attempt.repository';
 import { SupabaseExamDefinitionRepository } from '@/modules/exams/infrastructure/persistence/supabase/exam-definition.repository';
 import { SupabaseExamQuestionRepository } from '@/modules/exams/infrastructure/persistence/supabase/exam-question.repository';
@@ -74,6 +76,7 @@ export interface IContainer {
   readonly examDefinitions: IExamDefinitionRepository;
   readonly examAttempts: IExamAttemptRepository;
   readonly examQuestions: IExamQuestionRepository;
+  readonly examAnswers: IExamAnswerRepository;
 
   /**
    * Domain services. Stateless and pure, so one instance per request costs
@@ -125,6 +128,7 @@ export function createContainer(requestId: string): IContainer {
     examDefinitions: new SupabaseExamDefinitionRepository(db),
     examAttempts: new SupabaseExamAttemptRepository(db),
     examQuestions: new SupabaseExamQuestionRepository(db),
+    examAnswers: new SupabaseExamAnswerRepository(db),
 
     reviewPolicy: new IntervalLadderPolicy(),
     errorTagger: new ErrorTagger(),

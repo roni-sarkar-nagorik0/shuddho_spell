@@ -19,3 +19,38 @@ export interface IExamCodeParams {
 
 const _codeParamsMatch: z.ZodType<IExamCodeParams> = examCodeParamsSchema;
 void _codeParamsMatch;
+
+export const attemptParamsSchema = z.object({ id: z.string().uuid() });
+
+export interface IAttemptParams {
+  readonly id: string;
+}
+
+/**
+ * One endpoint, two acts, discriminated on `action`.
+ *
+ * Both write the same row and neither is the other: answering records what the
+ * learner wrote, flagging records that they want to come back. A single shape
+ * with two optional fields would have to decide what an absent `submittedValue`
+ * means, and "clear the answer" and "leave it alone" are both plausible
+ * readings of the same request — which is exactly the ambiguity a discriminated
+ * union removes.
+ */
+export const saveAnswerBodySchema = z.discriminatedUnion('action', [
+  z.object({
+    action: z.literal('answer'),
+    questionId: z.string().uuid(),
+    submittedValue: z.string().max(2000),
+    timeSpentMs: z.number().int().min(0).nullable(),
+  }),
+  z.object({
+    action: z.literal('flag'),
+    questionId: z.string().uuid(),
+    flagged: z.boolean(),
+  }),
+]);
+
+export type SaveAnswerBody = z.infer<typeof saveAnswerBodySchema>;
+
+const _attemptParamsMatch: z.ZodType<IAttemptParams> = attemptParamsSchema;
+void _attemptParamsMatch;

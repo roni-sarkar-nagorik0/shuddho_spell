@@ -87,6 +87,15 @@ export class ApiError extends Error {
     return new ApiError(409, PROBLEM_CODES.CONFLICT, detail);
   }
 
+  /**
+   * 409, not 400 and not 403: the request was well formed and the learner was
+   * entitled to make it. Only the clock disagreed, and the client needs to know
+   * that specifically — see `EXAM_TIME_EXPIRED`.
+   */
+  static examTimeExpired(detail: string): ApiError {
+    return new ApiError(409, PROBLEM_CODES.EXAM_TIME_EXPIRED, detail);
+  }
+
   static forbidden(): ApiError {
     return new ApiError(403, PROBLEM_CODES.FORBIDDEN, 'You cannot access this resource.');
   }

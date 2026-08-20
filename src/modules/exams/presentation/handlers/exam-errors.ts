@@ -1,6 +1,7 @@
 import { ApiError } from '@/lib/api/problem';
 import { ProfileNotFoundError } from '@/modules/auth/domain/errors/profile-not-found.error';
 import { ExamLockedError } from '../../domain/errors/exam-locked.error';
+import { ExamTimeExpiredError } from '../../domain/errors/exam-time-expired.error';
 import { ExamNotFoundError } from '../../domain/errors/exam-not-found.error';
 import { IllegalAttemptTransitionError } from '../../domain/errors/illegal-attempt-transition.error';
 
@@ -24,6 +25,15 @@ export function toApiError(caught: unknown): ApiError | null {
 
   if (caught instanceof ExamLockedError) {
     return ApiError.forbidden();
+  }
+
+  if (caught instanceof ExamTimeExpiredError) {
+    // Its own code, not a plain conflict: the runtime has to stop the clock and
+    // stop accepting input, and it cannot tell that from a replayed request
+    // without being told.
+    return ApiError.examTimeExpired(
+      'Time is up for this exam. Nothing further can be saved on this attempt.',
+    );
   }
 
   if (caught instanceof IllegalAttemptTransitionError) {
