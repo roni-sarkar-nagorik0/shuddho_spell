@@ -1,0 +1,140 @@
+আমার একটি সাক্ষাৎকার আছে।|I have an appointment.|I have got an appointment.;There is an appointment for me.|a,apointment,has|article_a_an|medium
+বিভাগটি বড়।|The department is large.|That department is large.;The department is big.|departmant,are,larje|soft_g|medium
+উন্নয়ন ধীর।|The development is slow.|That development is slow.;Development is slow.|developement,are,slo|subject_verb_agreement|medium
+আমরা একটি চুক্তিতে পৌঁছেছি।|We reached an agreement.|We came to an agreement.;An agreement was reached.|a,agrement,reachd|article_a_an|hard
+তার বক্তব্য পরিষ্কার।|His statement is clear.|That statement is clear.;His statement is easy to follow.|statment,are,cleare|subject_verb_agreement|medium
+সরঞ্জামগুলো নতুন।|The equipment is new.|That equipment is new.;The equipment is brand new.|equipmant,are,nue|q_takes_u|hard
+তর্কটি দীর্ঘ ছিল।|The argument was long.|That argument was long.;The argument went on.|arguement,were,longg|subject_verb_agreement|medium
+আমার একটি চাকরি দরকার।|I need a job.|I want a job.;A job is what I need.|an,needs,jobb|article_a_an|easy
+সে একজন নিয়োগকর্তা।|He is an employer.|He is a employer.;That man is an employer.|a,imployer,are|article_a_an|medium
+সাক্ষাৎকারটি ভালো হয়েছিল।|The interview went well.|That interview went well.;The interview was good.|intervew,were,wel|no_final_v|medium
+তার বেতন ভালো।|Her salary is good.|That salary is good.;She earns well.|salery,are,gud|y_to_i|medium
+লাভ বেড়েছে।|The profit has increased.|The profit went up.;Profits have increased.|proffit,have,incraesed|subject_verb_agreement|medium
+আমার একটি হিসাব আছে।|I have an account.|I hold an account.;There is an account in my name.|a,acount,has|article_a_an|medium
+পরিমাণটি কম।|The amount is small.|That amount is small.;The amount is not large.|ammount,are,smal|subject_verb_agreement|medium
+আমাদের বাজেট সীমিত।|Our budget is limited.|The budget is limited.;We have a limited budget.|budjet,are,limitted|dge_after_short_vowel|hard
+খরচ বেশি।|The expense is high.|That expense is high.;The cost is high.|expence,are,hi|subject_verb_agreement|medium
+ক্রেতা সবসময় ঠিক।|The customer is always right.|A customer is always right.;Customers are always right.|custumer,are,rite|silent_letters|hard
+পণ্যটি ভালো।|The product is good.|That product is good.;It is a good product.|prodct,are,gud|subject_verb_agreement|easy
+গুণমান গুরুত্বপূর্ণ।|Quality is important.|Quality matters.;The quality is important.|qality,are,importent|q_takes_u|medium
+সরবরাহ দেরিতে।|The delivery is late.|That delivery is late.;Delivery is delayed.|delivary,are,latte|y_to_i|medium
+কারখানাটি বন্ধ।|The factory is closed.|That factory is closed.;The factory has shut.|factry,are,clozed|y_to_i|medium
+যন্ত্রটি কাজ করে না।|The machine does not work.|That machine does not work.;The machine is broken.|machin,do,werk|drop_silent_e|medium
+কম্পিউটারটি ধীর।|The computer is slow.|That computer is slow.;The computer runs slowly.|computar,are,slo|subject_verb_agreement|easy
+প্রযুক্তি দ্রুত বদলায়।|Technology changes quickly.|Technology changes fast.;Technology is changing quickly.|tecnology,change,quikly|soft_g,q_takes_u|hard
+বিদ্যুৎ চলে গেছে।|The electricity has gone.|The power has gone.;There is no electricity.|electricty,have,gon|soft_c|hard
+গবেষণা সময় নেয়।|Research takes time.|Research needs time.;Doing research takes time.|reserch,take,tim|subject_verb_agreement|medium
+পরীক্ষাটি সফল হয়েছিল।|The experiment was successful.|That experiment succeeded.;The experiment worked.|experment,were,sucessful|subject_verb_agreement|hard
+প্রমাণ যথেষ্ট নয়।|The evidence is not sufficient.|The evidence is not enough.;There is not enough evidence.|evidance,are,sufficent|soft_c,i_before_e|hard
+সে বিশ্ববিদ্যালয়ে পড়ে।|She studies at the university.|She studies in the university.;She is at university.|univercity,study,in|y_to_i,place_prepositions|hard
+গ্রন্থাগারটি শান্ত।|The library is quiet.|That library is quiet.;The library is silent.|libary,quite,are|y_to_i,q_takes_u|medium
+আমার একটি অভিধান দরকার।|I need a dictionary.|I want a dictionary.;A dictionary is what I need.|an,dictionery,needs|article_a_an,tion_sion|medium
+কমিটি সিদ্ধান্ত নিয়েছে।|The committee has decided.|The committee decided.;A decision was taken by the committee.|comittee,have,desided|doubling_1_1_1|hard
+সম্প্রদায়টি ছোট।|The community is small.|That community is small.;It is a small community.|comunity,are,smal|y_to_i|medium
+প্রতিটি নাগরিকের অধিকার আছে।|Every citizen has rights.|Each citizen has rights.;All citizens have rights.|citzen,have,rites|soft_c|hard
+পরিবেশ রক্ষা করো।|Protect the environment.|Save the environment.;We must protect the environment.|enviroment,protects,protct|subject_verb_agreement|hard
+দূষণ বাড়ছে।|Pollution is increasing.|Pollution increases.;Pollution is going up.|polusion,are,incraesing|tion_sion|hard
+বনটি ঘন।|The forest is dense.|That forest is dense.;The forest is thick.|forrest,are,dence|subject_verb_agreement|medium
+পাহাড়টি উঁচু।|The mountain is high.|That mountain is high.;The mountain is tall.|mountian,are,hi|subject_verb_agreement|medium
+মরুভূমি শুকনো।|The desert is dry.|That desert is dry.;Deserts are dry.|dessert,are,drie|subject_verb_agreement|medium
+মিষ্টান্নটি সুস্বাদু।|The dessert is delicious.|That dessert is delicious.;The sweet is delicious.|desert,are,delisious|floss_doubling,tion_sion|hard
+হাতিটি বড়।|The elephant is big.|That elephant is big.;Elephants are big.|elefant,are,bigg|subject_verb_agreement|easy
+কৃষক ফসল ফলায়।|The farmer grows the crop.|Farmers grow crops.;The crop is grown by the farmer.|farmar,grow,cropp|subject_verb_agreement|medium
+মাটি উর্বর।|The soil is fertile.|That soil is fertile.;The soil is good.|soyl,are,fertle|subject_verb_agreement|medium
+সেচ প্রয়োজন।|Irrigation is necessary.|Irrigation is needed.;We need irrigation.|irigation,are,neccessary|tion_sion|hard
+খরা দীর্ঘ ছিল।|The drought was long.|That drought was long.;The drought lasted long.|drout,were,longg|silent_letters|hard
+যানজট ভয়ানক।|The traffic is terrible.|That traffic is terrible.;Traffic is very bad.|trafic,are,terrable|able_ible|medium
+যাত্রীরা অপেক্ষা করছে।|The passengers are waiting.|Passengers wait.;The passengers wait.|passanger,is,waitting|soft_g|hard
+আমার টিকিট হারিয়ে গেছে।|I have lost my ticket.|My ticket is lost.;I lost my ticket.|tikcet,has,lostt|ck_after_short_vowel|medium
+বিমানবন্দরটি ব্যস্ত।|The airport is busy.|That airport is busy.;The airport is crowded.|airpot,are,bussy|subject_verb_agreement|medium
+আগমন সময়মতো।|The arrival is on time.|The arrival is punctual.;It arrives on time.|arival,are,in|no_final_v,place_prepositions|hard
+হোটেলটি পরিষ্কার।|The hotel is clean.|That hotel is clean.;The hotel looks clean.|hotell,are,cleen|subject_verb_agreement|easy
+রেস্তোরাঁটি বন্ধ।|The restaurant is closed.|That restaurant is closed.;The restaurant has shut.|resturant,are,clozed|subject_verb_agreement|medium
+পর্যটকরা ছবি তোলে।|The tourists take photographs.|Tourists take photos.;Photographs are taken by the tourists.|turist,takes,photograf|subject_verb_agreement|hard
+ঐতিহ্য গুরুত্বপূর্ণ।|Tradition is important.|Traditions matter.;Tradition matters.|tradision,are,importent|tion_sion|medium
+উৎসবটি রঙিন।|The festival is colourful.|That festival is colourful.;The festival is full of colour.|festivel,are,colourfull|no_final_v,suffix_ful_one_l|hard
+সংগীত মন শান্ত করে।|Music calms the mind.|Music makes the mind calm.;The mind is calmed by music.|musik,calm,calmm|soft_c|hard
+সংবাদপত্রটি এসেছে।|The newspaper has arrived.|The newspaper arrived.;The paper has come.|newpaper,have,arive|no_final_v|medium
+নিবন্ধটি দীর্ঘ।|The article is long.|That article is long.;The article is very long.|artical,are,longg|subject_verb_agreement|medium
+লেখক বিখ্যাত।|The author is famous.|That author is famous.;The writer is famous.|auther,are,famus|subject_verb_agreement|medium
+কবিতাটি সুন্দর।|The poem is beautiful.|That poem is beautiful.;The poem is lovely.|poam,are,beutiful|subject_verb_agreement|medium
+সে দৌড়াচ্ছে।|He is running.|He runs.;He has begun running.|runing,run,runnning|doubling_1_1_1|medium
+আমরা কেনাকাটা করছি।|We are shopping.|We shop.;We have gone shopping.|shoping,is,shoppping|doubling_1_1_1|medium
+সে লিখছে।|She is writing.|She writes.;She has begun writing.|writting,writeing,writeng|drop_silent_e|medium
+তারা আসছে।|They are coming.|They come.;They will come.|comeing,is,comming|drop_silent_e|medium
+আমি আশা করছি।|I am hoping.|I hope.;I have hope.|hopeing,is,hopping|drop_silent_e|hard
+খরগোশটি লাফাচ্ছে।|The rabbit is hopping.|The rabbit hops.;The rabbit jumps.|hoping,are,rabit|doubling_1_1_1|hard
+সে পড়াশোনা করছে।|She is studying.|She studies.;She has begun studying.|studing,studiing,studyng|y_to_i|medium
+আমার তিনটি অনুলিপি আছে।|I have three copies.|I have got three copies.;There are three copies.|copys,has,copyes|y_to_i|medium
+শিশুরা মাঠে খেলছে।|The children are playing in the field.|Children play in the field.;The children play on the field.|childs,on,plaied|subject_verb_agreement,place_prepositions|medium
+আমার দুটি পা আছে।|I have two feet.|I have got two feet.;There are two feet.|foots,has,feets|subject_verb_agreement|medium
+তার দাঁত ব্যথা করছে।|His teeth hurt.|His teeth are hurting.;He has toothache.|tooths,hurts,teeths|subject_verb_agreement|medium
+ছুরিগুলো ধারালো।|The knives are sharp.|Those knives are sharp.;The knives cut well.|knifes,is,sharpp|f_to_ves|medium
+পাতাগুলো ঝরে পড়ে।|The leaves fall.|The leaves are falling.;Leaves fall.|leafs,falls,leavs|f_to_ves|medium
+তাকগুলো খালি।|The shelves are empty.|Those shelves are empty.;The shelves have nothing.|shelfs,is,emty|f_to_ves|medium
+আমার মতামত ভিন্ন।|My opinion is different.|I have a different opinion.;My view is different.|opinon,are,diferent|subject_verb_agreement|medium
+তোমার প্রস্তাবটি ভালো।|Your suggestion is good.|That suggestion is good.;It is a good suggestion.|sugestion,are,gud|tion_sion|medium
+ব্যাখ্যাটি পরিষ্কার।|The explanation is clear.|That explanation is clear.;The explanation is easy.|explaination,are,cleare|tion_sion|hard
+বর্ণনাটি বিস্তারিত।|The description is detailed.|That description is detailed.;The description is full.|discription,are,detaild|tion_sion|hard
+উপসংহারটি সঠিক।|The conclusion is correct.|That conclusion is correct.;The conclusion is right.|conclution,are,corect|tion_sion|hard
+পার্থক্যটি ছোট।|The difference is small.|That difference is small.;The difference is minor.|diference,are,smal|soft_c|medium
+এর একটি সুবিধা আছে।|It has an advantage.|There is an advantage.;It carries an advantage.|a,advantege,have|article_a_an,soft_g|hard
+এর একটি অসুবিধা আছে।|It has a disadvantage.|There is a disadvantage.;It carries a disadvantage.|an,disadvantege,have|article_a_an,prefix_keeps_root|hard
+উপকারটি স্পষ্ট।|The benefit is obvious.|That benefit is obvious.;The benefit is clear.|benifit,are,obvius|subject_verb_agreement|hard
+আমাদের উদ্দেশ্য পরিষ্কার।|Our purpose is clear.|The purpose is clear.;We have a clear purpose.|purpuse,are,cleare|subject_verb_agreement|medium
+তার প্রচেষ্টা প্রশংসনীয়।|His effort is admirable.|That effort is admirable.;His effort deserves praise.|efort,are,admireable|able_ible|hard
+এটি একটি ভুল।|This is a mistake.|That is a mistake.;It is an error.|an,mistak,are|article_a_an,prefix_keeps_root|easy
+সংশোধনটি প্রয়োজন।|The correction is necessary.|That correction is necessary.;A correction is needed.|corection,are,neccessary|tion_sion|hard
+উন্নতি দৃশ্যমান।|The improvement is visible.|That improvement is visible.;We can see the improvement.|improvment,are,visable|able_ible|hard
+সততা সেরা নীতি।|Honesty is the best policy.|Honesty is best.;The best policy is honesty.|honnesty,are,policey|silent_letters|hard
+ধৈর্য প্রয়োজন।|Patience is needed.|Patience is necessary.;We need patience.|patiense,are,neded|soft_c|hard
+তার আত্মবিশ্বাস আছে।|He has confidence.|He is confident.;Confidence is what he has.|confidance,have,confidant|soft_c|hard
+তার আচরণ ভালো।|His behaviour is good.|That behaviour is good.;He behaves well.|behavour,are,gud|subject_verb_agreement|medium
+সে একজন ভালো চরিত্রের মানুষ।|He is a man of good character.|He has a good character.;His character is good.|an,charecter,are|article_a_an|hard
+বন্ধুত্ব মূল্যবান।|Friendship is precious.|Friendship is valuable.;Friendship has value.|freindship,are,precius|i_before_e,tion_sion|hard
+শৈশব সংক্ষিপ্ত।|Childhood is short.|Childhood is brief.;Childhood does not last.|childood,are,shot|subject_verb_agreement|medium
+আমার চাচা এখানে থাকেন।|My uncle lives here.|My uncle stays here.;Here lives my uncle.|uncel,live,hear|subject_verb_agreement|medium
+আমার দাদি রান্না করেন।|My grandmother cooks.|My grandmother is cooking.;Grandmother cooks.|granmother,cook,cookes|subject_verb_agreement|medium
+অতিথিরা এসেছেন।|The guests have arrived.|The guests arrived.;Guests have come.|gest,has,arive|silent_letters,no_final_v|hard
+সে একজন অপরিচিত।|He is a stranger.|That man is a stranger.;He is an unknown person.|an,stranjer,are|article_a_an,soft_g|medium
+দলটি জিতেছে।|The team has won.|The team won.;They won.|teem,have,winn|subject_verb_agreement|medium
+ব্যবস্থাপক এখানে নেই।|The manager is not here.|That manager is not here.;The manager has gone.|manger,are,hear|soft_g|medium
+প্রকৌশলী সেতুটি বানিয়েছেন।|The engineer built the bridge.|The bridge was built by the engineer.;An engineer built the bridge.|enginear,build,brige|dge_after_short_vowel|hard
+পুলিশ এসেছে।|The police have arrived.|The police arrived.;Police have come.|polise,has,arive|soft_c,no_final_v|hard
+আইন সবার জন্য সমান।|The law is the same for everyone.|The law applies to everyone.;Law is equal for all.|lawe,are,everyone's|subject_verb_agreement|hard
+স্বাধীনতা মূল্যবান।|Freedom is valuable.|Freedom is precious.;Freedom has great value.|fredom,are,valuible|able_ible|hard
+এটি আধুনিক যুগ।|This is the modern age.|That is the modern age.;We live in the modern age.|moden,are,aje|soft_g|medium
+বর্তমান পরিস্থিতি কঠিন।|The current situation is hard.|The present situation is hard.;Things are hard now.|curent,are,situasion|tion_sion|hard
+এটি একটি সাধারণ ভুল।|This is a common mistake.|That is a common mistake.;It is a usual mistake.|an,comon,mistak|article_a_an,doubling_1_1_1|medium
+সে বিখ্যাত।|He is famous.|He is well known.;Everyone knows him.|famus,are,fameous|subject_verb_agreement|easy
+এটি বিপজ্জনক।|This is dangerous.|That is dangerous.;It is not safe.|dangrous,are,dangerus|soft_g|medium
+আমি উদ্বিগ্ন।|I am nervous.|I feel nervous.;I am anxious.|nervus,is,nervouse|no_final_v|medium
+খাবারটি সুস্বাদু।|The food is delicious.|That food is delicious.;The food tastes good.|delisious,are,fud|tion_sion|medium
+সে সচেতন।|He is conscious.|He is aware.;He knows.|concious,are,consious|tion_sion|hard
+সে সক্রিয়।|She is active.|She is very active.;She keeps active.|activ,are,aktive|no_final_v|medium
+এটি ব্যয়বহুল।|This is expensive.|That is expensive.;It costs a lot.|expensiv,are,expencive|no_final_v|medium
+এটি কার্যকর।|This is effective.|That is effective.;It works.|effectiv,are,efective|no_final_v|medium
+এটি একটি বিকল্প।|This is an alternative.|That is an alternative.;It is another option.|a,alternativ,are|article_a_an,no_final_v|hard
+সে বেঁচে গেছে।|He survived.|He has survived.;He is alive.|surviv,survives,survvive|no_final_v|medium
+আমাকে এটি প্রমাণ করতে হবে।|I must prove it.|I have to prove it.;It must be proved by me.|prov,proves,proove|no_final_v|medium
+সে সমস্যাটি সমাধান করে।|He solves the problem.|The problem is solved by him.;He works out the problem.|solv,solve,probelm|no_final_v|medium
+আমরা একটি সভার আয়োজন করি।|We arrange a meeting.|We organise a meeting.;A meeting is arranged by us.|an,arange,arranges|article_a_an,soft_g|hard
+এটি একটি বড় চ্যালেঞ্জ।|This is a big challenge.|That is a big challenge.;It is a great challenge.|an,chalenge,are|article_a_an,soft_g|medium
+সে আমাকে উৎসাহ দেয়।|She encourages me.|She gives me encouragement.;I am encouraged by her.|encorage,encourage,I|soft_g|hard
+আমি কল্পনা করতে পারি।|I can imagine.|I am able to imagine.;Imagining is possible for me.|imagin,imagines,imajine|soft_g|medium
+আমি তাকে চিনি।|I recognise him.|I know him.;He is known to me.|reconise,recognises,he|silent_letters|medium
+আমি ভুলটি বুঝতে পারি।|I realise the mistake.|I understand the mistake.;The mistake is understood by me.|realese,realises,mistak|drop_silent_e|hard
+সে ক্ষমা চায়।|He apologises.|He says sorry.;An apology comes from him.|apologize,apologise,apolagise|soft_g|hard
+এটি একটি আশ্চর্য।|This is a surprise.|That is a surprise.;It is unexpected.|an,suprise,are|article_a_an|medium
+আমরা আপস করি।|We compromise.|We reach a compromise.;A compromise is reached.|compromize,compromises,comprimise|drop_silent_e|hard
+তার দক্ষতা আছে।|He has expertise.|He is an expert.;Expertise is what he has.|expertize,have,expertice|drop_silent_e|hard
+এটি একটি সুযোগ।|This is an opportunity.|That is an opportunity.;It is a chance.|a,oportunity,are|article_a_an,y_to_i|hard
+দায়িত্ব ভারী।|The responsibility is heavy.|That responsibility is heavy.;It is a heavy responsibility.|responsability,are,hevy|y_to_i|hard
+তারা প্রতি বছর ভ্রমণ করে।|They travel every year.|They go travelling every year.;Every year they travel.|travle,travels,yeer|no_final_v|medium
+সে ছবি তোলে।|She takes photographs.|She takes photos.;Photographs are taken by her.|photograf,take,pikture|subject_verb_agreement|medium
+কারখানার শ্রমিকরা কাজ করে।|The factory workers work.|Factory workers work.;The workers of the factory work.|factry,works,werk|y_to_i|hard
+আমি একটি ছবি আঁকি।|I draw a picture.|I make a picture.;A picture is drawn by me.|an,pikture,draws|article_a_an|easy
+তারা একটি ঘর তৈরি করে।|They build a house.|They make a house.;A house is built by them.|an,buld,builds|article_a_an|medium
+বিজয় মিষ্টি।|Victory is sweet.|Victory tastes sweet.;Winning is sweet.|victry,are,sweat|y_to_i|medium
+ন্যায়বিচার প্রয়োজন।|Justice is needed.|Justice is necessary.;We need justice.|justise,are,neded|soft_c|hard
+তিনি তত্ত্বাবধান করেন।|He supervises.|He is supervising.;Supervision is done by him.|supervize,supervise,supervice|no_final_v|hard
