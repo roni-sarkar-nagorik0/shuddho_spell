@@ -81,7 +81,7 @@ and 2. No feature starts without it. **Never read the file** — existence check
 ## NEXT
 
 > **Phase 12 · Exam and marketing screens — in progress on `feat/12-exam-marketing-screens`**
-> Current: **F12.3** — `/exams/attempt/[id]` runtime shell.
+> Current: **F12.4** — the countdown.
 >
 > **What Phase 11 leaves Phase 12**
 > - `useSaveExamAnswer` (F10.7) is the optimistic template for the exam runtime; writes never retry.
@@ -574,7 +574,7 @@ Branch `feat/12-exam-marketing-screens` · Status: `IN PROGRESS`
   - Test: lock state and readiness reflect the server, not local state
 - [x] **F12.2** (2026-08-20) `/exams/[code]` lobby + system check
   - Test: the begin button is gated on **both** the checkbox and the mic/audio check
-- [ ] **F12.3** `/exams/attempt/[id]` runtime shell
+- [x] **F12.3** (2026-08-20) `/exams/attempt/[id]` runtime shell
   - Test: no navigation out; `beforeunload` warning active
 - [ ] **F12.4** The countdown
   - Test: driven by server remaining seconds; `secondary-500` at 5:00, `tertiary-500` at 0:60, each with `aria-live`
@@ -631,6 +631,7 @@ Out of scope for this build. Do not start these, and do not leave stubs for them
 Newest first. One line per finished feature: date · id · what · test result.
 
 | Date | Feature | What landed | Tests |
+| 2026-08-20 | F12.3 | `/exams/attempt/[id]` — `(exam)` route group on flat `primary-900`, `beforeunload` + back-button guard, optimistic never-retried answer saving, one-way section submission | typecheck + lint green (tests paused) |
 | 2026-08-20 | F12.2 | `/exams/[code]` lobby — spec and section tables, rules, a system check that really calls `getUserMedia`, begin gated on the checkbox **and** the check **and** the server's lock | typecheck + lint green (tests paused) |
 | 2026-08-20 | F12.1 | `/exams` — `GetExamCatalogue` produces the lock from the same `ExamEligibilityPolicy` `StartExamAttempt` consults; readiness only once unlocked; a live attempt always outranks starting a new one | typecheck + lint green (tests paused) |
 | 2026-08-20 | F11.12 | `/progress` — daily accuracy with gaps left open and dashed rules where each milestone was passed, 84-day activity heatmap, **both** mastery matrices from one component | typecheck + lint green (tests paused) |
