@@ -8,6 +8,7 @@ import { type IPushSender } from '@/modules/notifications/application/ports/push
 import { SupabaseNotificationPreferenceRepository } from '@/modules/notifications/infrastructure/persistence/supabase/notification-preference.repository';
 import { SupabaseNotificationRepository } from '@/modules/notifications/infrastructure/persistence/supabase/notification.repository';
 import { SupabasePushSubscriptionRepository } from '@/modules/notifications/infrastructure/persistence/supabase/push-subscription.repository';
+import { NotificationDispatcher } from '@/modules/notifications/application/services/notification-dispatcher';
 import { NotificationWriter } from '@/modules/notifications/infrastructure/adapters/notification-writer';
 import { WebPushSender } from '@/modules/notifications/infrastructure/adapters/web-push-sender';
 import { type IExamAnswerRepository } from '@/modules/exams/domain/repositories/exam-answer-repository';
@@ -107,6 +108,12 @@ export interface IContainer {
   readonly inAppNotifier: IInAppNotifier;
   readonly pushSender: IPushSender;
 
+  /**
+   * The machinery all six dispatches share: the policy, the idempotency key,
+   * and the two channels. One instance, so none of them can decide differently.
+   */
+  readonly notificationDispatcher: NotificationDispatcher;
+
   /** Pure and stateless too — a lookup over the confusion map, never a model. */
   readonly speechScorer: ISpeechScorer;
 
@@ -155,6 +162,9 @@ export function createContainer(requestId: string): IContainer {
   const pronunciationJudge = new SpeechScorerPronunciationJudge(phonemes, speechScorer);
   const notifications = new SupabaseNotificationRepository(db);
   const pushSubscriptions = new SupabasePushSubscriptionRepository(db);
+  const notificationPreferences = new SupabaseNotificationPreferenceRepository(db);
+  const inAppNotifier = new NotificationWriter(notifications);
+  const pushSender = new WebPushSender(pushSubscriptions);
 
   return {
     requestId,
@@ -178,11 +188,19 @@ export function createContainer(requestId: string): IContainer {
     examAnswers: new SupabaseExamAnswerRepository(db),
 
     notifications,
-    notificationPreferences: new SupabaseNotificationPreferenceRepository(db),
+    notificationPreferences,
     pushSubscriptions,
 
-    inAppNotifier: new NotificationWriter(notifications),
-    pushSender: new WebPushSender(pushSubscriptions),
+    inAppNotifier,
+    pushSender,
+    notificationDispatcher: new NotificationDispatcher(
+      notifications,
+      notificationPreferences,
+      pushSubscriptions,
+      inAppNotifier,
+      pushSender,
+      ids,
+    ),
 
     reviewPolicy,
     errorTagger: new ErrorTagger(),

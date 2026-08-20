@@ -17,6 +17,14 @@ import { StartLessonSessionUseCase } from '@/modules/lessons/application/use-cas
 import { SubmitConstructionAttemptUseCase } from '@/modules/lessons/application/use-cases/submit-construction-attempt';
 import { SubmitDictationAttemptUseCase } from '@/modules/lessons/application/use-cases/submit-dictation-attempt';
 import { SubmitPronunciationAttemptUseCase } from '@/modules/lessons/application/use-cases/submit-pronunciation-attempt';
+import {
+  SendDailyReminderUseCase,
+  SendExamResultUseCase,
+  SendExamUnlockedUseCase,
+  SendReviewItemsDueUseCase,
+  SendStreakAtRiskUseCase,
+  SendWeeklyReportUseCase,
+} from '@/modules/notifications/application/use-cases/dispatch-use-cases';
 import { GetNotificationPreferencesUseCase } from '@/modules/notifications/application/use-cases/get-notification-preferences';
 import { ListNotificationsUseCase } from '@/modules/notifications/application/use-cases/list-notifications';
 import { MarkAllNotificationsReadUseCase } from '@/modules/notifications/application/use-cases/mark-all-notifications-read';
@@ -336,4 +344,33 @@ export function makeRegisterPushSubscription(c: IContainer): RegisterPushSubscri
 
 export function makeRevokePushSubscription(c: IContainer): RevokePushSubscriptionUseCase {
   return new RevokePushSubscriptionUseCase(c.learnerProfiles, c.pushSubscriptions);
+}
+
+/**
+ * The six dispatches. Each takes the one shared dispatcher and nothing else —
+ * which is what stops any of them deciding for itself whether quiet hours
+ * apply, or reaching a channel the policy did not select.
+ */
+export function makeSendDailyReminder(c: IContainer): SendDailyReminderUseCase {
+  return new SendDailyReminderUseCase(c.notificationDispatcher);
+}
+
+export function makeSendStreakAtRisk(c: IContainer): SendStreakAtRiskUseCase {
+  return new SendStreakAtRiskUseCase(c.notificationDispatcher);
+}
+
+export function makeSendReviewItemsDue(c: IContainer): SendReviewItemsDueUseCase {
+  return new SendReviewItemsDueUseCase(c.notificationDispatcher);
+}
+
+export function makeSendExamUnlocked(c: IContainer): SendExamUnlockedUseCase {
+  return new SendExamUnlockedUseCase(c.notificationDispatcher);
+}
+
+export function makeSendExamResult(c: IContainer): SendExamResultUseCase {
+  return new SendExamResultUseCase(c.notificationDispatcher);
+}
+
+export function makeSendWeeklyReport(c: IContainer): SendWeeklyReportUseCase {
+  return new SendWeeklyReportUseCase(c.notificationDispatcher);
 }
