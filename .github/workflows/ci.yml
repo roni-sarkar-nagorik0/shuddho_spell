@@ -1,0 +1,144 @@
+name: CI
+
+# One app, one build job — `CLAUDE.md` §3. There is no second project to
+# matrix over and no separate backend to deploy, so this is deliberately a
+# single pipeline rather than a fan-out that would only ever have one arm.
+on:
+  push:
+    branches: [dev, main]
+  pull_request:
+    branches: [dev, main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: '20'
+
+jobs:
+  verify:
+    name: typecheck · lint · test · build
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    # The integration tests boot Postgres through PGlite in-process, so no
+    # service container is needed for them. This one exists for the migration
+    # suite, which applies every file against a real server and is the only
+    # thing that proves the SQL is valid rather than merely well-formed.
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_PASSWORD: ci-only-not-a-secret
+          POSTGRES_DB: shuddhospell_ci
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      # Ordered cheapest-first on purpose. A type error should fail in ninety
+      # seconds, not after a five-minute build.
+      - name: Typecheck
+        run: pnpm typecheck
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Content and i18n gates
+        run: |
+          pnpm content:validate
+          pnpm i18n:check
+
+      - name: Unit and integration tests
+        run: pnpm test
+        env:
+          DATABASE_URL: postgres://postgres:ci-only-not-a-secret@localhost:5432/shuddhospell_ci
+
+      - name: Coverage
+        # Reported, not gated. The floor in vitest.config.ts is 90% and the
+        # project is at 57% — failing the build on it today would mean a red
+        # pipeline on every commit, which trains people to ignore CI. The
+        # number is printed on every run so the gap stays visible, and the gate
+        # is turned on when it is reachable. F13.12 says exactly this.
+        continue-on-error: true
+        run: pnpm vitest run --coverage
+        env:
+          DATABASE_URL: postgres://postgres:ci-only-not-a-secret@localhost:5432/shuddhospell_ci
+
+      - name: Build
+        run: pnpm build
+        env:
+          # Boot-time Zod validation needs these to exist. They are syntactically
+          # valid and point at nothing — the build renders no dynamic page, so
+          # nothing connects.
+          NEXT_PUBLIC_SUPABASE_URL: https://ci.invalid
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ci-anon-key-placeholder
+          NEXT_PUBLIC_APP_URL: http://localhost:3000
+          SUPABASE_SERVICE_ROLE_KEY: ci-service-role-placeholder
+          DATABASE_URL: postgres://postgres:ci-only-not-a-secret@localhost:5432/shuddhospell_ci
+
+  e2e:
+    name: playwright
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    needs: verify
+    # Only where a real Supabase project is configured. The flows sign in as a
+    # seeded learner, and without those secrets every spec skips — a job that
+    # always skips is noise, so it does not run at all.
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/dev' }}
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      - name: Install browsers
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Run the four flows
+        run: pnpm test:e2e
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          NEXT_PUBLIC_APP_URL: http://localhost:3000
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          E2E_LEARNER_EMAIL: ${{ secrets.E2E_LEARNER_EMAIL }}
+          E2E_LEARNER_PASSWORD: ${{ secrets.E2E_LEARNER_PASSWORD }}
+
+      - name: Two-user RLS check
+        run: pnpm security:rls
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          E2E_LEARNER_EMAIL: ${{ secrets.E2E_LEARNER_EMAIL }}
+          E2E_LEARNER_PASSWORD: ${{ secrets.E2E_LEARNER_PASSWORD }}
+          E2E_LEARNER_B_EMAIL: ${{ secrets.E2E_LEARNER_B_EMAIL }}
+          E2E_LEARNER_B_PASSWORD: ${{ secrets.E2E_LEARNER_B_PASSWORD }}
