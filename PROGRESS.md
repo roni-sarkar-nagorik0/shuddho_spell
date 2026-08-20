@@ -80,8 +80,8 @@ and 2. No feature starts without it. **Never read the file** — existence check
 
 ## NEXT
 
-> **Phase 12 · Exam and marketing screens — not started**
-> Phase 11 is closed and merged (12/12). Cut `feat/12-exam-marketing-screens` from `dev`.
+> **Phase 12 · Exam and marketing screens — in progress on `feat/12-exam-marketing-screens`**
+> Current: **F12.2** — `/exams/[code]` lobby and system check.
 >
 > **What Phase 11 leaves Phase 12**
 > - `useSaveExamAnswer` (F10.7) is the optimistic template for the exam runtime; writes never retry.
@@ -568,9 +568,9 @@ Branch `feat/11-learning-screens` · Status: `DONE` (12/12 built 2026-08-20; exi
 ---
 
 ## Phase 12 — Exam and marketing screens
-Branch `feat/12-exam-marketing-screens` · Status: `NOT STARTED`
+Branch `feat/12-exam-marketing-screens` · Status: `IN PROGRESS`
 
-- [ ] **F12.1** `/exams` catalogue
+- [x] **F12.1** (2026-08-20) `/exams` catalogue
   - Test: lock state and readiness reflect the server, not local state
 - [ ] **F12.2** `/exams/[code]` lobby + system check
   - Test: the begin button is gated on **both** the checkbox and the mic/audio check
@@ -631,6 +631,7 @@ Out of scope for this build. Do not start these, and do not leave stubs for them
 Newest first. One line per finished feature: date · id · what · test result.
 
 | Date | Feature | What landed | Tests |
+| 2026-08-20 | F12.1 | `/exams` — `GetExamCatalogue` produces the lock from the same `ExamEligibilityPolicy` `StartExamAttempt` consults; readiness only once unlocked; a live attempt always outranks starting a new one | typecheck + lint green (tests paused) |
 | 2026-08-20 | F11.12 | `/progress` — daily accuracy with gaps left open and dashed rules where each milestone was passed, 84-day activity heatmap, **both** mastery matrices from one component | typecheck + lint green (tests paused) |
 | 2026-08-20 | F11.11 | `/library` — keyset cursor pagination on unique `words.text` (new `gt`/`ilike` on `IDatabase`, `search` on `IWordRepository`), four filters, column control, CSV export with formula-injection guard, detail drawer | typecheck + lint green (tests paused) |
 | 2026-08-20 | F11.10 | `/weak-spots` — master-detail on `DataTable` + `Drawer`, schedule axis bucketed straight from `review_items.due_at` in the learner's timezone | typecheck + lint green (tests paused) |

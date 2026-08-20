@@ -38,6 +38,7 @@ import { GetProgramOverviewUseCase } from '@/modules/program/application/use-cas
 import { GetLearnerDashboardUseCase } from '@/modules/progress/application/use-cases/get-learner-dashboard';
 import { GetMasterySnapshotUseCase } from '@/modules/progress/application/use-cases/get-mastery-snapshot';
 import { GetWeeklyActivityUseCase } from '@/modules/progress/application/use-cases/get-weekly-activity';
+import { GetExamCatalogueUseCase } from '@/modules/exams/application/use-cases/get-exam-catalogue';
 import { GetNextExamUseCase } from '@/modules/exams/application/use-cases/get-next-exam';
 import { ListExamMilestonesUseCase } from '@/modules/exams/application/use-cases/list-exam-milestones';
 import { GetLibraryPageUseCase } from '@/modules/library/application/use-cases/get-library-page';
@@ -207,6 +208,16 @@ export function makeGetWeeklyActivity(c: IContainer): GetWeeklyActivityUseCase {
 
 export function makeGetNextExam(c: IContainer): GetNextExamUseCase {
   return new GetNextExamUseCase(c.learnerProfiles, c.examDefinitions, c.examAttempts, c.mastery);
+}
+
+export function makeGetExamCatalogue(c: IContainer): GetExamCatalogueUseCase {
+  return new GetExamCatalogueUseCase(
+    c.learnerProfiles,
+    c.examDefinitions,
+    c.examAttempts,
+    c.mastery,
+    c.clock,
+  );
 }
 
 export function makeListExamMilestones(c: IContainer): ListExamMilestonesUseCase {

@@ -1,6 +1,7 @@
 import 'server-only';
 import { cache } from 'react';
 import { type AccentPreference } from '@/modules/auth/domain/value-objects/accent-preference';
+import { type IExamCatalogue } from '@/modules/exams/application/dto/exam-catalogue';
 import { type IExamMilestone } from '@/modules/exams/application/dto/exam-milestone';
 import { type INextExam } from '@/modules/exams/application/dto/next-exam';
 import { type ILibraryPage } from '@/modules/library/application/dto/library-page';
@@ -24,6 +25,7 @@ import {
   makeGetProgramOverview,
   makeGetProgressSummary,
   makeGetMe,
+  makeGetExamCatalogue,
   makeGetLibraryPage,
   makeGetPhonemeStrips,
   makeGetPracticeQueue,
@@ -152,6 +154,11 @@ export const readPracticeQueue = cache(
 export const readWeakSpots = cache(
   async (userId: string): Promise<IWeakSpots> =>
     makeGetWeakSpots(createContainer(crypto.randomUUID())).execute({ userId }),
+);
+
+export const readExamCatalogue = cache(
+  async (userId: string): Promise<IExamCatalogue> =>
+    makeGetExamCatalogue(createContainer(crypto.randomUUID())).execute({ userId }),
 );
 
 export const readExamMilestones = cache(
