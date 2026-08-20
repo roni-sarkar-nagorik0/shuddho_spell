@@ -1,5 +1,9 @@
 import 'server-only';
 import { createGetMeHandler } from '@/modules/auth/presentation/handlers/get-me';
+import {
+  createCompleteOnboardingHandler,
+  createGetOnboardingHandler,
+} from '@/modules/auth/presentation/handlers/onboarding';
 import { createAutoSubmitCronHandler } from '@/modules/exams/presentation/handlers/auto-submit-cron';
 import { createGetActiveAttemptHandler } from '@/modules/exams/presentation/handlers/get-active-attempt';
 import { createGetAnswerReviewHandler } from '@/modules/exams/presentation/handlers/get-answer-review';
@@ -34,6 +38,7 @@ import { createSubmitReviewAttemptHandler } from '@/modules/review/presentation/
 import { createContainer } from './container';
 import {
   makeAdvanceLessonStage,
+  makeCompleteOnboarding,
   makeCompleteLessonSession,
   makeGetDueReviewItems,
   makeGetLibraryPage,
@@ -86,6 +91,14 @@ function container(): ReturnType<typeof createContainer> {
 }
 
 export const getMeHandler = createGetMeHandler(() => makeGetMe(container()));
+
+export const getOnboardingHandler = createGetOnboardingHandler(() =>
+  makeCompleteOnboarding(container()),
+);
+
+export const completeOnboardingHandler = createCompleteOnboardingHandler(() =>
+  makeCompleteOnboarding(container()),
+);
 
 export const getProgramHandler = createGetProgramHandler(() =>
   makeGetProgramOverview(container()),

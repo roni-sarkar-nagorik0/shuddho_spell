@@ -80,8 +80,18 @@ and 2. No feature starts without it. **Never read the file** — existence check
 
 ## NEXT
 
-> **Phase 12 · Exam and marketing screens — in progress on `feat/12-exam-marketing-screens`**
-> Current: **F12.12** — `/onboarding`.
+> **Phase 13 · Hardening and delivery — not started**
+> Phase 12 is closed and merged (12/12). Cut `feat/13-hardening` from an up-to-date `dev`.
+>
+> **What Phase 12 leaves Phase 13**
+> - Lighthouse has never been run. F12.10's ≥95/100 is unproven, and D67 records that static
+>   rendering is blocked by the root layout's cookie reads.
+> - `/exams/diagnostic` is linked from onboarding and is a lobby route like any other code — it
+>   works if a `diagnostic` definition is seeded, and nothing verifies that it is.
+> - Certificate issuance is in `ExamSubmissionService` and has never been exercised: nothing in
+>   this run has passed a final exam against a live database.
+> - The whole of Phases 10–12 is typecheck-and-lint clean and **has not been run in a browser**.
+> - `pnpm test` has not been run since the pause began. The 25 existing tests may be red.
 >
 > **What Phase 11 leaves Phase 12**
 > - `useSaveExamAnswer` (F10.7) is the optimistic template for the exam runtime; writes never retry.
@@ -568,7 +578,7 @@ Branch `feat/11-learning-screens` · Status: `DONE` (12/12 built 2026-08-20; exi
 ---
 
 ## Phase 12 — Exam and marketing screens
-Branch `feat/12-exam-marketing-screens` · Status: `IN PROGRESS`
+Branch `feat/12-exam-marketing-screens` · Status: `DONE` (12/12 built 2026-08-20; exit gate not run — paused by standing instruction 2026-08-19)
 
 - [x] **F12.1** (2026-08-20) `/exams` catalogue
   - Test: lock state and readiness reflect the server, not local state
@@ -592,7 +602,7 @@ Branch `feat/12-exam-marketing-screens` · Status: `IN PROGRESS`
   - Test: Server Component, statically rendered, **Lighthouse ≥95 performance / 100 accessibility** — report attached
 - [x] **F12.11** (2026-08-20) Inline dictation demo on the hero
   - Test: it actually works, unauthenticated
-- [ ] **F12.12** `/onboarding`
+- [x] **F12.12** (2026-08-20) `/onboarding`
   - Test: goal → minutes → track → reminder time → diagnostic; resumable if abandoned
 
 ---
@@ -631,6 +641,7 @@ Out of scope for this build. Do not start these, and do not leave stubs for them
 Newest first. One line per finished feature: date · id · what · test result.
 
 | Date | Feature | What landed | Tests |
+| 2026-08-20 | F12.12 | `/onboarding` — five steps, resumable from `localStorage` **and** from the stored profile; `CompleteOnboarding` refuses to rewrite a finished profile; reminder written through the preferences endpoint that owns the field | typecheck + lint green (tests paused) |
 | 2026-08-20 | F12.11 | Inline dictation demo — the **real** `LetterTiles` on the hero, unauthenticated, three real corpus words each carrying a real Bengali-speaker error; the only thing in the product that grades in the browser, and it says so | typecheck + lint green (tests paused) |
 | 2026-08-20 | F12.10 | `/` — dark hero, the 8-row Bengali-speaker error table, the real 28-day syllabus with milestone rows, session-timing band, pricing, FAQ, footer. Server Component with **no data reads**. Lighthouse not run; static rendering blocked by the root layout's cookie reads — both stated in the run report | typecheck + lint green (tests paused) |
 | 2026-08-20 | F12.9 | Certificates end to end — entity, `VerificationCode`, repository, owner and public use cases, a rate-limited `auth: 'public'` verify route, `/certificate/[id]` and an unauthenticated `/verify/[code]`; issuance moved into the shared submission path so the cron backstop issues too | typecheck + lint green (tests paused) |

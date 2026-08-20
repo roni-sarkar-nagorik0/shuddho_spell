@@ -38,6 +38,7 @@ import { GetProgramOverviewUseCase } from '@/modules/program/application/use-cas
 import { GetLearnerDashboardUseCase } from '@/modules/progress/application/use-cases/get-learner-dashboard';
 import { GetMasterySnapshotUseCase } from '@/modules/progress/application/use-cases/get-mastery-snapshot';
 import { GetWeeklyActivityUseCase } from '@/modules/progress/application/use-cases/get-weekly-activity';
+import { CompleteOnboardingUseCase } from '@/modules/auth/application/use-cases/complete-onboarding';
 import { GetCertificateUseCase } from '@/modules/certificates/application/use-cases/get-certificate';
 import { VerifyCertificateUseCase } from '@/modules/certificates/application/use-cases/verify-certificate';
 import { GetExamCatalogueUseCase } from '@/modules/exams/application/use-cases/get-exam-catalogue';
@@ -210,6 +211,10 @@ export function makeGetWeeklyActivity(c: IContainer): GetWeeklyActivityUseCase {
 
 export function makeGetNextExam(c: IContainer): GetNextExamUseCase {
   return new GetNextExamUseCase(c.learnerProfiles, c.examDefinitions, c.examAttempts, c.mastery);
+}
+
+export function makeCompleteOnboarding(c: IContainer): CompleteOnboardingUseCase {
+  return new CompleteOnboardingUseCase(c.learnerProfiles, c.clock);
 }
 
 export function makeGetCertificate(c: IContainer): GetCertificateUseCase {

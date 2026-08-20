@@ -419,8 +419,16 @@ Status values: `NOT STARTED` · `IN PROGRESS` · `BLOCKED — <reason>` · `DONE
 ## Phase 12 — Exam and marketing screens
 
 - **Branch:** `feat/12-exam-marketing-screens` (from `dev`)
-- **Status:** NOT STARTED
-- **Completed:**
+- **Status:** DONE
+- **Completed:** 2026-08-20 — F12.1 through F12.12, all twelve built and merged into `dev`.
+  **Exit gate not run — paused by standing instruction 2026-08-19.** Four of its five items
+  were built to deliberately: the countdown is anchored to the server's `remainingSeconds` and
+  re-anchored on every response and on visibility change; it turns `secondary-500` at 5:00 and
+  `tertiary-500` at 0:60, each announced once through a live region; `beforeunload` and a
+  `popstate` guard are active for the life of an attempt; `/login` still contains exactly one
+  button. The fifth — a Lighthouse report for `/` — **was not produced**: Lighthouse has not
+  been run in this environment, and ARCHITECTURE.md D67 records that static rendering is
+  blocked by the root layout's cookie reads regardless.
 - **Reads:** `08-exam-engine`, `13-frontend`, `12-design-system`
 - **Deliverables:** `/exams` · `/exams/[code]` (lobby with system check, gated begin button) ·
   `/exams/attempt/[id]` (primary-900 runtime, no navigation out, server-driven countdown with local

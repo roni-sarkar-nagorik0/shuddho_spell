@@ -36,6 +36,20 @@ export interface ILearnerProfileProps {
   readonly onboardingCompletedAt: Date | null;
 }
 
+/**
+ * What onboarding actually decides.
+ *
+ * The reminder time is **not** here on purpose: it lives in
+ * `notification_preferences`, not on the profile, and 005 owns it. Copying it
+ * onto the profile so one screen could write it in one call would create a
+ * second home for the same fact.
+ */
+export interface IOnboardingChoices {
+  readonly track: Track;
+  readonly dailyMinutes: number;
+  readonly accentPreference: AccentPreference;
+}
+
 /** The learner behind a session. */
 export class LearnerProfile {
   readonly id: string;
@@ -97,6 +111,27 @@ export class LearnerProfile {
    * track rather than walking off it — 003's `current_day_index` check would
    * reject day 29, and finishing is not an error worth throwing over.
    */
+  /**
+   * Onboarding, finished.
+   *
+   * A new instance rather than a mutation, like `advanceDay` — every entity
+   * property in this project is `readonly` and a state change returns a copy.
+   *
+   * `onboardingCompletedAt` is what makes this idempotent in effect: the use
+   * case above refuses to run twice, and 011 treats a non-null value as the
+   * signal that the learner has chosen. Re-running it would silently rewrite
+   * choices the learner made and then forgot they made.
+   */
+  completeOnboarding(choices: IOnboardingChoices, at: Date): LearnerProfile {
+    return new LearnerProfile({
+      ...this.toProps(),
+      track: choices.track,
+      dailyMinutes: choices.dailyMinutes,
+      accentPreference: choices.accentPreference,
+      onboardingCompletedAt: at,
+    });
+  }
+
   advanceDay(): LearnerProfile {
     if (this.hasFinishedProgram()) {
       return this;
