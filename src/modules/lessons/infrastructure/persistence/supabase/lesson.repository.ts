@@ -26,8 +26,8 @@ export class SupabaseLessonRepository implements ILessonRepository {
 
   /**
    * The unfinished session for a day. `completed_at is null` is expressed as an
-   * equality against null, which is what `IDatabase` offers and what
-   * PostgREST turns into `is.null`.
+   * equality against null, which is what `IDatabase` offers; the adapter is what
+   * turns it into `is.null`, because PostgREST does not.
    */
   async findOpenForDay(profileId: string, dayIndex: DayIndex): Promise<LessonSession | null> {
     return toLessonSession(

@@ -7,7 +7,11 @@ import { Glyph } from '@/components/icons/glyph';
 import { StageTracker, type TrackerStage } from '@/components/lesson/stage-tracker';
 import { MonoValue } from '@/components/primitives/mono-value';
 import { apiFetch } from '@/lib/api/client';
-import { lessonSessionSchema, type LessonSessionView } from './lesson-contracts';
+import {
+  lessonSessionSchema,
+  lessonStageMoveSchema,
+  type LessonSessionView,
+} from './lesson-contracts';
 import { BuildStage, type IBuildSentence } from './build-stage';
 import { DictateStage } from './dictate-stage';
 import { LearnStage, type ILearnWord } from './learn-stage';
@@ -119,10 +123,16 @@ export function LessonRuntime({
 
     void apiFetch(`/api/v1/lessons/sessions/${session.sessionId}/stage`, {
       method: 'PATCH',
-      schema: lessonSessionSchema,
+      schema: lessonStageMoveSchema,
       body: { toStage },
     })
-      .then(setSession)
+      // Merged, not replaced: the reply carries the stage and the session id and
+      // says nothing about the day or the counters, because the move did not
+      // touch them. Replacing would blank the header's correct-of-total on every
+      // advance.
+      .then((moved) => {
+        setSession((current) => (current === null ? current : { ...current, ...moved }));
+      })
       // The server refused the move. Say so and stay put — the alternative is a
       // tracker showing a stage the database does not agree the learner is on.
       .catch(() => { setError('That stage could not be started. The order is fixed.'); })

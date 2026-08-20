@@ -28,6 +28,27 @@ export const lessonSessionSchema = z.object({
 
 export type LessonSessionView = z.infer<typeof lessonSessionSchema>;
 
+/**
+ * What `PATCH /sessions/:id/stage` answers with — and it is **not** a session.
+ *
+ * `AdvanceLessonStageUseCase` returns `{ sessionId, stage }`, because a stage
+ * move changes the stage and nothing else: the day is the day and the counters
+ * belong to the attempts. Validating that reply against `lessonSessionSchema`
+ * is what the runtime used to do, and the three fields it was missing made
+ * every successful advance look like a refusal — a 200 in the server log, "that
+ * stage could not be started" on the screen, and a learner stuck on Review with
+ * nothing wrong at either end.
+ *
+ * So this mirrors the use case's own output, which is the rule this file states
+ * at the top and the one that was broken.
+ */
+export const lessonStageMoveSchema = z.object({
+  sessionId: z.string(),
+  stage: z.enum(LESSON_STAGE_VALUES),
+});
+
+export type LessonStageMoveView = z.infer<typeof lessonStageMoveSchema>;
+
 /*
  * The review schemas used to live here. They moved to
  * `components/lesson/review-contracts.ts` when `/practice` needed the same
