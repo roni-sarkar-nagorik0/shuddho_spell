@@ -40,6 +40,34 @@ export const submitAttemptBodySchema = z.discriminatedUnion('mode', [
     latencyMs: z.number().int().min(0).nullable(),
   }),
   z.object({
+    mode: z.literal('pronunciation'),
+    wordId: z.string().uuid(),
+    /**
+     * The transcript, and **nothing but the transcript**.
+     *
+     * There is no audio field here and there must never be one:
+     * `07-speech-scoring.md` makes "the server never receives audio" a hard
+     * constraint, and a schema is where a constraint like that is either true
+     * or merely intended. The browser transcribes with the Web Speech API and
+     * posts the text; the score is still computed on the server, because a
+     * client-computed score is a client-editable score.
+     */
+    transcript: z.string().max(500),
+    /**
+     * An observed pronunciation, when the client has one — a phonetic
+     * self-assessment, or an acoustic model later. Untrusted exactly as the
+     * transcript is untrusted, and no more: it is an observation, not an
+     * identity and not a score.
+     */
+    heardPhonemes: z
+      .object({
+        phonemes: z.array(z.string().min(1).max(8)).max(40),
+        stressIndex: z.number().int().min(0).max(39).nullable(),
+      })
+      .nullable(),
+    latencyMs: z.number().int().min(0).nullable(),
+  }),
+  z.object({
     mode: z.literal('construction'),
     sentenceItemId: z.string().uuid(),
     submittedValue: z.string().min(1).max(500),

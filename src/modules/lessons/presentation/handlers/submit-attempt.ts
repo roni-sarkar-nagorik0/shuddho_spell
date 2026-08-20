@@ -3,6 +3,7 @@ import { ApiError } from '@/lib/api/problem';
 import { withApi, type IRouteContext } from '@/lib/api/with-api';
 import { type SubmitConstructionAttemptUseCase } from '../../application/use-cases/submit-construction-attempt';
 import { type SubmitDictationAttemptUseCase } from '../../application/use-cases/submit-dictation-attempt';
+import { type SubmitPronunciationAttemptUseCase } from '../../application/use-cases/submit-pronunciation-attempt';
 import {
   sessionParamsSchema,
   submitAttemptBodySchema,
@@ -13,6 +14,7 @@ import { toApiError } from './lesson-errors';
 
 export interface ISubmitAttemptUseCases {
   readonly dictation: SubmitDictationAttemptUseCase;
+  readonly pronunciation: SubmitPronunciationAttemptUseCase;
   readonly construction: SubmitConstructionAttemptUseCase;
 }
 
@@ -47,6 +49,15 @@ export function createSubmitAttemptHandler(
               sessionId: params.id,
               wordId: body.wordId,
               submittedValue: body.submittedValue,
+              latencyMs: body.latencyMs,
+            });
+          case 'pronunciation':
+            return await cases.pronunciation.execute({
+              userId: user.userId,
+              sessionId: params.id,
+              wordId: body.wordId,
+              transcript: body.transcript,
+              heardPhonemes: body.heardPhonemes,
               latencyMs: body.latencyMs,
             });
           case 'construction':

@@ -65,6 +65,11 @@ export interface IPronunciationDiagnosis {
 
 export interface IPronunciationScore {
   readonly scorePercent: number;
+  /**
+   * One entry per **expected** sound, in the order the word says them — so the
+   * caller can line them up against the phoneme ids it already resolved and
+   * write per-phoneme mastery without the scorer ever knowing an id exists.
+   */
   readonly perPhoneme: readonly IPhonemeScore[];
   readonly diagnoses: readonly IPronunciationDiagnosis[];
 }

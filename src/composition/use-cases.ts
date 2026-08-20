@@ -6,6 +6,7 @@ import { CompleteLessonSessionUseCase } from '@/modules/lessons/application/use-
 import { StartLessonSessionUseCase } from '@/modules/lessons/application/use-cases/start-lesson-session';
 import { SubmitConstructionAttemptUseCase } from '@/modules/lessons/application/use-cases/submit-construction-attempt';
 import { SubmitDictationAttemptUseCase } from '@/modules/lessons/application/use-cases/submit-dictation-attempt';
+import { SubmitPronunciationAttemptUseCase } from '@/modules/lessons/application/use-cases/submit-pronunciation-attempt';
 import { GetProgramDayUseCase } from '@/modules/program/application/use-cases/get-program-day';
 import { GetProgramOverviewUseCase } from '@/modules/program/application/use-cases/get-program-overview';
 import { GetLearnerDashboardUseCase } from '@/modules/progress/application/use-cases/get-learner-dashboard';
@@ -76,6 +77,30 @@ export function makeSubmitDictationAttempt(c: IContainer): SubmitDictationAttemp
     c.reviewItems,
     c.mastery,
     c.errorTagger,
+    c.reviewPolicy,
+    c.clock,
+    c.ids,
+    c.lessonWrites,
+  );
+}
+
+/**
+ * The longest argument list in the file, and the reason is visible in it: this
+ * is the only use case that reads the stored G2P **and** scores speech **and**
+ * writes the phoneme axis of the mastery matrix. Shortening it with a service
+ * locator would hide exactly the dependencies worth seeing.
+ */
+export function makeSubmitPronunciationAttempt(c: IContainer): SubmitPronunciationAttemptUseCase {
+  return new SubmitPronunciationAttemptUseCase(
+    c.learnerProfiles,
+    c.lessons,
+    c.program,
+    c.words,
+    c.wordPhonemes,
+    c.phonemes,
+    c.reviewItems,
+    c.mastery,
+    c.speechScorer,
     c.reviewPolicy,
     c.clock,
     c.ids,

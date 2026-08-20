@@ -23,7 +23,16 @@ const PHONEME_WEIGHT = 0.5;
  * has no reason to fix anything.
  */
 const NEAR_MISS_FLOOR = 65;
-const NEAR_MISS_CEILING = 90;
+
+/**
+ * Exported because it is also the pass mark. Above this band there is no named
+ * error left to name — that is what the ceiling *means* — so "was the word said
+ * correctly" has an answer already and does not need a second threshold
+ * invented beside it.
+ */
+export const NAMED_NEAR_MISS_CEILING = 90;
+
+const NEAR_MISS_CEILING = NAMED_NEAR_MISS_CEILING;
 
 const PERFECT = 100;
 

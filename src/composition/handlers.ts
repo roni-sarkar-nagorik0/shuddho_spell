@@ -21,6 +21,7 @@ import {
   makeStartLessonSession,
   makeSubmitConstructionAttempt,
   makeSubmitDictationAttempt,
+  makeSubmitPronunciationAttempt,
   makeSubmitReviewAttempt,
 } from './use-cases';
 
@@ -60,12 +61,13 @@ export const advanceLessonStageHandler = createAdvanceStageHandler(() =>
 );
 
 export const submitLessonAttemptHandler = createSubmitAttemptHandler(() => {
-  // One container for both, so the two use cases in this request share a
-  // database handle rather than opening two.
+  // One container for all three, so the use cases in this request share a
+  // database handle rather than opening three.
   const c = container();
 
   return {
     dictation: makeSubmitDictationAttempt(c),
+    pronunciation: makeSubmitPronunciationAttempt(c),
     construction: makeSubmitConstructionAttempt(c),
   };
 });
