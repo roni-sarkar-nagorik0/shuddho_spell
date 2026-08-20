@@ -63,6 +63,21 @@ export class LocalDate {
     return Math.round((to - from) / MS_PER_DAY);
   }
 
+  /**
+   * The calendar day `count` days earlier.
+   *
+   * UTC midnight arithmetic for the same reason `daysUntil` uses it: these are
+   * calendar days, and doing the subtraction in a zone with a DST transition in
+   * the window would land on the same date twice or skip one. Added for
+   * F11.1's seven-day activity window.
+   */
+  minusDays(count: number): LocalDate {
+    const from = Date.parse(`${this.value}T00:00:00Z`);
+    const moved = new Date(from - count * MS_PER_DAY);
+
+    return LocalDate.of(moved.toISOString().slice(0, 10));
+  }
+
   isBefore(other: LocalDate): boolean {
     return this.value < other.value;
   }

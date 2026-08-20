@@ -37,6 +37,8 @@ import { GetProgramDayUseCase } from '@/modules/program/application/use-cases/ge
 import { GetProgramOverviewUseCase } from '@/modules/program/application/use-cases/get-program-overview';
 import { GetLearnerDashboardUseCase } from '@/modules/progress/application/use-cases/get-learner-dashboard';
 import { GetMasterySnapshotUseCase } from '@/modules/progress/application/use-cases/get-mastery-snapshot';
+import { GetWeeklyActivityUseCase } from '@/modules/progress/application/use-cases/get-weekly-activity';
+import { GetNextExamUseCase } from '@/modules/exams/application/use-cases/get-next-exam';
 import { GetProgressSummaryUseCase } from '@/modules/progress/application/use-cases/get-progress-summary';
 import { GetDueReviewItemsUseCase } from '@/modules/review/application/use-cases/get-due-review-items';
 import { SubmitReviewAttemptUseCase } from '@/modules/review/application/use-cases/submit-review-attempt';
@@ -192,6 +194,14 @@ export function makeGetProgressSummary(c: IContainer): GetProgressSummaryUseCase
     c.mastery,
     c.clock,
   );
+}
+
+export function makeGetWeeklyActivity(c: IContainer): GetWeeklyActivityUseCase {
+  return new GetWeeklyActivityUseCase(c.learnerProfiles, c.attempts, c.clock);
+}
+
+export function makeGetNextExam(c: IContainer): GetNextExamUseCase {
+  return new GetNextExamUseCase(c.learnerProfiles, c.examDefinitions, c.examAttempts, c.mastery);
 }
 
 export function makeGetMasterySnapshot(c: IContainer): GetMasterySnapshotUseCase {

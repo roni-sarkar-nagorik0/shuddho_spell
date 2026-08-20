@@ -1,9 +1,24 @@
 import 'server-only';
 import { cache } from 'react';
+import { type INextExam } from '@/modules/exams/application/dto/next-exam';
+import { type IProgramDayDetail } from '@/modules/program/application/dto/program-day-detail';
+import { type IProgramOverview } from '@/modules/program/application/dto/program-overview';
 import { type ILearnerDashboard } from '@/modules/progress/application/dto/learner-dashboard';
+import { type IMasterySnapshot } from '@/modules/progress/application/dto/mastery-snapshot';
 import { type IProgressSummary } from '@/modules/progress/application/dto/progress-summary';
+import { type IWeeklyActivity } from '@/modules/progress/application/dto/weekly-activity';
+import { type IDueReviewQueue } from '@/modules/review/application/dto/due-review-item';
 import { createContainer } from './container';
-import { makeGetLearnerDashboard, makeGetProgressSummary } from './use-cases';
+import {
+  makeGetDueReviewItems,
+  makeGetLearnerDashboard,
+  makeGetMasterySnapshot,
+  makeGetNextExam,
+  makeGetProgramDay,
+  makeGetProgramOverview,
+  makeGetProgressSummary,
+  makeGetWeeklyActivity,
+} from './use-cases';
 
 /**
  * The read path for Server Components.
@@ -35,3 +50,43 @@ export const readLearnerDashboard = cache(
 export async function readProgressSummary(userId: string): Promise<IProgressSummary> {
   return makeGetProgressSummary(createContainer(crypto.randomUUID())).execute({ userId });
 }
+
+/**
+ * The rest of the read path, added by Phase 11 as each screen needed it.
+ *
+ * All memoised per request for the same reason as the dashboard: the shell's
+ * layout, the page and any panel that shares a source run inside one render,
+ * and none of them should cost a second query. Each still calls the same
+ * factory `src/composition/handlers.ts` calls — one implementation, two
+ * callers.
+ */
+export const readProgramOverview = cache(
+  async (userId: string): Promise<IProgramOverview> =>
+    makeGetProgramOverview(createContainer(crypto.randomUUID())).execute({ userId }),
+);
+
+export const readProgramDay = cache(
+  async (userId: string, dayIndex: number): Promise<IProgramDayDetail> =>
+    makeGetProgramDay(createContainer(crypto.randomUUID())).execute({ userId, dayIndex }),
+);
+
+export const readMasterySnapshot = cache(
+  async (userId: string): Promise<IMasterySnapshot> =>
+    makeGetMasterySnapshot(createContainer(crypto.randomUUID())).execute({ userId }),
+);
+
+export const readWeeklyActivity = cache(
+  async (userId: string): Promise<IWeeklyActivity> =>
+    makeGetWeeklyActivity(createContainer(crypto.randomUUID())).execute({ userId }),
+);
+
+/** The cap is the use case's own product decision (`06-spaced-repetition.md`), not a page's. */
+export const readDueReviews = cache(
+  async (userId: string): Promise<IDueReviewQueue> =>
+    makeGetDueReviewItems(createContainer(crypto.randomUUID())).execute({ userId }),
+);
+
+export const readNextExam = cache(
+  async (userId: string): Promise<INextExam | null> =>
+    makeGetNextExam(createContainer(crypto.randomUUID())).execute({ userId }),
+);

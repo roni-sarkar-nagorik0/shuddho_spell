@@ -1,65 +1,293 @@
+import Link from 'next/link';
+import { type ReactElement } from 'react';
+import { MasteryMatrix, type IMasteryMatrixCell } from '@/components/data/mastery-matrix';
 import { PushPermissionBanner } from '@/components/notifications/push-permission-banner';
-import { publicEnv } from '@/lib/env.public';
-import { readLearnerDashboard } from '@/composition/reads';
+import { HeatCell } from '@/components/primitives/heat-cell';
+import { MonoValue } from '@/components/primitives/mono-value';
+import { PanelHeader } from '@/components/primitives/panel-header';
+import { Sparkline } from '@/components/primitives/sparkline';
+import { StatCell } from '@/components/primitives/stat-cell';
+import { StatusBadge } from '@/components/primitives/status-badge';
+import {
+  readDueReviews,
+  readLearnerDashboard,
+  readMasterySnapshot,
+  readNextExam,
+  readProgressSummary,
+  readWeeklyActivity,
+} from '@/composition/reads';
 import { requireUser } from '@/lib/auth/current-user';
+import { publicEnv } from '@/lib/env.public';
+import { ReviewTable } from './review-table';
 
 /**
- * The dashboard, read **directly through the composition root**.
+ * The dashboard — one question, "what should I do now", answered above the
+ * fold.
  *
- * This page never calls the app's own HTTP API, and no page here may — the
- * sweep in `src/composition/one-implementation.test.ts` enforces it, and this
- * comment is worded to avoid tripping it, exactly as F3.11 had to.
+ * **Six reads, issued together, zero N+1.** Each is one use case that returns
+ * its whole answer in one shape; none of them is called per row, and the six
+ * run in a single `Promise.all` rather than serially. That is the acceptance
+ * criterion for this feature and it is a property of the read path, not of the
+ * markup: `readLearnerDashboard` and `readProgressSummary` both need the
+ * profile, and React's `cache` in `reads.ts` means the second one does not
+ * fetch it again.
  *
- * The page and `GET /api/v1/progress/summary` run the same
- * `GetLearnerDashboard` use case. The endpoint exists for TanStack Query and
- * any future client, not as this page's data source: going over HTTP would add
- * a network hop, a serialisation round trip and a second place for the shape to
- * be wrong.
+ * The page never calls this application's own HTTP API. It goes through the
+ * composition root to the same use cases the handlers use — the sweep in
+ * `src/composition/one-implementation.test.ts` enforces it.
  *
- * Phase 10 builds the real shell and the components. This renders the numbers
- * the use case already returns, in the plainest possible markup, so the read
- * path is real and provable now rather than asserted and built later.
+ * Zero-data is a first-class state throughout, not an afterthought: a learner
+ * on day one has no attempts, no mastery rows, no streak and nothing due, and
+ * every panel below says so in a sentence rather than rendering a 0 that reads
+ * as failure.
  */
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-export default async function DashboardPage() {
+function toMatrixCells(
+  cells: readonly {
+    readonly dimensionId: string;
+    readonly label: string;
+    readonly attempts: number;
+    readonly correct: number;
+    readonly accuracy: number;
+    readonly isWeakness: boolean;
+  }[],
+): readonly IMasteryMatrixCell[] {
+  return cells.map((cell) => ({
+    ...cell,
+    drillHref: `/practice?focus=${encodeURIComponent(cell.dimensionId)}`,
+  }));
+}
+
+export default async function DashboardPage(): Promise<ReactElement> {
   const user = await requireUser();
-  const dashboard = await readLearnerDashboard(user.userId);
+
+  const [dashboard, summary, mastery, activity, reviews, nextExam] = await Promise.all([
+    readLearnerDashboard(user.userId),
+    readProgressSummary(user.userId),
+    readMasterySnapshot(user.userId),
+    readWeeklyActivity(user.userId),
+    readDueReviews(user.userId),
+    readNextExam(user.userId),
+  ]);
+
+  const accuracyPercent = Math.round(summary.overallAccuracy);
+  const hasAttempts = summary.itemsReviewed > 0;
 
   return (
-    <section className="col-span-12">
+    <>
       {/*
         Inline, above the content, after the page has rendered — never a modal
         on load. The key is passed down because a Client Component importing the
         env schema would pull it into the bundle; it is public either way.
       */}
-      <PushPermissionBanner vapidPublicKey={publicEnv.NEXT_PUBLIC_VAPID_PUBLIC_KEY} />
+      <div className="col-span-12">
+        <PushPermissionBanner vapidPublicKey={publicEnv.NEXT_PUBLIC_VAPID_PUBLIC_KEY} />
+      </div>
 
-      <h1 className="mt-8 text-2xl font-semibold">{dashboard.displayName}</h1>
+      <header className="col-span-12 flex items-baseline gap-3">
+        <h1 className="font-display text-xl tracking-tight text-primary-900">
+          {dashboard.displayName}
+        </h1>
+        <span className="num text-muted">
+          Day {dashboard.currentDayIndex} of {dashboard.totalDays}
+        </span>
+      </header>
 
-      <dl className="mt-8 grid grid-cols-2 gap-6">
-        <div>
-          <dt className="text-sm">Day</dt>
-          <dd className="text-xl">
-            {dashboard.currentDayIndex} of {dashboard.totalDays}
-          </dd>
+      {/* Four stat panels. */}
+      <section className="card col-span-12 grid grid-cols-2 gap-6 p-4 md:grid-cols-4">
+        <StatCell
+          label="Day"
+          note={dashboard.hasFinishedProgram ? 'Programme complete' : `${String(summary.completedDays)} finished`}
+          value={dashboard.currentDayIndex}
+        />
+        <StatCell
+          label="Current streak"
+          note={dashboard.streakIsAlive ? `Best ${String(summary.longestStreak)}` : 'Broken — start it again today'}
+          unit="days"
+          value={dashboard.streakIsAlive ? summary.currentStreak : 0}
+        />
+        <StatCell
+          label="Accuracy"
+          note={hasAttempts ? `${String(summary.itemsReviewed)} answers` : 'Nothing measured yet'}
+          {...(hasAttempts ? { unit: '%' } : {})}
+          value={hasAttempts ? accuracyPercent : '—'}
+        />
+        <StatCell
+          label="Mastered"
+          note={`${String(dashboard.dueReviewCount)} due for review`}
+          value={summary.masteredItems}
+        />
+      </section>
+
+      {/* Today's session. The one card carrying the day's focus takes the accent rule. */}
+      <section className="card card-accent col-span-12 lg:col-span-7">
+        <PanelHeader
+          title="Today"
+          {...(dashboard.today === null
+            ? {}
+            : { note: `${String(dashboard.today.estimatedMinutes)} min` })}
+        />
+        <div className="flex flex-wrap items-center gap-4 p-4">
+          {dashboard.today === null ? (
+            <p className="text-muted">
+              {dashboard.hasFinishedProgram
+                ? 'You have finished the programme. Keep the reviews going.'
+                : 'Nothing is scheduled. Start the next day from the programme.'}
+            </p>
+          ) : (
+            <>
+              <div className="min-w-0 flex-1">
+                <p className="font-display text-base tracking-tight text-primary-900">
+                  {dashboard.today.title}
+                </p>
+                <p className="mt-1 text-muted">
+                  {dashboard.today.inProgress
+                    ? `Part-finished — you stopped at the ${dashboard.today.stage ?? 'first'} stage.`
+                    : 'Not started.'}
+                </p>
+              </div>
+              <StatusBadge
+                label={dashboard.today.inProgress ? 'In progress' : 'Ready'}
+                tone={dashboard.today.inProgress ? 'active' : 'due'}
+              />
+              <Link
+                className="h-8 rounded-control bg-primary-900 px-3 py-1.5 text-surface"
+                href={`/lesson/${String(dashboard.today.dayIndex)}`}
+              >
+                {dashboard.today.inProgress ? 'Continue' : 'Start'}
+              </Link>
+            </>
+          )}
         </div>
-        <div>
-          <dt className="text-sm">Streak</dt>
-          <dd className="text-xl">
-            {dashboard.streakIsAlive ? dashboard.currentStreak : 0}
-          </dd>
+      </section>
+
+      {/* Next exam, with readiness rather than encouragement. */}
+      <section className="card col-span-12 lg:col-span-5">
+        <PanelHeader title="Next exam" />
+        <div className="p-4">
+          {nextExam === null ? (
+            <p className="text-muted">Every exam passed. Your certificate is on the exams page.</p>
+          ) : (
+            <>
+              <p className="font-display text-base tracking-tight text-primary-900">
+                {nextExam.title}
+              </p>
+
+              <dl className="mt-3 grid grid-cols-2 gap-3">
+                <div>
+                  <dt className="label">{nextExam.isUnlocked ? 'Unlocked' : 'Unlocks'}</dt>
+                  <dd>
+                    {nextExam.isUnlocked ? (
+                      <span className="text-mastered">Open now</span>
+                    ) : (
+                      <MonoValue unit="days away" value={nextExam.daysUntilUnlock} />
+                    )}
+                  </dd>
+                </div>
+                <div>
+                  <dt className="label">Predicted</dt>
+                  <dd>
+                    {nextExam.predictedScorePercent === null ? (
+                      <span className="text-muted">Not yet</span>
+                    ) : (
+                      <span className="flex items-baseline gap-2">
+                        <MonoValue unit="%" value={Math.round(nextExam.predictedScorePercent)} />
+                        <StatusBadge
+                          label={nextExam.likelyToPass === true ? 'Likely pass' : 'Not ready'}
+                          tone={nextExam.likelyToPass === true ? 'passed' : 'failed'}
+                        />
+                      </span>
+                    )}
+                  </dd>
+                </div>
+              </dl>
+
+              <Link
+                className="mt-4 inline-flex h-8 items-center rounded-control border border-primary-900 px-3 text-primary-900"
+                href={`/exams/${nextExam.code}`}
+              >
+                Open the lobby
+              </Link>
+            </>
+          )}
         </div>
-        <div>
-          <dt className="text-sm">Reviews due</dt>
-          <dd className="text-xl">{dashboard.dueReviewCount}</dd>
+      </section>
+
+      {/* Time on task, this week. */}
+      <section className="card col-span-12 lg:col-span-5">
+        <PanelHeader
+          note={`${String(activity.totalMinutes)} min · ${String(activity.totalAttempts)} answers`}
+          title="This week"
+        />
+        <div className="flex flex-col gap-3 p-4">
+          {activity.totalAttempts === 0 ? (
+            <p className="text-muted">No answers in the last seven days.</p>
+          ) : (
+            <Sparkline
+              className="text-primary-900"
+              height={32}
+              label={`Minutes a day over the last seven days, ${String(activity.totalMinutes)} in total`}
+              values={activity.days.map((day) => day.minutes)}
+              width={240}
+            />
+          )}
+
+          {/* The bars are a chart; the row beneath is the same data as squares
+              with their accuracy in words, so the reading survives greyscale. */}
+          <ul className="flex gap-1">
+            {activity.days.map((day) => (
+              <li className="flex flex-col items-center gap-1" key={day.date}>
+                <HeatCell accuracy={day.accuracy} label={day.date} size="sm" />
+                <span className="num text-[9px] text-muted">{day.minutes}</span>
+              </li>
+            ))}
+          </ul>
         </div>
-        <div>
-          <dt className="text-sm">Today</dt>
-          <dd className="text-xl">{dashboard.today?.title ?? 'Nothing scheduled'}</dd>
+      </section>
+
+      {/* Due reviews. */}
+      <section className="col-span-12 lg:col-span-7">
+        <ReviewTable
+          rows={reviews.items.map((item) => ({
+            reviewItemId: item.reviewItemId,
+            prompt: item.prompt,
+            itemType: item.itemType,
+            daysOverdue: item.daysOverdue,
+            lastErrorTags: item.lastErrorTags,
+          }))}
+        />
+        {reviews.totalDue > reviews.items.length && (
+          <p className="num mt-1 text-[11px] text-muted">
+            Showing {reviews.items.length} of {reviews.totalDue} due. The rest surface tomorrow.
+          </p>
+        )}
+      </section>
+
+      {/* The phoneme matrix — the same component /progress renders for rules. */}
+      <section className="card col-span-12">
+        <PanelHeader
+          action={
+            <Link className="text-[11px] text-primary-900" href="/progress">
+              All of it
+            </Link>
+          }
+          note={`${String(mastery.phonemes.length)} sounds`}
+          title="Sounds"
+        />
+        <div className="p-4">
+          {mastery.phonemes.length === 0 ? (
+            <p className="text-muted">Nothing scored yet. The matrix fills in as you speak.</p>
+          ) : (
+            <MasteryMatrix
+              cells={toMatrixCells(mastery.phonemes)}
+              dimension="phoneme"
+              drillLabel="Drill this sound"
+            />
+          )}
         </div>
-      </dl>
-    </section>
+      </section>
+    </>
   );
 }
