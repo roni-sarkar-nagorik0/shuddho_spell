@@ -36,6 +36,28 @@ export class ClockTime {
     return new ClockTime(hours * MINUTES_PER_HOUR + minutes);
   }
 
+  /**
+   * The wall-clock time an instant shows **for this learner**.
+   *
+   * The zone comes from their profile, never from the process. This is the same
+   * discipline `LocalDate.fromInstant` exists for, applied to the other half of
+   * the clock: an hourly job that selected on the server's hour would send a
+   * UTC+6 learner their 20:00 reminder at 2am, which is precisely the bug
+   * `09-notifications.md` names as "the part that is usually wrong".
+   *
+   * `en-GB` with `hourCycle: 'h23'`, so midnight is `00` and not `24`.
+   */
+  static fromInstant(instant: Date, timezone: string): ClockTime {
+    const formatted = new Intl.DateTimeFormat('en-GB', {
+      timeZone: timezone,
+      hour: '2-digit',
+      minute: '2-digit',
+      hourCycle: 'h23',
+    }).format(instant);
+
+    return ClockTime.of(formatted);
+  }
+
   static fromMinutes(minutes: number): ClockTime {
     return new ClockTime(
       ((minutes % (HOURS_PER_DAY * MINUTES_PER_HOUR)) + HOURS_PER_DAY * MINUTES_PER_HOUR) %
