@@ -1,0 +1,104 @@
+name: Deploy
+
+# Migrations are a **gated step**, and the gate is a human.
+#
+# `03-database.md` and the phase list both ask for this, and the reason is that
+# a migration is the one action in this pipeline that cannot be rolled back by
+# redeploying the previous build. Code rolls back; a dropped column does not.
+# So the deploy is two jobs with a GitHub environment between them: `migrate`
+# waits on an approval, and `release` waits on `migrate`.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-production
+  # Never cancel a deploy in flight. Cancelling between the migration and the
+  # release is how a schema gets ahead of the code that reads it.
+  cancel-in-progress: false
+
+jobs:
+  migrate:
+    name: apply migrations (gated)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    # The approval gate. Configure `production-database` in Settings →
+    # Environments with required reviewers; without them this runs unattended,
+    # which defeats the point of the job existing.
+    environment: production-database
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: pnpm
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      # Printed before the approval is acted on, so the reviewer sees which
+      # files are pending and their checksums rather than approving blind.
+      - name: Show what would be applied
+        run: pnpm db:migrate:dry
+
+      - name: Apply
+        run: pnpm db:migrate
+        env:
+          DATABASE_URL: ${{ secrets.PRODUCTION_DATABASE_URL }}
+
+  release:
+    name: build and release
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    needs: migrate
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: pnpm
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      # The same gates CI ran, run again against the exact commit being
+      # released. CI proved the branch; this proves the artefact.
+      - name: Verify
+        run: |
+          pnpm typecheck
+          pnpm lint
+          pnpm test
+
+      - name: Build
+        run: pnpm build
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          NEXT_PUBLIC_APP_URL: ${{ secrets.NEXT_PUBLIC_APP_URL }}
+          NEXT_PUBLIC_VAPID_PUBLIC_KEY: ${{ secrets.NEXT_PUBLIC_VAPID_PUBLIC_KEY }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          DATABASE_URL: ${{ secrets.PRODUCTION_DATABASE_URL }}
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+          VAPID_PRIVATE_KEY: ${{ secrets.VAPID_PRIVATE_KEY }}
+          VAPID_SUBJECT: ${{ secrets.VAPID_SUBJECT }}
+          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+
+      # The publish step itself is deliberately left as one command to fill in.
+      # Which host this deploys to has not been decided (ARCHITECTURE.md O4),
+      # and writing `vercel deploy` here would be inventing that decision rather
+      # than recording that it is open.
+      - name: Publish
+        run: |
+          echo "No deploy target is configured — see ARCHITECTURE.md O4."
+          echo "Everything above this line ran: migrations applied under review,"
+          echo "gates green, production build succeeded."
+          exit 1

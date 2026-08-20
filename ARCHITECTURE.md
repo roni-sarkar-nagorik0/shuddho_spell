@@ -1117,6 +1117,15 @@ environment; no number is claimed for it.
 `li-bra-ry` and casual RP says `li-bry`, and the course should teach one of them deliberately.
 Nothing is broken until somebody chooses.
 
+**O4 — no deploy target has been chosen (F13.10).** `.github/workflows/deploy.yml` applies
+migrations behind a required-reviewer environment and then builds the release, and its final
+`Publish` step **exits 1 with a message** rather than running `vercel deploy` or anything else.
+Which host this runs on is a decision nobody has made — Vercel, Fly, a container on the
+user's own infrastructure — and each implies different things about the cron routes, the Node
+runtime and where `CRON_SECRET` lives. Writing one in would be inventing the decision and
+hiding it inside a workflow file. The gate, the ordering and the verification are all real;
+one command is missing and it is missing on purpose.
+
 **O3 — `.env.example` is missing four entries added in Phase 13 (F13.6).** Same hook, same
 reason as O2: every shell command naming the file is refused in this environment, and working
 around a guard the user has in place is not the right move. The lines to add, all optional:
