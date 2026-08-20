@@ -20,7 +20,9 @@
     "db:migrate": "node --env-file-if-exists=.env.local --env-file-if-exists=.env scripts/migrate.mjs",
     "db:migrate:dry": "node scripts/migrate.mjs --dry-run",
     "content:validate": "tsx scripts/content-validate.ts",
-    "prebuild": "pnpm content:validate"
+    "prebuild": "pnpm content:validate",
+    "content:seed": "node --env-file-if-exists=.env.local --env-file-if-exists=.env --import tsx scripts/content-seed.ts",
+    "content:seed:dry": "tsx scripts/content-seed.ts --dry-run"
   },
   "dependencies": {
     "@supabase/ssr": "0.7.0",
