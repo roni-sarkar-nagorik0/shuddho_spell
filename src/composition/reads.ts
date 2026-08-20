@@ -12,6 +12,7 @@ import { type IProgressSummary } from '@/modules/progress/application/dto/progre
 import { type IWeeklyActivity } from '@/modules/progress/application/dto/weekly-activity';
 import { type IDueReviewQueue } from '@/modules/review/application/dto/due-review-item';
 import { type IPracticeQueue } from '@/modules/review/application/dto/practice-queue';
+import { type IWeakSpots } from '@/modules/review/application/dto/weak-spots';
 import { createContainer } from './container';
 import {
   makeGetDueReviewItems,
@@ -24,6 +25,7 @@ import {
   makeGetMe,
   makeGetPhonemeStrips,
   makeGetPracticeQueue,
+  makeGetWeakSpots,
   makeGetWeeklyActivity,
   makeListExamMilestones,
 } from './use-cases';
@@ -125,6 +127,11 @@ export const readPracticeQueue = cache(
     makeGetPracticeQueue(createContainer(crypto.randomUUID())).execute(
       focusDimensionId === undefined ? { userId } : { userId, focusDimensionId },
     ),
+);
+
+export const readWeakSpots = cache(
+  async (userId: string): Promise<IWeakSpots> =>
+    makeGetWeakSpots(createContainer(crypto.randomUUID())).execute({ userId }),
 );
 
 export const readExamMilestones = cache(

@@ -42,6 +42,7 @@ import { GetNextExamUseCase } from '@/modules/exams/application/use-cases/get-ne
 import { ListExamMilestonesUseCase } from '@/modules/exams/application/use-cases/list-exam-milestones';
 import { GetPhonemeStripsUseCase } from '@/modules/library/application/use-cases/get-phoneme-strips';
 import { GetPracticeQueueUseCase } from '@/modules/review/application/use-cases/get-practice-queue';
+import { GetWeakSpotsUseCase } from '@/modules/review/application/use-cases/get-weak-spots';
 import { GetProgressSummaryUseCase } from '@/modules/progress/application/use-cases/get-progress-summary';
 import { GetDueReviewItemsUseCase } from '@/modules/review/application/use-cases/get-due-review-items';
 import { SubmitReviewAttemptUseCase } from '@/modules/review/application/use-cases/submit-review-attempt';
@@ -209,6 +210,10 @@ export function makeGetNextExam(c: IContainer): GetNextExamUseCase {
 
 export function makeListExamMilestones(c: IContainer): ListExamMilestonesUseCase {
   return new ListExamMilestonesUseCase(c.learnerProfiles, c.examDefinitions, c.examAttempts);
+}
+
+export function makeGetWeakSpots(c: IContainer): GetWeakSpotsUseCase {
+  return new GetWeakSpotsUseCase(c.learnerProfiles, c.reviewItems, c.words, c.sentenceItems, c.clock);
 }
 
 export function makeGetPracticeQueue(c: IContainer): GetPracticeQueueUseCase {
