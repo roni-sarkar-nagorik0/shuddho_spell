@@ -1,5 +1,8 @@
 {
-  "app": { "name": "শুদ্ধস্পেল", "tagline": "লিখুন। বলুন। বুঝুন।" },
+  "app": {
+    "name": "শুদ্ধস্পেল",
+    "tagline": "লিখুন। বলুন। বুঝুন।"
+  },
   "landing": {
     "subtitle": "বাংলাভাষীদের জন্য তৈরি ৩০ দিনের ইংরেজি কোর্স।",
     "chooseLanguage": "আপনার ভাষা বেছে নিন",
@@ -19,7 +22,18 @@
     "mistakes": "ভুলগুলো",
     "profile": "প্রোফাইল",
     "settings": "সেটিংস",
-    "help": "সহায়তা"
+    "help": "সহায়তা",
+    "primary": "প্রধান",
+    "breadcrumb": "পথনির্দেশ",
+    "dashboard": "আজ",
+    "program": "কর্মসূচি",
+    "practice": "অনুশীলন",
+    "weakSpots": "দুর্বল দিক",
+    "library": "শব্দভান্ডার",
+    "progress": "অগ্রগতি",
+    "exams": "পরীক্ষা",
+    "collapse": "সংকুচিত করুন",
+    "expand": "প্রসারিত করুন"
   },
   "dashboard": {
     "dayOf": "{total} দিনের মধ্যে {day} দিন",
@@ -47,5 +61,13 @@
     "playBack": "আবার শুনুন",
     "listening": "শোনা হচ্ছে…"
   },
-  "error": { "generic": "কিছু একটা সমস্যা হয়েছে।", "notFound": "এই পাতাটি নেই।" }
+  "error": {
+    "generic": "কিছু একটা সমস্যা হয়েছে।",
+    "notFound": "এই পাতাটি নেই।"
+  },
+  "shell": {
+    "session": "সেশন",
+    "streak": "ধারা",
+    "signedInAs": "{name} হিসেবে সাইন ইন করা আছে"
+  }
 }

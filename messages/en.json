@@ -1,5 +1,8 @@
 {
-  "app": { "name": "ShuddhoSpell", "tagline": "Spell it. Say it. Mean it." },
+  "app": {
+    "name": "ShuddhoSpell",
+    "tagline": "Spell it. Say it. Mean it."
+  },
   "landing": {
     "subtitle": "A 30-day English course built for Bangla speakers.",
     "chooseLanguage": "Choose your language",
@@ -19,7 +22,18 @@
     "mistakes": "Mistakes",
     "profile": "Profile",
     "settings": "Settings",
-    "help": "Help"
+    "help": "Help",
+    "primary": "Primary",
+    "breadcrumb": "Breadcrumb",
+    "dashboard": "Today",
+    "program": "Program",
+    "practice": "Practice",
+    "weakSpots": "Weak spots",
+    "library": "Library",
+    "progress": "Progress",
+    "exams": "Exams",
+    "collapse": "Collapse",
+    "expand": "Expand"
   },
   "dashboard": {
     "dayOf": "Day {day} of {total}",
@@ -47,5 +61,13 @@
     "playBack": "Play back",
     "listening": "Listening…"
   },
-  "error": { "generic": "Something went wrong.", "notFound": "That page does not exist." }
+  "error": {
+    "generic": "Something went wrong.",
+    "notFound": "That page does not exist."
+  },
+  "shell": {
+    "session": "Session",
+    "streak": "Streak",
+    "signedInAs": "Signed in as {name}"
+  }
 }

@@ -28,7 +28,7 @@ export default async function DashboardPage() {
   const dashboard = await readLearnerDashboard(user.userId);
 
   return (
-    <main className="paper mx-auto max-w-2xl px-6 py-16">
+    <section className="col-span-12">
       {/*
         Inline, above the content, after the page has rendered — never a modal
         on load. The key is passed down because a Client Component importing the
@@ -60,6 +60,6 @@ export default async function DashboardPage() {
           <dd className="text-xl">{dashboard.today?.title ?? 'Nothing scheduled'}</dd>
         </div>
       </dl>
-    </main>
+    </section>
   );
 }

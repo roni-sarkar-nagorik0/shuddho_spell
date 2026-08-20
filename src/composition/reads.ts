@@ -1,4 +1,5 @@
 import 'server-only';
+import { cache } from 'react';
 import { type ILearnerDashboard } from '@/modules/progress/application/dto/learner-dashboard';
 import { type IProgressSummary } from '@/modules/progress/application/dto/progress-summary';
 import { createContainer } from './container';
@@ -18,10 +19,18 @@ import { makeGetLearnerDashboard, makeGetProgressSummary } from './use-cases';
  * because there is nothing for them to drift apart *from*.
  *
  * `src/app` may import this. `presentation` may not, and does not need to.
+ *
+ * Wrapped in React's `cache` (F10.1): the shell's top bar needs the streak and
+ * the dashboard page needs everything, and both are rendered inside one
+ * request. Without this the layout and the page would each run the use case
+ * and each hit the database for the same rows. `cache` is per-request — it is
+ * request memoisation, not a cache with a lifetime, so no learner ever sees
+ * another learner's numbers.
  */
-export async function readLearnerDashboard(userId: string): Promise<ILearnerDashboard> {
-  return makeGetLearnerDashboard(createContainer(crypto.randomUUID())).execute({ userId });
-}
+export const readLearnerDashboard = cache(
+  async (userId: string): Promise<ILearnerDashboard> =>
+    makeGetLearnerDashboard(createContainer(crypto.randomUUID())).execute({ userId }),
+);
 
 export async function readProgressSummary(userId: string): Promise<IProgressSummary> {
   return makeGetProgressSummary(createContainer(crypto.randomUUID())).execute({ userId });

@@ -80,8 +80,8 @@ and 2. No feature starts without it. **Never read the file** — existence check
 
 ## NEXT
 
-> **Phase 10 · Web shell and core components — not started**
-> Cut `feat/10-web-shell` from an up-to-date `dev`. Phase 9 is closed and merged.
+> **Phase 10 · Web shell and core components — in progress on `feat/10-web-shell`**
+> Current: **F10.2** — `PhonemeStrip`.
 >
 > **What Phase 5 leaves Phase 6**
 > - `ISpeechScorer` is declared (F4.10) and **has no implementation**. Phase 6 is that, plus the
@@ -481,9 +481,9 @@ written and **unproven**: it needs a live database, and there is none in this en
 ---
 
 ## Phase 10 — Web shell and core components
-Branch `feat/10-web-shell` · Status: `NOT STARTED`
+Branch `feat/10-web-shell` · Status: `IN PROGRESS`
 
-- [ ] **F10.1** App shell — 232px sidebar collapsing to 56px, 48px top bar, 1280px grid
+- [x] **F10.1** (2026-08-20) App shell — 232px sidebar collapsing to 56px, 48px top bar, 1280px grid
   - Test: collapse state persists; keyboard reachable
 - [ ] **F10.2** `PhonemeStrip`
   - Test: syllable dividers, 22px cells tinted by learner mastery, Bangla line, mono stat line; 3 states in Storybook
@@ -598,6 +598,7 @@ Out of scope for this build. Do not start these, and do not leave stubs for them
 Newest first. One line per finished feature: date · id · what · test result.
 
 | Date | Feature | What landed | Tests |
+| 2026-08-20 | F10.1 | App shell: 232px→56px rail with cookie-persisted collapse, 48px top bar, 1280px 12-col paper grid, skip link | typecheck + lint green (tests paused) |
 | --- | --- | --- | --- |
 | 2026-08-20 | F9.9 | `pnpm content:report` prints the phase's numbers rather than claiming them, and **exits non-zero when a target is missed** — a report that only described what was there would let 900 words pass as 1,240. All five targets hit exactly. It also reports two things the spec did not ask for and should have: **all 24 rule families are exercised** (a family nobody's content demonstrates is a mastery-matrix row that can never move, and a learner staring at a permanently empty cell), and the 15 phonemes absent from Bangla each carry the substitution learners produce. **I went back and marked my own work uncertain.** 24 of 1,240 transcriptions are now `ipaNeedsReview: true` — the compressed **-ary/-ory/-ery** family and the words whose careful and casual RP differ by a syllable (`library`, `secretary`, `February`, `restaurant`, `medicine`, `comfortable`, `temperature`…). My syllable splits follow the compressed form, and *which register the course teaches* is a real editorial decision a human should make rather than one I quietly settle. `stationary` and `stationery` are flagged **together and identically**, which is the point of the pair. Fixed one genuine error found on review: `graduate` was tagged a noun and carried the **verb's** transcription — the noun reduces its final vowel and the verb does not | typecheck, lint green · `pnpm content:report`: **1,240 / 560 / 44 / 24 / 28 — every target ok**, 33–34 min per day across all four weeks, 24 flagged for human review and listed |
 | 2026-08-20 | F9.8 | **310 words, 140 sentences, 7 days — and the corpus closes on exactly 1,240 / 560 / 28.** The spellings that survive to the final exam: -ance against -ence, -ary against -ery against -ory, the doubled consonants nobody hears (`accommodation`, `occurrence`, `embarrass`), the Greek and French borrowings that kept their own spelling (`psychology`, `technique`, `colleague`, `rhythm`), and the last silent letters — `column`, `muscle`, `hymn`, `resign`. Three pairs run through the week because they cost marks in an exam and nowhere else: `stationary`/`stationery`, `practice`/`practise`, `breath`/`breathe`. The sentences are the hardest in the corpus — conditionals, reported speech, relative clauses — because by day 28 construction is examined too. **Thirty-one compound placeholders were written and cut** across five passes; every one became a real word teaching the same rule. **The validator caught a real flaw in my own F9.1 schema**: `text` was lower-case-only, so `February`, `January`, `Wednesday`, `Tuesday`, `Thursday` and `Saturday` all failed — and lowercasing them to satisfy the rule would have taught a learner that `february` is how the word is spelled, which is precisely the quiet wrongness a spelling product cannot afford. The rule is now "lower case, or a proper noun with one capital"; marking is unaffected because `normaliseAnswer` folds case before comparing. It also caught "The future is uncertain" duplicated from week 2 | typecheck, lint green · `pnpm content:validate`: **1,240 words · 560 sentence items · 44 phonemes · 24 rule families · 28 days — valid.** Every count in the spec table hit exactly |

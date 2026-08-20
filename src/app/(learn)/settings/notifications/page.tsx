@@ -17,7 +17,7 @@ export default async function NotificationSettingsPage() {
   await requireUser();
 
   return (
-    <main className="paper mx-auto max-w-2xl px-6 py-16">
+    <section className="col-span-12">
       <h1 className="text-2xl font-semibold">Notifications</h1>
 
       <div className="mt-6">
@@ -27,6 +27,6 @@ export default async function NotificationSettingsPage() {
       <div className="mt-8">
         <PreferencesTable />
       </div>
-    </main>
+    </section>
   );
 }
