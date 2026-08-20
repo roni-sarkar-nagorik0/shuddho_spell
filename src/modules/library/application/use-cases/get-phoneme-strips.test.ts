@@ -81,8 +81,7 @@ function build(options: {
 
   const mastery: IMasteryRepository = {
     findByProfile: () => Promise.resolve(options.records ?? []),
-    findByDimension: () => Promise.resolve(null),
-    upsertMany: () => Promise.resolve(),
+    saveMany: () => Promise.resolve(),
   };
 
   return new GetPhonemeStripsUseCase(profiles, words, wordPhonemes, phonemes, mastery);
