@@ -1,0 +1,73 @@
+{
+  "app": {
+    "name": "শুদ্ধস্পেল",
+    "tagline": "লিখুন। বলুন। বুঝুন।"
+  },
+  "landing": {
+    "subtitle": "বাংলাভাষীদের জন্য তৈরি ৩০ দিনের ইংরেজি কোর্স।",
+    "chooseLanguage": "আপনার ভাষা বেছে নিন",
+    "english": "English (Aa)",
+    "bangla": "বাংলা (অআ)",
+    "continue": "চালিয়ে যান"
+  },
+  "login": {
+    "heading": "সাইন ইন করুন।",
+    "subtitle": "গুগল দিয়ে এক ট্যাপে। ঢোকার একমাত্র পথ এটিই — মনে রাখার কিছু নেই।",
+    "google": "গুগল দিয়ে চালিয়ে যান",
+    "failed": "গুগল সাইন-ইন শুরু করা যায়নি। আবার চেষ্টা করুন।"
+  },
+  "nav": {
+    "home": "হোম",
+    "course": "কোর্স",
+    "mistakes": "ভুলগুলো",
+    "profile": "প্রোফাইল",
+    "settings": "সেটিংস",
+    "help": "সহায়তা",
+    "primary": "প্রধান",
+    "breadcrumb": "পথনির্দেশ",
+    "dashboard": "আজ",
+    "program": "কর্মসূচি",
+    "practice": "অনুশীলন",
+    "weakSpots": "দুর্বল দিক",
+    "library": "শব্দভান্ডার",
+    "progress": "অগ্রগতি",
+    "exams": "পরীক্ষা",
+    "collapse": "সংকুচিত করুন",
+    "expand": "প্রসারিত করুন"
+  },
+  "dashboard": {
+    "dayOf": "{total} দিনের মধ্যে {day} দিন",
+    "start": "{day} দিন শুরু করুন",
+    "progress": "অগ্রগতি",
+    "currentStreak": "বর্তমান ধারা",
+    "days": "দিন",
+    "quickStats": "সংক্ষিপ্ত পরিসংখ্যান",
+    "wordsLearned": "শেখা শব্দ",
+    "accuracy": "নির্ভুলতা",
+    "mistakesToFix": "সংশোধনের ভুল",
+    "journey": "৩০ দিনের যাত্রা",
+    "reviewMistakes": "ভুল পর্যালোচনা"
+  },
+  "drill": {
+    "exitPractice": "অনুশীলন বন্ধ করুন",
+    "questionOf": "{total}টির মধ্যে {current} নম্বর প্রশ্ন",
+    "playWord": "শব্দটি শুনুন",
+    "nextWord": "পরের শব্দ",
+    "targetWord": "লক্ষ্য শব্দ",
+    "spellingRuleCheck": "বানানের নিয়ম যাচাই",
+    "youWrote": "আপনি লিখেছেন {word}।",
+    "syllableStress": "শব্দাংশের ঝোঁক",
+    "previousAttempt": "আগের চেষ্টা",
+    "playBack": "আবার শুনুন",
+    "listening": "শোনা হচ্ছে…"
+  },
+  "error": {
+    "generic": "কিছু একটা সমস্যা হয়েছে।",
+    "notFound": "এই পাতাটি নেই।"
+  },
+  "shell": {
+    "session": "সেশন",
+    "streak": "ধারা",
+    "signedInAs": "{name} হিসেবে সাইন ইন করা আছে"
+  }
+}

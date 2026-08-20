@@ -1,0 +1,312 @@
+# Week 2 — the endings that decide most English spellings a learner meets next:
+# -tion and -sion, -able and -ible, the silent letters, and the three sounds of -ed.
+nation|ˈneɪʃn|na-tion|নেশন|জাতি|noun|tion_sion|311|nashion,nasion
+station|ˈsteɪʃn|sta-tion|স্টেশন|স্টেশন|noun|tion_sion|312|stashion,staition
+collection|kəˈlekʃn|col-lec-tion|কালেকশন|সংগ্রহ|noun|tion_sion|313|collecsion,colection
+action|ˈækʃn|ac-tion|অ্যাকশন|কাজ|noun|tion_sion|314|acshion,actoin
+section|ˈsekʃn|sec-tion|সেকশন|অংশ|noun|tion_sion|315|secsion,sektion
+attention|əˈtenʃn|at-ten-tion|অ্যাটেনশন|মনোযোগ|noun|tion_sion|316|attension,atention
+information|ˌɪnfəˈmeɪʃn|in-for-ma-tion|ইনফরমেশন|তথ্য|noun|tion_sion|317|infomation,informasion
+education|ˌedʒuˈkeɪʃn|e-du-ca-tion|এডুকেশন|শিক্ষা|noun|tion_sion|318|educasion,eduction
+population|ˌpɒpjuˈleɪʃn|po-pu-la-tion|পপুলেশন|জনসংখ্যা|noun|tion_sion|319|populasion,populaton
+direction|dəˈrekʃn|di-rec-tion|ডিরেকশন|দিক|noun|tion_sion|320|direcsion,dirction
+position|pəˈzɪʃn|po-si-tion|পজিশন|অবস্থান|noun|tion_sion|321|posission,positon
+condition|kənˈdɪʃn|con-di-tion|কন্ডিশন|অবস্থা|noun|tion_sion|322|condision,conditon
+solution|səˈluːʃn|so-lu-tion|সলিউশন|সমাধান|noun|tion_sion|323|solusion,soultion
+relation|rɪˈleɪʃn|re-la-tion|রিলেশন|সম্পর্ক|noun|tion_sion|324|relasion,relaton
+addition|əˈdɪʃn|ad-di-tion|অ্যাডিশন|যোগ|noun|tion_sion|325|adision,additon
+decision|dɪˈsɪʒn|de-ci-sion|ডিসিশন|সিদ্ধান্ত|noun|tion_sion|326|decition,desicion
+division|dɪˈvɪʒn|di-vi-sion|ডিভিশন|বিভাগ|noun|tion_sion|327|divition,divison
+television|ˈtelɪvɪʒn|te-le-vi-sion|টেলিভিশন|টেলিভিশন|noun|tion_sion|328|televition,telivision
+discussion|dɪˈskʌʃn|dis-cus-sion|ডিসকাশন|আলোচনা|noun|tion_sion|329|discution,discusion
+expression|ɪkˈspreʃn|ex-pres-sion|এক্সপ্রেশন|অভিব্যক্তি|noun|tion_sion|330|expretion,expresion
+permission|pəˈmɪʃn|per-mis-sion|পারমিশন|অনুমতি|noun|tion_sion|331|permition,permision
+occasion|əˈkeɪʒn|oc-ca-sion|অকেশন|উপলক্ষ|noun|tion_sion|332|occation,ocasion
+mission|ˈmɪʃn|mis-sion|মিশন|অভিযান|noun|tion_sion|333|mition,mision
+passion|ˈpæʃn|pas-sion|প্যাশন|আবেগ|noun|tion_sion|334|pasion,passsion
+comfortable|ˈkʌmftəbl|com-for-ta-ble|কমফোর্টেবল|আরামদায়ক|adjective|able_ible|335|comfortible,confortable|review
+reasonable|ˈriːznəbl|rea-so-na-ble|রিজনেবল|যুক্তিসঙ্গত|adjective|able_ible|336|reasonible,resonable
+valuable|ˈvæljuəbl|va-lua-ble|ভ্যালুয়েবল|মূল্যবান|adjective|able_ible|337|valuible,valueable
+available|əˈveɪləbl|a-vai-la-ble|অ্যাভেইলেবল|উপলব্ধ|adjective|able_ible|338|availible,avaliable
+suitable|ˈsuːtəbl|sui-ta-ble|সুইটেবল|উপযুক্ত|adjective|able_ible|339|suitible,sutable
+enjoyable|ɪnˈdʒɔɪəbl|en-joy-a-ble|এনজয়েবল|উপভোগ্য|adjective|able_ible|340|enjoyible,enjoiable
+possible|ˈpɒsəbl|pos-si-ble|পসিবল|সম্ভব|adjective|able_ible|341|possable,posible
+terrible|ˈterəbl|ter-ri-ble|টেরিবল|ভয়ানক|adjective|able_ible|342|terrable,terible
+horrible|ˈhɒrəbl|hor-ri-ble|হরিবল|ভয়ংকর|adjective|able_ible|343|horrable,horible
+visible|ˈvɪzəbl|vi-si-ble|ভিজিবল|দৃশ্যমান|adjective|able_ible|344|visable,visibel
+sensible|ˈsensəbl|sen-si-ble|সেনসিবল|বিবেচক|adjective|able_ible|345|sensable,sensibel
+responsible|rɪˈspɒnsəbl|res-pon-si-ble|রেসপনসিবল|দায়িত্বশীল|adjective|able_ible|346|responsable,responsibel
+knee|niː|knee|নি|হাঁটু|noun|silent_letters|347|nee,knea
+knock|nɒk|knock|নক|টোকা দেওয়া|verb|silent_letters|348|nock,knok
+knot|nɒt|knot|নট|গিঁট|noun|silent_letters|349|not,nott
+knowledge|ˈnɒlɪdʒ|know-ledge|নলেজ|জ্ঞান|noun|silent_letters|350|noledge,knowlege
+wrist|rɪst|wrist|রিস্ট|কব্জি|noun|silent_letters|351|rist,wrest
+wrap|ræp|wrap|র্যাপ|মোড়ানো|verb|silent_letters|352|rap,wrapp
+comb|kəʊm|comb|কোম|চিরুনি|noun|silent_letters|353|coom,kom
+lamb|læm|lamb|ল্যাম্ব|ভেড়ার বাচ্চা|noun|silent_letters|354|lam,lambe
+thumb|θʌm|thumb|থাম্ব|বুড়ো আঙুল|noun|silent_letters|355|thum,tumb
+climb|klaɪm|climb|ক্লাইম্ব|আরোহণ করা|verb|silent_letters|356|clime,klimb
+debt|det|debt|ডেট|ঋণ|noun|silent_letters|357|det,debbt
+doubt|daʊt|doubt|ডাউট|সন্দেহ|noun|silent_letters|358|dout,doubtt
+island|ˈaɪlənd|is-land|আইল্যান্ড|দ্বীপ|noun|silent_letters|359|iland,ailand
+castle|ˈkɑːsl|cas-tle|কাসল|দুর্গ|noun|silent_letters|360|casle,castel
+whistle|ˈwɪsl|whis-tle|হুইসল|বাঁশি|noun|silent_letters|361|wisle,whisle
+honest|ˈɒnɪst|ho-nest|অনেস্ট|সৎ|adjective|silent_letters|362|onest,honnest
+hour|ˈaʊə|hour|আওয়ার|ঘণ্টা|noun|silent_letters|363|our,howr
+ghost|ɡəʊst|ghost|গোস্ট|ভূত|noun|silent_letters|364|gost,goast
+sign|saɪn|sign|সাইন|চিহ্ন|noun|silent_letters|365|sine,sighn
+design|dɪˈzaɪn|de-sign|ডিজাইন|নকশা|noun|silent_letters|366|desine,dizain
+foreign|ˈfɒrən|fo-reign|ফরেন|বিদেশি|adjective|silent_letters|367|foriegn,foren
+neighbour|ˈneɪbə|neigh-bour|নেইবার|প্রতিবেশী|noun|i_before_e|368|nieghbour,neigbour
+weight|weɪt|weight|ওয়েট|ওজন|noun|i_before_e|369|wieght,wait
+eight|eɪt|eight|এইট|আট|determiner|i_before_e|370|ieght,eigth
+height|haɪt|height|হাইট|উচ্চতা|noun|i_before_e|371|hieght,heigth
+either|ˈaɪðə|ei-ther|আইদার|যেকোনো একটি|determiner|i_before_e|372|iether,eather
+neither|ˈnaɪðə|nei-ther|নাইদার|কোনোটিই নয়|determiner|i_before_e|373|niether,neather
+seize|siːz|seize|সিজ|দখল করা|verb|i_before_e|374|sieze,seaze
+weird|wɪəd|weird|উইয়ার্ড|অদ্ভুত|adjective|i_before_e|375|wierd,weard
+science|ˈsaɪəns|sci-ence|সায়েন্স|বিজ্ঞান|noun|i_before_e|376|sceince,sience
+society|səˈsaɪəti|so-cie-ty|সোসাইটি|সমাজ|noun|i_before_e|377|socity,socieity
+walked|wɔːkt|walked|ওয়াক্ট|হেঁটেছিল|verb|ed_pronunciation|378|walkd,waked
+talked|tɔːkt|talked|টক্ট|কথা বলেছিল|verb|ed_pronunciation|379|talkd,taked
+asked|ɑːskt|asked|আস্কট|জিজ্ঞাসা করেছিল|verb|ed_pronunciation|380|askd,aksed
+helped|helpt|helped|হেল্প্ট|সাহায্য করেছিল|verb|ed_pronunciation|381|helpd,halped
+watched|wɒtʃt|watched|ওয়াচ্ট|দেখেছিল|verb|ed_pronunciation|382|watchd,wached
+finished|ˈfɪnɪʃt|fi-nished|ফিনিশ্ট|শেষ করেছিল|verb|ed_pronunciation|383|finishd,finshed
+opened|ˈəʊpənd|o-pened|ওপেন্ড|খুলেছিল|verb|ed_pronunciation|384|opend,openned
+closed|kləʊzd|closed|ক্লোজ্‌ড|বন্ধ করেছিল|verb|ed_pronunciation|385|closd,clozed
+played|pleɪd|played|প্লেইড|খেলেছিল|verb|ed_pronunciation|386|playd,plaied
+listened|ˈlɪsnd|lis-tened|লিসন্ড|শুনেছিল|verb|ed_pronunciation|387|listend,lisened
+wanted|ˈwɒntɪd|wan-ted|ওয়ান্টেড|চেয়েছিল|verb|ed_pronunciation|388|wantd,wonted
+started|ˈstɑːtɪd|star-ted|স্টার্টেড|শুরু করেছিল|verb|ed_pronunciation|389|startd,startted
+needed|ˈniːdɪd|nee-ded|নিডেড|প্রয়োজন ছিল|verb|ed_pronunciation|390|needd,neded
+waited|ˈweɪtɪd|wai-ted|ওয়েটেড|অপেক্ষা করেছিল|verb|ed_pronunciation|391|waitd,waitted
+decided|dɪˈsaɪdɪd|de-ci-ded|ডিসাইডেড|সিদ্ধান্ত নিয়েছিল|verb|ed_pronunciation|392|decidd,desided
+evening|ˈiːvnɪŋ|eve-ning|ইভনিং|সন্ধ্যা|noun||393|evning,evenning
+government|ˈɡʌvənmənt|go-vern-ment|গভর্নমেন্ট|সরকার|noun||394|goverment,governmant
+company|ˈkʌmpəni|com-pa-ny|কোম্পানি|কোম্পানি|noun|y_to_i|395|compny,companey
+business|ˈbɪznəs|bu-si-ness|বিজনেস|ব্যবসা|noun||396|bussiness,busness
+service|ˈsɜːvɪs|ser-vice|সার্ভিস|সেবা|noun|soft_c|397|servise,servis
+journey|ˈdʒɜːni|jour-ney|জার্নি|যাত্রা|noun|soft_g|398|jorney,journy
+system|ˈsɪstəm|sys-tem|সিস্টেম|ব্যবস্থা|noun||399|sistem,systum
+problem|ˈprɒbləm|pro-blem|প্রবলেম|সমস্যা|noun||400|probelm,problam
+example|ɪɡˈzɑːmpl|ex-am-ple|এক্সাম্পল|উদাহরণ|noun||401|exampel,exemple
+result|rɪˈzʌlt|re-sult|রেজাল্ট|ফলাফল|noun||402|resault,rezult
+reason|ˈriːzn|rea-son|রিজন|কারণ|noun||403|reasen,resson
+weather|ˈweðə|wea-ther|ওয়েদার|আবহাওয়া|noun||404|wether,weater
+holiday|ˈhɒlədeɪ|ho-li-day|হলিডে|ছুটি|noun||405|holliday,holaday
+history|ˈhɪstri|his-to-ry|হিস্টরি|ইতিহাস|noun|y_to_i|406|histry,histery|review
+memory|ˈmeməri|me-mo-ry|মেমরি|স্মৃতি|noun|y_to_i|407|memery,memmory
+language|ˈlæŋɡwɪdʒ|lan-guage|ল্যাঙ্গুয়েজ|ভাষা|noun|soft_g|408|languge,langauge
+practice|ˈpræktɪs|prac-tice|প্র্যাকটিস|অনুশীলন|noun|soft_c|409|practise,practis
+exercise|ˈeksəsaɪz|e-xer-cise|এক্সারসাইজ|ব্যায়াম|noun||410|excercise,exercize
+lesson|ˈlesn|les-son|লেসন|পাঠ|noun||411|leson,lessen
+medicine|ˈmedsn|me-di-cine|মেডিসিন|ওষুধ|noun|soft_c|412|medecine,medicin|review
+subject|ˈsʌbdʒɪkt|sub-ject|সাবজেক্ট|বিষয়|noun||413|subjekt,subjact
+sentence|ˈsentəns|sen-tence|সেনটেন্স|বাক্য|noun|soft_c|414|sentance,sentense
+grammar|ˈɡræmə|gram-mar|গ্রামার|ব্যাকরণ|noun||415|grammer,gramar
+spelling|ˈspelɪŋ|spel-ling|স্পেলিং|বানান|noun|doubling_1_1_1|416|speling,spellling
+meaning|ˈmiːnɪŋ|mea-ning|মিনিং|অর্থ|noun||417|meening,menaing
+distance|ˈdɪstəns|dis-tance|ডিসট্যান্স|দূরত্ব|noun|soft_c|418|distence,distanse
+picture|ˈpɪktʃə|pic-ture|পিকচার|ছবি|noun||419|pikture,pictur
+future|ˈfjuːtʃə|fu-ture|ফিউচার|ভবিষ্যৎ|noun||420|futur,fucher
+nature|ˈneɪtʃə|na-ture|নেচার|প্রকৃতি|noun||421|natur,nacher
+culture|ˈkʌltʃə|cul-ture|কালচার|সংস্কৃতি|noun||422|cultur,kalcher
+measure|ˈmeʒə|mea-sure|মেজার|পরিমাপ|noun||423|mesure,mejar
+pleasure|ˈpleʒə|plea-sure|প্লেজার|আনন্দ|noun||424|plesure,plejar
+treasure|ˈtreʒə|trea-sure|ট্রেজার|ধন|noun||425|tresure,trejar
+usual|ˈjuːʒuəl|u-su-al|ইউজুয়াল|সাধারণ|adjective||426|usal,ushual
+special|ˈspeʃl|spe-cial|স্পেশাল|বিশেষ|adjective||427|speical,speshal
+social|ˈsəʊʃl|so-cial|সোশ্যাল|সামাজিক|adjective||428|socail,soshal
+official|əˈfɪʃl|of-fi-cial|অফিশিয়াল|সরকারি|adjective||429|offical,offishal
+national|ˈnæʃnəl|na-tio-nal|ন্যাশনাল|জাতীয়|adjective|tion_sion|430|nashonal,natonal
+personal|ˈpɜːsənl|per-so-nal|পার্সোনাল|ব্যক্তিগত|adjective||431|personel,persnal
+natural|ˈnætʃrəl|na-tu-ral|ন্যাচারাল|প্রাকৃতিক|adjective||432|naturel,nachural
+central|ˈsentrəl|cen-tral|সেন্ট্রাল|কেন্দ্রীয়|adjective|soft_c|433|centrel,sentral
+several|ˈsevrəl|se-ve-ral|সেভারাল|কয়েকটি|determiner||434|serveral,severel
+general|ˈdʒenrəl|ge-ne-ral|জেনারেল|সাধারণ|adjective|soft_g|435|genral,jeneral
+different|ˈdɪfrənt|dif-fe-rent|ডিফারেন্ট|ভিন্ন|adjective||436|diferent,differant
+important|ɪmˈpɔːtnt|im-por-tant|ইমপর্ট্যান্ট|গুরুত্বপূর্ণ|adjective||437|importent,imortant
+present|ˈpreznt|pre-sent|প্রেজেন্ট|উপস্থিত|adjective||438|presant,prezent
+absent|ˈæbsənt|ab-sent|অ্যাবসেন্ট|অনুপস্থিত|adjective||439|absant,abscent
+correct|kəˈrekt|cor-rect|কারেক্ট|সঠিক|adjective||440|corect,correkt
+incorrect|ˌɪnkəˈrekt|in-cor-rect|ইনকারেক্ট|ভুল|adjective|prefix_keeps_root|441|incorect,inncorrect
+capable|ˈkeɪpəbl|ca-pa-ble|কেপেবল|সক্ষম|adjective|able_ible|442|capible,cappable
+impossible|ɪmˈpɒsəbl|im-pos-si-ble|ইমপসিবল|অসম্ভব|adjective|prefix_keeps_root|443|imposible,impossable
+unusual|ʌnˈjuːʒuəl|un-u-su-al|আনইউজুয়াল|অস্বাভাবিক|adjective|prefix_keeps_root|444|unusal,unnusual
+unnecessary|ʌnˈnesəsri|un-ne-ces-sa-ry|আননেসেসারি|অপ্রয়োজনীয়|adjective|prefix_keeps_root|445|unecessary,unnecesary
+necessary|ˈnesəsri|ne-ces-sa-ry|নেসেসারি|প্রয়োজনীয়|adjective||446|neccessary,necesary|review
+dissatisfied|dɪsˈsætɪsfaɪd|dis-sa-tis-fied|ডিসস্যাটিসফাইড|অসন্তুষ্ট|adjective|prefix_keeps_root|447|disatisfied,dissatisfyed
+misunderstand|ˌmɪsʌndəˈstænd|mis-un-der-stand|মিসআন্ডারস্ট্যান্ড|ভুল বোঝা|verb|prefix_keeps_root|448|missunderstand,misunderstend
+happen|ˈhæpən|hap-pen|হ্যাপেন|ঘটা|verb||449|hapen,happan
+remember|rɪˈmembə|re-mem-ber|রিমেম্বার|মনে রাখা|verb||450|remeber,rember
+forget|fəˈɡet|for-get|ফরগেট|ভুলে যাওয়া|verb|doubling_1_1_1|451|forgett,froget
+understand|ˌʌndəˈstænd|un-der-stand|আন্ডারস্ট্যান্ড|বোঝা|verb||452|understend,undrstand
+explain|ɪkˈspleɪn|ex-plain|এক্সপ্লেইন|ব্যাখ্যা করা|verb||453|explane,expalin
+describe|dɪˈskraɪb|de-scribe|ডেসক্রাইব|বর্ণনা করা|verb|drop_silent_e|454|discribe,describ
+compare|kəmˈpeə|com-pare|কমপেয়ার|তুলনা করা|verb|drop_silent_e|455|compair,comapre
+choose|tʃuːz|choose|চুজ|বেছে নেওয়া|verb||456|chose,chooze
+decide|dɪˈsaɪd|de-cide|ডিসাইড|সিদ্ধান্ত নেওয়া|verb|soft_c|457|deside,decid
+prepare|prɪˈpeə|pre-pare|প্রিপেয়ার|প্রস্তুত করা|verb|drop_silent_e|458|prepair,preapre
+continue|kənˈtɪnjuː|con-ti-nue|কনটিনিউ|চালিয়ে যাওয়া|verb||459|continu,contineu
+finish|ˈfɪnɪʃ|fi-nish|ফিনিশ|শেষ করা|verb|plural_es|460|finsh,finnish
+return|rɪˈtɜːn|re-turn|রিটার্ন|ফিরে আসা|verb||461|retrun,returne
+protein|ˈprəʊtiːn|pro-tein|প্রোটিন|আমিষ|noun|i_before_e|462|protien,protine
+follow|ˈfɒləʊ|fol-low|ফলো|অনুসরণ করা|verb||463|folow,followe
+allow|əˈlaʊ|al-low|অ্যালাউ|অনুমতি দেওয়া|verb||464|alow,allaw
+travel|ˈtrævl|tra-vel|ট্রাভেল|ভ্রমণ করা|verb|no_final_v|465|travle,trevel
+visit|ˈvɪzɪt|vi-sit|ভিজিট|পরিদর্শন করা|verb||466|vizit,visitt
+enter|ˈentə|en-ter|এন্টার|প্রবেশ করা|verb||467|entar,entter
+appear|əˈpɪə|ap-pear|অ্যাপিয়ার|আবির্ভূত হওয়া|verb||468|apear,appare
+become|bɪˈkʌm|be-come|বিকাম|হয়ে ওঠা|verb|drop_silent_e|469|becom,beecome
+belong|bɪˈlɒŋ|be-long|বিলং|অন্তর্ভুক্ত হওয়া|verb||470|belonge,bilong
+succeed|səkˈsiːd|suc-ceed|সাকসিড|সফল হওয়া|verb|soft_c|471|suceed,succede
+fail|feɪl|fail|ফেইল|ব্যর্থ হওয়া|verb||472|fale,faile
+improve|ɪmˈpruːv|im-prove|ইমপ্রুভ|উন্নত করা|verb|no_final_v|473|improv,impruve
+increase|ɪnˈkriːs|in-crease|ইনক্রিজ|বৃদ্ধি করা|verb|soft_c|474|incraese,increse
+reduce|rɪˈdjuːs|re-duce|রিডিউস|কমানো|verb|soft_c|475|reduse,redduce
+produce|prəˈdjuːs|pro-duce|প্রডিউস|উৎপাদন করা|verb|soft_c|476|produse,prodce
+provide|prəˈvaɪd|pro-vide|প্রভাইড|সরবরাহ করা|verb|drop_silent_e|477|provid,provde
+require|rɪˈkwaɪə|re-quire|রিকোয়ার|প্রয়োজন হওয়া|verb|q_takes_u|478|requier,rekuire
+suggest|səˈdʒest|sug-gest|সাজেস্ট|প্রস্তাব করা|verb|soft_g|479|sugest,sujest
+accept|əkˈsept|ac-cept|অ্যাকসেপ্ট|গ্রহণ করা|verb|soft_c|480|acept,accpet
+refuse|rɪˈfjuːz|re-fuse|রিফিউজ|প্রত্যাখ্যান করা|verb|drop_silent_e|481|refuze,refus
+agree|əˈɡriː|a-gree|অ্যাগ্রি|সম্মত হওয়া|verb||482|agre,aggree
+disagree|ˌdɪsəˈɡriː|dis-a-gree|ডিসঅ্যাগ্রি|দ্বিমত হওয়া|verb|prefix_keeps_root|483|disagre,dissagree
+promise|ˈprɒmɪs|pro-mise|প্রমিস|প্রতিশ্রুতি|noun||484|promiss,promice
+advice|ədˈvaɪs|ad-vice|অ্যাডভাইস|উপদেশ|noun|soft_c|485|advise,advize
+advise|ədˈvaɪz|ad-vise|অ্যাডভাইজ|উপদেশ দেওয়া|verb|drop_silent_e|486|advice,advize
+effect|ɪˈfekt|ef-fect|এফেক্ট|প্রভাব|noun||487|efect,affect
+affect|əˈfekt|af-fect|অ্যাফেক্ট|প্রভাবিত করা|verb||488|effect,afect
+success|səkˈses|suc-cess|সাকসেস|সাফল্য|noun|soft_c|489|sucess,succes
+except|ɪkˈsept|ex-cept|এক্সেপ্ট|ছাড়া|preposition|soft_c|490|accept,exept
+weapon|ˈwepən|wea-pon|ওয়েপন|অস্ত্র|noun||491|wepon,weapen
+whether|ˈweðə|whe-ther|ওয়েদার|কিনা|conjunction||492|wether,weather
+through|θruː|through|থ্রু|মধ্য দিয়ে|preposition|silent_letters|493|throo,thru
+though|ðəʊ|though|দো|যদিও|conjunction|silent_letters|494|tho,thogh
+thought|θɔːt|thought|থট|চিন্তা|noun|silent_letters|495|thout,thougt
+enough|ɪˈnʌf|e-nough|ইনাফ|যথেষ্ট|determiner|silent_letters|496|enuf,enought
+rough|rʌf|rough|রাফ|অমসৃণ|adjective|silent_letters|497|ruff,rugh
+cough|kɒf|cough|কফ|কাশি|noun|silent_letters|498|coff,cogh
+laugh|lɑːf|laugh|লাফ|হাসা|verb|silent_letters|499|laf,lauf
+daughter|ˈdɔːtə|daugh-ter|ডটার|কন্যা|noun|silent_letters|500|dauter,doughter
+brought|brɔːt|brought|ব্রট|এনেছিল|verb|silent_letters|501|brout,brougt
+bought|bɔːt|bought|বট|কিনেছিল|verb|silent_letters|502|bout,bougt
+caught|kɔːt|caught|কট|ধরেছিল|verb|silent_letters|503|cought,caugt
+taught|tɔːt|taught|টট|শিখিয়েছিল|verb|silent_letters|504|tought,taugt
+straight|streɪt|straight|স্ট্রেইট|সোজা|adjective|silent_letters|505|strait,straigt
+weigh|weɪ|weigh|ওয়ে|ওজন করা|verb|i_before_e|506|wiegh,way
+address|əˈdres|ad-dress|অ্যাড্রেস|ঠিকানা|noun|floss_doubling|507|adress,addres
+across|əˈkrɒs|a-cross|অ্যাক্রস|জুড়ে|preposition|floss_doubling|508|accross,acros
+process|ˈprəʊses|pro-cess|প্রসেস|প্রক্রিয়া|noun|floss_doubling|509|proces,procces
+progress|ˈprəʊɡres|pro-gress|প্রোগ্রেস|অগ্রগতি|noun|floss_doubling|510|progres,progess
+express|ɪkˈspres|ex-press|এক্সপ্রেস|প্রকাশ করা|verb|floss_doubling|511|expres,exspress
+impress|ɪmˈpres|im-press|ইমপ্রেস|প্রভাবিত করা|verb|floss_doubling|512|impres,inpress
+discuss|dɪˈskʌs|dis-cuss|ডিসকাস|আলোচনা করা|verb|floss_doubling|513|discus,dicuss
+possess|pəˈzes|pos-sess|পজেস|অধিকার করা|verb|floss_doubling|514|posess,possses
+happiness|ˈhæpinəs|hap-pi-ness|হ্যাপিনেস|সুখ|noun|y_to_i|515|happyness,hapiness
+sadness|ˈsædnəs|sad-ness|স্যাডনেস|দুঃখ|noun||516|sadnes,sadess
+kindness|ˈkaɪndnəs|kind-ness|কাইন্ডনেস|দয়া|noun||517|kindnes,kindess
+darkness|ˈdɑːknəs|dark-ness|ডার্কনেস|অন্ধকার|noun||518|darknes,darkess
+weakness|ˈwiːknəs|weak-ness|উইকনেস|দুর্বলতা|noun||519|weeknes,weakess
+illness|ˈɪlnəs|ill-ness|ইলনেস|অসুস্থতা|noun|floss_doubling|520|ilness,illnes
+carefully|ˈkeəfəli|care-ful-ly|কেয়ারফুলি|সাবধানে|adverb|suffix_ful_one_l|521|carefuly,carefullly
+usefully|ˈjuːsfəli|use-ful-ly|ইউজফুলি|উপযোগীভাবে|adverb|suffix_ful_one_l|522|usefuly,usefullly
+beautifully|ˈbjuːtɪfəli|beau-ti-ful-ly|বিউটিফুলি|সুন্দরভাবে|adverb|suffix_ful_one_l|523|beautifuly,beutifully
+successfully|səkˈsesfəli|suc-cess-ful-ly|সাকসেসফুলি|সফলভাবে|adverb|suffix_ful_one_l|524|sucessfully,successfuly
+quickly|ˈkwɪkli|quick-ly|কুইকলি|দ্রুত|adverb|q_takes_u|525|quikly,quicly
+slowly|ˈsləʊli|slow-ly|স্লোলি|ধীরে|adverb||526|slowely,sloly
+really|ˈrɪəli|real-ly|রিয়েলি|সত্যিই|adverb||527|realy,reallly
+finally|ˈfaɪnəli|fi-nal-ly|ফাইনালি|অবশেষে|adverb||528|finaly,finallly
+usually|ˈjuːʒuəli|u-su-al-ly|ইউজুয়ালি|সাধারণত|adverb||529|usualy,usaully
+actually|ˈæktʃuəli|ac-tu-al-ly|অ্যাকচুয়ালি|প্রকৃতপক্ষে|adverb||530|actualy,acctually
+probably|ˈprɒbəbli|pro-ba-bly|প্রবাবলি|সম্ভবত|adverb||531|probaly,probabley
+certainly|ˈsɜːtnli|cer-tain-ly|সার্টেনলি|নিশ্চয়ই|adverb|soft_c|532|certanly,certianly
+already|ɔːlˈredi|al-rea-dy|অলরেডি|ইতিমধ্যে|adverb||533|allready,alredy
+always|ˈɔːlweɪz|al-ways|অলওয়েজ|সবসময়|adverb||534|allways,alwais
+almost|ˈɔːlməʊst|al-most|অলমোস্ট|প্রায়|adverb||535|allmost,almoast
+although|ɔːlˈðəʊ|al-though|অলদো|যদিও|conjunction|silent_letters|536|allthough,altho
+together|təˈɡeðə|to-ge-ther|টুগেদার|একসাথে|adverb||537|togather,togethar
+between|bɪˈtwiːn|bet-ween|বিটুইন|মধ্যে|preposition||538|betwen,betwean
+before|bɪˈfɔː|be-fore|বিফোর|আগে|preposition||539|befor,beefore
+behind|bɪˈhaɪnd|be-hind|বিহাইন্ড|পিছনে|preposition||540|behid,behinde
+beside|bɪˈsaɪd|be-side|বিসাইড|পাশে|preposition||541|besid,beeside
+during|ˈdjʊərɪŋ|du-ring|ডিউরিং|সময়ে|preposition||542|dureing,durring
+without|wɪˈðaʊt|with-out|উইদাউট|ছাড়া|preposition||543|withought,widout
+within|wɪˈðɪn|with-in|উইদিন|ভিতরে|preposition||544|widin,withinn
+against|əˈɡenst|a-gainst|অ্যাগেইনস্ট|বিরুদ্ধে|preposition||545|agenst,againest
+towards|təˈwɔːdz|to-wards|টুওয়ার্ডস|দিকে|preposition||546|torwards,twards
+among|əˈmʌŋ|a-mong|অ্যামং|মধ্যে|preposition||547|amoung,amung
+around|əˈraʊnd|a-round|অ্যারাউন্ড|চারপাশে|preposition||548|arround,aroud
+beyond|bɪˈjɒnd|be-yond|বিয়ন্ড|ওপারে|preposition||549|beyound,beyand
+below|bɪˈləʊ|be-low|বিলো|নিচে|preposition||550|belowe,bellow
+under|ˈʌndə|un-der|আন্ডার|নিচে|preposition||551|undar,unnder
+until|ənˈtɪl|un-til|আনটিল|পর্যন্ত|preposition|floss_doubling|552|untill,untl
+since|sɪns|since|সিন্স|থেকে|preposition|soft_c|553|sinse,cince
+while|waɪl|while|হোয়াইল|যখন|conjunction||554|wile,whyle
+whose|huːz|whose|হুজ|যার|determiner|silent_letters|555|whos,hoos
+where|weə|where|হোয়্যার|কোথায়|adverb||556|were,wher
+were|wɜː|were|ওয়ার|ছিল|verb||557|where,ware
+here|hɪə|here|হিয়ার|এখানে|adverb||558|hear,heer
+hear|hɪə|hear|হিয়ার|শোনা|verb||559|here,heare
+beach|biːtʃ|beach|বিচ|সৈকত|noun|plural_es|560|beech,beatch
+peace|piːs|peace|পিস|শান্তি|noun|soft_c|561|peice,piece
+brief|briːf|brief|ব্রিফ|সংক্ষিপ্ত|adjective|i_before_e|562|breif,brif
+whole|həʊl|whole|হোল|সম্পূর্ণ|adjective|silent_letters|563|hole,whol
+hole|həʊl|hole|হোল|গর্ত|noun||564|whole,holl
+break|breɪk|break|ব্রেক|ভাঙা|verb||565|brake,braek
+brake|breɪk|brake|ব্রেক|ব্রেক|noun||566|break,brak
+weak|wiːk|weak|উইক|দুর্বল|adjective||567|week,weke
+knew|njuː|knew|নিউ|জানত|verb|silent_letters|568|new,nue
+threw|θruː|threw|থ্রু|ছুড়েছিল|verb||569|through,thru
+throw|θrəʊ|throw|থ্রো|ছোড়া|verb||570|thro,trow
+grow|ɡrəʊ|grow|গ্রো|বেড়ে ওঠা|verb||571|groe,gro
+show|ʃəʊ|show|শো|দেখানো|verb||572|sho,showe
+snow|snəʊ|snow|স্নো|তুষার|noun||573|sno,snoe
+slow|sləʊ|slow|স্লো|ধীর|adjective||574|slo,sloe
+low|ləʊ|low|লো|নিচু|adjective||575|lo,lowe
+high|haɪ|high|হাই|উঁচু|adjective|silent_letters|576|hi,hiegh
+light|laɪt|light|লাইট|আলো|noun|silent_letters|577|lite,ligth
+bright|braɪt|bright|ব্রাইট|উজ্জ্বল|adjective|silent_letters|578|brite,brigth
+fight|faɪt|fight|ফাইট|লড়াই|noun|silent_letters|579|fite,figth
+might|maɪt|might|মাইট|হতে পারে|verb|silent_letters|580|mite,migth
+sight|saɪt|sight|সাইট|দৃষ্টি|noun|silent_letters|581|site,sigth
+tight|taɪt|tight|টাইট|আঁটসাঁট|adjective|silent_letters|582|tite,tigth
+eighteen|ˌeɪˈtiːn|eigh-teen|এইটিন|আঠারো|determiner|i_before_e|583|eightteen,eiteen
+thirteen|ˌθɜːˈtiːn|thir-teen|থার্টিন|তেরো|determiner||584|thirten,tirteen
+fourteen|ˌfɔːˈtiːn|four-teen|ফোর্টিন|চৌদ্দ|determiner||585|forteen,fourten
+fifteen|ˌfɪfˈtiːn|fif-teen|ফিফটিন|পনেরো|determiner||586|fiveteen,fiften
+twenty|ˈtwenti|twen-ty|টোয়েন্টি|বিশ|determiner|y_to_i|587|twentie,twanty
+thirty|ˈθɜːti|thir-ty|থার্টি|ত্রিশ|determiner|y_to_i|588|thirtie,tirty
+hundred|ˈhʌndrəd|hun-dred|হানড্রেড|একশো|determiner||589|hundered,hundrad
+thousand|ˈθaʊznd|thou-sand|থাউজেন্ড|হাজার|determiner||590|thousend,tousand
+million|ˈmɪljən|mil-lion|মিলিয়ন|মিলিয়ন|determiner||591|milion,millon
+second|ˈsekənd|se-cond|সেকেন্ড|দ্বিতীয়|determiner|soft_c|592|secound,secend
+third|θɜːd|third|থার্ড|তৃতীয়|determiner||593|thrid,tird
+fourth|fɔːθ|fourth|ফোর্থ|চতুর্থ|determiner||594|forth,fourt
+fifth|fɪfθ|fifth|ফিফথ|পঞ্চম|determiner||595|fith,fivth
+minute|ˈmɪnɪt|mi-nute|মিনিট|মিনিট|noun||596|minit,minutte
+honour|ˈɒnə|ho-nour|অনার|সম্মান|noun|silent_letters|597|onour,honnour
+season|ˈsiːzn|sea-son|সিজন|ঋতু|noun||598|seson,seasen
+summer|ˈsʌmə|sum-mer|সামার|গ্রীষ্ম|noun|doubling_1_1_1|599|sumer,summar
+winter|ˈwɪntə|win-ter|উইন্টার|শীত|noun||600|wintar,vinter
+spring|sprɪŋ|spring|স্প্রিং|বসন্ত|noun||601|sprin,springg
+autumn|ˈɔːtəm|au-tumn|অটাম|শরৎ|noun|silent_letters|602|autum,autom
+cloud|klaʊd|cloud|ক্লাউড|মেঘ|noun||603|clowd,claud
+climate|ˈklaɪmət|cli-mate|ক্লাইমেট|জলবায়ু|noun|drop_silent_e|604|climat,clymate
+temperature|ˈtemprətʃə|tem-pe-ra-ture|টেম্পারেচার|তাপমাত্রা|noun||605|temprature,temperatur|review
+degree|dɪˈɡriː|de-gree|ডিগ্রি|ডিগ্রি|noun||606|degre,digree
+health|helθ|health|হেলথ|স্বাস্থ্য|noun||607|helth,healt
+disease|dɪˈziːz|di-sease|ডিজিজ|রোগ|noun||608|desease,diseese
+patient|ˈpeɪʃnt|pa-tient|পেশেন্ট|রোগী|noun|tion_sion|609|pateint,patiant
+nurse|nɜːs|nurse|নার্স|নার্স|noun||610|nurs,nerse
+courage|ˈkʌrɪdʒ|cou-rage|কারেজ|সাহস|noun|soft_g|611|corage,couraje
+manage|ˈmænɪdʒ|ma-nage|ম্যানেজ|পরিচালনা করা|verb|soft_g|612|manege,manaje
+message|ˈmesɪdʒ|mes-sage|মেসেজ|বার্তা|noun|soft_g|613|mesage,messaje
+package|ˈpækɪdʒ|pack-age|প্যাকেজ|প্যাকেট|noun|soft_g|614|packege,packaje
+percentage|pəˈsentɪdʒ|per-cen-tage|পার্সেন্টেজ|শতাংশ|noun|soft_g|615|percentege,percentaje
+average|ˈævrɪdʒ|a-ve-rage|অ্যাভারেজ|গড়|noun|soft_g|616|avrage,averaje
+damage|ˈdæmɪdʒ|da-mage|ড্যামেজ|ক্ষতি|noun|soft_g|617|damege,damaje
+marriage|ˈmærɪdʒ|mar-riage|ম্যারেজ|বিয়ে|noun|soft_g|618|marrage,mariage
+cabbage|ˈkæbɪdʒ|cab-bage|ক্যাবেজ|বাঁধাকপি|noun|soft_g|619|cabage,cabbaje
+storage|ˈstɔːrɪdʒ|sto-rage|স্টোরেজ|সংরক্ষণ|noun|soft_g|620|storege,storaje

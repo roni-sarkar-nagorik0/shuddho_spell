@@ -1,0 +1,140 @@
+আমি একজন ছাত্র।|I am a student.|I'm a student.;I am a pupil.|are,were,an|subject_verb_agreement,article_a_an|easy
+সে একজন শিক্ষক।|She is a teacher.|She's a teacher.;She is a school teacher.|are,am,an|subject_verb_agreement,article_a_an|easy
+আমরা স্কুলে যাই।|We go to school.|We go to the school.;We attend school.|goes,going,went|subject_verb_agreement|easy
+তারা বাড়িতে থাকে।|They live in a house.|They live in the house.;They stay in a house.|lives,living,an|subject_verb_agreement,article_a_an|easy
+আমার একটি বই আছে।|I have a book.|I have one book.;I've got a book.|has,an,having|subject_verb_agreement,article_a_an|easy
+তার একটি গাড়ি আছে।|He has a car.|He's got a car.;He owns a car.|have,an,having|subject_verb_agreement,article_a_an|easy
+এটি একটি আপেল।|This is an apple.|That is an apple.;It is an apple.|a,are,were|article_a_an|easy
+সেটি একটি কমলা।|That is an orange.|This is an orange.;It is an orange.|a,are,am|article_a_an|easy
+আমি পানি পান করি।|I drink water.|I am drinking water.;I have water.|drinks,drank,drinking|subject_verb_agreement|easy
+সে ভাত খায়।|He eats rice.|He is eating rice.;He has rice.|eat,ate,eating|subject_verb_agreement|easy
+আমার মা রান্না করেন।|My mother cooks.|My mother is cooking.;Mum cooks.|cook,cooked,cooking|subject_verb_agreement|easy
+আমার বাবা কাজ করেন।|My father works.|My father is working.;Dad works.|work,worked,working|subject_verb_agreement|easy
+বইটি টেবিলের উপরে।|The book is on the table.|The book is on a table.;There is a book on the table.|in,under,are|article_a_an|easy
+বিড়ালটি চেয়ারের নিচে।|The cat is under the chair.|A cat is under the chair.;The cat sits under the chair.|on,over,are|place_prepositions|easy
+আমি সকালে উঠি।|I get up in the morning.|I wake up in the morning.;I rise in the morning.|on,at,gets|place_prepositions|easy
+আমরা রাতে ঘুমাই।|We sleep at night.|We go to sleep at night.;We sleep during the night.|in,on,sleeps|place_prepositions|easy
+সে স্কুলে পড়ে।|She studies at school.|She studies in school.;She is a student at school.|study,studied,on|subject_verb_agreement,place_prepositions|easy
+তারা বাজারে যায়।|They go to the market.|They go to market.;They visit the market.|goes,went,in|subject_verb_agreement,place_prepositions|easy
+আমি ইংরেজি শিখি।|I learn English.|I am learning English.;I study English.|learns,learnt,learning|subject_verb_agreement|easy
+সে বাংলা বলে।|He speaks Bangla.|He is speaking Bangla.;He talks in Bangla.|speak,spoke,speaking|subject_verb_agreement|easy
+আজ আবহাওয়া গরম।|Today the weather is hot.|The weather is hot today.;It is hot today.|are,were,was|subject_verb_agreement|easy
+আজ আবহাওয়া ঠান্ডা।|Today the weather is cold.|The weather is cold today.;It is cold today.|are,hot,was|subject_verb_agreement|easy
+আমার একটি ছোট ঘর আছে।|I have a small room.|I have got a small room.;My room is small.|has,an,big|article_a_an|easy
+তার একটি বড় বাড়ি আছে।|She has a big house.|She has got a big house.;Her house is big.|have,an,small|article_a_an|easy
+আমি খুশি।|I am happy.|I'm happy.;I feel happy.|is,are,was|subject_verb_agreement|easy
+সে দুঃখিত।|He is sad.|He's sad.;He feels sad.|am,are,were|subject_verb_agreement|easy
+বাচ্চারা খেলছে।|The children are playing.|The children play.;Children are playing.|is,was,plays|subject_verb_agreement|easy
+পাখিটি উড়ছে।|The bird is flying.|A bird is flying.;The bird flies.|are,were,fly|subject_verb_agreement|easy
+আমি একটি চিঠি লিখি।|I write a letter.|I am writing a letter.;I write letters.|writes,wrote,an|subject_verb_agreement,article_a_an|easy
+সে একটি বই পড়ে।|She reads a book.|She is reading a book.;She reads books.|read,an,readed|subject_verb_agreement,article_a_an|easy
+আমরা প্রতিদিন হাঁটি।|We walk every day.|We walk daily.;Every day we walk.|walks,walked,walking|subject_verb_agreement|easy
+তারা দ্রুত দৌড়ায়।|They run quickly.|They run fast.;They are running quickly.|runs,ran,quick|subject_verb_agreement|easy
+দরজাটি খোলা।|The door is open.|The door is opened.;That door is open.|are,close,were|subject_verb_agreement|easy
+জানালাটি বন্ধ।|The window is closed.|The window is shut.;That window is closed.|are,open,were|subject_verb_agreement|easy
+আমার বন্ধু এখানে থাকে।|My friend lives here.|My friend stays here.;My friend is here.|live,there,living|subject_verb_agreement|easy
+তার বোন সেখানে কাজ করে।|His sister works there.|His sister is working there.;His sister has a job there.|work,here,worked|subject_verb_agreement|easy
+আমি চা পছন্দ করি।|I like tea.|I love tea.;I enjoy tea.|likes,liked,liking|subject_verb_agreement|easy
+সে দুধ পছন্দ করে না।|She does not like milk.|She doesn't like milk.;She dislikes milk.|do,likes,dont|subject_verb_agreement|medium
+আমাদের অনেক টাকা নেই।|We do not have much money.|We don't have much money.;We have little money.|does,many,has|fewer_less|medium
+তাদের কম বন্ধু আছে।|They have fewer friends.|They have few friends.;They do not have many friends.|less,much,has|fewer_less|medium
+আমার কম সময় আছে।|I have less time.|I have little time.;I do not have much time.|fewer,many,few|fewer_less|medium
+বাজারে কম মানুষ আছে।|There are fewer people at the market.|There are few people at the market.;Not many people are at the market.|less,much,is|fewer_less,place_prepositions|medium
+সে সাবধানে হাঁটে।|He walks carefully.|He walks with care.;He is walking carefully.|walk,careful,quickly|subject_verb_agreement|medium
+মেয়েটি সুন্দরভাবে গায়।|The girl sings beautifully.|The girl sings well.;She sings beautifully.|sing,beautiful,sang|subject_verb_agreement|medium
+আমি বাসে যাই।|I go by bus.|I travel by bus.;I take the bus.|goes,in,on|place_prepositions|easy
+সে ট্রেনে আসে।|She comes by train.|She travels by train.;She takes the train.|come,in,on|place_prepositions|easy
+বইটি ব্যাগের ভিতরে।|The book is in the bag.|A book is in the bag.;There is a book in the bag.|on,under,are|place_prepositions|easy
+ছবিটি দেয়ালে আছে।|The picture is on the wall.|A picture is on the wall.;There is a picture on the wall.|in,under,are|place_prepositions|easy
+আমরা সাতটায় খাই।|We eat at seven.|We have dinner at seven.;We eat at seven o'clock.|in,on,eats|place_prepositions|easy
+সে সোমবারে আসে।|He comes on Monday.|He arrives on Monday.;He comes every Monday.|in,at,come|place_prepositions|medium
+আমি জানুয়ারিতে জন্মেছি।|I was born in January.|I was born in the month of January.;My birthday is in January.|on,at,were|place_prepositions|medium
+বাচ্চাটি স্কুলে আছে।|The child is at school.|The child is in school.;The child has gone to school.|on,are,were|place_prepositions|easy
+আমি একটি প্রশ্ন জিজ্ঞাসা করি।|I ask a question.|I have a question.;I want to ask a question.|asks,an,asked|article_a_an|easy
+সে উত্তর দেয়।|She gives the answer.|She answers.;She gives an answer.|give,gived,gave|subject_verb_agreement|easy
+আমি সাহায্য চাই।|I want help.|I need help.;I would like help.|wants,wanted,helps|subject_verb_agreement|easy
+সে আমাকে সাহায্য করে।|He helps me.|He gives me help.;He is helping me.|help,I,helped|subject_verb_agreement|medium
+আমরা একসাথে পড়ি।|We study together.|We learn together.;We read together.|studies,studys,studied|subject_verb_agreement,y_to_i|medium
+তারা কঠিন চেষ্টা করে।|They try hard.|They make an effort.;They try their best.|tries,trys,tried|subject_verb_agreement,y_to_i|medium
+সে প্রতিদিন চেষ্টা করে।|She tries every day.|She tries daily.;Every day she tries.|trys,try,tryes|y_to_i|medium
+বাচ্চাটি কাঁদছে।|The baby is crying.|The baby cries.;A baby is crying.|babys,babies,cryes|y_to_i|medium
+মেয়েরা গল্প পড়ে।|The girls read stories.|The girls read the stories.;Girls read stories.|storys,storyes,reads|y_to_i,plural_es|medium
+শহরগুলো বড়।|The cities are big.|These cities are big.;The cities are large.|citys,cityes,is|y_to_i,plural_es|medium
+আমার দুটি ছুরি আছে।|I have two knives.|I have got two knives.;There are two knives.|knifes,knive,has|f_to_ves|medium
+গাছের পাতাগুলো সবুজ।|The leaves are green.|The leaves of the tree are green.;Its leaves are green.|leafs,leafes,is|f_to_ves|medium
+তাদের জীবন সহজ নয়।|Their lives are not easy.|Their life is not easy.;Life is not easy for them.|lifes,there,is|f_to_ves,i_before_e|medium
+আমি দুটি বাক্স কিনি।|I buy two boxes.|I buy two box.;I purchase two boxes.|boxs,boxis,buys|plural_es|medium
+সে তিনটি বাস দেখে।|He sees three buses.|He sees three bus.;He can see three buses.|buss,busses,see|plural_es|medium
+আমরা অনেক ক্লাস নিই।|We take many classes.|We attend many classes.;We have many classes.|classs,classis,takes|plural_es|medium
+তারা গির্জায় যায়।|They go to the churches.|They visit the churches.;They go to church.|churchs,churchis,goes|plural_es|medium
+আমি থালা ধুই।|I wash the dishes.|I do the dishes.;I clean the dishes.|dishs,dishis,washes|plural_es|medium
+আমি বিশ্বাস করি সে সৎ।|I believe he is honest.|I think he is honest.;I believe that he is honest.|beleive,belive,are|i_before_e|medium
+সে চিঠিটি পেয়েছে।|She received the letter.|She has received the letter.;She got the letter.|recieved,receved,receive|i_before_e|medium
+আমাকে এক টুকরো দাও।|Give me a piece.|Give me one piece.;Please give me a piece.|peice,pice,an|i_before_e,article_a_an|medium
+সে দলের প্রধান।|He is the chief of the team.|He is the head of the team.;He leads the team.|cheif,chef,are|i_before_e|medium
+ছাদটি সাদা।|The ceiling is white.|That ceiling is white.;The ceiling is painted white.|cieling,ceilling,are|i_before_e|medium
+আমরা আমাদের লক্ষ্য অর্জন করি।|We achieve our goal.|We reach our goal.;We achieve our goals.|acheive,achive,achieves|i_before_e|medium
+সে থামছে।|He is stopping.|He stops.;He has stopped.|stoping,stopps,stop|doubling_1_1_1|medium
+তারা দৌড়াচ্ছে।|They are running.|They run.;They have started running.|runing,runns,runs|doubling_1_1_1|medium
+আমি সাঁতার কাটছি।|I am swimming.|I swim.;I have started swimming.|swiming,swimms,swims|doubling_1_1_1|medium
+সে বসছে।|She is sitting.|She sits.;She has sat down.|siting,sitts,sits|doubling_1_1_1|medium
+আমরা আশা করছি।|We are hoping.|We hope.;We have hope.|hopeing,hopping,hopes|drop_silent_e|medium
+সে আসছে।|He is coming.|He comes.;He will come.|comeing,comming,comes|drop_silent_e|medium
+তারা এটি ব্যবহার করছে।|They are using it.|They use it.;They have used it.|useing,usseing,uses|drop_silent_e|medium
+আমি একটি কেক বানাচ্ছি।|I am making a cake.|I make a cake.;I bake a cake.|makeing,an,makes|drop_silent_e,article_a_an|medium
+সেটি একটি সুন্দর ছবি।|That is a beautiful picture.|It is a beautiful picture.;What a beautiful picture.|an,beautifull,are|suffix_ful_one_l,article_a_an|medium
+সে খুব সহায়ক।|He is very helpful.|He is really helpful.;He helps a lot.|helpfull,helful,are|suffix_ful_one_l|medium
+বইটি উপযোগী।|The book is useful.|That book is useful.;The book is very useful.|usefull,usful,are|suffix_ful_one_l|medium
+সাবধান হও।|Be careful.|Please be careful.;Take care.|carefull,carful,is|suffix_ful_one_l|easy
+সে অসুখী।|She is unhappy.|She is not happy.;She feels unhappy.|unhapy,unhappi,are|prefix_keeps_root|medium
+আমি অক্ষম।|I am unable.|I cannot.;I am not able.|unabel,unnable,is|prefix_keeps_root|medium
+তিনি ভুল বানান করেন।|He misspells the word.|He spells the word wrongly.;He gets the spelling wrong.|mispells,misspell,misspelled|prefix_keeps_root|hard
+তারাগুলো অদৃশ্য হয়ে যায়।|The stars disappear.|The stars vanish.;The stars go away.|dissapear,disapear,disappears|prefix_keeps_root|hard
+সে দ্রুত দৌড়ায়।|She runs quickly.|She runs fast.;She is a quick runner.|quick,quikly,run|q_takes_u|medium
+রানি প্রাসাদে থাকেন।|The queen lives in the palace.|The queen stays in the palace.;The queen's home is the palace.|qeen,kween,live|q_takes_u,place_prepositions|medium
+ঘরটি শান্ত।|The room is quiet.|That room is quiet.;The room is silent.|quite,qiet,are|q_takes_u|medium
+এটি বেশ ভালো।|This is quite good.|That is quite good.;It is fairly good.|quiet,qite,are|q_takes_u|medium
+সেতুটি লম্বা।|The bridge is long.|That bridge is long.;The bridge is very long.|brige,bridg,are|dge_after_short_vowel|medium
+বিচারক এসেছেন।|The judge has arrived.|The judge arrived.;The judge is here.|judg,juge,have|dge_after_short_vowel,no_final_v|medium
+সে বলটি ধরে।|He catches the ball.|He catches a ball.;He gets the ball.|cach,katches,catch|tch_after_short_vowel|medium
+আমি ঘড়িটি দেখি।|I watch the clock.|I look at the clock.;I am watching the clock.|wach,votch,watches|tch_after_short_vowel|medium
+রান্নাঘরটি পরিষ্কার।|The kitchen is clean.|That kitchen is clean.;The kitchen looks clean.|kichen,kitchan,are|tch_after_short_vowel|medium
+সে দরজাটি তালা দেয়।|She locks the door.|She shuts and locks the door.;She is locking the door.|lok,loc,lock|ck_after_short_vowel|medium
+বাচ্চাটি অসুস্থ।|The child is sick.|That child is sick.;The child feels sick.|sik,sic,are|ck_after_short_vowel|medium
+আমি একটি ফল বাছি।|I pick a fruit.|I choose a fruit.;I take a fruit.|pik,an,picks|ck_after_short_vowel,article_a_an|medium
+তার মুখ সুন্দর।|Her face is nice.|She has a nice face.;Her face looks nice.|fase,nise,are|soft_c|medium
+দামটি বেশি।|The price is high.|That price is high.;The price is too high.|prise,pryce,are|soft_c|medium
+আমরা দৌড় জিতি।|We win the race.|We won the race.;We are winning the race.|rase,rais,wins|soft_c|medium
+জায়গাটি শান্ত।|The place is quiet.|That place is quiet.;The place is peaceful.|plase,quite,are|soft_c,q_takes_u|medium
+তার বয়স কত?|What is his age?|How old is he?;What age is he?|aje,aige,are|soft_g|medium
+পাখিটি খাঁচায় আছে।|The bird is in the cage.|A bird is in the cage.;There is a bird in the cage.|caje,kage,on|soft_g,place_prepositions|medium
+গ্রামটি ছোট।|The village is small.|That village is small.;The village is very small.|vilage,villege,are|soft_g|medium
+আমি একটি পরিবর্তন চাই।|I want a change.|I need a change.;I would like a change.|chanje,an,wants|soft_g,article_a_an|medium
+বড় ঘরটি খালি।|The large room is empty.|That large room is empty.;The big room is empty.|larje,larg,are|soft_g|medium
+সে একটি কমলা খায়।|She eats an orange.|She is eating an orange.;She has an orange.|a,orenge,eat|article_a_an,soft_g|medium
+আমি একটি ডিম রান্না করি।|I cook an egg.|I am cooking an egg.;I make an egg.|a,eg,cooks|article_a_an|easy
+সে একটি ঘণ্টা অপেক্ষা করে।|He waits an hour.|He waits for an hour.;He is waiting an hour.|a,our,wait|article_a_an|medium
+এটি একটি বিশ্ববিদ্যালয়।|This is a university.|That is a university.;It is a university.|an,are,were|article_a_an|hard
+আমার একটি ছাতা আছে।|I have an umbrella.|I have got an umbrella.;There is an umbrella with me.|a,has,umbrela|article_a_an|medium
+আমরা এক ঘণ্টা পড়ি।|We study for one hour.|We study for an hour.;We read for one hour.|a,studies,our|article_a_an|medium
+সে ডাক্তার নয়।|He is not a doctor.|He isn't a doctor.;He is no doctor.|an,are,docter|article_a_an|medium
+আমার কাছে কম টাকা আছে।|I have less money.|I do not have much money.;I have little money.|fewer,few,many|fewer_less|medium
+তার কম বই আছে।|She has fewer books.|She has few books.;She does not have many books.|less,much,have|fewer_less|medium
+কম মানুষ এসেছে।|Fewer people came.|Not many people came.;Few people came.|less,much,comes|fewer_less|medium
+কম চিনি ব্যবহার করো।|Use less sugar.|Use a little sugar.;Do not use much sugar.|fewer,few,suger|fewer_less|medium
+আমি টেবিলে বসি।|I sit at the table.|I sit by the table.;I take a seat at the table.|in,on,sits|place_prepositions|easy
+বইটি তাকের উপরে।|The book is on the shelf.|A book is on the shelf.;There is a book on the shelf.|in,at,shelfs|place_prepositions,f_to_ves|medium
+সে ঘরে ঢোকে।|He goes into the room.|He enters the room.;He walks into the room.|in,onto,go|place_prepositions|medium
+আমরা নদীর কাছে থাকি।|We live near the river.|We stay near the river.;Our home is near the river.|in,rivar,lives|place_prepositions,no_final_v|medium
+গাড়িটি বাড়ির সামনে।|The car is in front of the house.|A car is in front of the house.;The car stands in front of the house.|on,behind,are|place_prepositions|medium
+সে আমাকে ভালোবাসে।|She loves me.|She likes me a lot.;She cares for me.|luv,love,I|no_final_v|medium
+আমরা আগামীকাল রওনা হই।|We leave tomorrow.|We are leaving tomorrow.;We depart tomorrow.|leav,leve,leaves|no_final_v|medium
+ট্রেনটি ছয়টায় পৌঁছায়।|The train arrives at six.|The train comes at six.;The train reaches at six.|arive,in,arrive|no_final_v,place_prepositions|medium
+তিনি খাবার পরিবেশন করেন।|She serves the food.|She is serving the food.;She gives out the food.|serv,surve,serve|no_final_v|medium
+টাকা বাঁচাও।|Save money.|Save your money.;Keep your money.|sav,saive,saves|no_final_v|easy
+বইটি টেবিলের উপরে নেই।|The book is not on the table.|The book is not on a table.;There is no book on the table.|in,under,are|place_prepositions|medium
+সে ভালো ইংরেজি বলে।|He speaks good English.|He speaks English well.;His English is good.|gud,speak,goot|subject_verb_agreement|medium
+আমার পরিবার বড়।|My family is big.|My family is large.;I have a big family.|familly,are,famely|y_to_i,subject_verb_agreement|medium
+সে প্রতিদিন কাজ করে।|She works every day.|She works daily.;Every day she works.|work,worked,everyday|subject_verb_agreement|medium
+আমি সকালে চা খাই।|I drink tea in the morning.|I have tea in the morning.;In the morning I drink tea.|on,at,drinks|place_prepositions|easy
+তারা সন্ধ্যায় আসে।|They come in the evening.|They arrive in the evening.;In the evening they come.|on,at,comes|place_prepositions|easy

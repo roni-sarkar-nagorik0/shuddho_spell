@@ -1,0 +1,73 @@
+{
+  "app": {
+    "name": "ShuddhoSpell",
+    "tagline": "Spell it. Say it. Mean it."
+  },
+  "landing": {
+    "subtitle": "A 30-day English course built for Bangla speakers.",
+    "chooseLanguage": "Choose your language",
+    "english": "English (Aa)",
+    "bangla": "বাংলা (অআ)",
+    "continue": "Continue"
+  },
+  "login": {
+    "heading": "Sign in.",
+    "subtitle": "One tap with Google. It is the only way in — nothing to remember, nothing to reset.",
+    "google": "Continue with Google",
+    "failed": "Google sign-in could not start. Try again."
+  },
+  "nav": {
+    "home": "Home",
+    "course": "Course",
+    "mistakes": "Mistakes",
+    "profile": "Profile",
+    "settings": "Settings",
+    "help": "Help",
+    "primary": "Primary",
+    "breadcrumb": "Breadcrumb",
+    "dashboard": "Today",
+    "program": "Program",
+    "practice": "Practice",
+    "weakSpots": "Weak spots",
+    "library": "Library",
+    "progress": "Progress",
+    "exams": "Exams",
+    "collapse": "Collapse",
+    "expand": "Expand"
+  },
+  "dashboard": {
+    "dayOf": "Day {day} of {total}",
+    "start": "Start day {day}",
+    "progress": "Progress",
+    "currentStreak": "Current streak",
+    "days": "days",
+    "quickStats": "Quick stats",
+    "wordsLearned": "Words learned",
+    "accuracy": "Accuracy",
+    "mistakesToFix": "Mistakes to fix",
+    "journey": "30 day journey",
+    "reviewMistakes": "Review mistakes"
+  },
+  "drill": {
+    "exitPractice": "Exit practice",
+    "questionOf": "Question {current} of {total}",
+    "playWord": "Play the word",
+    "nextWord": "Next word",
+    "targetWord": "Target word",
+    "spellingRuleCheck": "Spelling rule check",
+    "youWrote": "You wrote {word}.",
+    "syllableStress": "Syllable stress",
+    "previousAttempt": "Previous attempt",
+    "playBack": "Play back",
+    "listening": "Listening…"
+  },
+  "error": {
+    "generic": "Something went wrong.",
+    "notFound": "That page does not exist."
+  },
+  "shell": {
+    "session": "Session",
+    "streak": "Streak",
+    "signedInAs": "Signed in as {name}"
+  }
+}

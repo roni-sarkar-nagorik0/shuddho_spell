@@ -1,0 +1,12 @@
+{
+  "doc": "/**\n * Week 3 — work, study and the wider world.\n *\n * Longer words, unstressed syllables, and the doubling that happens (or does\n * not) when a suffix arrives. This is where the two rules from week 1 stop\n * being separate exercises and start colliding: `hoping` and `hopping` differ\n * by one letter and one rule, and the pair is in here on purpose, as are\n * `writing`/`written`, `desert`/`dessert` and the -ise verbs whose ending a\n * learner has probably seen spelled both ways.\n *\n * The irregular plurals arrive here too — children, women, feet, teeth, mice,\n * knives, leaves — because a learner who has just been taught -s and -es needs\n * the exceptions before they over-apply the rule to everything.\n */\n",
+  "days": [
+    { "title": "Work and money", "focus": "The -ment nouns, and the vocabulary of a job, a salary and a budget." },
+    { "title": "Machines and science", "focus": "Longer words with unstressed syllables, and the -cience/-cient family." },
+    { "title": "Study and the city", "focus": "University, library, dictionary — the -ary and -ory endings that sound alike." },
+    { "title": "Land, weather and animals", "focus": "The natural world, and desert against dessert." },
+    { "title": "Hoping and hopping", "focus": "The two rules colliding: one letter, one doubling, two different words." },
+    { "title": "Plurals that break the rule", "focus": "Children, women, feet, teeth, knives, leaves — before over-applying -s." },
+    { "title": "Character and choice", "focus": "The -ous and -ive adjectives, and the -ise verbs learners see spelled both ways." }
+  ]
+}

@@ -1,0 +1,140 @@
+স্বাধীনতা মূল্যবান।|Independence is precious.|Independence is valuable.;Freedom is precious.|independance,are,precius|soft_c|hard
+শিক্ষার গুরুত্ব অনেক।|The importance of education is great.|Education is very important.;Education has great importance.|importence,are,educasion|soft_c,tion_sion|hard
+তার অভিজ্ঞতা আছে।|He has experience.|He is experienced.;Experience is what he has.|experiance,have,expirience|soft_c|hard
+আমার পছন্দ ভিন্ন।|My preference is different.|I prefer something else.;My choice is different.|preferance,are,diferent|soft_c|hard
+তার প্রভাব বড়।|His influence is great.|That influence is great.;He has great influence.|influance,are,influense|soft_c|hard
+পরিণতি গুরুতর।|The consequence is serious.|That consequence is serious.;The result is serious.|consequance,are,serius|q_takes_u|hard
+তার কর্মদক্ষতা ভালো।|His performance is good.|That performance is good.;He performs well.|performence,are,preformance|soft_c|hard
+তার চেহারা বদলেছে।|His appearance has changed.|He looks different now.;His look has changed.|appearence,have,chanjed|soft_c,soft_g|hard
+উপস্থিতি বাধ্যতামূলক।|Attendance is compulsory.|Attendance is required.;You must attend.|attendence,are,compulsary|soft_c|hard
+আমার সহায়তা দরকার।|I need assistance.|I need help.;Assistance is what I need.|assistence,needs,asistance|soft_c|hard
+রক্ষণাবেক্ষণ ব্যয়বহুল।|The maintenance is expensive.|Maintenance costs a lot.;Maintenance is costly.|maintainance,are,expensiv|soft_c,no_final_v|hard
+বিমা প্রয়োজন।|Insurance is necessary.|Insurance is needed.;We need insurance.|insurence,are,neccessary|soft_c|hard
+নির্দেশনা সহায়ক।|The guidance is helpful.|That guidance is helpful.;The guidance helps.|guidence,are,helpfull|silent_letters,suffix_ful_one_l|hard
+ভারসাম্য গুরুত্বপূর্ণ।|Balance is important.|Balance matters.;Keeping balance is important.|balence,are,importent|soft_c|medium
+নীরবতা সোনার মতো।|Silence is golden.|Silence is like gold.;Being silent is golden.|silance,are,goldenn|soft_c|hard
+বুদ্ধিমত্তা যথেষ্ট নয়।|Intelligence is not enough.|Intelligence alone is not enough.;Being clever is not enough.|inteligence,are,enuf|soft_g,silent_letters|hard
+সুবিধাটি স্পষ্ট।|The convenience is obvious.|That convenience is obvious.;The convenience is clear.|conveniance,are,obvius|no_final_v|hard
+আবিষ্কারটি গুরুত্বপূর্ণ।|The discovery is important.|That discovery is important.;The discovery matters.|discovary,are,importent|no_final_v|hard
+রহস্যটি রয়ে গেছে।|The mystery remains.|That mystery remains.;The mystery is unsolved.|mistery,remain,remians|y_to_i|hard
+দৃশ্যটি সুন্দর।|The scenery is beautiful.|That scenery is beautiful.;The view is beautiful.|scenary,are,beutiful|soft_c|hard
+গাড়িটি স্থির।|The car is stationary.|That car is stationary.;The car is not moving.|stationery,are,statonary|tion_sion|hard
+আমার লেখার সরঞ্জাম দরকার।|I need stationery.|I need writing materials.;Stationery is what I need.|stationary,needs,stationry|tion_sion|hard
+সীমানাটি পরিষ্কার।|The boundary is clear.|That boundary is clear.;The border is clear.|boundry,are,cleare|y_to_i|hard
+ফেব্রুয়ারি ছোট মাস।|February is a short month.|February is the shortest month.;The month of February is short.|febuary,an,munth|article_a_an|hard
+বুধবার আমরা মিলিত হই।|We meet on Wednesday.|We meet every Wednesday.;On Wednesday we meet.|wenesday,in,meets|place_prepositions|hard
+সংসদ বসেছে।|The parliament has met.|Parliament met.;The parliament is in session.|parliment,have,mett|subject_verb_agreement|hard
+গণতন্ত্র জরুরি।|Democracy is essential.|Democracy is necessary.;We need democracy.|democrasy,are,esential|soft_c|hard
+অর্থনীতি বাড়ছে।|The economy is growing.|The economy grows.;Economic growth is happening.|economey,are,groing|y_to_i|hard
+সাহিত্য মানুষকে বদলায়।|Literature changes people.|Literature changes a person.;People are changed by literature.|literatur,change,pepole|subject_verb_agreement|hard
+গণিত কঠিন নয়।|Mathematics is not hard.|Maths is not hard.;Mathematics is easy.|mathamatics,are,hardd|subject_verb_agreement|hard
+রসায়ন আকর্ষণীয়।|Chemistry is interesting.|Chemistry is very interesting.;I find chemistry interesting.|chemistery,are,intresting|y_to_i|hard
+শল্যচিকিৎসা সফল হয়েছিল।|The surgery was successful.|That surgery succeeded.;The operation was successful.|surgary,were,sucessful|soft_g|hard
+লক্ষণগুলো গুরুতর।|The symptoms are serious.|Those symptoms are serious.;The signs are serious.|symtom,is,serius|subject_verb_agreement|hard
+ব্যবস্থাপত্রটি প্রয়োজন।|The prescription is needed.|That prescription is needed.;We need the prescription.|priscription,are,neded|tion_sion|hard
+আবাসন ব্যয়বহুল।|The accommodation is expensive.|That accommodation is expensive.;Accommodation costs a lot.|accomodation,are,expensiv|tion_sion,no_final_v|hard
+এটি একটি বিরল ঘটনা।|This is a rare occurrence.|That is a rare occurrence.;It rarely happens.|an,occurence,are|article_a_an,soft_c|hard
+আমি বিব্রত হয়েছিলাম।|I was embarrassed.|I felt embarrassed.;Embarrassment came over me.|embarassed,were,embarrased|floss_doubling|hard
+তার পেশা সম্মানজনক।|His profession is respectable.|That profession is respectable.;His job is respectable.|profesion,are,respectible|tion_sion,able_ible|hard
+তার যোগ্যতা আছে।|He has the qualification.|He is qualified.;The qualification is his.|qualifcation,have,qalification|q_takes_u|hard
+আমার সনদ হারিয়ে গেছে।|I have lost my certificate.|My certificate is lost.;I lost the certificate.|certifcate,has,sertificate|soft_c|hard
+আবেদনটি জমা দাও।|Submit the application.|Please submit the application.;Hand in the application.|aplication,submits,submitt|tion_sion,doubling_1_1_1|hard
+যোগাযোগ গুরুত্বপূর্ণ।|Communication is important.|Communication matters.;Good communication is important.|comunication,are,importent|tion_sion|hard
+সংগঠনটি বড়।|The organisation is large.|That organisation is large.;It is a large organisation.|organization,are,larje|tion_sion,soft_g|hard
+পরীক্ষা আগামীকাল।|The examination is tomorrow.|The exam is tomorrow.;Tomorrow is the examination.|examinaton,are,tommorow|tion_sion|hard
+প্রস্তুতি প্রয়োজন।|Preparation is necessary.|Preparation is needed.;We need preparation.|preperation,are,neccessary|tion_sion|hard
+মনোযোগ প্রয়োজন।|Concentration is required.|Concentration is needed.;You need concentration.|concentraton,are,requier|soft_c,q_takes_u|hard
+তার সংকল্প আছে।|He has determination.|He is determined.;Determination is what he has.|determinaton,have,determinasion|tion_sion|hard
+আমি আপনার বিবেচনার জন্য কৃতজ্ঞ।|I am grateful for your consideration.|Thank you for your consideration.;I thank you for the consideration.|consideraton,is,greatful|soft_c|hard
+সন্তুষ্টি সবচেয়ে জরুরি।|Satisfaction matters most.|Satisfaction is most important.;What matters most is satisfaction.|satisfacton,matter,importent|tion_sion|hard
+হতাশা স্বাভাবিক।|Disappointment is natural.|Disappointment is normal.;It is natural to be disappointed.|dissapointment,are,naturel|prefix_keeps_root|hard
+ঘোষণাটি এসেছে।|The announcement has come.|The announcement came.;An announcement was made.|anouncement,have,announcment|soft_c|hard
+বিজ্ঞাপনটি বড়।|The advertisement is big.|That advertisement is large.;The advert is big.|advertisment,are,advertizement|drop_silent_e|hard
+তার অবসর কাছাকাছি।|His retirement is near.|Retirement is near for him.;He is close to retirement.|retirment,are,neer|drop_silent_e|hard
+উত্তেজনা বেড়েছে।|The excitement has increased.|The excitement grew.;Excitement has grown.|excitment,have,incraesed|drop_silent_e|hard
+তার শক্তি ফিরে এসেছে।|His strength has returned.|He has got his strength back.;Strength has returned to him.|stength,have,retruned|subject_verb_agreement|hard
+দৈর্ঘ্য যথেষ্ট নয়।|The length is not enough.|That length is not enough.;The length is insufficient.|lenght,are,enuf|silent_letters|hard
+সত্য বেরিয়ে আসে।|The truth comes out.|Truth comes out.;The truth is revealed.|truthh,come,trueth|subject_verb_agreement|medium
+সম্পদ সুখ আনে না।|Wealth does not bring happiness.|Money does not bring happiness.;Happiness does not come from wealth.|welth,do,happyness|y_to_i|hard
+গভীর শ্বাস নাও।|Take a deep breath.|Breathe deeply.;Take a deep breathe.|breathe,an,breth|article_a_an|hard
+আমি শ্বাস নিতে পারি না।|I cannot breathe.|I am unable to breathe.;Breathing is hard for me.|breath,breathes,breeth|drop_silent_e|hard
+জামাকাপড় শুকনো।|The clothes are dry.|Those clothes are dry.;The washing is dry.|cloths,is,clothse|silent_letters|hard
+কাপড়টি মসৃণ।|The cloth is smooth.|That cloth is smooth.;The material is smooth.|clothe,are,smoth|subject_verb_agreement|medium
+দক্ষিণী অঞ্চল গরম।|The southern region is hot.|The south is hot.;Southern areas are hot.|southren,are,hott|subject_verb_agreement|hard
+কৌশলটি নতুন।|The technique is new.|That technique is new.;It is a new method.|technic,are,nue|q_takes_u|hard
+প্রতিটি মানুষ অনন্য।|Every person is unique.|Each person is unique.;All people are unique.|uniqe,are,pepole|q_takes_u|hard
+আমার সহকর্মী সাহায্য করেন।|My colleague helps.|My colleague is helping.;Help comes from my colleague.|colegue,help,halps|silent_letters|hard
+তার জিহ্বা ধারালো।|His tongue is sharp.|He has a sharp tongue.;His words are sharp.|tounge,are,sharpp|silent_letters|hard
+সংলাপটি স্বাভাবিক।|The dialogue is natural.|That dialogue is natural.;The conversation is natural.|dialoge,are,naturel|silent_letters|hard
+সময়সূচি বদলেছে।|The schedule has changed.|That schedule changed.;There is a change of schedule.|schedual,have,chanjed|silent_letters,soft_g|hard
+স্থপতি নকশা করেন।|The architect designs.|The architect makes designs.;Designs come from the architect.|architec,design,desine|silent_letters|hard
+আমার পেটে ব্যথা।|My stomach aches.|I have stomach ache.;My stomach hurts.|stomache,ache,ake|silent_letters|hard
+প্রতিধ্বনি শোনা যায়।|The echo can be heard.|You can hear the echo.;An echo is heard.|eco,hears,ecoh|silent_letters|hard
+এটি একটি রাসায়নিক বিক্রিয়া।|This is a chemical reaction.|That is a chemical reaction.;It is a chemical process.|an,chemicle,reacsion|article_a_an,tion_sion|hard
+সমাধানটি ব্যবহারিক।|The solution is practical.|That solution is practical.;It is a practical solution.|practicle,are,solusion|tion_sion|hard
+তার যুক্তি যৌক্তিক।|His argument is logical.|That argument is logical.;His reasoning is logical.|logicle,are,arguement|soft_g|hard
+সে নির্ভরযোগ্য।|He is reliable.|He can be relied on.;He is dependable.|reliible,are,relyable|able_ible|hard
+এটি অবিশ্বাস্য।|This is incredible.|That is incredible.;It is unbelievable.|incredable,are,increadible|able_ible|hard
+হাতের লেখা পাঠযোগ্য।|The handwriting is legible.|That handwriting is legible.;The writing can be read.|legable,are,handwritting|soft_g|hard
+সে যোগ্য।|She is eligible.|She qualifies.;She meets the requirement.|eligable,are,elijible|soft_g|hard
+আমি তথ্য বিশ্লেষণ করি।|I analyse the data.|I study the data.;The data is analysed by me.|analyze,analyses,dat|drop_silent_e|hard
+সারসংক্ষেপটি ছোট।|The summary is short.|That summary is short.;The summary is brief.|summery,are,breif|y_to_i,i_before_e|hard
+আমি ধরে নিই সে আসবে।|I assume he will come.|I suppose he will come.;He will come, I assume.|assum,assumes,comes|drop_silent_e|hard
+আমাকে নির্ধারণ করতে হবে।|I must determine it.|I have to decide it.;It must be determined by me.|determin,determines,determaine|drop_silent_e|hard
+সে নীরবতা বজায় রাখে।|He maintains silence.|He keeps silent.;Silence is maintained by him.|maintian,maintain,silance|soft_c|hard
+বাক্সটি বই ধারণ করে।|The box contains books.|There are books in the box.;Books are in the box.|contian,contain,boxs|plural_es|hard
+আমি নিশ্চিত।|I am certain.|I am sure.;Certainty is mine.|certian,is,sertain|soft_c|medium
+ফলাফল অনিশ্চিত।|The result is uncertain.|The result is not certain.;Nobody is certain of the result.|uncertian,are,resault|prefix_keeps_root|hard
+পর্দাটি বন্ধ।|The curtain is closed.|That curtain is closed.;The curtain is drawn.|curtian,are,clozed|subject_verb_agreement|medium
+আমরা এগিয়ে যাই।|We proceed.|We go ahead.;We move forward.|procede,proceeds,proseed|soft_c|hard
+এটি সীমা অতিক্রম করে।|It exceeds the limit.|It goes beyond the limit.;The limit is exceeded.|excede,exceed,limitt|soft_c|hard
+বাধা দিও না।|Do not interrupt.|Please do not interrupt.;Don't interrupt.|interupt,interrupts,intrupt|prefix_keeps_root|hard
+আমি বাক্যটি অনুবাদ করি।|I translate the sentence.|I put the sentence into another language.;The sentence is translated by me.|tranlate,translates,sentance|drop_silent_e|hard
+সে টাকা স্থানান্তর করে।|He transfers the money.|He moves the money.;The money is transferred by him.|tranfer,transfer,monney|doubling_1_1_1|hard
+আমি ভুলটি স্বীকার করি।|I admit the mistake.|I accept the mistake.;The mistake is admitted by me.|admitt,admits,mistak|doubling_1_1_1|hard
+আবেদনপত্র জমা দাও।|Submit the form.|Please submit the form.;Hand in the form.|submitt,submits,fom|doubling_1_1_1|medium
+আমি চা পছন্দ করি কফির চেয়ে।|I prefer tea to coffee.|I like tea more than coffee.;Tea is what I prefer.|preffer,prefers,coffe|doubling_1_1_1|hard
+এটি প্রায়ই ঘটে।|It occurs often.|It happens often.;This often occurs.|ocur,occur,ofen|doubling_1_1_1|hard
+নিয়ন্ত্রণ প্রয়োজন।|Control is necessary.|Control is needed.;We need control.|controll,are,neccessary|doubling_1_1_1|hard
+সভাটি বাতিল হয়েছে।|The meeting is cancelled.|That meeting is cancelled.;The meeting has been called off.|cancle,are,canceled|soft_c|hard
+মোট পরিমাণ কত?|What is the total amount?|How much is the total?;What is the total?|totle,are,ammount|subject_verb_agreement|medium
+ঢাকা বাংলাদেশের রাজধানী।|Dhaka is the capital of Bangladesh.|The capital of Bangladesh is Dhaka.;Bangladesh's capital is Dhaka.|capitle,are,bangladash|subject_verb_agreement|hard
+প্রতিটি ব্যক্তি গুরুত্বপূর্ণ।|Every individual is important.|Each individual matters.;All individuals are important.|indivdual,are,importent|no_final_v|hard
+সবাই সমান।|Everyone is equal.|All are equal.;Every person is equal.|equel,are,eqal|q_takes_u|medium
+এটি একটি ঘন ঘন ভুল।|This is a frequent mistake.|That is a frequent mistake.;It is a common mistake.|an,frequant,mistak|article_a_an,q_takes_u|hard
+ক্রমটি সঠিক।|The sequence is correct.|That sequence is correct.;The order is correct.|sequance,are,corect|q_takes_u|hard
+পরিমাণটি পর্যাপ্ত।|The amount is adequate.|That amount is adequate.;The amount is enough.|adequete,are,ammount|q_takes_u|hard
+পানি একটি তরল।|Water is a liquid.|Water is liquid.;Water is in liquid form.|an,licuid,are|article_a_an,q_takes_u|medium
+আমি জ্ঞান অর্জন করি।|I acquire knowledge.|I gain knowledge.;Knowledge is acquired by me.|aquire,acquires,noledge|q_takes_u,silent_letters|hard
+সে পদত্যাগ করেছে।|He has resigned.|He resigned.;A resignation came from him.|resine,have,rezign|silent_letters|hard
+সে ভুলটি স্বীকার করে।|He acknowledges the mistake.|He admits the mistake.;The mistake is acknowledged by him.|aknowledge,acknowledge,mistak|silent_letters|hard
+স্তম্ভটি লম্বা।|The column is tall.|That column is tall.;The pillar is tall.|colum,are,talll|silent_letters|hard
+পেশিতে ব্যথা।|The muscle hurts.|My muscle hurts.;There is pain in the muscle.|musle,hurt,muscel|silent_letters|hard
+দৃশ্যটি শান্ত।|The scene is quiet.|That scene is quiet.;The scene is peaceful.|seen,quite,scen|silent_letters,q_takes_u|hard
+শৃঙ্খলা প্রয়োজন।|Discipline is necessary.|Discipline is needed.;We need discipline.|disipline,are,neccessary|soft_c|hard
+আমরা তাকে জায়গা দিই।|We accommodate him.|We make room for him.;Room is made for him.|acommodate,accommodates,he|drop_silent_e|hard
+এটি উপযুক্ত নয়।|This is not appropriate.|That is not appropriate.;It is not suitable.|apropriate,are,suitible|able_ible|hard
+আমি তোমার সাহায্যের প্রশংসা করি।|I appreciate your help.|I am grateful for your help.;Your help is appreciated.|apreciate,appreciates,halp|soft_c|hard
+মনোযোগ দাও।|Concentrate.|Please concentrate.;Focus.|consentrate,concentrates,concentrat|soft_c|medium
+আমরা একসাথে অংশগ্রহণ করি।|We participate together.|We take part together.;Together we participate.|particpate,participates,togather|soft_c|hard
+আমরা বিজয় উদযাপন করি।|We celebrate the victory.|We mark the victory.;The victory is celebrated by us.|celebrat,celebrates,victry|soft_c,y_to_i|hard
+তাদের আলাদা করো।|Separate them.|Keep them apart.;Put them apart.|seperate,separates,seperat|drop_silent_e|hard
+আমি খরচ গণনা করি।|I calculate the cost.|I work out the cost.;The cost is calculated by me.|calcualte,calculates,coste|drop_silent_e|hard
+উত্তরটি নির্ভুল।|The answer is accurate.|That answer is accurate.;The answer is exact.|acurate,are,anser|silent_letters|hard
+এটি ব্যক্তিগত।|This is private.|That is private.;It is personal.|privat,are,privet|no_final_v|medium
+এটি আমার প্রিয় বই।|This is my favourite book.|That is my favourite book.;My favourite book is this.|favorite,are,favourit|no_final_v|hard
+সময়টি নির্দিষ্ট নয়।|The time is not definite.|That time is not definite.;The time is uncertain.|definate,are,uncertian|prefix_keeps_root|hard
+এটি অস্থায়ী।|This is temporary.|That is temporary.;It will not last.|temporery,are,tempary|y_to_i|hard
+বিপরীত দিকে যাও।|Go in the opposite direction.|Go the other way.;Take the opposite direction.|opposit,on,direcsion|place_prepositions,tion_sion|hard
+সে সঙ্গে সঙ্গে উত্তর দেয়।|He answers immediately.|He replies at once.;An immediate answer comes from him.|imediate,answer,anser|silent_letters|hard
+তিনি শিক্ষিত।|He is literate.|He can read and write.;Literacy is his.|literat,are,littrate|subject_verb_agreement|hard
+আলোচনাটি পরিমিত ছিল।|The discussion was moderate.|That discussion was moderate.;The discussion stayed moderate.|moderat,were,discution|tion_sion|hard
+তার একটি সমস্যা আছে বলে সে দেরি করে।|He is late because he has a problem.|He comes late because of a problem.;A problem makes him late.|an,becuase,probelm|article_a_an|hard
+যদি তুমি অনুশীলন করো, তুমি উন্নতি করবে।|If you practise, you will improve.|You will improve if you practise.;Practising will improve you.|practice,improves,improv|soft_c,no_final_v|hard
+যদিও এটি কঠিন, আমি চেষ্টা করব।|Although it is hard, I will try.|Even though it is hard, I will try.;I will try although it is hard.|allthough,tries,trie|silent_letters,y_to_i|hard
+সে যত পড়ে তত শেখে।|The more he reads, the more he learns.|He learns more as he reads more.;Reading more makes him learn more.|read,lern,learnt|subject_verb_agreement|hard
+আমি জানি না সে কোথায় গেছে।|I do not know where he has gone.|I don't know where he went.;Where he has gone is unknown to me.|no,were,gon|silent_letters|hard
+সে বলল যে সে আসবে।|He said that he would come.|He said he would come.;He promised to come.|sayed,tell,comes|subject_verb_agreement|hard
+এটি সেই বই যা আমি চেয়েছিলাম।|This is the book that I wanted.|This is the book I wanted.;The book I wanted is this.|wich,wantd,whant|subject_verb_agreement|hard
+যদি আমি জানতাম, আমি সাহায্য করতাম।|If I had known, I would have helped.|Had I known, I would have helped.;I would have helped if I had known.|knowed,helpd,knew|silent_letters|hard
+পরীক্ষার আগে ভালো করে প্রস্তুতি নাও।|Prepare well before the examination.|Prepare thoroughly before the exam.;Get ready well before the examination.|prepair,after,examinaton|place_prepositions,tion_sion|hard

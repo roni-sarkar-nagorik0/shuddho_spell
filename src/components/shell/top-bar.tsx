@@ -1,0 +1,56 @@
+'use client';
+
+import { useTranslations } from 'next-intl';
+import { type ReactElement } from 'react';
+import { NotificationBell } from '@/components/notifications/notification-bell';
+import { Breadcrumb } from './breadcrumb';
+import { SessionTimer } from './session-timer';
+
+export interface ITopBarProps {
+  readonly displayName: string;
+  /** `null` when the streak is broken — shown as a zero, never hidden. */
+  readonly streakDays: number;
+}
+
+/** Two initials at most. A three-letter monogram is unreadable at 24px. */
+function initials(displayName: string): string {
+  const parts = displayName.trim().split(/\s+/).filter((part) => part !== '');
+  const letters = parts.slice(0, 2).map((part) => part.charAt(0).toUpperCase());
+  return letters.join('') === '' ? '?' : letters.join('');
+}
+
+/**
+ * 48px, and nothing in it is decorative: breadcrumb, time on task, streak,
+ * bell, avatar — the five things a learner checks without leaving the page.
+ *
+ * The avatar is a monogram, not a photograph. Google returns a picture URL and
+ * rendering it would put a third-party host in the CSP for a 24px circle.
+ */
+export function TopBar({ displayName, streakDays }: ITopBarProps): ReactElement {
+  const t = useTranslations('shell');
+
+  return (
+    <header className="flex h-topbar shrink-0 items-center gap-4 border-b border-hairline bg-surface px-4">
+      <Breadcrumb />
+
+      <div className="ml-auto flex items-center gap-4">
+        <SessionTimer label={t('session')} />
+
+        <span className="flex items-center gap-1.5">
+          <span className="label">{t('streak')}</span>
+          <span className="num text-neutral-700">{streakDays}</span>
+        </span>
+
+        <NotificationBell />
+
+        <span
+          aria-hidden="true"
+          className="flex h-6 w-6 items-center justify-center rounded-full bg-primary-100 text-[10px] font-medium text-primary-900"
+        >
+          {initials(displayName)}
+        </span>
+        <span className="sr-only">{t('signedInAs', { name: displayName })}</span>
+      </div>
+    </header>
+  );
+}

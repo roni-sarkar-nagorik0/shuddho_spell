@@ -1,0 +1,96 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    font-size: 16px;
+  }
+
+  body {
+    @apply bg-neutral-50 font-sans text-base text-neutral-900 antialiased;
+  }
+
+  :lang(bn) {
+    @apply font-bengali;
+  }
+
+  h1,
+  h2,
+  h3 {
+    @apply font-display tracking-tight text-primary-900;
+  }
+
+  /* Every numeral in the product is mono and tabular — see 12-design-system.md. */
+  .num {
+    @apply font-mono tabular-nums;
+  }
+
+  /*
+    2px secondary-500 at 2px offset — 12-design-system.md, and never removed.
+
+    A real `outline`, not a ring. Tailwind's ring is a box-shadow, so its offset
+    has to be painted in the colour of whatever is behind the element: the old
+    rule hard-coded `ring-offset-neutral-50`, which is right on the page canvas
+    and wrong on every white card, inside every overlay, and against the
+    primary-900 exam runtime. An outline needs no such guess, it follows the
+    element's border-radius, and it survives forced-colors mode where
+    box-shadows are dropped entirely.
+  */
+  :focus-visible {
+    outline: 2px solid theme('colors.secondary.500');
+    outline-offset: 2px;
+  }
+
+  /*
+    Respect the system setting rather than a preference toggle of our own.
+    Motion sickness and vestibular disorders are the reason this exists, and a
+    learner who has told their OS already should not have to tell us again.
+
+    Not `animation: none`: killing an animation outright can strand an element
+    mid-keyframe. Collapsing it to a single instant frame runs it to its final
+    state without the movement.
+  */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+@layer components {
+  /* The ruled-paper surface: 32px rules plus one tertiary margin rule. */
+  .paper {
+    background-image:
+      linear-gradient(to right, rgba(194, 74, 60, 0.35) 0 1px, transparent 1px),
+      repeating-linear-gradient(
+        to bottom,
+        transparent 0 31px,
+        theme('colors.hairline') 31px 32px
+      );
+    background-position:
+      64px 0,
+      0 0;
+    background-repeat: no-repeat, repeat;
+    background-size:
+      1px 100%,
+      100% 32px;
+  }
+
+  .label {
+    @apply text-label font-medium uppercase text-muted;
+  }
+
+  .card {
+    @apply rounded-card border border-hairline bg-surface;
+  }
+
+  .card-accent {
+    @apply border-l-2 border-l-tertiary-500;
+  }
+}

@@ -1,0 +1,48 @@
+# dependencies
+node_modules/
+.pnpm-store/
+
+# next
+.next/
+out/
+next-env.d.ts
+
+# production
+build/
+dist/
+
+# env — never commit real values
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# supabase
+supabase/.branches/
+supabase/.temp/
+
+# testing
+coverage/
+playwright-report/
+test-results/
+.nyc_output/
+
+# misc
+.DS_Store
+*.pem
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.turbo/
+.vercel/
+tsconfig.tsbuildinfo
+storybook-static/
+node_modules
+.next
+out
+coverage
+next-env.d.ts
+test-results
+playwright-report
+tsconfig.tsbuildinfo

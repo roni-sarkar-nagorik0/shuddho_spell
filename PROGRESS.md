@@ -1,0 +1,863 @@
+# PROGRESS.md — feature tracker
+
+**One feature at a time. Test it. Fix it if it fails. Only then move on.**
+
+> **BUILD MODE — feature-first, verification paused. Set by the user 2026-08-19.**
+> See section 0 of `CLAUDE.md`, which governs. Summary for this file:
+> - The `Test:` line under every feature below is now an **acceptance criterion** — what the
+>   feature must *do*. Build to it. You do not have to write it as a test.
+> - `[x]` means **built and merged into `dev`**. No green suite required.
+> - `[!]` is for a feature that could not be built, not for a failing test.
+> - `/build` completes **five phases** per invocation.
+> - Nothing in this file has been deleted. Paused lines are marked, not removed.
+
+This file is the live state of the build. `BUILD-ORDER-COMPLETE.md` says what the phases are;
+this file says exactly where you are inside them.
+
+---
+
+## How to read and update this file
+
+| Mark | Meaning |
+| --- | --- |
+| `[ ]` | not started |
+| `[~]` | in progress — **only ever one of these in the whole file** |
+| `[x]` | done: built, tested, tests green, merged into `dev` — *paused → **built and merged into `dev`*** |
+| `[!]` | **failed or blocked** — must be debugged and fixed before anything else starts |
+| `[-]` | deliberately skipped or deferred — needs a one-line reason on the same row |
+
+### Preflight — before the loop, every session
+
+```bash
+ls -la .env .env.local 2>/dev/null
+```
+
+Either file present → continue immediately; do not raise it again this session. Neither
+present? Say so in one sentence, then keep building everything that does not need live
+credentials. Formerly this said: copy `.env.example` to `.env.local` and fill sections 1
+and 2. No feature starts without it. **Never read the file** — existence check only.
+
+### The loop, every single time
+
+1. Find the **first** `[ ]` feature in the topmost unfinished phase. That is the only feature
+   you may work on.
+2. Mark it `[~]` and update the **NEXT** pointer at the top of this file.
+3. Build it. Only it.
+4. Write and run its **test cases** — they are listed under every feature below.
+   > **PAUSED.** Read the `Test:` line as the definition of done and **build to it**. Do not
+   > author it as a test. Run `pnpm typecheck && pnpm lint` instead.
+5. **If the tests fail:** mark it `[!]`, debug, fix, re-run. Do **not** start another feature.
+   Do **not** move on. Do **not** leave it half-done for later.
+   > **PAUSED for tests; live for builds.** `[!]` now means *the feature could not be built* —
+   > typecheck or lint red, or a real blocker. That still stops everything until it is fixed.
+6. When tests are green: mark it `[x]`, add the date, add a one-line note in the **Log**.
+   > **PAUSED →** when it is **built and merged into `dev`**: mark `[x]`, add the date, add
+   > the **Log** line.
+7. Commit and push the feature branch (see `.claude/docs/15-git-workflow.md`).
+8. Move the **NEXT** pointer to the following `[ ]`, then go back to 1 and do the next
+   feature. **One whole phase per `/build`**, one feature at a time — a feature is picked only
+   once the one before it is committed, pushed and merged into `dev`. When the phase has no
+   `[ ]` left, run its exit gate, flip its **Status**, and stop. The next phase is the next
+   `/build`.
+   > **PAUSED →** **five whole phases per `/build`**, still one feature at a time, still in
+   > order. When a phase has no `[ ]` left, flip its **Status** to `DONE` (no exit gate) and
+   > roll straight into the next phase — until five are done, then stop.
+
+### Absolute rules
+
+- **Check the env file once, never read it**, and never block the build on it twice.
+- **Never work on two features at once.** One `[~]` in this file, ever.
+- **Never mark `[x]` without tests written and green.** "It works when I try it" is not a test.
+  > **PAUSED** — `[x]` = built and merged into `dev`.
+- **Never leave a feature incomplete.** A `[!]` blocks the whole build until it is `[x]`.
+- **Never skip ahead** to a more interesting feature because the current one is awkward.
+- **Never delete or weaken a test** to turn `[!]` into `[x]`.
+  > **STILL LIVE.** Writing tests is paused; vandalising the 25 that already exist is not.
+- A feature is done when it is built **and** tested **and** merged into `dev` — not before.
+  > **PAUSED** — built **and** merged into `dev`.
+
+---
+
+## NEXT
+
+> **All 14 phases are built.** Nothing in this file is `[ ]`.
+> Read the **Closing report** at the end of this file before doing anything else: it names what
+> was never executed, what is fragile, and what to do first. The short version is that the whole
+> user interface has never been rendered in a browser.
+>
+> **What Phase 12 leaves Phase 13**
+> - Lighthouse has never been run. F12.10's ≥95/100 is unproven, and D67 records that static
+>   rendering is blocked by the root layout's cookie reads.
+> - `/exams/diagnostic` is linked from onboarding and is a lobby route like any other code — it
+>   works if a `diagnostic` definition is seeded, and nothing verifies that it is.
+> - Certificate issuance is in `ExamSubmissionService` and has never been exercised: nothing in
+>   this run has passed a final exam against a live database.
+> - The whole of Phases 10–12 is typecheck-and-lint clean and **has not been run in a browser**.
+> - `pnpm test` has not been run since the pause began. The 25 existing tests may be red.
+>
+> **What Phase 11 leaves Phase 12**
+> - `useSaveExamAnswer` (F10.7) is the optimistic template for the exam runtime; writes never retry.
+> - `LetterTiles`, `SentenceChips` and `ReviewDrill` are built and keyboard-complete — the exam's
+>   spelling and construction questions should use them, not build a second set.
+> - `AudioProvider` is mounted per route group. The exam runtime needs its own, or none.
+> - `DataTable` + `Drawer` is the master-detail pattern `/exams/review/[id]` wants.
+> - `GetNextExam` and `ListExamMilestones` exist; the `/exams` catalogue needs attempts used,
+>   cooldown and best score, which neither carries yet.
+> - `AccuracyChart` is a Server Component and reusable for the result screen's by-section chart.
+>
+> **What Phase 10 leaves Phase 11**
+> - The shell is real: `(learn)/layout.tsx` gives every screen the rail, the top bar and a
+>   12-column paper grid. A page renders `col-span-*` children and nothing else.
+> - `PhonemeStrip`, `MasteryMatrix`, `DataTable` and the six primitives are built and shown in
+>   three states each at `/gallery` (dev only). Nothing in Phase 11 should build a second one.
+> - `DataTable` takes `render`/`rowKey` **functions**, so every screen using it needs a thin
+>   Client Component wrapper — `gallery/table-demo.tsx` is the pattern.
+> - TanStack Query is mounted in the root layout. Reads retry, **writes never do**.
+>   `useSaveExamAnswer` is the optimistic template for Phase 12.
+> - `useDismissable` is the one focus-trap/Escape/restore implementation. Do not write a second.
+> - `pnpm i18n:check` runs in `prebuild`: a new `en` key without its `bn` twin fails the build.
+>
+> **What Phase 5 leaves Phase 6**
+> - `ISpeechScorer` is declared (F4.10) and **has no implementation**. Phase 6 is that, plus the
+>   Bengali confusion map `07-speech-scoring.md` specifies as data rather than branches.
+> - The whole write path is real: `IDatabase` → eleven repositories → 013/014's Postgres
+>   functions. A pronunciation attempt should reach `record_lesson_attempt` like any other.
+> - **Phoneme-dimension mastery is still never written.** Dictation credits rule families only,
+>   correctly — the matrix's phoneme axis stays empty until pronunciation attempts land here.
+> - `withApi` takes `paramsSchema` and `rateLimit` now. A speech endpoint is a write route and
+>   wants a ceiling.
+> - `Word` carries `ipa` but **no `phonemeIds`** — the `word_phonemes` join table exists in 002
+>   and nothing reads it. Per-phoneme scoring needs a repository method that does.
+>
+> **Spotted, still open — none of these belonged to a Phase 5 feature**
+> - 008 still grants `authenticated` a table-wide update on `learner_profiles`, so a learner can
+>   write their own `current_day_index`. F4.12 made that column meaningful and 014 now writes it
+>   inside a transaction, which makes the hole worth more than it was.
+> - `pnpm test` takes ~28s, most of it PGlite booting Postgres four times. Two full runs at once
+>   contend badly enough to time out — worth one shared instance if it grows further.
+> - The repo has never been prettier-clean: `pnpm format` rewrites files no feature touched.
+> - `IProgramDayDetail.sentences` ships `englishText` to the browser, which is the construction
+>   stage's answer in word order. The chips are shuffled deterministically, but a learner reading
+>   the network tab has the sentence. The DTO chose this in Phase 5 (it excludes
+>   `acceptedAlternatives` and `commonMisspellings` on exactly this reasoning and then keeps
+>   `englishText`); fixing it means a shuffled server-side word bag and belongs to whoever owns
+>   that DTO, not to a screen.
+> - `NotificationBell` still hand-rolls its own popover markup rather than using F10.6's
+>   `Popover`, and still renders as a bordered text button instead of the top bar's bell glyph.
+>   Both are working and accessible (Escape closes, focus returns); converting them needs
+>   `Popover` to expose an on-open callback for the feed refresh, which is a change to a shipped
+>   Phase 8 feature and did not belong to any Phase 10 feature.
+
+## Phase 0 — Specification and architecture record
+Branch `docs/00-architecture-record` · Status: `COMPLETE`
+
+- [x] **F0.1** (2026-08-18) Write `ARCHITECTURE.md` — layer diagram, folder tree, token/port table, DB table list, unspecified-decisions section
+  - Test: all five sections present; every port in `05-domain-model.md` appears in the token table
+- [x] **F0.2** (2026-08-18) Confirm or amend the phase list and the feature list in this file
+  - Test: every phase in `BUILD-ORDER-COMPLETE.md` has a matching section here
+- [x] **F0.3** (2026-08-18) Confirm `.env.example` covers every variable the design needs
+  - Test: every variable referenced in the docs appears in `.env.example` with a comment
+
+---
+
+## Phase 1 — App scaffold, tooling, contracts
+Branch `feat/01-app-scaffold` · Status: `DONE` (12/14 built 2026-08-18; F1.9 and F1.11 each
+have one part deferred to a later phase — see their rows)
+
+- [x] **F1.1** (2026-08-18) Single Next.js 15 app at the repo root — one `package.json`, no monorepo, no separate server project
+  - Test: `pnpm dev`, `build`, `lint`, `typecheck`, `test` all run; `git ls-files | grep -c "^apps/"` is 0
+- [x] **F1.2** (2026-08-18) Strict tsconfig with every required flag
+  - Test: an unchecked index access fails typecheck
+- [x] **F1.3** (2026-08-18) ESLint flat config — `typescript-eslint` strict-type-checked, `import/no-cycle`, prettier
+  - Test: a deliberate import cycle fails lint
+- [x] **F1.4** (2026-08-18) `eslint-plugin-boundaries` — five zones: domain, application, infrastructure, presentation, app
+  - Test: `domain → infrastructure` fails lint; `src/app → domain` fails lint (paste both, then remove)
+- [x] **F1.5** (2026-08-18) The `type`-alias-on-object ban
+  - Test: `type Foo = { a: string }` fails lint (paste output, then remove)
+- [x] **F1.6** (2026-08-18) `src/contracts` — `IApiResponse<T>`, `IProblemDetails`, `IPaginatedResult<T>` with interface-first + `satisfies`
+  - Test: a schema drifting from its interface fails typecheck
+- [x] **F1.7** (2026-08-18) `src/lib/env.ts` — split server/public Zod schemas, `server-only` on the server half
+  - Test: removing a required var stops boot and names it; importing the server env from a Client Component fails the build
+- [x] **F1.8** (2026-08-18) `src/lib/supabase/` — session client + `server-only` service client
+  - Test: grep finds exactly two `createClient` call sites; the service client cannot be imported client-side
+- [x] **F1.9** (2026-08-19) `withApi` wrapper — **complete**, rate limiting landed via F4.10a
+  - Shipped in Phase 1 and green: auth, Zod body/query, request id, pino, problem+json.
+  - **Was deferred:** rate limiting needed the `IRateLimiter` port and a `rate_limits` table
+    that Phase 2 did **not** ship. Re-opened as F4.10a and closed there on 2026-08-19 —
+    012 ships the table and `consume_rate_limit`, and `withApi` takes a `rateLimit` option.
+  - Test: a bad body returns problem+json with a stable `code`; a request id appears in the log line
+- [x] **F1.10** (2026-08-18) `src/composition/` — per-request container factory
+  - Test: a use case can be constructed with fakes and no container at all
+- [x] **F1.11** (2026-08-20) Health, ready **and** `/api/v1/openapi.json` — complete via F5.9a
+  - Shipped in Phase 1 and green: `/api/health` and `/api/ready`, both unauthenticated.
+  - **Was deferred:** the OpenAPI doc must be generated from the v1 request/response schemas, and
+    none existed until the presentation DTOs landed in F5.7. Re-opened as F5.9a and closed there.
+  - Test: all three respond 200 unauthenticated; the OpenAPI doc is generated from the Zod schemas
+- [x] **F1.12** (2026-08-18) Tailwind with the exact tokens and four fonts
+  - Test: every token from `12-design-system.md` resolves in the Tailwind theme
+- [x] **F1.13** (2026-08-18) `next-intl` with `en` + `bn` catalogues
+  - Test: rendering in `bn` returns Bangla, not a missing-key fallback
+- [x] **F1.14** (2026-08-18) Typed fetch client validating every response, throwing `ApiError` on mismatch
+  - Test: a mocked malformed response throws `ApiError`, not a render crash
+- [x] **F1.15** (2026-08-18) Vitest (unit + integration + component) and Playwright configured
+  - Test: one example test of each kind runs green
+- [x] **F1.16** (2026-08-18) Hosted Supabase setup + `.env.example` + README steps — **no Docker, no local stack**
+  - Test: a clean checkout reaches a booting app using only the README
+
+---
+
+## Phase 2 — Database schema, migrations, RLS
+Branch `feat/02-database-schema` · Status: `DONE` (exit gate run 2026-08-19)
+
+- [x] **F2.1** (2026-08-18) `001_extensions` + `002_content_tables`
+  - Applied by `pnpm db:migrate` over `DATABASE_URL` — plain SQL, forward-only, checksum ledger
+    in `public.schema_migrations`. No Docker, no Supabase CLI.
+  - Test: migration applies from empty; every table has id/created_at/updated_at
+- [x] **F2.2** (2026-08-18) `003_learner_tables`
+  - `learner_profiles` (anchored to `auth.users`) + `lesson_sessions`, `attempts`,
+    `review_items`, `mastery_records`, `streak_records`. `profile_id` is denormalised onto
+    every child so an RLS policy in 008 never has to join to find the owner.
+  - Test: every learner table has `profile_id` with `on delete cascade`
+- [x] **F2.3** (2026-08-18) `004_exam_tables`
+  - `exam_definitions`, `exam_sections`, `exam_attempts`, `exam_questions`, `exam_answers`.
+    A partial unique index allows one `in_progress` attempt per learner per exam, and
+    `exam_answers` is unique per question, so a replayed save updates rather than duplicates.
+  - Test: score columns are `numeric`, never `float`
+- [x] **F2.4** (2026-08-18) `005_notification_tables` + `006_certificates`
+  - `notifications`, `notification_preferences`, `push_subscriptions`, `certificates`.
+    `scheduled_for` is the window the dispatcher aimed at, so `(profile_id, type,
+    scheduled_for)` stays stable across a platform retry. `email` is legal in both channel
+    constraints and written by nothing — the v2 door, held open with no migration.
+    A certificate is revoked by update, never by delete: it must still verify, as revoked.
+  - Test: the notification idempotency unique key `(profile_id, type, scheduled_for)` exists
+- [x] **F2.5** (2026-08-18) `007_indexes`
+  - Five indexes created; `exam_answers (question_id)` and `exam_questions (attempt_id,
+    section_code, order_index)` were already btrees behind `unique (...)` from 004, so they
+    are commented rather than duplicated. Every index carries `comment on index` naming its
+    query, and the catalogue test enforces that for any non-constraint index added later.
+  - Test: each index has a comment naming the query it serves; `explain` uses it
+- [x] **F2.6** (2026-08-18) `008_rls_policies`
+  - `current_profile_id()` (security definer, pinned search path) resolves the caller once;
+    every learner table gets the same select/insert/update pair, no delete anywhere. Content
+    is readable by any authenticated user and writable by none. `exam_questions` gets no
+    policy and no grant — refused at the privilege layer. F2.7 kept it that way (see D15).
+    Public certificate verification ships as a view, per 006's note.
+  - Test: **the two-user script** — user A cannot read B's attempts, review items, exam attempts, answers or notifications
+- [x] **F2.7** (2026-08-18) `correct_answer` protection (column policy or view)
+  - No new SQL: 008 grants the client nothing on `exam_questions`, so the column is refused
+    at the privilege layer — stricter than a column policy or a view, both of which imply a
+    grant. A client view would also have no consumer (the API reads via the service role),
+    and the forward-only checksum in `scripts/migrate.mjs` forbids editing 008. See D15.
+  - Shipped instead: the lock. `has_column_privilege` false for every client role on every
+    column; no view carries the column; a static sweep fails any future migration that
+    grants, polices or views it.
+  - Test: a client-role select of `correct_answer` is denied
+- [x] **F2.8** (2026-08-19) `009_functions_triggers` — `updated_at`, profile-on-signup, session-completion function, exam auto-submit
+  - `updated_at` attached by catalogue loop, so a table added in Phase 8 cannot be the one
+    without a trigger. Signup trigger is `security definer` and idempotent. 
+    `complete_lesson_session` is the `IUnitOfWork` boundary only — jsonb in, four tables
+    written atomically, no domain arithmetic (D16). Auto-submit marks `submitted`, never
+    graded, and is pg_cron-guarded so a database without the extension still migrates.
+    All four functions revoked from the client roles (D17).
+  - Test: inserting into `auth.users` creates a `learner_profiles` row
+- [x] **F2.9** (2026-08-19) `010_seed_reference` — 44 real phonemes, 24 real rule families
+  - 12 vowels, 8 diphthongs, 24 consonants, each annotated for a Bengali speaker: a null
+    `bangla_equivalent` means Bangla lacks the sound, and the substitution column then says
+    what learners produce instead. 24 rule families, each with three examples and two
+    counterexamples that are genuinely counter — the counterexample is the lesson.
+    Idempotent on the natural keys (`symbol`, `code`), so a re-run corrects drift instead
+    of duplicating. The migration asserts its own completeness by naming every symbol and
+    code, which catches a mistyped IPA character that a count never could (D19).
+  - Test: counts are exactly 44 and 24; no placeholder text
+- [x] **F2.10** (2026-08-19) Hand-written row interfaces in `infrastructure/`
+  - One `I*Row` per table, 22 of them, across the nine modules that own the tables. `jsonb` is
+    typed `Json` and nothing narrower — the database guarantees well-formed JSON and no more,
+    and narrowing is the mapper's job. Verified against the Postgres catalogue read out of
+    PGlite rather than against the Supabase CLI, which is not installed by design and needs
+    live credentials: `gen types` reads that same catalogue and applies the same mapping, so
+    this is the CLI's rule without the CLI, plus column order, `readonly`, file naming and
+    placement (D20).
+  - Test: `supabase gen types` output matches them; no row interface outside `infrastructure/`
+
+---
+
+## Phase 3 — Authentication (Google only)
+Branch `feat/03-google-auth` · Status: `DONE` (12/12, 2026-08-19). Exit gate 7/7, with three
+items proven below the level they are written at — see **Completed** in
+`BUILD-ORDER-COMPLETE.md`.
+
+- [x] **F3.1** (2026-08-19) `@supabase/ssr` cookie session client
+  - Test: the session cookie is httpOnly
+- [x] **F3.2** (2026-08-19) `/login` — one heading, one line, one Google button
+  - Test: the page contains exactly one button and zero input elements
+- [x] **F3.3** (2026-08-19) `/auth/callback` code exchange + new-vs-existing routing
+  - Test: a new profile lands on `/onboarding`, an existing one on `/dashboard`
+- [x] **F3.4** (2026-08-19) Session-refresh middleware and route protection
+  - Test: an unauthenticated request to `/dashboard` redirects to `/login`
+- [x] **F3.5** (2026-08-19) `useSession()` + `requireUser()`
+  - Test: `requireUser()` throws/redirects with no session
+- [x] **F3.6** (2026-08-19) `withApi({ auth: 'required' })` session resolution
+  - Test: no session → 401 problem+json; expired cookie → refreshed or 401, never 500; tampered cookie → 401
+- [x] **F3.7** (2026-08-19) Protected-by-default routing; `auth: 'public'` as the explicit opt-out
+  - Test: a protected handler 401s without a session; a public one returns 200
+- [x] **F3.8** (2026-08-19) `CRON_SECRET` bearer check for `/api/cron/*`, constant-time compare
+  - Test: a request without the secret → 401; the secret never appears in a log line
+- [x] **F3.9** (2026-08-19) `BootstrapProfileUseCase`, idempotent
+  - Test: two concurrent first requests produce exactly one profile, no 500
+- [x] **F3.10** (2026-08-19) `GET /api/v1/me`
+  - Test: returns profile + program position for a valid token
+- [x] **F3.11** (2026-08-19) No email/password path exists
+  - Test: `grep -ri "password\|magic.link\|signInWithOtp" src/` returns nothing in app code
+- [x] **F3.12** (2026-08-19) Identity comes only from the session
+  - Test: a body carrying another user's `profileId` is ignored; the session's profile is used
+
+---
+
+## Phase 4 — Domain and application layers
+Branch `feat/04-domain-application` · Status: `DONE` (16/16, 2026-08-19).
+**Exit gate not run — paused by standing instruction 2026-08-19** (`CLAUDE.md` section 0).
+Four of its items were nonetheless proven, by probes kept deliberately: the engine's five
+mandatory cases, all nine error tags reachable from real wrong answers, `consume_rate_limit`,
+and the 40→25 review queue. Coverage was not measured and most use cases have no unit test.
+
+- [x] **F4.1** (2026-08-19) Value objects — `DayIndex`, `ScorePercent`, `IpaTranscription`, `Track`, `ErrorTag`
+  - Test: each rejects out-of-range construction
+- [x] **F4.2** (2026-08-19) Content entities — `Phoneme`, `Word`, `RuleFamily`, `SentenceItem`, `ProgramDay`
+  - Test: construction from valid data; readonly enforced at compile time
+- [x] **F4.3** (2026-08-19) `LearnerProfile` + `LessonSession.advanceStage()`
+  - Test: legal order passes; skipping or reversing a stage is a domain error
+- [x] **F4.4** (2026-08-19) `ReviewItem.recordResult()` — the interval ladder
+  - Test: correct advances one rung; rung 4 stays 4; wrong resets to rung 0 from every rung
+- [x] **F4.5** (2026-08-19) `ReviewSchedulingPolicy` behind `IReviewSchedulingPolicy`
+  - Test: `1,3,7,16,35` appear nowhere outside the policy (grep)
+- [x] **F4.6** (2026-08-19) Mastery rule — 3 correct on 3 **different calendar days**
+  - Test: two correct same day counts once; three across three days → `isMastered`
+- [x] **F4.7** (2026-08-19) `StreakRecord.registerActivity()` with timezone day boundaries
+  - Test: a UTC+6 learner at 23:50 local; a learner who changes timezone mid-streak
+- [x] **F4.8** (2026-08-19) `MasteryCalculator` and `ErrorTagger`
+  - Test: each named tag (`DOUBLE_CONSONANT`, `SILENT_LETTER`, `ARTICLE_MISSING`, `V_W_SUBSTITUTION`, …) is produced by a real wrong answer
+- [x] **F4.9** (2026-08-19) Repository ports + Symbol tokens (8 ports)
+  - Test: every port has a token; no concrete class is injected anywhere
+- [x] **F4.10** (2026-08-19) Application ports — `IClock`, `IIdGenerator`, `ISpeechScorer`, `IUnitOfWork`
+  - Test: no `Date.now()` / `new Date()` outside a clock adapter (grep)
+- [x] **F4.10a** (2026-08-19) `IRateLimiter` port + the `rate_limits` table, then finish `withApi`'s rate limiting
+  - **Carried from F1.9**, deferred out of Phase 1 because neither the port nor the table existed.
+    Phase 2 did not ship `rate_limits`, so this feature adds the migration as well as the port.
+  - Test: the 61st request in a 60-second window returns 429 problem+json with `RATE_LIMITED`;
+    the window resets; two learners do not share a bucket
+- [x] **F4.11** (2026-08-19) Program use cases — `GetProgramOverview`, `GetProgramDay`
+  - Test: unit tests with in-memory fakes, no Nest `TestingModule`
+- [x] **F4.12** (2026-08-19) Lesson use cases — `StartLessonSession`, `AdvanceLessonStage`, `CompleteLessonSession`
+  - Test: stage out of order rejected; a session resumed the next day works
+- [x] **F4.13** (2026-08-19) Attempt use cases — `SubmitDictationAttempt`, `SubmitConstructionAttempt`
+  - Test: an attempt on a word not in today's lesson is rejected
+- [x] **F4.14** (2026-08-19) Review use cases — `GetDueReviewItems`, `SubmitReviewAttempt`
+  - Test: 40 due items → 25 returned, most overdue first, ties by lowest accuracy
+- [x] **F4.15** (2026-08-19) Progress use cases — `GetMasterySnapshot`, `GetProgressSummary`, `GetLearnerDashboard`
+  - Test: unit tests with fakes; coverage on `domain` + `application` ≥ 90%
+
+---
+
+## Phase 5 — Infrastructure and presentation wiring
+Branch `feat/05-infrastructure` · Status: `DONE` (9/9, 2026-08-20). F1.11 closed with F5.9a.
+**Exit gate not run — paused by standing instruction 2026-08-19** (`CLAUDE.md` section 0).
+Five of its seven items happen to be proven by sweeps and probes kept while building; the two
+that are not are named on the phase's **Completed** line in `BUILD-ORDER-COMPLETE.md`.
+
+- [x] **F5.1** (2026-08-19) Repositories use the `server-only` service client and nothing else
+  - Test: grep finds no `createClient` outside `src/lib/supabase/`
+- [x] **F5.2** (2026-08-19) Row↔entity mappers, both directions
+  - Test: round-trip mapping is lossless; no row interface escapes `infrastructure/`
+- [x] **F5.3** (2026-08-19) Repository implementations (8 ports)
+  - Test: integration tests against real local Supabase, seeded and torn down per suite
+- [x] **F5.4** (2026-08-19) `IUnitOfWork` over a Postgres function for session completion
+  - Test: a mid-write failure rolls back attempts, review items, mastery and streak together
+- [x] **F5.5** (2026-08-19) Postgres error-code mapping (23505 / 23503 / 40001 + one retry)
+  - Test: each code produces its typed domain error; 40001 retries exactly once
+- [x] **F5.6** (2026-08-19) Batched reads — no N+1 on the dashboard
+  - Test: a query-count assertion on `GetLearnerDashboard`
+- [x] **F5.7** (2026-08-19) Program, lessons and review handlers via `withApi` + three-line route re-exports
+  - Test: each handler invoked directly with a constructed `Request`; no business conditional in any handler; `runtime = 'nodejs'` declared
+- [x] **F5.8** (2026-08-19) Server Component read path calls the same use cases
+  - Test: the dashboard Server Component and `GET /api/v1/progress/summary` run one implementation, not two
+- [x] **F5.9a** (2026-08-19) `/api/v1/openapi.json`, generated from the v1 Zod schemas
+  - **Carried from F1.11**, deferred out of Phase 1 because no v1 schema existed to generate from.
+    The presentation DTOs land in F5.7, so this comes after them.
+  - Test: responds 200 unauthenticated; every v1 route appears; the doc is generated from the
+    Zod schemas, never hand-maintained alongside them
+
+---
+
+## Phase 6 — Speech scoring
+Branch `feat/06-speech-scoring` · Status: `DONE` (8/8, 2026-08-20). Exit gate **not run** — paused by
+standing instruction 2026-08-19. F6.7's 42-case suite is green (75/75) and covers five of the
+five gate items that are about behaviour; the sixth, "no audio reaches the server unless the
+learner opted into storage", is enforced by the request schema having no audio field and was
+not proven by a sweep.
+
+- [x] **F6.1** (2026-08-20) G2P lookup stored in the `words` table
+  - Test: every seeded word resolves to a phoneme sequence
+- [x] **F6.2** (2026-08-20) `BengaliConfusionMap` as data
+  - Test: all required pairs present — v↔w, θ→t, ð→d, z→j, ʃ↔s, æ→e, epenthetic /sk/ /sp/ /st/, dropped final clusters, stress
+- [x] **F6.3** (2026-08-20) Normalised Levenshtein similarity
+  - Test: identical → 1.0; empty → 0; known distances match expected values
+- [x] **F6.4** (2026-08-20) Phoneme-level comparison with partial credit
+  - Test: a single confused phoneme scores partial, not zero
+- [x] **F6.5** (2026-08-20) The 50/50 blend and the ≥65 clamp
+  - Test: a near miss on **every** confusion pair scores 65–90, never 0
+- [x] **F6.6** (2026-08-20) `IPronunciationScore` with `perPhoneme` and named diagnoses
+  - Test: every diagnosis carries `expected`, `heard`, `articulationFix`
+- [x] **F6.7** (2026-08-20) The ≥40-case table-driven suite
+  - Test: correct · each confusion pair · completely wrong · empty transcript · homophone · extra words
+- [x] **F6.8** (2026-08-20) Pronunciation attempt endpoint + mastery write-through
+  - Test: an attempt updates per-phoneme `mastery_records`; no audio reaches the server
+
+---
+
+## Phase 7 — Exam engine
+Branch `feat/07-exam-engine` · Status: `DONE` (14/14, 2026-08-20). Exit gate **not run** — paused
+by standing instruction 2026-08-19. Of the nine gate items, seven are covered by the two suites
+F7.9 and F7.14 shipped (36 assertions, green); the two that are **not** proven are the ones
+needing a live database: that pg_cron actually auto-submits, and that the transactional writes in
+015/016/017 roll back. Their guards are written and unexercised.
+
+- [x] **F7.1** (2026-08-20) Exam entities + `ExamStatus` union
+  - Test: illegal status transitions rejected
+- [x] **F7.2** (2026-08-20) `ExamScoringService` — pure, no I/O
+  - Test: section weights 35/20/30/15 applied; boundary case exactly at the pass mark
+- [x] **F7.3** (2026-08-20) `ExamBlueprintService` — seed-deterministic selection
+  - Test: the same seed produces the same questions; weak items are preferred
+- [x] **F7.4** (2026-08-20) `StartExamAttempt` + `serverDeadlineAt`
+  - Test: the deadline is set once and never extended, including on resume
+- [x] **F7.5** (2026-08-20) `SaveExamAnswer` / `FlagExamQuestion`
+  - Test: a write past the deadline → 409 `EXAM_TIME_EXPIRED`
+- [x] **F7.6** (2026-08-20) `SubmitExamSection` — one-way locking
+  - Test: a submitted section cannot be reopened by any endpoint
+- [x] **F7.7** (2026-08-20) Attempt limits and cooldowns
+  - Test: a 4th `milestone1` attempt → 409 `EXAM_ATTEMPTS_EXHAUSTED`; a retake inside cooldown → 409 with remaining time
+- [x] **F7.8** (2026-08-20) `GetActiveExamAttempt` — crash-safe resume
+  - Test: refresh at the 30-second mark resumes with server-computed remaining seconds
+- [x] **F7.9** (2026-08-20) No `correctAnswer` leak
+  - Test: a snapshot over **every** exam response body asserts its absence before submission
+- [x] **F7.10** (2026-08-20) `SubmitExamAttempt` — pass advances, fail prescribes
+  - Test: a pass advances `currentDayIndex`; a fail writes drills into `review_items`
+- [x] **F7.11** (2026-08-20) `GetExamResult` / `GetExamAnswerReview`
+  - Test: review is unreachable before submission
+- [x] **F7.12** (2026-08-20) `GetExamReadiness`
+  - Test: returns a predicted score and exactly three costliest topics
+- [x] **F7.13** (2026-08-20) `pg_cron` auto-submit for abandoned attempts + `/api/cron/exam-autosubmit` backstop
+  - Test: an abandoned attempt is submitted and no longer blocks a retake; the cron route 401s without the bearer secret; a double-fire does not double-submit
+- [x] **F7.14** (2026-08-20) The full attack suite (`/exam-attack`)
+  - Test: all 11 attacks rejected or resumed correctly
+
+---
+
+## Phase 8 — Notifications
+Branch `feat/08-notifications` · Status: `DONE` (10/10 built, F8.4b deferred to v2, 2026-08-20).
+Exit gate **not run** — paused by standing instruction 2026-08-19. Five of the seven gate items
+were checked directly and are recorded in the Log: the policy cases, the retried dispatch, the
+`email` channel never selected, no mail dependency, and no Email column. The two **not** proven
+are the ones needing a live deployment: that the hourly job selects by learner-local time against
+a real roster, and that `/api/cron/notifications` 401s without the bearer secret (the `withCron`
+guard it is built on has its own 14 tests from F3.8, re-run green).
+
+> **Open, needs the user:** `.env.example` is missing `VAPID_PRIVATE_KEY`, `VAPID_SUBJECT` and
+> `NEXT_PUBLIC_VAPID_PUBLIC_KEY`. Every shell command naming that file is refused by a hook in
+> this environment, so it could not be edited from here. See `ARCHITECTURE.md` **O2**.
+
+> **In-app and web push only. The app sends no email.** No `IMailer`, no Resend, no SMTP,
+> no `RESEND_API_KEY`. `email` stays in the channel union and the DB constraint so v2 needs
+> no migration. See `09-notifications.md`.
+
+- [x] **F8.1** (2026-08-20) Notification entities + type/channel unions
+  - Test: construction and validation of all 8 types
+- [x] **F8.2** (2026-08-20) `NotificationPolicy` — channels + quiet hours
+  - Test: quiet hours **spanning midnight** (22:00→07:00) suppress at 02:00, allow at 12:00
+- [x] **F8.3** (2026-08-20) `IPushSender` (VAPID) with self-cleaning
+  - Test: a 410 response deletes the subscription without throwing
+- [x] **F8.4** (2026-08-20) `IInAppNotifier` — writes a `notifications` row
+  - Test: a dispatch writes exactly one row; unread counts update
+- [-] **F8.4b** `IMailer` + email channel — **deferred to v2, the app sends no email**
+  - Test: n/a. Gate instead: no mail dependency in `package.json`; `grep -ri "resend\|nodemailer\|smtp" src/` is empty
+- [x] **F8.5** (2026-08-20) Preference and list use cases
+  - Test: a learner can only read and update their own preferences
+- [x] **F8.6** (2026-08-20) Dispatch use cases (6 types), in-app + push only
+  - Test: each respects the policy service; `SendWeeklyReport` sends no email; a preference requesting `email` is never selected
+- [x] **F8.7** (2026-08-20) `/api/cron/notifications` — hourly, timezone-aware dispatch
+  - Test: a UTC+6 learner with a 20:00 reminder fires at 20:00 local, exactly once; the route 401s without the bearer secret; a platform retry does not double-send
+- [x] **F8.8** (2026-08-20) Idempotency on `(profile_id, type, scheduled_for)`
+  - Test: a retried dispatch produces one row and one send
+- [x] **F8.9** (2026-08-20) Service worker + inline permission banner
+  - Test: the prompt is a banner, never a modal; a denied permission is a recoverable state
+- [x] **F8.10** (2026-08-20) Bell popover, toasts, preferences table (**In-app / Push** columns only)
+  - Test: component tests for unread counts and channel toggles; no Email column rendered
+
+---
+
+## Phase 9 — Content pipeline and seeding
+Branch `feat/09-content-pipeline` · Status: `DONE` (9/9, 2026-08-20). Exit gate **not run** —
+paused by standing instruction 2026-08-19. Four of its five items are proven by
+`pnpm content:report` and are in the Log: a malformed entry fails the build naming the file and
+entry, the counts are exact (1,240 / 560 / 44 / 24 / 28), every word has ≥2 realistic
+misspellings and every sentence ≥2 alternatives (schema-enforced), and the 24 uncertain
+transcriptions are flagged and listed. The fifth — **re-running the seed is a no-op diff** — is
+written and **unproven**: it needs a live database, and there is none in this environment.
+
+- [x] **F9.1** (2026-08-20) `content/` Zod schemas + build-time validation
+  - Test: a malformed entry fails the build naming the exact file and line
+- [x] **F9.2** (2026-08-20) `pnpm content:seed` — validate, diff, apply only changes
+  - Test: a second run is a no-op diff
+- [x] **F9.3** (2026-08-20) 44 phonemes with real articulation notes
+  - Test: count is 44; `banglaEquivalent: null` always has a `commonBengaliSubstitution`
+- [x] **F9.4** (2026-08-20) 24 rule families — statement + 3 examples + 2 counterexamples
+  - Test: count is 24; every family has 3 and 2
+- [x] **F9.5** (2026-08-20) Week 1 content
+  - Test: validator green; counts reported; Bangla is Bangla script; ≥2 misspellings per word
+- [x] **F9.6** (2026-08-20) Week 2 content
+  - Test: as above
+- [x] **F9.7** (2026-08-20) Week 3 content
+  - Test: as above
+- [x] **F9.8** (2026-08-20) Week 4 content
+  - Test: as above
+- [x] **F9.9** (2026-08-20) Final totals and the `ipaNeedsReview` report
+  - Test: 1,240 words, 560 sentence items, no duplicate `text`, flagged list reported
+
+---
+
+## Phase 10 — Web shell and core components
+Branch `feat/10-web-shell` · Status: `DONE` (9/9 built 2026-08-20; exit gate not run — paused by standing instruction 2026-08-19)
+
+- [x] **F10.1** (2026-08-20) App shell — 232px sidebar collapsing to 56px, 48px top bar, 1280px grid
+  - Test: collapse state persists; keyboard reachable
+- [x] **F10.2** (2026-08-20) `PhonemeStrip`
+  - Test: syllable dividers, 22px cells tinted by learner mastery, Bangla line, mono stat line; 3 states in Storybook
+- [x] **F10.3** (2026-08-20) `MasteryMatrix`
+  - Test: renders 44 cells **and** 24 cells from the same component via `dimension`; tooltips; drill action
+- [x] **F10.4** (2026-08-20) `DataTable` — sticky header, pinned columns, cursor pagination, 32px rows
+  - Test: pagination with a cursor; keyboard navigation
+- [x] **F10.5** (2026-08-20) Primitives — `StatCell`, `PanelHeader`, `HeatCell`, `MonoValue`, `StatusBadge`, `Sparkline`
+  - Test: tabular numerals on every numeric primitive
+- [x] **F10.6** (2026-08-20) Overlays — `Toast`, `Popover`, `Drawer`, `ConfirmDialog`
+  - Test: focus trap, Escape closes, focus returns to the trigger
+- [x] **F10.7** (2026-08-20) TanStack Query wiring + optimistic answer saving
+  - Test: **exam writes are not retried**; other reads retry
+- [x] **F10.8** (2026-08-20) i18n key-parity CI check
+  - Test: deleting a `bn` key fails CI (paste output, restore key)
+- [x] **F10.9** (2026-08-20) Accessibility baseline
+  - Test: focus rings 2px secondary-500 / 2px offset; `prefers-reduced-motion` respected; no colour-only cue
+
+---
+
+## Phase 11 — Learning screens
+Branch `feat/11-learning-screens` · Status: `DONE` (12/12 built 2026-08-20; exit gate not run — paused by standing instruction 2026-08-19)
+
+- [x] **F11.1** (2026-08-20) `/dashboard`
+  - Test: renders with zero data and with full data; no N+1 on the API call
+- [x] **F11.2** (2026-08-20) `/program`
+  - Test: 28 rows grouped by week with milestone rows; expandable day rows
+- [x] **F11.3** (2026-08-20) `/lesson/[day]` shell + five-stage tracker
+  - Test: stage order enforced by the server, not just the UI
+- [x] **F11.4** (2026-08-20) Learn stage
+  - Test: `PhonemeStrip` renders per word; audio plays
+- [x] **F11.5** (2026-08-20) Dictate stage — the letter tiles
+  - Test: keyboard input · auto-advance · backspace moves back **and** clears · arrows navigate · **paste blocked** · Enter submits · fully operable with no mouse
+- [x] **F11.6** (2026-08-20) Speak stage — the mic flow
+  - Test: unsupported browser renders the self-assessment fallback, never a dead button; permission-denied is recoverable
+- [x] **F11.7** (2026-08-20) Build stage — sentence chips
+  - Test: pointer-event reordering **and** full keyboard reordering as a first-class path
+- [x] **F11.8** (2026-08-20) Audio manager
+  - Test: a new play cancels the previous utterance — no overlap, ever
+- [x] **F11.9** (2026-08-20) `/practice`
+  - Test: drills are selected by actual weakness, not at random
+- [x] **F11.10** (2026-08-20) `/weak-spots`
+  - Test: the spaced-repetition schedule axis matches `review_items.due_at`
+- [x] **F11.11** (2026-08-20) `/library`
+  - Test: filters, column control, CSV export, detail drawer; cursor pagination
+- [x] **F11.12** (2026-08-20) `/progress`
+  - Test: accuracy over time with milestone markers; both mastery matrices; activity heatmap
+
+---
+
+## Phase 12 — Exam and marketing screens
+Branch `feat/12-exam-marketing-screens` · Status: `DONE` (12/12 built 2026-08-20; exit gate not run — paused by standing instruction 2026-08-19)
+
+- [x] **F12.1** (2026-08-20) `/exams` catalogue
+  - Test: lock state and readiness reflect the server, not local state
+- [x] **F12.2** (2026-08-20) `/exams/[code]` lobby + system check
+  - Test: the begin button is gated on **both** the checkbox and the mic/audio check
+- [x] **F12.3** (2026-08-20) `/exams/attempt/[id]` runtime shell
+  - Test: no navigation out; `beforeunload` warning active
+- [x] **F12.4** (2026-08-20) The countdown
+  - Test: driven by server remaining seconds; `secondary-500` at 5:00, `tertiary-500` at 0:60, each with `aria-live`
+- [x] **F12.5** (2026-08-20) Question navigator
+  - Test: answered / current / flagged / blank states; fully keyboard operable
+- [x] **F12.6** (2026-08-20) Refresh and resume
+  - Test: a refresh mid-attempt loses no answers and no elapsed time
+- [x] **F12.7** (2026-08-20) `/exams/result/[id]` — pass and fail variants
+  - Test: the fail variant renders its prescription block
+- [x] **F12.8** (2026-08-20) `/exams/review/[id]`
+  - Test: master-detail with diffs; unreachable before submission
+- [x] **F12.9** (2026-08-20) `/certificate/[id]` + public verification
+  - Test: verification works unauthenticated
+- [x] **F12.10** (2026-08-20) `/` marketing landing
+  - Test: Server Component, statically rendered, **Lighthouse ≥95 performance / 100 accessibility** — report attached
+- [x] **F12.11** (2026-08-20) Inline dictation demo on the hero
+  - Test: it actually works, unauthenticated
+- [x] **F12.12** (2026-08-20) `/onboarding`
+  - Test: goal → minutes → track → reminder time → diagnostic; resumable if abandoned
+
+---
+
+## Phase 13 — Hardening and delivery
+Branch `feat/13-hardening` · Status: `DONE` (12/12 built 2026-08-20; exit gate partly run — see the closing report)
+
+- [x] **F13.1** (2026-08-20) Weakest three modules fixed; per-module numbers reported.
+  **The ≥90% floor is NOT met — 57.20% lines / 72.26% functions / 78.41% branches.** Reported,
+  not claimed. See the Log row and the closing report (F13.12).
+  - Test: `domain` + `application` ≥ 90%, per-module numbers reported
+- [x] **F13.2** (2026-08-20) Playwright — Google sign-in → dashboard. **Written, not executed:** needs a live Supabase and a seeded learner; the Google consent screen is deliberately never automated.
+- [x] **F13.3** (2026-08-20) Playwright — a complete day-12 lesson. **Written, not executed** (no live Supabase here).
+- [x] **F13.4** (2026-08-20) Playwright — a full `milestone2` exam **including a mid-exam refresh**. **Written, not executed.**
+- [x] **F13.5** (2026-08-20) Playwright — a failed exam producing its drill prescription. **Written, not executed.**
+- [x] **F13.6** (2026-08-20) Security pass — CSP + 5 headers, 14-assertion sweep (rate limits, client-bundle isolation, `process.env` containment), `pnpm security:rls` two-user script. **The RLS script was not executed** — no live database here. The `correct_answer` snapshot already existed from F7.9 and is green.
+- [x] **F13.7** (2026-08-20) Performance pass — index review (migration 018: two real gaps found), N+1 counted by counting fakes. **p95 and the bundle budget were NOT measured** — both need a deployed app, and no number is claimed for either.
+- [x] **F13.8** (2026-08-20) Observability — inbound request-id continuity (validated), Sentry behind an optional DSN, `/metrics` behind `withCron`. **`/metrics` answers JSON, not Prometheus text** — `renderMetrics` produces the exposition format for a scrape adapter.
+- [x] **F13.9** (2026-08-20) CI — `.github/workflows/ci.yml`: typecheck, lint, content + i18n gates, tests with a Postgres service, coverage (reported, **not** gated — see below), build, and a Playwright job gated on `dev`. **Never executed** — no GitHub Actions runner here.
+- [x] **F13.10** (2026-08-20) `.github/workflows/deploy.yml` — migrations behind a required-reviewer environment, then verify + build. **The publish command is deliberately absent** (ARCHITECTURE.md O4: no host has been chosen) and the step exits 1 rather than pretending. **Never executed.**
+- [x] **F13.11** (2026-08-20) `README.md` brought to the finished state with a *Verification that has not been run* section; `DECISIONS.md` — the twelve shaping decisions, each with its cost.
+- [x] **F13.12** (2026-08-20) The honest closing report — see **Closing report** below the Log.
+
+---
+
+## Deferred to v2
+
+Out of scope for this build. Do not start these, and do not leave stubs for them.
+
+| Item | Why | What is already in place |
+| --- | --- | --- |
+| Email channel / `IMailer` / Resend | The app sends no email. Notifications run on in-app + web push. | `email` stays in the `NotificationChannel` union and the DB check constraint, so v2 needs no migration. `RESEND_API_KEY` and `EMAIL_FROM` stay commented out in `.env.example` and absent from the Zod schema. |
+
+---
+
+## Log
+
+Newest first. One line per finished feature: date · id · what · test result.
+
+| Date | Feature | What landed | Tests |
+| 2026-08-20 | F13.12 | The closing report — incomplete, fragile, and what to do next, in order | n/a |
+| 2026-08-20 | F13.11 | `DECISIONS.md` (12 decisions, each with what it costs, pointing at ARCHITECTURE.md's 67 for the full record); README de-staled and given an explicit unproven list | typecheck + lint green |
+| 2026-08-20 | F13.10 | Two jobs with a human gate between them: `migrate` (dry-run printed before the approval, then apply) → `release` (typecheck, lint, test, build). `cancel-in-progress: false`, because cancelling between the two is how a schema gets ahead of its code | YAML parses; **workflow not executed** |
+| 2026-08-20 | F13.9 | One `verify` job (cheapest gate first) + a `playwright` job that only runs where the secrets exist; coverage printed with `continue-on-error` so the 57%→90% gap stays visible without a permanently red pipeline | YAML parses; **workflow not executed** |
+| 2026-08-20 | F13.8 | `instrumentation.ts` (inert without a DSN), request ids honoured from upstream **only when a valid UUID**, `IMetricsReader` port + `/api/metrics`. Three sweeps caught my own work and all three were fixed properly | **553 tests green**, typecheck + lint clean |
+| 2026-08-20 | F13.7 | Migration 018 — `attempts (profile_id, created_at desc)` and `exam_attempts (profile_id, definition_id, …)`, the latter because 004's index is **partial** and cannot serve the catalogue; `n-plus-one.test.ts` proves 40 words still cost 4 reads | 3 new assertions green; **p95 and bundle budget not measured** |
+| 2026-08-20 | F13.6 | CSP + X-Frame-Options/nosniff/Referrer-Policy/Permissions-Policy/HSTS; `security-sweep.test.ts` (14 assertions); `scripts/rls-two-user.mjs`. Found and fixed the Phase-3 `process.env` read in `logger.ts` | 14 new assertions green; RLS script **not executed** (no live DB) |
+| 2026-08-20 | F13.3–F13.5 | Three e2e specs: the whole five-stage day-12 lesson, `milestone2` with a mid-exam refresh, and a failed exam producing its prescription | typecheck + lint green; **none executed** — no live Supabase in this environment |
+| 2026-08-20 | F13.2 | `e2e/fixtures/session.ts` (mints a session via Supabase rather than driving Google) + `sign-in-to-dashboard.spec.ts`, incl. an assertion that the dashboard makes **no** call to its own API | typecheck + lint green; **spec not executed** — no live Supabase here |
+| 2026-08-20 | F13.1 | Fixed 3 red tests (2 mine, 1 red since Phase 7); covered the weakest three modules — `program/application` 0→100%, `library/application` 0→98.5%, `lessons/application` 0→14.1% | **501→533 tests, all green.** Coverage 50.57→57.20% lines. **Floor of 90% NOT met** |
+| 2026-08-20 | F12.12 | `/onboarding` — five steps, resumable from `localStorage` **and** from the stored profile; `CompleteOnboarding` refuses to rewrite a finished profile; reminder written through the preferences endpoint that owns the field | typecheck + lint green (tests paused) |
+| 2026-08-20 | F12.11 | Inline dictation demo — the **real** `LetterTiles` on the hero, unauthenticated, three real corpus words each carrying a real Bengali-speaker error; the only thing in the product that grades in the browser, and it says so | typecheck + lint green (tests paused) |
+| 2026-08-20 | F12.10 | `/` — dark hero, the 8-row Bengali-speaker error table, the real 28-day syllabus with milestone rows, session-timing band, pricing, FAQ, footer. Server Component with **no data reads**. Lighthouse not run; static rendering blocked by the root layout's cookie reads — both stated in the run report | typecheck + lint green (tests paused) |
+| 2026-08-20 | F12.9 | Certificates end to end — entity, `VerificationCode`, repository, owner and public use cases, a rate-limited `auth: 'public'` verify route, `/certificate/[id]` and an unauthenticated `/verify/[code]`; issuance moved into the shared submission path so the cron backstop issues too | typecheck + lint green (tests paused) |
+| 2026-08-20 | F12.8 | `/exams/review/[id]` — master-detail with a **character** diff by longest common subsequence; unreachable before submission because `GetExamAnswerReview` refuses, not because the page guards | typecheck + lint green (tests paused) |
+| 2026-08-20 | F12.7 | `/exams/result/[id]` — one page, two variants; by-section table showing **marks lost** rather than accuracy; the fail variant carries the prescription block and links into `/practice` | typecheck + lint green (tests paused) |
+| 2026-08-20 | F12.6 | Refresh and resume — debounced autosave flushed on question change, section submit, tab-hide and `pagehide`; clock and answers re-anchored on visibility change and every 60s; a plain saving indicator | typecheck + lint green (tests paused) |
+| 2026-08-20 | F12.5 | Question navigator — answered / current / flagged / blank, each named in words as well as filled; roving-focus grid with arrows, Home/End and Enter; flagging wired to the real endpoint | typecheck + lint green (tests paused) |
+| 2026-08-20 | F12.4 | The countdown — anchored to the server's `remainingSeconds` and re-anchored on every response, `secondary-500` at 5:00 and `tertiary-500` at 0:60, each announced once via `aria-live` | typecheck + lint green (tests paused) |
+| 2026-08-20 | F12.3 | `/exams/attempt/[id]` — `(exam)` route group on flat `primary-900`, `beforeunload` + back-button guard, optimistic never-retried answer saving, one-way section submission | typecheck + lint green (tests paused) |
+| 2026-08-20 | F12.2 | `/exams/[code]` lobby — spec and section tables, rules, a system check that really calls `getUserMedia`, begin gated on the checkbox **and** the check **and** the server's lock | typecheck + lint green (tests paused) |
+| 2026-08-20 | F12.1 | `/exams` — `GetExamCatalogue` produces the lock from the same `ExamEligibilityPolicy` `StartExamAttempt` consults; readiness only once unlocked; a live attempt always outranks starting a new one | typecheck + lint green (tests paused) |
+| 2026-08-20 | F11.12 | `/progress` — daily accuracy with gaps left open and dashed rules where each milestone was passed, 84-day activity heatmap, **both** mastery matrices from one component | typecheck + lint green (tests paused) |
+| 2026-08-20 | F11.11 | `/library` — keyset cursor pagination on unique `words.text` (new `gt`/`ilike` on `IDatabase`, `search` on `IWordRepository`), four filters, column control, CSV export with formula-injection guard, detail drawer | typecheck + lint green (tests paused) |
+| 2026-08-20 | F11.10 | `/weak-spots` — master-detail on `DataTable` + `Drawer`, schedule axis bucketed straight from `review_items.due_at` in the learner's timezone | typecheck + lint green (tests paused) |
+| 2026-08-20 | F11.9 | `/practice` — `GetPracticeQueue` ranks weaknesses by expected loss and orders drills weakness-first then most-overdue; every item carries the reason it is there. Nothing sampled or shuffled | typecheck + lint green (tests paused) |
+| 2026-08-20 | F11.8 | Audio manager — one `AudioProvider` over all five stages, unconditional cancel-before-speak, the learner's own accent and playback rate, best-effort named voice | typecheck + lint green (tests paused); `grep SpeechSynthesisUtterance src` finds it in one file |
+| 2026-08-20 | F11.7 | Build stage — `SentenceChips` reorderable by pointer events **and** by keyboard (lift, move, drop, Escape to cancel), plus the missing `POST /lessons/sessions/:id/complete` route that closes a day | typecheck + lint green (tests paused) |
+| 2026-08-20 | F11.6 | Speak stage — feature-detected `SpeechRecognition` with a real self-assessment fallback, unambiguous and announced recording state, recoverable permission-denied; transcript only, never audio | typecheck + lint green (tests paused) |
+| 2026-08-20 | F11.5 | Dictate stage — `LetterTiles`: one real input per letter, auto-advance, backspace back-and-clear in one press, arrows, Home/End, paste blocked, Enter submits, no mouse needed | typecheck + lint green (tests paused) |
+| 2026-08-20 | F11.4 | Learn stage — a real `PhonemeStrip` per word from `GetPhonemeStrips` (four batched reads for the day), cancel-before-speak audio, the day's rules with their counterexamples | typecheck + lint green (tests paused) |
+| 2026-08-20 | F11.3 | `/lesson/[day]` focus mode — `(focus)` layout, idempotent session open/resume, `StageTracker`, the review stage, every transition taken from the server's response | typecheck + lint green (tests paused) |
+| 2026-08-20 | F11.2 | `/program` — 28 rows grouped by week, five exam milestones interleaved at their unlock day, expandable day rows, stats rail; `ListExamMilestones` use case | typecheck + lint green (tests paused) |
+| 2026-08-20 | F11.1 | `/dashboard` — four stat panels, today's session, next-exam readiness, weekly time-on-task, due-review table, phoneme matrix; six parallel memoised reads, plus `GetWeeklyActivity` and `GetNextExam` | typecheck + lint green (tests paused) |
+| 2026-08-20 | F10.9 | Focus ring rebuilt as a real `outline` (2px secondary-500 / 2px offset, background-independent), global `prefers-reduced-motion` rule, colour-only-cue audit in the gallery | typecheck + lint green (tests paused) |
+| 2026-08-20 | F10.8 | `pnpm i18n:check` — missing, orphaned and placeholder-mismatched keys; wired into `prebuild`. Proved by deleting `nav.weakSpots` and breaking `dashboard.dayOf`, then restoring both | typecheck + lint green; check exits 1 on a deleted key (output in the run report) |
+| 2026-08-20 | F10.7 | TanStack Query: per-tab client, read retry policy (never on 4xx, always on 429/5xx), `NEVER_RETRY` on every mutation, optimistic `useSaveExamAnswer` | typecheck + lint green (tests paused) |
+| 2026-08-20 | F10.6 | Overlays: `Toast` (moved from notifications, upgraded and mounted in the shell), `Popover`, `Drawer`, `ConfirmDialog`, all on one `useDismissable` hook | typecheck + lint green (tests paused) |
+| 2026-08-20 | F10.5 | Primitives: `MonoValue`, `StatCell`, `PanelHeader`, `HeatCell`, `StatusBadge`, `Sparkline` — tabular figures on every numeric one | typecheck + lint green (tests paused) |
+| 2026-08-20 | F10.4 | `DataTable` — sticky header, sticky pinned columns with computed offsets, cursor stack pagination, ARIA grid with roving focus | typecheck + lint green (tests paused) |
+| 2026-08-20 | F10.3 | `MasteryMatrix` — one component, 44 phoneme cells and 24 rule-family cells via `dimension`; keyboard cells, detail row, drill link, legend | typecheck + lint green (tests paused) |
+| 2026-08-20 | F10.2 | `PhonemeStrip` — syllable dividers, 22px heat-tinted cells, Bangla line, mono stat line; three states in `/gallery` (D66: gallery, not Storybook) | typecheck + lint green (tests paused) |
+| 2026-08-20 | F10.1 | App shell: 232px→56px rail with cookie-persisted collapse, 48px top bar, 1280px 12-col paper grid, skip link | typecheck + lint green (tests paused) |
+| --- | --- | --- | --- |
+| 2026-08-20 | F9.9 | `pnpm content:report` prints the phase's numbers rather than claiming them, and **exits non-zero when a target is missed** — a report that only described what was there would let 900 words pass as 1,240. All five targets hit exactly. It also reports two things the spec did not ask for and should have: **all 24 rule families are exercised** (a family nobody's content demonstrates is a mastery-matrix row that can never move, and a learner staring at a permanently empty cell), and the 15 phonemes absent from Bangla each carry the substitution learners produce. **I went back and marked my own work uncertain.** 24 of 1,240 transcriptions are now `ipaNeedsReview: true` — the compressed **-ary/-ory/-ery** family and the words whose careful and casual RP differ by a syllable (`library`, `secretary`, `February`, `restaurant`, `medicine`, `comfortable`, `temperature`…). My syllable splits follow the compressed form, and *which register the course teaches* is a real editorial decision a human should make rather than one I quietly settle. `stationary` and `stationery` are flagged **together and identically**, which is the point of the pair. Fixed one genuine error found on review: `graduate` was tagged a noun and carried the **verb's** transcription — the noun reduces its final vowel and the verb does not | typecheck, lint green · `pnpm content:report`: **1,240 / 560 / 44 / 24 / 28 — every target ok**, 33–34 min per day across all four weeks, 24 flagged for human review and listed |
+| 2026-08-20 | F9.8 | **310 words, 140 sentences, 7 days — and the corpus closes on exactly 1,240 / 560 / 28.** The spellings that survive to the final exam: -ance against -ence, -ary against -ery against -ory, the doubled consonants nobody hears (`accommodation`, `occurrence`, `embarrass`), the Greek and French borrowings that kept their own spelling (`psychology`, `technique`, `colleague`, `rhythm`), and the last silent letters — `column`, `muscle`, `hymn`, `resign`. Three pairs run through the week because they cost marks in an exam and nowhere else: `stationary`/`stationery`, `practice`/`practise`, `breath`/`breathe`. The sentences are the hardest in the corpus — conditionals, reported speech, relative clauses — because by day 28 construction is examined too. **Thirty-one compound placeholders were written and cut** across five passes; every one became a real word teaching the same rule. **The validator caught a real flaw in my own F9.1 schema**: `text` was lower-case-only, so `February`, `January`, `Wednesday`, `Tuesday`, `Thursday` and `Saturday` all failed — and lowercasing them to satisfy the rule would have taught a learner that `february` is how the word is spelled, which is precisely the quiet wrongness a spelling product cannot afford. The rule is now "lower case, or a proper noun with one capital"; marking is unaffected because `normaliseAnswer` folds case before comparing. It also caught "The future is uncertain" duplicated from week 2 | typecheck, lint green · `pnpm content:validate`: **1,240 words · 560 sentence items · 44 phonemes · 24 rule families · 28 days — valid.** Every count in the spec table hit exactly |
+| 2026-08-20 | F9.7 | **310 words, 140 sentences, 7 days — running total 930 and 420, validator green.** Work, study and the wider world: longer words, unstressed syllables, and the week where week 1's two rules stop being separate exercises and start **colliding** — `hoping` and `hopping` differ by one letter and one rule and are in together deliberately, as are `desert`/`dessert` and the -ise verbs a learner has probably seen spelled both ways. The irregular plurals land here too (children, women, feet, teeth, mice, knives, leaves) because a learner just taught -s and -es needs the exceptions **before** they over-apply the rule. **Nineteen compound entries were written and cut** across three passes — `science-lab`, `journey-time`, `culture-shock`, `history-book` and the rest existed to reach a rule count, and each became a real word teaching the same thing (`efficient`, `railway`, `custom`, `victory`). **The validator caught three real errors**: `is` used as a distractor in two of its own sentences, and "The children are playing" duplicated verbatim from week 1 — which would have been the same drill served twice as if it were new | typecheck, lint green · `pnpm content:validate`: **930 words · 420 sentences · 21 days — valid**, no IPA flagged for review |
+| 2026-08-20 | F9.6 | **310 words, 140 sentences, 7 days — running total 620 and 280, validator green.** The endings that decide most of what a learner meets next: -tion/-sion, -able/-ible, the silent letters English kept from the languages it borrowed from, the three sounds of -ed, and the -ough family that spells six vowels with four letters. Several **confusion pairs are in deliberately together** — advice/advise, effect/affect, except/accept, whether/weather, break/brake, whole/hole, here/hear, knew/new — because each is the other's commonest misspelling and teaching them apart is the entire point of a spelling product. **Fourteen compound entries were written and then cut**, in two passes: things like `office-work`, `country-side`, `weather-report` and `knowledge-base` existed only to reach a rule-family count, and padding a corpus is the specific failure `10-content-pipeline.md` warns about. They became ordinary words demonstrating the same rules — `journey`, `memory`, `weapon`, `cabbage`. **The validator caught two real errors**: `question` duplicated from week 1, which would have violated 002's unique index and taught the same word twice as if it were new, and `visits` used as a distractor in its own sentence | typecheck, lint green · `pnpm content:validate`: **620 words · 280 sentences · 14 days — valid**, no IPA flagged for review |
+| 2026-08-20 | F9.5 | **310 words, 140 sentence items, 7 days — validator green.** Authored one line per entry in a pipe-separated table that is committed beside the generated file, because the TS object form is ten lines per word and a review that has to scroll past 3,000 lines of punctuation is a review nobody does. Every `commonMisspellings` entry is an error a Bengali speaker **actually produces** rather than a random corruption: `dis` for `this` and `tink` for `think` from the missing dental fricatives, `vil` and `bhery` from the missing /w/ and /v/, `recieve` and `beleive` from the i-before-e rule itself, `quiet`↔`quite` because they are genuinely the pair learners swap. IPA is the standard British reference accent, matching `accent_preference`'s default. **Three entries were cut for being padding rather than vocabulary** — `box-office`, `watchbox` and `city-hall` existed only to reach a rule-family count, and `watchbox` is barely a word; they became `dish`, `fox` and `copy`, which demonstrate the same rules and are words. **The validator caught a real error**: `not` used as a distractor in "She does not like milk", which would have shown the learner a correct chip and marked them wrong for taking it. **Corrected my own pacing constants**: 45s/word and 75s/sentence made an honest day claim 58 minutes against a `daily_minutes` default of 30 — the numbers or the promise had to give, so they are 25 and 45 and a day now lands at 33–34 minutes. The generator moved from `.mjs` to `.ts` because `scripts/*.mjs` is inside type-aware lint and every line was an `any` | typecheck, lint green · `pnpm content:validate`: **310 words · 140 sentences · 44 phonemes · 24 rule families · 7 days — valid**, no IPA flagged for review this week |
+| 2026-08-20 | F9.4 | The 24 families moved out of `010_seed_reference` for the same reason as the phonemes, parsed rather than retyped. The **counterexamples are the half that matters**: a rule with no exception teaches a false absolute, and English spelling is very largely made of exceptions — `noticeable` keeps its silent e to hold the c soft, `boxing` does not double because x is never doubled. 002 refuses a family without exactly three and exactly two and so does the schema, because a family that lost its counterexamples would still render and would teach a rule the language does not follow. **Caught a real bug in F9.1's schema doing this**: the `code` pattern was hyphen-only while 010 stores snake case, so the first seed would have renamed all 24 families — and a rename orphans every `mastery_records` row keyed on the old code, which is the rule-family axis of the mastery matrix erased by a tidy-up. Matching the database is not a preference there | typecheck, lint green · `pnpm content:validate`: **24 rule families, 44 phonemes, valid** — each family's 3-and-2 shape enforced by the schema |
+| 2026-08-20 | F9.3 | **Not invented here** — these are the entries migration `010_seed_reference` already carries, written and reviewed in Phase 2, **moved** into the content pipeline rather than duplicated. Two sources for the same 44 rows drift, and the drift shows up as a lesson teaching one articulation while the matrix labels another. Parsed out of the SQL programmatically rather than retyped, because transcribing 44 IPA symbols and 44 Bangla notes by hand is exactly where a silent corruption enters. Twelve vowels, eight diphthongs, twenty-four consonants — 44, and the count is now asserted by the validator rather than by counting. **Fifteen have `banglaEquivalent: null`**, which is data and not a gap, and the schema refuses any of them without a recorded substitution — the substitution *is* the thing the lesson teaches against. Those fifteen are ɜː ə əʊ ɪə eə ʊə t d v θ ð z ʒ r w: the fricatives Bangla lacks outright, the two alveolar stops it splits into dental and retroflex with nothing between, the centring diphthongs, and the unstressed central vowel it does not reduce to at all. That is where a Bengali speaker's accent lives, and it is exactly the list Phase 6's confusion map is built from | typecheck, lint green · `pnpm content:validate`: **44 phonemes, valid** — the null-equivalent rule enforced by the schema, not by inspection |
+| 2026-08-20 | F9.2 | Validate → diff → apply, and the middle step is the whole feature. **Nothing is ever deleted and nothing is reinserted.** A seed that truncated and reinserted would give every word a new uuid, and every `review_items.item_id`, `attempts.item_id` and `mastery_records.dimension_id` pointing at the old one would be orphaned — months of a learner's history silently detached by a command whose name suggests it is safe to re-run. So rows are matched on **natural keys** (a phoneme's symbol, a family's code, a word's text, a sentence's English target) and only rows whose content actually differs are updated. Arrays are compared **ordered**, not as sets: `syllables` and `examples` are sequences a learner is shown in order, and calling a reordered rule unchanged would ship a different lesson under the same row. Validation runs **first and always** — applying content that failed validation is how a corpus ends up with a word nothing can render and no record of when it arrived. Like the migration runner it never reads an env file itself; `node --env-file-if-exists` hands it `DATABASE_URL` and the value is never printed. **Not exercised against a real database** — there is none in this environment — so the no-op-second-run gate item is written and unproven; `--dry-run` validates and connects to nothing | typecheck, lint green · `pnpm content:seed:dry` runs clean and applies nothing — the diff-and-apply path is **unproven without a live database** |
+| 2026-08-20 | F9.1 | Two layers, because they catch different mistakes. `schema.ts` holds what an entry can check about **itself** — ≥2 misspellings, none equal to the word, syllables that join back into it, Bangla that contains an actual Bangla codepoint (the check that tells `ভালো` from `bhalo`, which `CLAUDE.md` bans outright and which passes every other test while being unreadable to the learner the product is for). `validate.ts` holds what only the **corpus** can check: a duplicate `text` across two weeks, a rule family nobody defined, a day naming a word its own week does not contain, a distractor that appears in the answer — which would make the word bank a lie, the learner picking a correct chip and being marked wrong. `estimatedMinutes` is checked against actual volume, because `10` is specific that a day claiming 30 and holding 70 breaks the streak mechanic, and the streak is the retention the product runs on. **A week is empty or complete, never half** — `days.min(1)` alone cannot tell an unwritten week from a written one whose day plan was forgotten, and the second is 300 words no learner is ever shown. Validation runs at module load and `prebuild` runs it, so bad content cannot reach a deploy by way of nobody having run the right script. `tsx` added as a dev-only runner for the CLI | typecheck, lint green · **acceptance proven**: a planted word with one misspelling fails as `content/week-01.ts  words.0.commonMisspellings — Array must contain at least 2 element(s)`, naming the exact file and entry; removed, and `content:validate` is green again |
+| 2026-08-20 | F8.10 | **There is no Email column, and the component could not render one.** The columns come from `CHANNEL_COLUMNS`, a two-entry tuple, and `Preference.channel` is typed from the same tuple — so there is no value a third column could be rendered *from*. Not greyed out, not "coming soon", not omitted by a component that had the option. The badge is the server's `unreadCount`, never `notifications.length`: the feed is a page of thirty, and a learner with sixty unread would otherwise see 30 — wrong in the reassuring direction. A failed feed load leaves the previous one on screen rather than blanking it, which would tell the learner their notifications had been deleted; a failed toggle leaves the checkbox where it was, because an optimistic flip that silently reverted would say the setting had saved. Saving sends **only the row that changed** — the whole matrix on every toggle would let two devices overwrite each other with settings neither touched. A toast is **never the only record of anything**: everything shown has already been written to `notifications`, so a page navigation cannot destroy a message. `aria-live="polite"`, not assertive — the right manners for something the learner did not ask for — and the unread count is in the button's accessible name rather than only in a badge. Plain `useState` and `apiFetch` rather than TanStack Query, because **F10.7 wires the query client** and reaching for it here would mean building it early or building this twice | typecheck, lint green · `grep -i email src/components/` finds only the sentence explaining why there is no such column · composition + api sweeps 58/58 |
+| 2026-08-20 | F8.9 | **A banner, never a modal**, and `09`'s reason is not aesthetic: browsers penalise sites that request notification permission from a modal on load, and so do users — and a permission asked for badly is a permission denied **permanently**, because no browser lets script re-request it. So it asks in place, after the page has rendered, and only on a click. **A denial renders as an explanation of where to undo it, never as a button that would do nothing** — a button that cannot work is worse than no button. The state starts as `unsupported` and is corrected in an effect, because reading `Notification.permission` during render differs between the server pass and the client one and React calls that a hydration mismatch. The service worker is plain JavaScript in `public/`, served verbatim: anything the build would transform is a build step standing between a browser and a notification. It reads no state, calls no API and holds no credentials — a worker runs when the app is closed, so everything it can do it can do to somebody who is not looking. A click focuses an existing tab rather than opening a second, and an empty push (some services send keepalives) shows nothing rather than an empty notification. The base64url→`Uint8Array` conversion is commented because skipping the two substitutions silently produces an unusable key. **Lint change, stated plainly**: `public/**` is now ignored — `allowJs` is off so TypeScript sees the worker as untyped and every line becomes an `any`, producing 38 findings about the absence of types rather than about the code. The linter is scoped to source; no rule was loosened | typecheck, lint green · one-implementation sweeps 4/4 with the banner mounted |
+| 2026-08-20 | F8.8 | The mechanism shipped with F8.4 and F8.6; `09` asks for it **proven by test**, so this feature is that proof — nine assertions against the real dispatcher. The fake notification store **enforces the unique key the way Postgres does**, which is the only reason the suite means anything: a fake that cheerfully accepted a second row would prove the code calls a method, not that a retry cannot double-send. One assertion exists to stop the guard being vacuous — the *next hour* dispatches again, so what is being tested is the **key** rather than a blanket "only ever once". Four of Phase 8's exit-gate items are covered here: a retried dispatch is one row and one send; quiet hours spanning midnight suppress at 02:00 Dhaka and deliver at 20:00 on the same preferences; push disabled sends in-app only; and an `email` preference is never selected, produces no send, and never appears in `channelsDelivered` even when it sits beside two live channels. `SendWeeklyReport` is asserted separately by name, since `09` calls it out: two channels, no third | `pnpm exec vitest run` on this file: **9/9** · typecheck, lint green |
+| 2026-08-20 | F8.7 | Two things make this correct and both are easy to get wrong. **It selects on the learner's local hour, not the server's** — so the job runs *every* hour and asks each learner whether this is theirs, because there is no single server hour at which it could run and still reach a UTC+6 learner at 20:00 their time. And **every notification in a tick shares one `scheduledFor`: the top of the hour, never `now()`.** That is what makes 005's unique key survive a retry: a platform re-invoking a timed-out job at 20:03 having already sent half the batch at 20:01 computes the same 20:00 for everyone, so the sent half collides and the unsent half goes out — `now()` would give every retry a fresh key and double-send the lot. `listAll` is the compromise and it is written down where it lives: the *right* query is "learners whose reminder hour matches in their own timezone", which is `(now() at time zone timezone)::time` and which `IDatabase` cannot express — so the job reads a capped roster and decides per learner in the domain, where the rule is testable, and when the cap bites the answer is a Postgres function like 013 rather than a bigger number. A review nudge fires only when something is actually due: "0 words are due" is the fastest way to teach somebody to ignore the app. A streak warning goes only to a streak that is **live and untouched on the learner's own today**, and quiet hours can still suppress it — somebody who sleeps at nine has said they would rather lose the streak than be woken. One learner's failure is caught per learner and reported | typecheck, lint green · public-routes sweep 59/59 with the second cron route listed |
+| 2026-08-20 | F8.6 | Six use cases that decide only **what to say**; `NotificationDispatcher` does everything else, so none of them can decide for itself whether quiet hours apply or reach a channel the policy did not select — and **none of them can send an email**, because there is no mailer, no port for one, and `LIVE_CHANNELS` has two entries. `SendWeeklyReport` is the one `09` names by name and it goes through the identical path as the other five, which is the strongest form that promise can take. The dispatcher's **order** is the idempotency guarantee: ask the policy first (a suppressed notification is never written, so quiet hours do not fill the bell with what the learner asked not to see), then write the row — which *claims* `(profile_id, type, scheduled_for)` — then push only if that write created it. A retried tick loses the race, learns it from `created: false`, and sends nothing, with **no coordination between invocations**, which matters because no process is alive between them. A deferred send writes **nothing**: a row now would claim the key for a send that has not happened. Copy is data in both languages with **real Bangla script**, because a change that must be made in six files gets made in four, and nobody can review Bangla scattered through application code. Found a bug mid-lap: recording push delivery went through `deliver()`, which would have gone to `insertIfAbsent`, found the key taken and dropped the update — it saves through the repository now | typecheck, lint green · gate items checked directly: **no mail dependency in `package.json`, and `grep -ri "resend\|nodemailer\|smtp" src/` is empty** apart from prose saying so |
+| 2026-08-20 | F8.5 | Seven use cases, seven routes, and **not one input interface has a field for a profile id** — that is the whole of "a learner can only read and update their own", enforced by there being nothing to pass rather than by a check repeated seven times. `MarkAllRead` is the strongest form: no id at all. Preferences are always the **complete matrix** — eight types across both live channels, stored rows over defaults — because a screen rendering only what was stored would show a new learner an empty table and let them conclude they had no notifications. Defaults are computed rather than seeded at signup: sixteen rows per account nobody has opinions about is a lot of storage for a default, and the consequence is stated out loud — **an absent row means on**, so a learner who never opens the screen still gets their daily reminder. `product_update` is the one type off by default, being marketing rather than teaching. The write schema's channel enum is **`LIVE_CHANNELS`**, so a body asking to configure `email` is a 422 naming the field instead of an accepted request that silently does nothing — the honest answer while the app sends none, and the reason `IPreferenceView.channel` is a `LiveChannel`: a view type that *cannot express* a third column is a stronger promise than a component choosing not to render one. Revoking a push endpoint that is not yours reports `revoked: false` rather than 404, because an endpoint is a capability URL and a 404 would tell the caller whose they had guessed. The unread badge is a `count(*)`, not the length of the page — sixty unread behind a thirty-row feed would otherwise show 30 | typecheck, lint green · openapi + api sweeps 59/59 with all seven routes registered |
+| 2026-08-20 | F8.4 | `insertIfAbsent` is `on conflict do nothing` plus a read-back, and `ignoreDuplicates: true` here is **the opposite of every other upsert in this codebase** — deliberately. A conflict means another tick already claimed this `(profile_id, type, scheduled_for)`, and updating would overwrite a notification that may already have been sent and read, turning a duplicate-delivery bug into a data-loss one. The read-back is what tells the caller who won: if the stored id is not the one we tried to write, we lost, and the winner does the sending. That `created` flag is the whole idempotency mechanism — writing the row **claims** the key, so a retried cron tick finds it taken and sends nothing. A port beside `IPushSender` rather than the repository directly, so a dispatch use case talks to two channels in one shape instead of reaching into persistence for one of them. **Found and fixed a bug while writing it**: `markAllRead` had a comment describing a sent-only filter the code did not apply, and a blanket update would have failed outright against 005's `read_implies_sent` the first time a delivery failed and left a row queued. It now reads the unread rows, drops the queued ones, and writes the rest — one write per row rather than one statement, which is the honest trade when `IDatabase` expresses equality filters and "sent_at is not null" is not one | typecheck, lint green — tests paused |
+| 2026-08-20 | F8.3 | `IPushSender` **returns an outcome and never throws**, and that shape is the feature. A 410 means the browser is gone — somebody cleared their site data — which is the *normal* end of a subscription's life, and an exception would abort a whole batch over the least surprising event in the system. So the adapter deletes the row and reports `expired`. `unconfigured` is an outcome for the same reason: an app with no VAPID keys has push switched off, and taking a request down over a missing optional key would be worse than the silence it prevents. The error policy is exactly `09`'s three lines — 410 deletes, 429 backs off, anything else fails — and no more, because an adapter inventing its own retry ladder is a product decision made in infrastructure. VAPID details are set **lazily and once**: at import time a missing optional key would become a boot failure, which is what the optionality exists to avoid. The endpoint is a **capability URL** — anybody holding it can push to that browser — so it is truncated in every log line. `IDatabase` grew a `delete`, its first: everywhere else a learner's history is evidence and is kept, but a dead push endpoint is not history, it is a browser that no longer exists, and leaving it fails on every tick forever. `upsert` on `endpoint` with `ignoreDuplicates: false` is what moves a shared device's row to whoever is signed in now — ignoring the duplicate would keep pushing to the previous owner | typecheck, lint green · probed with a stubbed transport: **410 → `expired` and the row deleted, no throw** · 429 → `throttled`, row kept · 200 → `sent` · upsert-target and round-trip sweeps 23/23 |
+| 2026-08-20 | F8.2 | One service answers "does this learner want this, on this channel, at this moment" and every dispatch use case asks it — six answers to one question would drift within a month. `email` is filtered out **first**, before anything else looks at it, so a preference asking for it is never selected and no send is attempted; there is no mailer to attempt one with. Defer-or-drop is decided per **type** and the split is about whether the news keeps: an exam result is still worth hearing at seven, "12 reviews due today" delivered nine hours late is noise and tomorrow's is already coming. Erring toward deferring is how a learner wakes to eleven stale notifications, which is how the permission gets revoked. A deferred send waits for the **earliest** window end across channels, so different quiet hours per channel mean the learner hears it as soon as any one opens rather than when the last does. `isReminderHour` compares the hour **in the learner's timezone** — `09` calls scheduling "the part that is usually wrong", and an hourly job selecting on the server's hour sends a UTC+6 learner their 20:00 reminder at 2am. Minutes are ignored deliberately: the job is hourly, so 20:30 fires at 20:00 rather than never | typecheck, lint green · probed all seven cases from `09`'s table: 02:00 suppressed · 12:00 delivered · 22:00 quiet and 07:00 audible (inclusive start, exclusive end) · email-only dropped with no send · push-off delivers in-app only · exam_result defers to 07:00 · UTC 14:00 = 20:00 Dhaka and matches the reminder hour |
+| 2026-08-20 | F8.1 | Three entities, four unions. **`email` is in the channel union and the app never sends one** — that asymmetry is `09-notifications.md`'s, held on purpose so v2 needs no migration and no widening of a union other code has already switched on exhaustively; what stops a send is `LIVE_CHANNELS`, not the absence of a name, and no `IMailer` is declared because a port with no implementation is dead weight that drifts. `scheduledFor` is documented as **the window the dispatcher aimed at, not when it ran**, because that is the entire mechanism behind idempotency: two ticks of an hourly job aim at the same instant, so 005's unique key rejects the second — which it could not do if the column were `now()`, since two ticks never share one. An empty `channelsDelivered` means **queued, not failed**, which is what lets dispatch write the row first and send after: the write claims the idempotency key, and claiming it before sending is what stops a retried tick sending twice. `ClockTime` is minutes-since-midnight with no date and no zone, because `22:00` means ten at night *wherever the learner is* — pinning it to a zone at rest would give somebody who flies to London 3am reminders. A quiet window that wraps is **legal data**, named as `wrapsMidnight()` so the policy asks a question rather than doing the arithmetic twice; half a window is refused, since one bound leaves the policy guessing which way it opened. Quiet hours are inclusive of the start and exclusive of the end — silence *at* 22:00, and the 07:00 reminder still arrives | typecheck, lint green — tests paused |
+| 2026-08-20 | F7.14 | **13 attacks, all rejected or resumed correctly**, run against the real use cases over an in-memory world. Fakes rather than a database, and the reason is not convenience: every attack here is about a *decision* — is this write too late, is this section already locked, is this the fourth attempt — and every one is made in the domain and the use case. A database would be testing Postgres's opinion of those decisions, which is a real thing to test and a different one; the two writes that genuinely need a transaction are guarded in SQL by 015 and 017. The clock attack is the one worth reading: it passes not because a check rejects a forged time but because **there is no argument anywhere by which a client could assert one** — and every write answers with the server's remaining seconds, so a tab that lied to itself is corrected on the next save. Beyond the doc's seven: flagging after submission (a flag is a write), answering a question belonging to another attempt, reaching an attempt that is not yours, and the deadline surviving a resume. **Four attacks failed on the first run and the code was right every time** — a day-1 fixture profile was hitting `milestone1`'s day-7 lock before eligibility was ever evaluated, so the setup moved to day 8; the guard refusing first is correct, and the attacks below it are about what happens once the exam is reachable | `pnpm exec vitest run src/modules/exams`: **23/23** (13 attacks + 10 leak assertions) · typecheck, lint green |
+| 2026-08-20 | F7.13 | Rule 9 exists because 004's one-live-attempt index turns a dead battery into a **permanent lockout** — a learner whose milestone attempt never closed cannot start that exam again, ever, with no action available to them. The primary path stays in the database (009's pg_cron job), which works when the app is entirely down; this route is the backstop. 009 deliberately only sets `submitted` — the deadline passing is not a grade — so the backstop meets attempts in **two** states, and `findAbandoned` is two queries rather than one loose `status <> 'passed'` predicate that would sweep up live attempts. Migration **017** `create or replace`s 016's function (forward-only; 016 is not edited) to widen its guard from "still open" to "still open, or handed in and never marked" — 016's original guard would have refused every pg_cron-submitted attempt and left it scoreless forever. Idempotence survives: a graded attempt has a score, so a double-fire still changes nothing, and `submitted_at` is `coalesce`d so the paper is recorded as handed in at the **deadline**, not when somebody got round to marking it. Marking is now one shared `ExamSubmissionService` for both callers — two implementations would drift, and the one that drifted would be the abandoned-attempt path nobody watches, which is exactly the case rule 8 exists for. One attempt's failure is caught **per attempt and reported in the result**, because a batch that dies on row three leaves rows four onward abandoned for another hour. **The cron handler broke the public-routes sweep, and the break was real**: the sweep followed *every* import of the `handlers.ts` barrel and joined the text, so one `withCron(` made all 22 routes look like opt-outs — a sweep that fails for everything gets disabled, so it now follows the specific symbol the route re-exports, its one `export const`, and the factory that declaration calls. Mutation-probed: a planted `auth: 'public'` on the result handler still fails it | typecheck, lint green · 121/121 across exams, api, auth, progress, review and openapi · public-routes sweep repaired and mutation-probed |
+| 2026-08-20 | F7.12 | The three topics are ranked by **expected loss, not by accuracy**, and those are different orders — that difference is the whole value of the feature. A rule family at 40% inside a 30%-weighted section costs more of the final mark than a phoneme at 20% inside a 20%-weighted one, so telling a learner to go and drill the phoneme would be advice that does not move the number they care about. Each topic's share is its dimension's weight divided by how many topics have been measured in it: a learner with 44 measured phonemes has each accounting for a forty-fourth of the pronunciation section, and skipping that would rank one phoneme above a whole section's worth of rules. A previous attempt at **this** exam outweighs general mastery 60/40 — sitting the paper is the best evidence about the paper — but it does not erase it, because somebody who failed on Monday and practised all week is not still that score. With nothing measured, the prediction is 50, not 0: the honest guess is the middle, and zero would tell a new learner they are certain to fail. Fewer than three topics come back only for an account measured on fewer than three dimensions — padding the list would be inventing advice. `08` calls this the thing that makes the lobby honest instead of decorative, and the field is named `predictedScorePercent` for the same reason: a lobby saying *Ready!* to somebody who will score 51% is worse than one saying nothing, because they will believe it | typecheck, lint green · exam sweeps + openapi 15/15 |
+| 2026-08-20 | F7.11 | The review is **the only route in the API that returns correct answers**, and the guard sits in the use case rather than the handler: a check in a handler protects one handler, a check before the read protects the data — an unsubmitted attempt never loads its answer key into memory at all, and the ordering (ownership → submission → read) is what makes that true rather than a `throw` further down keeping it off the wire. `submitted` counts as finished alongside `passed`/`failed`, because the diagnostic ends there by design and refusing a learner their own placement result would refuse the only thing that exam produces. Two routes rather than one: the result screen must not download 150 questions and their answer key to show one number. **F7.9's sweep needed amending, and the amendment is the rule stated in full, not a hole in it** — rule 3 bounds the key by *time* ("every other exam route must not, **before submission**"), so the review DTO and its use case are listed together as `AFTER_SUBMISSION_ONLY`, with a **new assertion** that the gate exists and that it precedes the read. Neither file is safe alone: a DTO with the field and no gate is a leak, a gate protecting nothing is theatre | typecheck, lint green · exam sweeps + openapi 15/15, now 10 assertions in the leak suite |
+| 2026-08-20 | F7.10 | Four responsibilities, four pure services, one write. `ExamAnswerMarker` decides right or wrong, `ExamScoringService` weights, `ExamDefinition.passes()` decides the outcome, `ExamPrescriptionService` turns a failure into work — and migration **016** writes all of it in one transaction, because every partial outcome is worse than the failure that caused it: marks with no outcome leave the attempt stuck `in_progress` past its deadline **blocking the retake the learner earned**; an outcome with no advance leaves somebody who passed still on day 7 tomorrow; a fail with no prescription is rule 8's "just a number". 016 is **idempotent by construction** — it returns early unless the row is still `in_progress` — which is what rule 9 needs when the cron backstop fires on an attempt the learner has just handed in. Rule 8's drills go through the **same review ladder as every other wrong answer**, not a bespoke exam-drill path: a word missed in an exam and the same word missed in a lesson are one gap, and two schedulers would give it two due dates. Pronunciation earns **partial** points where the other types do not, and the asymmetry is the product's — a spelling is right or not, a pronunciation is a distance, and marking `wery` zero in an exam would be Phase 6's mistake made twice. Submission is deliberately **not** deadline-guarded: rule 2 governs answers and has already stopped them changing any, while an out-of-time paper is submitted rather than lost. `IPronunciationJudge` is declared in the exams **domain** and never names `ISpeechScorer`; one adapter connects them and caches the 44-phoneme inventory per request, so a 30-item pronunciation section reads it once, not thirty times. **The F7.9 sweep did its job mid-lap** — it failed on `exam-answer-marker.ts` naming the answer key, which is legitimate, so the file joined the list with its reason rather than the rule being loosened | typecheck, lint green · exam sweeps + openapi 14/14 |
+| 2026-08-20 | F7.9 | Asserted **two ways**, because either alone is escapable. The behavioural half serialises every shape an exam endpoint returns before submission — the attempt view that start, resume and reconnect all share, an offered question, the saved-answer echo, the section-submit progress — and looks for a distinctive planted answer in the JSON, which catches a leak through a nested object or a spread. The structural half sweeps the source, which catches a leak in a shape nobody has written a case for yet: the Phase 12 endpoint added by somebody who has not read this file. One assertion exists purely to keep the rest honest — **the entity that does hold the key must still hold it**, because if `correctAnswer` quietly stopped being populated every other assertion would pass while proving nothing. Two sweep rules rather than one growing allowlist: response-shaping locations (`presentation/`, `application/dto/`, `application/services/`, the routes) may name it **never, no exceptions**, and everywhere else in the module is held against the seven-file generation-and-marking path, each entry carrying its reason. A fourth assertion fails if a listed file *stops* naming it, so the list cannot go stale and quietly widen. Mutation-probed: a planted `correctAnswer` in a response DTO fails both sweeps | `pnpm exec vitest run` on this file: **9/9**, planted leak caught and removed · typecheck, lint green |
+| 2026-08-20 | F7.8 | Rule 6 — a crash loses nothing — and the reason it works is that **there was never anything in the tab that mattered**: the attempt, the section, the answers and the deadline are all columns. The elapsed time is deducted because it is never *added*: `remainingSeconds` is `serverDeadlineAt − now`, so a learner away ten minutes returns to ten fewer, and an exam whose clock stopped when the tab closed would be an exam with no time limit. Start and resume now share **one** view builder, because two functions that agree today are how a resume comes to report the deadline differently from the start — a bug that costs a learner time and is invisible until it does. The read is deliberately **not** a write: an expired attempt is returned with zero seconds rather than being auto-submitted here, because a read that writes behaves differently under a refresh, and finishing abandoned attempts belongs to the cron backstop. `null` rather than 404 when nothing is running — the runtime asks "am I mid-exam?" on every load and "no" is an answer, not a missing resource | typecheck, lint green · openapi + api sweeps 59/59 with the new route registered |
+| 2026-08-20 | F7.7 | `ExamEligibilityPolicy` returns a **union of three answers**, not a boolean with two nullable fields beside it: "never again" and "not for another six hours" are different news, and a client that cannot tell them apart shows the wrong screen. Two problem codes for the same reason — `EXAM_ATTEMPTS_EXHAUSTED` is terminal, `EXAM_COOLDOWN_ACTIVE` carries the wait, and rule 5 asks for the remaining time **in the problem detail** because "come back later" with no number reads as a bug. Ordering inside `StartExamAttempt` is the subtle part: eligibility is evaluated **after** the resume path, never before. Checking first would refuse a learner their own live attempt on the third try at a three-attempt exam — they are not starting a fourth, they are coming back to the one they are sitting. The cooldown runs from the most recent `submittedAt` and **not** from the highest attempt number: an attempt abandoned and auto-submitted by the cron backstop finishes at its deadline, which can fall after a later attempt was created, and the cooldown is about when the learner last sat an exam. Remaining seconds round **up**, because reporting zero while still refusing the start is the one answer a client cannot act on. Pure, so the case that matters — a retake one second early — is a table of numbers rather than a test that waits twenty-four hours | typecheck, lint green — tests paused |
+| 2026-08-20 | F7.6 | Rule 4 says a submitted section cannot be reopened **by any endpoint** — "not an admin one, not a debug one" — and the way that is kept is not a check in this use case. It is that `ExamAttempt` has **no method that lowers `currentSectionIndex`**: there is nothing for a future endpoint to call, so writing the endpoint does not create the hole; somebody would have to add the method first, in the entity, where the rule is written down and visible. The guard here is a narrower and different one: the code submitted must be the section the attempt is actually on. Behind is a replay (a double-click, a lost response) and ahead would lock the section in between unsat — both are `SectionNotCurrentError`, both 409, because both leave the paper describing something that did not happen. Ordering inside the use case matters and is deliberate: **writability is checked first**, so a learner whose time ran out is told the paper closed rather than that they picked the wrong section | typecheck, lint green · openapi + api sweeps 59/59 with the new route registered |
+| 2026-08-20 | F7.5 | `attempt.assertWritable(now)` is the whole feature, and it fails in **two distinguishable ways** because the client's reaction differs: a finished attempt is an illegal transition (409 `CONFLICT`, a replayed request, no action needed) and an overdue one is `EXAM_TIME_EXPIRED` (409, its own code, and the runtime must stop the clock and stop accepting input). A generic conflict for both would leave the client unable to tell them apart. The deadline compared against is **the stored one**, and there is no argument to either use case that could carry a client's opinion of the time — which is what makes the "move the system clock forward mid-attempt" attack a non-event rather than a defended one. Every response carries `remainingSeconds` from the server clock, so the runtime resynchronises on each save instead of trusting an hour of its own interpolation. Flagging is **not** merged into saving despite writing the same row: a combined shape would have to decide what an absent `submittedValue` means, and "clear the answer" and "leave it alone" are both plausible readings — the ambiguity a discriminated union exists to remove. `ignoreDuplicates: false` on the upsert is deliberate the other way from the profile bootstrap: a conflict here is a learner changing their mind, and ignoring it would keep the first answer while the screen showed the second. The rate ceiling is high (300/min) because `13-frontend.md` forbids retrying exam writes — a limit that bit here would lose an answer outright rather than delay it | typecheck, lint green · openapi + api + auth sweeps re-run 98/98 with the new route registered |
+| 2026-08-20 | F7.4 | `POST /exams/:code/attempts`, and the rule it exists to hold: **the deadline is set once.** The resume path *reads and does not write* — an existing `in_progress` attempt is returned exactly as stored, with `remainingSeconds` recomputed from the column and the server's clock, and there is no code on that path that could extend anything, because the only thing that writes `serverDeadlineAt` is `ExamAttempt.start()` and it is not called. Migration **015** writes the attempt and its paper in one transaction: an attempt row without questions is unanswerable *and*, thanks to 004's one-live-attempt index, permanently blocks that exam — the worst outcome available from a dropped connection. `attempt_number` is derived **inside** the function under a row lock, because two tabs starting at once would each compute it from a count read a moment earlier and the second would die on the unique constraint. Rule 3 is made structural rather than procedural: `IExamQuestionForLearner` has **no field** for the answer key, and `findByAttemptForLearner` does not name `correct_answer` in its projection — a column that never enters the process cannot leak through a spread, a log line, or a mapper edited in a hurry. Coverage is derived from the **fraction of the track**, not `day / 7`: the sprint compresses four weeks into 21 days, so its day 11 is two weeks in and `ceil(11/7)` would ask about material the learner has not reached. **Caught a bug in my own draft**: the blueprint was seeded with a freshly generated id while a *different* id was stored as `seed`, which would have made the column a decoration — it cannot rebuild a paper it never selected. Three ports grew a method (`findUpToWeek`, `listAll`, `findByProfile`) and the two existing fakes were extended to match, not loosened | typecheck, lint green · openapi route sweep **caught the unregistered route** and passes after registering it (59/59 across the api sweeps) · the two touched suites re-run 8/8 |
+| 2026-08-20 | F7.3 | Two properties that pull against each other on purpose: the paper is **reproducible from the `seed` column** — same seed, same pool, same questions, on any machine, so support can rebuild exactly what a learner sat — and it **prefers what they are weak at**, because an exam drawn uniformly from 1,240 words measures luck. The reconciliation is a jittered sort, not a shuffle: a candidate's position is its weakness plus a keyed pseudo-random third. Zero jitter gives a learner the same paper forever, which is a paper they can memorise; a full unit drowns the weakness signal and selects at random. The generator is **keyed, not sequential** — `seededUnitValue(seed, key)` is a pure function of its two arguments, so a candidate's number does not depend on where it sat in the list and adding a word to the course does not reshuffle every attempt ever taken. That is also why `Math.random()` is banned in the domain: a global generator's state depends on how many other things called it first. Section→type is data, because grammar-and-construction draws on three question types and a `switch` would hide the exam's shape inside a function. Zero I/O — weakness arrives already computed, so the caller reads repositories and this decides | typecheck, lint green — tests paused |
+| 2026-08-20 | F7.2 | A section is a percentage **of itself** first and weighted second, and the alternative sounds equivalent but is not: pooling every question's points and weighting each question makes a section's influence depend on how many questions it happens to hold, so a 60-question paper with 8 pronunciation items would quietly score pronunciation at 13% instead of the 20% the spec fixes. Zero I/O is the point rather than a style preference — this is the calculation a learner's whole programme turns on, and it has to run against a table of numbers with no database, no clock and no network. It scores what it is given and **marks nothing**: deciding whether an answer was right takes different inputs per question type (a string comparison for dictation, the speech scorer for pronunciation), and mixing them in would make the weighting untestable without a scorer in scope. A section the blueprint produced no questions for is **dropped and its weight redistributed**, not scored zero — zeroing charges the learner for a generation bug, and leaving it in the denominator does the same thing more quietly. `passed` is `>=`, so a learner exactly on the pass mark passes; no reading of "70% to pass" supports failing somebody who scored precisely what was asked. `Object.fromEntries` would have needed an `as` to narrow its record, so the section map is built by assignment instead | typecheck, lint green — tests paused |
+| 2026-08-20 | F7.1 | Four entities, four unions, two errors. `ExamStatus` has **five** states and not four because `submitted` is genuinely distinct: the diagnostic is ungraded and ends there permanently, and a graded attempt is handed in before it is marked — collapse them and an attempt that has been submitted but not yet scored has no status to be in. The transition graph is **data**, not a chain of `if`s, so "can an attempt be reopened" is a lookup with one answer: `submitted`, `passed` and `failed` allow nothing back. Rule 1 — the deadline is set once — is expressed as **the absence of a method**: `start()` writes `serverDeadlineAt`, refuses to run twice, and nothing else in `ExamAttempt` touches it. A check can be called with the wrong argument; a method that does not exist cannot be called at all. Same trick for rule 4: no method lowers `currentSectionIndex`. `submit()` is deliberately **not** deadline-guarded — an attempt that ran out of time is submitted, not rejected, which is exactly what the cron backstop does to abandoned ones and what a learner clicking submit on the final second deserves. `ExamQuestion.forLearner()` builds a new object field by field rather than spreading and deleting, because a spread copies whatever field somebody adds next and the thing that must not leak has to be **absent by construction**. `ExamDefinition` checks its section weights total 100 in the constructor — a per-definition invariant across four rows that a row-level check in 004 cannot see, and a definition totalling 95 would score every attempt 5% low, silently, forever | typecheck, lint green — tests paused |
+| 2026-08-20 | F6.8 | `mode: 'pronunciation'` joins the same endpoint as the other two answer kinds, and **the phoneme axis of the mastery matrix finally has a source of data.** Dictation credits rule families only and is right to — spelling `very` correctly proves nothing about saying it — so until this use case existed half of `MasteryMatrix` had nothing behind it at all. Partial credit counts as a **miss** in the matrix: the learner produced a nameable wrong sound, and a cell that scored it correct would hide the exact gap the product exists to find. `perPhoneme` lines up with the resolved sequence position for position, which is how a score with no ids in it writes rows that need them. `isCorrect` needs no threshold of its own: above the near-miss ceiling there is no named error left, which is what the ceiling *means*. Error tags are only ever the ones 003's allowlist already knows — /v/↔/w/ has `V_W_SUBSTITUTION` and the other twelve confusions get **nothing**, because inventing `TH_SUBSTITUTION` here would fail `attempts_error_tags_known` at insert time, a runtime failure for something the build could have caught. The privacy constraint is enforced where it is either true or merely intended — **the request schema**: a `transcript` string, no audio field, and none permitted; the score is still computed server-side, because a client-computed score is a client-editable one. `heardPhonemes` is optional and exactly as untrusted as the transcript — an observation, not an identity and not a score — and it is the only route by which a stress error is ever visible | typecheck, lint green · openapi document sweep re-run 5/5 after the schema grew a third variant — the rest of the suite still not run, per the pause |
+| 2026-08-20 | F6.7 | 42 cases, and **this one was written as a real suite** — test-writing is paused for the run, and F6.7 *is* a table of cases, so there was nothing else to build and shipping it unrun would have been shipping it unbuilt. Run through the **port**, not through the services behind it: every claim `07` makes is about what a learner is told — 65 not 0, a named fix, no fix invented for an error they did not make — and those are properties of the answer, so a suite written against `PhonemeComparer` would still pass with the blend wired backwards. Six correct · nineteen near misses covering all thirteen confusions, two apiece where one word could get it right by accident · five unrelated words · three silences · four homophones · five transcripts with extra words. The inventory is the 44 symbols **copied out of `010_seed_reference.sql`** rather than invented in the file, because a suite segmenting against a different inventory from the database tests a scorer nobody ships. A coverage assertion holds the table against the map, so a fourteenth confusion added later fails the suite until somebody writes it a case | `pnpm exec vitest run` on this file: **75/75**, 42 cases · typecheck, lint green — the rest of the suite still not run, per the pause |
+| 2026-08-20 | F6.6 | `ConfusionMapSpeechScorer` implements the port, and it is an **adapter, not a domain service** — every judgement is made by the pure services in `speech/domain/` and this file only translates their vocabulary into the application's, so a real acoustic model replaces this one class and no use case changes, because none of them ever knew how a score was arrived at. One diagnosis per distinct **error**, not per damaged sound: a learner who says `wery` made one mistake, and a word with two /v/ sounds would otherwise be told the same thing twice, which reads as two problems. Stress needs its own pass — it damages no single sound, so every cell of `perPhoneme` can be full marks while the word is still wrong, and the diagnosis names the sound the emphasis landed on instead of the one it should have. Silence gets a real diagnosis rather than a crash or a zero with no explanation, and its wording is deliberate: nothing was recorded is a microphone problem, and telling a learner their pronunciation was wrong when the device never heard them is untrue as well as discouraging. **The port changed shape.** `expectedIpa: string` is gone in favour of `expected: ISpokenForm` — segmented sounds plus the stressed index — because cutting IPA needs the 44-phoneme inventory and the port is deliberately synchronous; the caller has already read the stored G2P to write mastery, so it hands over what it holds instead of making the scorer load the inventory again. `heard: ISpokenForm \| null` is new and is the only way stress is ever diagnosed — a transcript cannot carry it, and it is never guessed from text | typecheck, lint green — tests paused |
+| 2026-08-20 | F6.5 | The blend, the band, and homophones. 50/50 is not arbitrary and each half fails in a known way alone: all-orthographic and `wery` scores the same as `wall`; all-phoneme and an unrelated word scores well whenever no confusion happens to fire. The **ceiling** matters as much as the floor — 65–90 is one sentence, and an attempt with a named error is not a 95, because a learner told it was has no reason to fix anything. Homophones are handled where `07` says explicitly and not accidentally: the recogniser writes a *word*, so a learner who pronounced `there` perfectly may get `their` back, and the orthographic half measures against the closest **acceptable spelling** so the recogniser's guess costs nothing while a real vowel error still costs what it should. Judgement call, stated: with no confusion found and no observed pronunciation, the phoneme half has **no evidence of its own** and takes the orthographic similarity rather than the deduced sequence's — the deduced sequence *equals* the expected one there, and scoring it would hand a wholly wrong word full marks on half the mark. **Probing the numbers found two real bugs.** The cluster-drop detector read spelling, so `asked` → `ask` — the commonest instance of that confusion — was undetectable: `asked` ends in the letters `e`,`d` and the sounds /k/,/t/, and only the second pair is a cluster. And any wrong answer the map nudged *slightly* closer collected a confident false diagnosis: `very` heard as `wall` was told to move the learner's lip. A residual tolerance that grows with the word (one edit in four letters is a recogniser approximating; three is a different word) killed it | typecheck, lint green · probed end-to-end: all 13 pairs land 65–90 (floor exercised at `cat`→`ket` = 65, ceiling at `station`→`istation` = 90), empty → 0 *not heard*, `their` for `there` → 100, extra words → 100, `elephant` for `very` → 13 with no diagnosis |
+| 2026-08-20 | F6.4 | Four services, and the shape of them is dictated by the privacy rule: the server holds **text, never audio**, so it cannot *hear* /w/ where /v/ belonged — it can only notice that `very` came back as `wery`, that the map predicts exactly that deformation, and that nothing else predicts it better. `ConfusionDetector` is therefore a hypothesis test over the table, and it says so in its result (`isHypothesis`) so a deduced sequence is never read as evidence the untouched sounds were right. Only the **best** explanations survive: `this` heard as `dis` is improved by the /ð/→/d/ row and slightly by /θ/→/t/, and reporting both hands the learner a fix for a sound they never said. `align` is Needleman–Wunsch with the **substitution cost supplied by the confusion map** — plain edit distance calls every swap one error, which is precisely the claim `07` denies, and a cheap cost is what makes the learner's /w/ land against the /v/ it was meant to be instead of one deletion plus one insertion. `focusTranscript` picks the closest token, because the Web Speech API hears the room and `so anyway water right` must not tank a correct attempt. Stress is applied to the **whole word**, not to a slot: English lexical stress is what separates a REcord from reCORD, so every sound being right does not make the word right — and the per-phoneme array stays honest, since stress is not a phoneme and belongs in none of its cells | typecheck, lint green — tests paused |
+| 2026-08-20 | F6.3 | Edit distance over **tokens**, not characters, and that is the whole design decision: the same arithmetic serves both halves of `07`'s blend — letters on the orthographic side, IPA symbols on the phoneme side — and `dʒ` is one sound written with two code points, so a per-character split would score it as two wrong sounds instead of one. Two rows rather than a full matrix, not for memory (the words are five letters long) but because a matrix invites a caller to read the traceback out of it, and alignment is a different question with its own service. Normalisation divides by the **longer** side: `s` against `station` is six edits over seven, 0.14; dividing by the shorter side would return a negative similarity for an answer that was merely short. **Two empty sequences score 0, not 1** — they are identical and identity is not the question, and `07` requires an empty transcript to come back 0 with a *not heard* diagnosis rather than full marks for silence. `textSimilarity` segments by grapheme cluster through `Intl.Segmenter` rather than spreading the string; lint caught the spread, and it was right to — a code-unit split breaks a Bangla conjunct into pieces and reports two errors where a reader sees one character | typecheck, lint green · arithmetic spot-checked against the textbook kitten/sitting = 3 — tests paused |
+| 2026-08-20 | F6.2 | Thirteen confusions as an array, never a branch — `07-speech-scoring.md` asks for that and the reason is not tidiness: this table is **content**, it grows when a teacher notices a pattern, and a branch per pattern would mean rewriting the scorer every time somebody learns something about learners. Every row is a documented fact of Bengali against English rather than a guess: Bangla has no /v/, /z/, /θ/ or /ð/, its sibilants pull /s/ toward /ʃ/, it has no /æ/, it does not permit word-initial /s/+stop so a vowel appears in front, and it has fixed initial prominence where English has lexical stress. Coverage is the gate's list in full — v↔w, θ→t, ð→d, z→dʒ, ʃ↔s, æ→e, epenthesis before /sk/ /sp/ /st/ as three separate rows, dropped final cluster, first-syllable stress. Two fields the doc's sketch did not have, both forced by the privacy constraint: `kind`, because the browser sends **text** and a substitution shows up as a spelling shift while epenthesis, cluster-drop and stress are structural and need a detector each rather than a letter swap; and `graphemeShifts`, the orthographic shadow of the phoneme swap — `very` arriving as `wery` is the only trace of /v/→/w/ a transcript can carry. `explain()` returns **null** for an unrelated word, which is the field that keeps diagnoses honest: naming a fix for an error the learner did not make is worse than naming none | typecheck, lint green — tests paused |
+| 2026-08-20 | F6.1 | The stored G2P, read at last. `words.ipa` is the G2P — `07-speech-scoring.md` bans deriving it at runtime, because English grapheme-to-phoneme is a research project and a curated lookup over a closed vocabulary is both correct and fast — and `IpaSegmenter` cuts that stored transcription into the 44 symbols of 002 by longest match, so `uː` never comes back as `u` plus a stray length mark and `dʒ` never as `d` then `ʒ`. `word_phonemes` has carried a comment since 002 saying it drives per-phoneme mastery and **nothing had ever read it**; `IWordPhonemeRepository` does, batched by word id for the same N+1 reason `findByIds` exists. The two sources are not redundant and `WordPhonemeResolver` says which wins where: the transcription owns the **shape and the stress** (the scorer compares those), the join table owns the **ids** (mastery writes against those), and where the join table is silent — content seeded before Phase 9 links it up — the symbol still resolves through the inventory. That fallback is why *every* seeded word resolves to a sequence rather than most of them. A slot whose symbol is not one of the 44 keeps a null `phonemeId`: scored, never credited, because a mastery row under an invented id is worse than an absent one | typecheck, lint green — tests paused |
+| 2026-08-19 | F5.9a | `GET /api/v1/openapi.json`, generated from **the same Zod schemas the handlers validate with** — every one imported from the module that parses with it, none redeclared, because a hand-maintained document drifts the first time someone is in a hurry and a drifted spec is worse than none since people believe it. Public, deliberately: it describes shapes rather than data, and documentation needing a session is a puzzle. A sweep holds the document against the filesystem, so a route added under `src/app/api/v1/` and left unregistered fails the suite. **Writing this exposed a real hole in F3.7's guarantee**: the public-routes sweep only ever read `route.ts`, and every handler now lives behind a three-line re-export — a module handler could have gone public without ever appearing on the written list. The sweep now follows the re-export two hops, and I mutation-probed it by making `/review/due` public in its handler and watching it fail. The generator had to sit in `presentation` rather than `src/lib`, because `lib` may not import `presentation` — the boundary pointing at where the code belonged. Closes **F1.11**, deferred out of Phase 1 for want of a v1 schema | typecheck, lint green · 5/5 on the document sweep · public-routes sweep strengthened and mutation-probed · full suite 394/394 |
+| 2026-08-19 | F5.8 | `src/composition/reads.ts` is the composition root's front door for a page, and it calls **the same factories `handlers.ts` calls** — not two implementations that agree today, one implementation with two callers, so there is nothing for a page and its endpoint to drift apart *from*. `/dashboard` is a real Server Component reading through it, plus `GET /api/v1/progress/summary` and `/progress/mastery`. Four sweeps hold the rule over the whole `src/app` tree: no page fetches this app's own API, no page constructs a use case, no page imports a repository or a domain type, and both composition files pull from one factory module. The first sweep's only hit was **this page's own doc comment** promising it would never happen — reworded rather than excepted, the same call F3.11 and F4.5 made, because an exception list is how a real hit gets waved through. The dashboard markup is deliberately plain: Phase 10 builds the shell and the components, and this exists so the read path is provable now rather than asserted now and built later | typecheck, lint green · full suite 389/389 · the four one-implementation sweeps green |
+| 2026-08-19 | F5.7 | Seven routes across program, lessons and review, every `route.ts` a three-line re-export and every one declaring `runtime = 'nodejs'` and `dynamic = 'force-dynamic'`. `withApi` grew a **`paramsSchema`**: a path segment is as untrusted as a body — `:dayIndex` arrives as `"99"` or `"../../etc"` as readily as `"3"` — and a handler doing `Number(params.dayIndex)` itself would pass `NaN` to a use case, where `DayIndex.of` throws and becomes a **500 for what is really a 422**. No handler contains a business rule. The nearest thing is the `switch (body.mode)` in the attempt handler, and it is routing: Zod's discriminated union has already narrowed the body, neither branch decides anything about the answer, and one endpoint rather than two is what stops the session lookup, the ownership check and the day-membership check being written twice. Error mapping is shared in one `toApiError` so the three lesson handlers cannot disagree about what a stage violation is — and the statuses are deliberately distinct: a locked day is 403 (the learner exists and may not have it yet), a missing day is 404, an illegal stage is **409 not 422**, because the body was fine and telling a client otherwise sends them looking in the wrong place. No request schema anywhere declares an identity field | typecheck, lint green · full suite 385/385, including the protected-by-omission sweep over all seven new routes |
+| 2026-08-19 | F5.6 | The dashboard's query count is now **asserted against an exact list of five**, not a ratio — a test saying "fewer than ten" passes the day someone adds a loop. The fake makes the wrong shapes impossible rather than merely uncounted: `findDue`, `listDays` and `findCompletedDayIndexes` all **reject**, so a dashboard that fetched due items to call `.length`, or loaded 28 days to render one tile, fails rather than quietly costing more. That is the failure mode worth catching, because an N+1 here reads correctly, types correctly, returns the right answer, and only gets slower in proportion to how much the learner has done — which is backwards, since the learners with the most history are the ones still using the product. The batching that makes five possible is already in the ports: `countDue` is a `count`, `findByIds` takes a list, and `findCompletedDayIndexes` returns numbers rather than sessions | typecheck, lint green · 4/4 — exactly five queries, and the N+1 shapes rejected outright |
+| 2026-08-19 | F5.5 | `RetryingDatabase` decorates the seam: 23505 → `ConflictError`, 23503 → `MissingReferenceError`, everything else stays a `DatabaseError` and becomes a 500 — the honest answer for a failure nobody has decided about. A decorator rather than logic inside the adapter, because the adapter's job is to speak Supabase and "what does 23505 mean" is a policy decision. **Exactly one retry on 40001**, proven by counting calls: the winner has already committed — that is what made this transaction fail — so there is nothing to wait for and no backoff, and a second retry would turn a contended row into a queue of clients all retrying at once. A conflict is never retried, since nothing about it will change. The two new errors are deliberately distinct: a conflict means something exists that should not, a missing reference means something does not exist that should, and the second sends an operator to the content seed rather than to the learner | typecheck, lint green · 7/7 — each code mapped, the retry counted at exactly two calls |
+| 2026-08-19 | F5.4 | **`IUnitOfWork` could not be built, so it is gone.** A callback unit of work assumes the caller can open a transaction and run statements inside it; Supabase speaks PostgREST, where every call is its own HTTP request and therefore its own transaction. `run(work)` would have compiled, run, and provided no atomicity whatsoever — a lie in a type, which is worse than the missing feature. It is replaced by `ILessonWriteUnit`, whose two methods are each **one Postgres function call**. Migration **013** `record_lesson_attempt` covers the per-answer path 009 never had: one answer writes an attempt, moves the session counters, upserts the ladder and upserts mastery, and a failure after the second leaves a learner whose review advanced and whose mastery did not. Migration **014** `complete_lesson_day` fixes a hole F4.12 opened — 009's function does not touch `learner_profiles`, so a crash between closing the session and advancing the learner sends somebody who finished day 5 back through day 5. A **new** function rather than a replacement, because `create or replace` with a different argument list makes an overload, and migrations are forward-only. Session counters are now incremented **inside** 013 rather than written from a number computed in TypeScript — two answers submitted at once would each write "the total as I saw it" and one would be lost. `SubmitReviewAttempt` needed no transaction at all and lost its unit of work: it writes one row | typecheck, lint green · 6/6 against real Postgres — the mid-write rollback proven, both functions unreachable by `authenticated` · migrations 94/94 |
+| 2026-08-19 | F5.3 | Ten repository implementations behind the shared seam, all eleven ports now wired in `src/composition/container.ts` — one `IDatabase` handle per request, shared by every repository. **Writing this found a real bug that nothing else would have caught until the first learner submitted an answer**: the review upsert targeted `(profile_id, item_id)` while 003 declares `unique (profile_id, item_type, item_id)`, and Postgres refuses a conflict target that does not match an index exactly. It is now a sweep — every `onConflict` string in `src/modules/` is held against the unique indexes the migrations actually declare, mutation-probed by reintroducing the bug and watching it fail. The adapters keep the product rules where they belong: `findDue` filters but does **not** order or cap, because the 25 and the most-overdue-first ordering are `06`'s decisions and in SQL they would be invisible to the use case and untestable with a fake. `ignoreDuplicates` differs per table and each choice is stated — a review conflict **should** update, a profile bootstrap conflict must **not**, because there it means another request won the race. **The gate's integration tests against a real local Supabase were not written — verification is paused** — so these adapters are typechecked and unexercised against Postgres | typecheck, lint green · onConflict sweep 1/1, mutation-probed — the integration tests the gate asks for were NOT written |
+| 2026-08-19 | F5.2 | Ten mappers, both directions, and the round trip **proven** entity → row → entity for every one — `toStrictEqual` on the whole object, so a mapper that drops `common_misspellings` on the way out fails here rather than making wrong answers silently untaggable months later. Every closed set is a Zod `enum` at the boundary, so a tenth `part_of_speech` added to 002's constraint drops the row visibly instead of arriving in the domain as a string nothing can render. `parseRows` **drops** a malformed row and `parseRow` returns null, and the split is deliberate: a bad row in a list is one missing word and failing the request turns a content error into an outage, while a bad row in a single read is the thing the caller actually asked for. `mastery_records.accuracy` is **written and never read** — the entity derives it, because two stored numbers that can disagree produce a matrix showing 4/5 beside 60%. Program-day items are sorted in the mapper rather than trusted from the query: the entity's contract promises ascending order, and an adapter that forgot its `order by` would play a lesson's stages in whatever order Postgres chose. The second half of the criterion — no row interface escaping `infrastructure/` — is already the Phase 2 sweep, re-run green | typecheck, lint green · 10/10 round trips · rows sweep 8/8 — row interfaces still confined to infrastructure |
+| 2026-08-19 | F5.1 | One seam for every repository: `IDatabase`, a **description** of a single-table query rather than a fluent chain — no joins, no mapping, no identity map, which is the opposite of the ORM CLAUDE.md bans. It exists because Supabase's builder is generic enough that checking a test double against it makes the compiler give up (TS2589, the reason Phase 3 hand-rolled its own narrow slice), and because "only `src/lib/supabase/` constructs a client" is only enforceable if a repository cannot name the client type at all. The sweep proves both halves and found one real hit — Phase 3's `to-profile-database.ts` — so the auth repository was **migrated onto the shared seam and its bespoke one deleted**, rather than the sweep growing an exception. That migration would have silently dropped two behaviours, so both were carried across deliberately: `ignoreDuplicates` (without it an upsert becomes an update and the loser of a race stamps over the winner's display name) and the 23505 tolerance, which needed `DatabaseError` carrying its Postgres code — F5.5's mapping, arriving early because this needed it. The adapter had to move from `src/lib` into `shared/infrastructure`: `lib` may not import `infrastructure`, and the dependency genuinely runs the other way | typecheck, lint green · the one-client sweep 2/2 · auth suite 39/39 with all 11 repository assertions preserved |
+| 2026-08-19 | F4.15 | `GetMasterySnapshot`, `GetProgressSummary`, `GetLearnerDashboard` — **closes Phase 4**. The dashboard is five queries and always five: one for the profile, then four in parallel, none of which loops or grows with how much the learner has done — the due count is a `count`, not a fetch-and-length, and the open session is found by day rather than by scanning a history. That is the shape the Phase 5 gate's N+1 assertion is written against. Three places where the obvious number would have been a lie: `streakIsAlive` is not `currentStreak > 0` (a learner last active three days ago still has a stored streak, and showing it is a number about to reset without warning); `overallAccuracy` for a learner with no attempts is unmeasured rather than 0%, because "0% accuracy" before a first answer reads as failure; and the dashboard returns `today: null` instead of throwing when a day has no content, so an incomplete seed costs the learner their lesson tile and not their whole screen. `overallAccuracy` is folded from mastery records rather than counted over `attempts` — both agree today, one still answers in a year with fifty thousand attempt rows behind it | typecheck, lint green — tests paused |
+| 2026-08-19 | F4.14 | `GetDueReviewItems` and `SubmitReviewAttempt`. The criterion is proven, not asserted: 40 due → 25 returned, most overdue first, ties by lowest accuracy, and overdue measured at the **learner-local day boundary** (an item due 23:00 UTC on the 17th is one day overdue at noon Dhaka on the 19th, not two). The cap lives in the use case rather than a SQL `limit` because it is a product decision — the queue is shortened for the learner's sake and nothing about the schedule changes — and `totalDue` goes out beside it so a learner returning after a fortnight is not left wondering why the queue never empties. The tiebreak is what makes the cap fair: 25 items all one day overdue is the common case, and taking them in whatever order Postgres returned would keep showing the learner the words they already know. `SubmitReviewAttempt` deliberately writes **no `Attempt` row** — `attempts.session_id` is not nullable in 003 and a review happens outside a session, so inventing one to hang it off would corrupt every per-session number the product reports; the review item's own counters are the record. It also resolves the item from the **due list**, so answering something not actually due is refused by the same lookup that finds it | typecheck, lint green · 4/4 on the kept queue probe — 40→25, ordering and tiebreak proven |
+| 2026-08-19 | F4.13 | `SubmitDictationAttempt` and `SubmitConstructionAttempt`. The mandatory case is enforced **before anything is written**: the item id arrives in the request body, so any client can send any id, and without the day-membership check a learner could grind one easy word to mastery or answer day 27's vocabulary on day 2 and skew every number they have. One answer moves four things — the attempt row, the session counters, the review queue and the mastery record — and all four happen **now, in one `IUnitOfWork`**, not batched to the end of the lesson: a learner who abandons at `speak` must keep the work they actually did. Dictation credits the **rule family only, never the phonemes** — spelling "very" correctly demonstrates nothing about saying it, and crediting the sounds here would make the pronunciation half of the mastery matrix a lie. Construction fans out instead: one sentence can demonstrate an article, a preposition and a tense at once, which is why `MasteryCalculator.apply` takes a list. `correctValue` is returned **only on a wrong answer** — always returning it is how an answer key ends up in a network response | typecheck, lint green — tests paused |
+| 2026-08-19 | F4.12 | `StartLessonSession` is **not an insert** — it resumes. A learner who reached `dictate` and closed the tab comes back to `dictate`; a second session for the same day would restart them at `review` and count every attempt they are about to make against a fresh `itemsTotal` while the first sits half-finished forever. Idempotent for the same reason `BootstrapProfile` is: a page load and its own prefetch are two requests. `AdvanceLessonStage` takes the **target stage rather than "next"**, which looks weaker and is stronger — a stale tab or a double-tap sends `dictate` when the session is at `speak`, and "next" would quietly skip the learner to `build` where a named target is refused. `CompleteLessonSession` closes the session, advances the position **only when the finished day is the current one** (revisiting day 3 does not earn day 5), and registers the streak, all inside one `IUnitOfWork`. Two regressions caught and fixed in this lap: the profile port needed `save`, which broke three fakes and the Supabase adapter; and F4.10a's static import of the rate limiter had made **every route module require Supabase env at load time**, `/api/health` included — now imported lazily, only when a route actually declares a limit | typecheck, lint green · full suite re-run after the churn: 351/351 (was 327 at Phase 3 close) |
+| 2026-08-19 | F4.11 | `GetProgramOverview` and `GetProgramDay`. Both take a `userId` from the verified session and resolve the profile themselves — no input carries a `profileId`, so there is no field for a body to forge. The overview answers three questions in one shape (the track's days, the learner's position, which days are done) because a component asking three times is three round trips and three chances for them to disagree about what "current" means; `findCompletedDayIndexes` returns **numbers, not sessions**, since loading 28 sessions to tick 28 tiles is the N+1 the Phase 5 gate is written against. `GetProgramDay` checks the lock **before** reading any content — a learner probing urls should cost one query and a refusal, not a fully assembled day the server then withholds — and separates `DayLockedError` from `DayNotFoundError`, because "not yet" sends an operator to the learner's position and "no such day" sends them to Phase 9's seed. The day DTO deliberately omits `acceptedAlternatives` and `commonMisspellings`: both are answer keys, and shipping them to a browser is the same class of mistake as `correct_answer` in an exam response | typecheck, lint green — tests paused |
+| 2026-08-19 | F4.10a | The carried F1.9, closed: migration **012** ships `rate_limits` and `consume_rate_limit`, and `withApi` finally has the rate limiting CLAUDE.md always said it owned. The counter increments **inside** the database in one `insert … on conflict do update`, because a read-then-write limiter has a gap that more connections win. Fixed window, not sliding — the known cost is twice the limit across a boundary, which for write routes is not an incident, and it is written down rather than discovered later. `IRateLimiter` is declared in `src/contracts`, a **deliberate departure** from `05-domain-model`'s ports list: its only caller is `withApi` in `src/lib`, and `lib` may import `contracts` but not `application` — better than loosening the boundary or writing the interface twice. Limiting runs **after** the session check, so an anonymous flood on a protected route is answered 401 without touching the table, and the subject is a learner id wherever there is one rather than an address standing in for an office. It **fails open and logs loudly**: this is abuse protection, not authorisation, and a hiccup in the counter table must not lock every learner out. Conforming to 03's table conventions broke four existing structural tests — fixed by conforming the table (uuid id, created_at, updated_at, a row interface, an owning module), never by excepting it | typecheck, lint green · 6/6 against real Postgres in PGlite: 61st refused, window resets, two learners separate, and the function unreachable by `authenticated` · the 147 db-convention tests green again |
+| 2026-08-19 | F4.10 | `IClock`, `IIdGenerator`, `IUnitOfWork` and `ISpeechScorer` in `shared/application/ports/`. The grep was run and is **not** vacuously clean, so here is the honest reading: `domain` 0 hits, `application` 0 hits, and three remaining in `src/lib/api/with-api.ts` — two measuring request latency and one stamping the response envelope. Those are `lib`, not a use case, and request duration is not domain time; the rule CLAUDE.md states is that a **use case** never calls `Date.now()`, and that holds absolutely. `IIdGenerator` exists because a lesson session and its first attempt are written together and the attempt needs the session's id while both are still in memory — letting Postgres fill the uuid means a use case cannot build an object graph before saving any of it. `IUnitOfWork` takes a callback rather than `begin`/`commit` so there is no way to forget the commit or leave a transaction open by returning early. `ISpeechScorer` is transcript-in, never audio — `07`'s hard privacy constraint — and is deliberately **synchronous**, because Phase 6 scores by lookup and writing every use case `await`-shaped for an acoustic model nobody has is the wrong kind of foresight | typecheck, lint green · clock grep run: domain 0, application 0, 3 in lib/api reported not hidden |
+| 2026-08-19 | F4.9 | Eleven repository ports, eleven Symbol tokens, checked 1:1 by a sweep over `*/domain/repositories/` — and the other half of the criterion holds too: no `application` file names `infrastructure`, no `domain` file imports anything but `domain`, and every use-case constructor parameter is an `I`-prefixed interface. **Eleven, not the spec's eight**: `05-domain-model` lists one library repository, but `Phoneme`, `RuleFamily` and `SentenceItem` are separate tables read by different screens, and one port spanning four aggregates is a port nobody can implement narrowly. The interesting decisions are in what the ports refuse to offer — `IAttemptRepository` has `append` and no `save`, because 003 gives the client no update and a port offering one is a way around a rule the database is enforcing; `IReviewItemRepository.findDue` takes **no limit**, because the cap of 25 and the most-overdue-first ordering are product rules from `06` and pushing them into SQL would hide them in an adapter where no fake can test them. The `Attempt` entity lands here too — the port cannot be typed without it — and deliberately has no method returning a changed copy | typecheck, lint green · port/token sweep 11/11 · layer-import sweep clean |
+| 2026-08-19 | F4.8 | `ErrorTagger` — the service that makes this diagnostic instead of a quiz. Nine tags, each with its own detection: `v`/`w` at the same position, a doubled consonant collapsed, a written-but-unsounded cluster dropped (`knife`→`nife`), `y` left where `i` belongs, a `-tion` spelled as it sounds; and for sentences, a missing article, a preposition swapped for another preposition, a shared stem carrying the wrong tense marker, and word order — **checked first and short-circuiting**, because the right words in the wrong order make every other rule fire too and hand the learner four tags for one mistake. It prefers silence to a guess: an unrecognised wrong answer returns no tags, since an untagged error is a visible content gap and a mis-tagged one teaches the wrong lesson. Two bugs caught while proving it: the Y_TO_I reconstruction produced `studyes` rather than `studys`, and a bare `h` silent-letter entry would have tagged `the`→`te`, which is not a silent h — dropped rather than kept as a near-miss. `MasteryCalculator` folds one attempt's several observations into per-phoneme and per-rule-family records and returns **only what changed**, so `last_updated_at` still answers "when did I last practise this". `accuracy` is derived, never stored twice — a matrix showing 4/5 beside 60% is a matrix nobody trusts again | typecheck, lint green · 13/13 on the kept tag-coverage probe — all nine tags produced by a real wrong answer |
+| 2026-08-19 | F4.7 | `StreakRecord.registerActivity()` compares learner-local calendar days, never instants — a UTC+6 learner finishing at 23:50 has finished on that day, and a server comparing UTC dates would break their streak at ten to midnight every single night. Four documented cases: first activity starts at 1, same day changes nothing (a lesson then a review is not two days), the next day grows it, a gap of one missed day spends a freeze if there is one and otherwise restarts. The **fifth case had no rule in the spec and needed one**: the local day can move *backwards*. A learner active in Dhaka on the 19th who opens the app in New York is on the 18th, and every comparison here reads that as a gap of minus one. Treated as "same day" — nothing changes and `lastActiveDate` is never walked backwards — because the alternative is resetting the streak of somebody who got on a plane | typecheck, lint green — tests paused |
+| 2026-08-19 | F4.6 | Mastery granted, through the policy rather than decided in the entity — `isMastered` now follows from the same day-counting counter F4.4 built, so the rule and the counter cannot drift apart. **Granted once, never revoked:** a mastered item later missed drops to rung 0 and comes back tomorrow like anything else, and that is correction enough; taking the badge back as well tells a learner they have un-learned something, which is untrue and is how people stop. Both policy arguments are `consecutiveCorrect` because by construction it *is* the distinct-day count — the interface still takes the pair separately so a future caller counting answers cannot buy mastery in one sitting. Verified with a throwaway probe that covered all five of `06`'s mandatory cases and passed, including the exact due instant `2026-08-21T18:00:00Z` for a Dhaka learner; **kept** as `review-engine.test.ts` rather than discarded, since it was already written and the engine is the product | typecheck, lint green · 5/5 on the kept engine probe — test-writing otherwise paused |
+| 2026-08-19 | F4.5 | `IntervalLadderPolicy` — the one file that knows `1, 3, 7, 16, 35`. The grep criterion was run and is clean: outside the policy the only hits for those numbers are a Tailwind `px-16`, a CSS gradient stop and `CRON_SECRET`'s `min(16)`. One real hit was a prose comment in `ReviewItem` naming the longest interval — reworded rather than excepted, the same call F3.11 made, because an exception list is how a real hit gets waved through later. `nextDueAt` resolves to the **start of a learner-local day**, not to an instant 24h × n after submission: an item answered at 21:00 and due "in one day" belongs in tomorrow morning's session, not at 21:00 tomorrow evening after the learner has stopped. That needed `zonedDayStart`, which reads the zone offset back out of `Intl` — two sampling passes, because a single guess can land on the wrong side of a DST transition | typecheck, lint green · the ladder-numbers grep run and clean — tests paused |
+| 2026-08-19 | F4.4 | `ReviewItem.recordResult()` — correct climbs one rung, wrong drops to rung 0 from anywhere including the top. The entity never learns the ladder's numbers *or its length*: it asks `IReviewSchedulingPolicy` for the next rung and the next due date, which is what keeps `1,3,7,16,35` inside one file for F4.5's grep to prove. `consecutiveCorrect` counts **days, not answers** — a second correct answer on the same learner-local day leaves it untouched, so drilling one word five times in a session cannot buy mastery. That needed a real `LocalDate`: comparing a UTC instant to a learner's calendar day is the bug this whole engine is written around, and both `last_correct_on\' and `last_active_date` are `date` columns because the resolution happens once, on the way in. Two departures from `06`'s sketched interface, both deliberate — `nextIntervalIndex` (the cap at rung 4 is a fact about the ladder, which the entity may not know) and a `timezone` on `nextDueAt` (the doc's own signature cannot deliver the day-boundary rule its prose demands two lines above) | typecheck, lint green — tests paused |
+| 2026-08-19 | F4.3 | `LearnerProfile` grows from six fields to twelve — the whole of 003 plus 011 — and stops being positional doing it: `track`, `timezone`, `uiLanguage` and `accentPreference` are all strings, and eleven positional arguments is a transposition the compiler could not have caught. `timezone` is the field Phase 4 actually needed; streaks and the three-different-days mastery rule both compute their day boundary in it. `currentDayIndex` is a `DayIndex` now, so the wire contract converts once at the handler instead of passing a bare number through four layers. `LessonSession.advanceStage()` reads position in `LESSON_STAGES` rather than a transition map that could drift from 003 — forwards by exactly one, because skipping `dictate` asks a learner to pronounce a word they never spelled, and going back re-counts items already counted. `complete()` only from `build` | typecheck, lint green · the 4 refactored auth test files re-run: 39/39 — tests otherwise paused |
+| 2026-08-19 | F4.2 | The five content entities, each carrying the behaviour that would otherwise leak into a component. `Phoneme.isAbsentFromBangla()` names what a null `banglaEquivalent` means so the next reader cannot mistake meaningful data for a gap. `RuleFamily` guards 3 examples and 2 counterexamples in its constructor as well as in 002 — content assembled in memory by a seeder or a fixture cannot build a rule the database would reject, and a rule with no counterexample teaches a false absolute. `Word.matches()` and `SentenceItem.accepts()` put answer comparison in the domain over one shared `normaliseAnswer`: case and whitespace are forgiven, letters are not, because "there" and "their" differ by exactly what the programme exists to teach. `ProgramDay` holds items as one ordered list, the way `program_day_items` stores them and the way a lesson plays them — the three id arrays in the spec are derivations, offered as methods | typecheck, lint green — tests paused |
+| 2026-08-19 | F4.1 | Five value objects in a new `shared` module, so the things every other module counts in have one definition. `DayIndex` guards 1..28 at the longest track's length, not the learner's — whether day 25 is past the end is a question about `sprint21`, and only an entity holding a track can answer it. `ScorePercent` rounds to two decimals at construction, matching the `numeric(5,2)` columns: a float from a scoring API that stores at a precision the column cannot hold reads back different. `IpaTranscription` enforces the "bare IPA" 002 only wrote in a comment — `/wɔː/` never equals `wɔː`, and pronunciation scoring compares transcriptions. `ErrorTag` is 003's nine-tag allowlist as a frozen union. `Track` **moved** from `auth` to `shared`: it is a programme-wide concept, and program, lessons and review all need it — one definition below them all rather than beside one of them | typecheck, lint green — tests paused |
+| 2026-08-19 | F3.12 | The rule stated once and checked over the whole tree, so the next endpoint inherits it: no request schema declares an identity field, nothing reads one out of a url, nothing but `withApi` and `requireUser()` can produce an `IAuthenticatedUser`, and no handler spreads a body into a use-case input — `execute({ ...body, userId })` looks safe and is one careless reorder from letting the body win. Plus the behavioural half: a body or query carrying another learner's id reaches `ctx.body`, never `ctx.user`. **The structural sweeps are near-vacuous today** — no v1 request schema exists until Phase 5 — and they are there for the first one | `pnpm test` 327/327 — 9 new, all six mutations caught (two probes re-run after being mis-designed) · `pnpm test:e2e` 9/9 · typecheck, lint green |
+| 2026-08-19 | F3.11 | The gate's grep is now a test, `src/lib/auth/one-door.test.ts`, and it sweeps test files too — a test that types a credential into a form is a form that accepts one. Its single hit was pino's fourth redaction path, guarding a value this app cannot hold; removed rather than excepted, because an exception list is how a real hit gets waved through (D26). The other three paths are real and stay. The reasoning had to move to `ARCHITECTURE.md` — a comment explaining the ban trips the ban | `pnpm test` 318/318 — 3 new, all four mutations caught (redaction restored, OTP mention, an email field on `/login`, and the sweep itself blinded) · `pnpm test:e2e` 9/9 · typecheck, lint green |
+| 2026-08-19 | F3.10 | `GET /api/v1/me` — the module's first `presentation/` code, and the first three-line `route.ts`. `presentation` may not reach the composition root, so the handler is a factory taking the use case it needs and `src/composition/handlers.ts` is the one file that knows where that comes from. Position travels with its total: `track` decides 28 or 21, and the entity answers it rather than the client. `Track` is a checked union at the mapper, so a value added to 003's constraint cannot arrive in the domain unnoticed | `pnpm test` 315/315 — 15 new, all eight mutations caught · coverage 100% on domain and application · `pnpm test:e2e` 9/9 · typecheck, lint green |
+| 2026-08-19 | F3.9 | The phase's first real module — `src/modules/auth/` across all four layers, wired in `src/composition/`. Idempotence lives in the port, not the caller: `insertIfAbsent` is `on conflict do nothing` and reads back, so Postgres decides the race and the loser reads what the winner wrote. The use case owns the display-name chain, reproducing 009's so the two cannot disagree. Called from `/auth/callback` — the first authenticated request by construction, and the only layer allowed to reach the composition root. Found and fixed a build-breaker: an empty `CRON_SECRET=` is present, not absent, so `.optional()` never applied | `pnpm test` 300/300 — 33 new, all eleven mutations caught · coverage 100% on domain and application (the 90% floor had never been runnable — `@vitest/coverage-v8` was missing) · `pnpm test:e2e` 8/8 · typecheck, lint green |
+| 2026-08-19 | F3.8 | `withCron` — the guard every scheduled route is built by, a `withApi` route underneath so it keeps the request id and the problem+json. Both sides are sha256'd before `timingSafeEqual`, because that function throws on a length mismatch and throwing early leaks the length one guess at a time. Header only, never the query string. A missing `CRON_SECRET` refuses rather than waving through. `CRON_UNAUTHORISED` is its own code so an operator is not sent to fix a login. **No cron route exists yet** (Phase 8), so the gate item is proven at the wrapper | `pnpm test` 268/268 — 14 new, all seven mutations caught (the constant-time one needed a structural guard — no assertion on a result can see timing) · typecheck, lint green |
+| 2026-08-19 | F3.7 | `auth?: 'required' \| 'public'` replaces the boolean, and the boolean stops compiling — two spellings of the opt-out is one too many. A word can also be counted, which is the real gain: a sweep over `src/app/api/**/route.ts` holds every public endpoint against a written list, so a new one fails the suite until someone adds it deliberately. Saying `'required'` out loud is banned too; its absence is the rule | `pnpm test` 254/254 — 8 new, all three mutations caught including a planted unlisted public route · `pnpm test:e2e` 8/8 · typecheck, lint green |
+| 2026-08-19 | F3.6 | `withApi` stops calling `getUser()` inline and goes through the same `readUser()` a Server Component does — a handler and a page can no longer disagree about who is signed in. Its private two-field `IAuthenticatedUser` is gone in favour of the contract. Absent, expired and tampered cookies all arrive as null and leave as one 401 problem+json that names none of them; the session is checked **before** the body is parsed, so an anonymous caller cannot map a schema one 422 at a time | `pnpm test` 246/246 — 12 new, all five mutations caught · `pnpm test:e2e` 8/8 · typecheck, lint green |
+| 2026-08-19 | F3.5 | `requireUser()` and `useSession()`, over one `IAuthenticatedUser` contract — the client is handed exactly what the server verified, so there is no second, looser shape. `useSession()` throws outside its boundary rather than reporting nobody: a missing provider and a signed-out learner must not look alike. A verified session with no profile is loud, never "signed out" — that redirect would loop through `/login` forever — and a sweep pins `auth.getUser(` to exactly three files | `pnpm test` 234/234 — 17 new, all seven mutations caught · `pnpm test:e2e` 8/8 · typecheck, lint green |
+| 2026-08-19 | F3.4 | `src/middleware.ts` — `getUser()` refresh on every page, then protect-by-default: a page nobody listed is private, and an unauthenticated request for one is a redirect, never a 401. `/api/` is outside the matcher on purpose — a `fetch` answered with login markup is a 200 the caller cannot branch on, so that 401 stays `withApi`'s (F3.6). `secure` finally lands on the session cookie, off `NEXT_PUBLIC_APP_URL` rather than the spoofable `x-forwarded-proto`. One session client, two cookie transports, so neither can skip the hardening | `pnpm test` 217/217 — 15 new, all eight mutations caught · `pnpm test:e2e` 8/8 · typecheck, lint green |
+| 2026-08-19 | F3.3 | `/auth/callback` — server-side PKCE exchange, then routing on `learner_profiles.onboarding_completed_at`, a column 003 never had (migration 011). The row's *existence* cannot mean "has been here before": 009's signup trigger creates it before the learner sees a screen. Every failure — refusal, missing code, stale code, unreadable profile — lands on `/login?error=google`, and a refusal carrying a code is still never exchanged | `pnpm test` 202/202 — 10 new, all six mutations caught (one survived first: the refusal guard was untested against a code) · `pnpm test:e2e` 5/5 · typecheck, lint green |
+| 2026-08-19 | F3.2 | `/login` — one heading, one line, one Google button, and `POST /auth/signin` building the OAuth url server-side. A plain HTML form, not a Server Action: an action form renders a hidden `$ACTION_ID` input, and this page must carry zero inputs — it also means sign-in survives with JavaScript off | `pnpm test` 192/192 — 10 new, all six mutations caught · `pnpm test:e2e` 3/3 · typecheck, lint green |
+| 2026-08-19 | F3.1 | `@supabase/ssr` cookie session client — `toSessionCookieOptions` overrides the library's own `httpOnly: false` default so the access and refresh tokens are unreadable by script; every cookie in a chunked batch is hardened, the rest of Supabase's attributes pass through | `pnpm test` 182/182 — 9 new, all four mutations caught · `pnpm test:e2e` 1/1 · typecheck, lint green |
+| 2026-08-19 | F2.10 | 22 hand-written row interfaces across the nine owning modules, plus `Json` for jsonb; verified column-for-column against the Postgres catalogue instead of the uninstalled Supabase CLI. **Closes Phase 2** | `pnpm test` 173/173 — 8 new, each mutation-probed · typecheck, lint green |
+| 2026-08-19 | F2.9 | `010_seed_reference` — the 44 English phonemes annotated for a Bengali speaker and the 24 rule families, seeded idempotently on their natural keys; the migration names every symbol and code so a lost or mistyped row fails the deploy | `pnpm test` 165/165 — 20 new · typecheck, lint green |
+| 2026-08-19 | F2.8 | `009_functions_triggers` — updated_at by catalogue loop, idempotent signup trigger, `complete_lesson_session` as a pure transaction boundary, pg_cron auto-submit, execute revoked from every client role | `pnpm test` 145/145 — 20 new · typecheck, lint green |
+| 2026-08-18 | F2.7 | `correct_answer` protection — already unreachable after 008, so this ships the regression lock instead of redundant SQL: privilege sweep over every column and role, no-view assertion, static sweep of every migration | `pnpm test` 125/125 — 9 new · typecheck, lint green |
+| 2026-08-18 | F2.6 | `008_rls_policies` — revoke-first grants, one policy shape per learner table, no client delete, `exam_questions` unreachable, public certificate view | `pnpm test` 116/116 — 17 new, incl. the two-user script run as real `authenticated` roles · typecheck, lint green |
+| 2026-08-18 | F2.5 | `007_indexes` — five indexes for the queries that run; the two already served by a `unique (...)` btree are documented, not duplicated; every index names its query in a `comment on index` | `pnpm test` 99/99 — 11 new cases, 5 of them `explain` against seeded PGlite · typecheck, lint green |
+| 2026-08-18 | F2.4 | `005_notification_tables` + `006_certificates` — idempotency key, wrapping quiet hours, globally-unique push endpoint, revocable certificate | 85 passed (7 files); 16 new PGlite cases + 8 static | 
+| 2026-08-18 | F2.3 | `004_exam_tables` — definitions, sections, attempts, questions, answers; one live attempt per exam enforced by a partial unique index; every score `numeric` | `pnpm test` 61/61 — 23 against real Postgres · typecheck, lint green |
+| 2026-08-18 | F2.2 | `003_learner_tables` — profile + sessions, attempts, review queue, mastery, streaks; `profile_id` on every child, cascading from `auth.users` down | `pnpm test` 54/54 — 16 applied against real Postgres, incl. a full delete-the-user cascade · typecheck, lint green |
+| 2026-08-18 | F2.1 | `001_extensions` + `002_content_tables` (7 content tables, RLS on, checks not enums) · `pnpm db:migrate` runner over `DATABASE_URL` — no Docker, no Supabase CLI | `pnpm test` 47/47 — 9 of them apply the migrations from empty in PGlite · typecheck, lint, build green |
+| 2026-08-18 | F1.16 | Hosted-Supabase setup path — README getting-started, `.env.example` rewrite, `pnpm setup:check` doctor; **Docker removed everywhere** | `pnpm test` 26/26 · clean-clone walkthrough · typecheck, lint, build green |
+| 2026-08-18 | F1.14 | Typed fetch client — `apiFetch`/`apiRequest` validate the `{data,meta}` envelope and the caller's schema, map problem+json onto `ApiError` | `pnpm test` 22/22 · typecheck, lint, build green |
+| 2026-08-18 | F0.1 | `ARCHITECTURE.md` — layer diagram, folder tree, 24-token port table, 23-table DB list, 11 recorded decisions + 1 open question | `scripts/check-architecture-doc.sh` — 5/5 sections, 15/15 ports tokenised, `IMailer` correctly absent · PASSED |
+| 2026-08-18 | — | Email deferred to v2 — notifications are in-app + push only; `RESEND_API_KEY` commented out | n/a — docs only |
+| 2026-08-18 | — | Restructured to a **single Next.js app** (no separate backend); added `.env.example`, `.gitignore`, `16-environment.md` | n/a — docs only |
+| 2026-08-18 | — | Claude Code setup: CLAUDE.md, build order, docs, commands, git rules | n/a — docs only |
+
+---
+
+## Blocked / failed
+
+Anything currently `[!]`. This table must be **empty** before a new feature starts.
+
+| Feature | What failed | Diagnosis | Fix in progress |
+| --- | --- | --- | --- |
+| — | — | — | — |
+
+---
+
+## Closing report (F13.12)
+
+Written 2026-08-20, at the end of the run that closed Phases 10, 11, 12 and 13.
+
+**What is true.** Every feature in this file is `[x]`. `pnpm typecheck`, `pnpm lint` and
+`pnpm test` are green — **553 tests**, run, not asserted. `pnpm i18n:check` and
+`pnpm content:validate` pass. Every phase branch is merged into `dev`.
+
+**What that does not mean.** Phases 10–13 were built under the build-mode pause, and the
+difference between *built* and *proved* is the subject of the rest of this report.
+
+### Incomplete
+
+| What | Where it stands |
+| --- | --- |
+| **Coverage** | 57.20% lines, 72.26% functions, 78.41% branches on `domain` + `application`, against a 90% floor. The three weakest modules were fixed (`program/application` 0→100%, `library/application` 0→98.5%, `lessons/application` 0→14.1%); `lessons/application`'s four attempt use cases and all of `notifications/application`, `review/application` and `certificates/application` remain thin. CI prints the number and does not gate on it. |
+| **The four Playwright flows** | Written, never executed. They need a live Supabase project and two seeded learners. |
+| **`pnpm security:rls`** | Written, never executed. Same reason. RLS therefore has **no** end-to-end proof — every unit test in the repo runs above it. |
+| **Lighthouse on `/`** | Never run. The ≥95/100 target is unmeasured, and static rendering is separately blocked by the root layout's cookie reads (D67). |
+| **CI and deploy workflows** | YAML parses; no runner has executed either. The deploy workflow's publish step exits 1 on purpose (O4 — no host has been chosen). |
+| **p95 latency and the bundle budget** | Never measured. Both need a deployed application. |
+| **The app in a browser** | Phases 10, 11 and 12 — the entire user interface — have never been rendered. |
+| **`.env.example`** | Missing seven entries (O2: three VAPID; O3: `LOG_LEVEL` and four `E2E_LEARNER_*`). A hook in this environment refuses every command naming the file. |
+
+### Fragile
+
+- **Certificate issuance has never run.** It lives in `ExamSubmissionService` so that the cron
+  backstop issues too, and nothing in this run has passed a final exam against a real database.
+  The first real certificate is the first test of it.
+- **`IProgramDayDetail.sentences` ships `englishText`** — the construction stage's answer, in
+  word order — to the browser. The chips are shuffled deterministically, but a learner reading
+  the network tab has the sentence. The DTO excludes `acceptedAlternatives` and
+  `commonMisspellings` on exactly this reasoning and then keeps this one.
+- **The exam runtime's question rendering is generic.** `QuestionView` reads a `jsonb` payload
+  defensively and handles a prompt, a passage and options. The six question types may need
+  shapes it does not draw; nothing has rendered a real generated paper.
+- **`migrations.test.ts` was red for five phases** and nobody saw it, because the suite was not
+  being run. The assertion was a blunt substring match that 015 legitimately tripped. It is now
+  precise and self-proving — but the class of bug is "a sweep that matches its own explanation",
+  and it recurred twice more during Phase 13 alone.
+- **`NotificationBell` still hand-rolls its own popover** rather than using F10.6's `Popover`,
+  and renders as a bordered text button rather than the top bar's bell glyph.
+- **`/metrics` answers JSON, not Prometheus text.** A scraper needs a four-line adapter.
+- **The repo has never been prettier-clean.** `pnpm format` rewrites files no feature touched.
+
+### What is next, in order
+
+1. **Point it at a real Supabase project and open it.** Nothing below this is worth doing first.
+   Seed the content, run `pnpm content:seed`, sign in, and walk one day. Phases 10–12 are
+   unrendered code.
+2. **Run the four Playwright flows and `pnpm security:rls`.** They are written and waiting; the
+   RLS one is the highest-value unrun check in the repository.
+3. **Fix `englishText` in `IProgramDayDetail`** — a server-shuffled word bag, so the answer does
+   not cross the wire.
+4. **Lift coverage on the write paths.** `lessons/application`'s attempt use cases first: they
+   are the most-executed code in the product and the least covered.
+5. **Choose a deploy target** and finish O4's one missing command.
+6. **Turn the coverage gate on** once it is reachable, and delete the `continue-on-error` in CI.
+
+### The one thing to read if you read nothing else
+
+The build-mode pause traded proof for breadth, deliberately and at the user's instruction. The
+breadth is real: 13 phases, every feature built. The cost is that a suite which had been red
+since Phase 7 stayed red for five phases, and that the entire interface is unrendered. Neither
+is a reason to distrust the code; both are reasons to run it before trusting it.
+

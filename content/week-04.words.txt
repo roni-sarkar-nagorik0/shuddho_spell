@@ -1,0 +1,313 @@
+# Week 4 — the words that separate a confident speaker from a fluent one, and
+# the spellings that survive to the final exam: -ance/-ence, -ery/-ary/-ory,
+# the doubled consonants nobody hears, and the borrowings that keep foreign spelling.
+independence|ˌɪndɪˈpendəns|in-de-pen-dence|ইনডিপেনডেন্স|স্বাধীনতা|noun|soft_c|931|independance,independense
+importance|ɪmˈpɔːtns|im-por-tance|ইমপর্ট্যান্স|গুরুত্ব|noun|soft_c|932|importence,importanse
+existence|ɪɡˈzɪstəns|ex-is-tence|এক্সিসটেন্স|অস্তিত্ব|noun|soft_c|933|existance,existanse
+experience|ɪkˈspɪəriəns|ex-pe-rience|এক্সপেরিয়েন্স|অভিজ্ঞতা|noun|soft_c|934|experiance,expirience
+preference|ˈprefrəns|pre-fe-rence|প্রেফারেন্স|পছন্দ|noun|soft_c|935|preferance,prefrence
+reference|ˈrefrəns|re-fe-rence|রেফারেন্স|উল্লেখ|noun|soft_c|936|referance,refrence
+influence|ˈɪnfluəns|in-flu-ence|ইনফ্লুয়েন্স|প্রভাব|noun|soft_c|937|influance,influense
+consequence|ˈkɒnsɪkwəns|con-se-quence|কনসিকোয়েন্স|পরিণতি|noun|q_takes_u|938|consequance,consiquence
+performance|pəˈfɔːməns|per-for-mance|পারফরম্যান্স|কর্মদক্ষতা|noun|soft_c|939|performence,preformance
+appearance|əˈpɪərəns|ap-pea-rance|অ্যাপিয়ারেন্স|চেহারা|noun|soft_c|940|appearence,apearance
+attendance|əˈtendəns|at-ten-dance|অ্যাটেনডেন্স|উপস্থিতি|noun|soft_c|941|attendence,atendance
+assistance|əˈsɪstəns|as-sis-tance|অ্যাসিসট্যান্স|সহায়তা|noun|soft_c|942|assistence,asistance
+resistance|rɪˈzɪstəns|re-sis-tance|রেজিসট্যান্স|প্রতিরোধ|noun|soft_c|943|resistence,rezistance
+maintenance|ˈmeɪntənəns|main-te-nance|মেইনটেন্যান্স|রক্ষণাবেক্ষণ|noun|soft_c|944|maintainance,maintenence
+insurance|ɪnˈʃʊərəns|in-su-rance|ইনসিওরেন্স|বিমা|noun|soft_c|945|insurence,insurrance
+allowance|əˈlaʊəns|al-lo-wance|অ্যালাউয়েন্স|ভাতা|noun|soft_c|946|allowence,alowance
+guidance|ˈɡaɪdns|gui-dance|গাইডেন্স|নির্দেশনা|noun|silent_letters|947|guidence,gidance
+balance|ˈbæləns|ba-lance|ব্যালেন্স|ভারসাম্য|noun|soft_c|948|balence,ballance
+excellence|ˈeksələns|ex-cel-lence|এক্সেলেন্স|উৎকর্ষ|noun|soft_c|949|excellance,excelence
+silence|ˈsaɪləns|si-lence|সাইলেন্স|নীরবতা|noun|soft_c|950|silance,silense
+violence|ˈvaɪələns|vio-lence|ভায়োলেন্স|সহিংসতা|noun|soft_c|951|violance,violense
+obedience|əˈbiːdiəns|o-be-dience|ওবিডিয়েন্স|আনুগত্য|noun|soft_c|952|obediance,obedeince
+intelligence|ɪnˈtelɪdʒəns|in-tel-li-gence|ইনটেলিজেন্স|বুদ্ধিমত্তা|noun|soft_g|953|inteligence,intelligance
+convenience|kənˈviːniəns|con-ve-nience|কনভিনিয়েন্স|সুবিধা|noun|no_final_v|954|conveniance,convienience
+machinery|məˈʃiːnəri|ma-chi-ne-ry|মেশিনারি|যন্ত্রপাতি|noun|y_to_i|955|machinary,machinry|review
+jewellery|ˈdʒuːəlri|je-wel-le-ry|জুয়েলারি|গয়না|noun|soft_g|956|jewelry,jewellary
+discovery|dɪˈskʌvəri|dis-co-ve-ry|ডিসকভারি|আবিষ্কার|noun|no_final_v|957|discovary,discovry
+recovery|rɪˈkʌvəri|re-co-ve-ry|রিকভারি|আরোগ্য|noun|no_final_v|958|recovary,recovry
+mystery|ˈmɪstri|mys-te-ry|মিস্ট্রি|রহস্য|noun|y_to_i|959|mistery,mystary
+bakery|ˈbeɪkəri|ba-ke-ry|বেকারি|বেকারি|noun|drop_silent_e|960|bakary,bakry
+scenery|ˈsiːnəri|sce-ne-ry|সিনারি|দৃশ্য|noun|soft_c|961|scenary,senery
+stationery|ˈsteɪʃənri|sta-tio-ne-ry|স্টেশনারি|লেখার সরঞ্জাম|noun|tion_sion|962|stationary,stationry|review
+stationary|ˈsteɪʃənri|sta-tio-na-ry|স্টেশনারি|স্থির|adjective|tion_sion|963|stationery,stationry|review
+cemetery|ˈsemətri|ce-me-te-ry|সেমেট্রি|কবরস্থান|noun|soft_c|964|cemetary,cematery|review
+territory|ˈterətri|ter-ri-to-ry|টেরিটরি|অঞ্চল|noun|y_to_i|965|teritory,territry|review
+directory|dəˈrektəri|di-rec-to-ry|ডিরেক্টরি|তালিকা|noun|y_to_i|966|directry,directary|review
+inventory|ˈɪnvəntri|in-ven-to-ry|ইনভেনটরি|মজুদ তালিকা|noun|no_final_v|967|inventry,inventary|review
+boundary|ˈbaʊndri|boun-da-ry|বাউনডারি|সীমানা|noun|y_to_i|968|boundry,boundery|review
+February|ˈfebruəri|Feb-ru-a-ry|ফেব্রুয়ারি|ফেব্রুয়ারি|noun|y_to_i|969|febuary,feburary|review
+January|ˈdʒænjuəri|Ja-nu-a-ry|জানুয়ারি|জানুয়ারি|noun|soft_g|970|janurary,januray
+Wednesday|ˈwenzdeɪ|Wed-nes-day|ওয়েনজডে|বুধবার|noun|silent_letters|971|wenesday,wendsday
+Tuesday|ˈtjuːzdeɪ|Tues-day|টিউজডে|মঙ্গলবার|noun||972|teusday,tusday
+Thursday|ˈθɜːzdeɪ|Thurs-day|থার্সডে|বৃহস্পতিবার|noun||973|thersday,thusday
+Saturday|ˈsætədeɪ|Sa-tur-day|স্যাটারডে|শনিবার|noun||974|saterday,satarday
+receipt|rɪˈsiːt|re-ceipt|রিসিট|রসিদ|noun|i_before_e|975|reciept,receit
+constitution|ˌkɒnstɪˈtjuːʃn|cons-ti-tu-tion|কনস্টিটিউশন|সংবিধান|noun|tion_sion|976|constitusion,consitution
+parliament|ˈpɑːləmənt|par-lia-ment|পার্লামেন্ট|সংসদ|noun||977|parliment,parlament
+democracy|dɪˈmɒkrəsi|de-mo-cra-cy|ডেমোক্রেসি|গণতন্ত্র|noun|soft_c|978|democrasy,democracey
+economy|ɪˈkɒnəmi|e-co-no-my|ইকোনমি|অর্থনীতি|noun|y_to_i|979|economey,ecconomy
+economic|ˌiːkəˈnɒmɪk|e-co-no-mic|ইকোনমিক|অর্থনৈতিক|adjective|soft_c|980|ecconomic,economik
+politics|ˈpɒlətɪks|po-li-tics|পলিটিক্স|রাজনীতি|noun||981|poltics,politiks
+political|pəˈlɪtɪkl|po-li-ti-cal|পলিটিক্যাল|রাজনৈতিক|adjective||982|politcal,politicle
+leisure|ˈleʒə|lei-sure|লেজার|অবসর|noun|i_before_e|983|liesure,leasure
+heritage|ˈherɪtɪdʒ|he-ri-tage|হেরিটেজ|ঐতিহ্য|noun|soft_g|984|heritege,heritaje
+literature|ˈlɪtrətʃə|li-te-ra-ture|লিটারেচার|সাহিত্য|noun||985|literatur,litrature|review
+philosophy|fəˈlɒsəfi|phi-lo-so-phy|ফিলোসফি|দর্শন|noun|y_to_i|986|filosophy,philosphy
+psychology|saɪˈkɒlədʒi|psy-cho-lo-gy|সাইকোলজি|মনোবিজ্ঞান|noun|soft_g|987|psycology,sychology
+geography|dʒiˈɒɡrəfi|ge-o-gra-phy|জিওগ্রাফি|ভূগোল|noun|soft_g|988|geografy,geograhpy
+mathematics|ˌmæθəˈmætɪks|ma-the-ma-tics|ম্যাথমেটিক্স|গণিত|noun||989|mathamatics,mathmatics
+physics|ˈfɪzɪks|phy-sics|ফিজিক্স|পদার্থবিজ্ঞান|noun||990|fysics,phisics
+chemistry|ˈkemɪstri|che-mis-try|কেমিস্ট্রি|রসায়ন|noun|y_to_i|991|chemistery,kemistry
+biology|baɪˈɒlədʒi|bio-lo-gy|বায়োলজি|জীববিজ্ঞান|noun|soft_g|992|bilogy,biolgy
+prescription|prɪˈskrɪpʃn|pres-crip-tion|প্রেসক্রিপশন|ব্যবস্থাপত্র|noun|tion_sion|993|priscription,prescripsion
+surgery|ˈsɜːdʒəri|sur-ge-ry|সার্জারি|শল্যচিকিৎসা|noun|soft_g|994|surgary,surjery
+treatment|ˈtriːtmənt|treat-ment|ট্রিটমেন্ট|চিকিৎসা|noun||995|treatmant,tretment
+symptom|ˈsɪmptəm|symp-tom|সিমটম|লক্ষণ|noun||996|symtom,simptom
+accommodation|əˌkɒməˈdeɪʃn|ac-com-mo-da-tion|অ্যাকোমোডেশন|আবাসন|noun|tion_sion|997|acommodation,accomodation
+occurrence|əˈkʌrəns|oc-cur-rence|অকারেন্স|ঘটনা|noun|soft_c|998|occurence,ocurrence
+embarrass|ɪmˈbærəs|em-bar-rass|এমব্যারাস|বিব্রত করা|verb|floss_doubling|999|embarass,embarras
+harass|ˈhærəs|ha-rass|হ্যারাস|উত্ত্যক্ত করা|verb|floss_doubling|1000|harrass,haras
+possession|pəˈzeʃn|pos-ses-sion|পজেশন|অধিকার|noun|tion_sion|1001|posession,possesion
+profession|prəˈfeʃn|pro-fes-sion|প্রফেশন|পেশা|noun|tion_sion|1002|profesion,professon
+professional|prəˈfeʃənl|pro-fes-sio-nal|প্রফেশনাল|পেশাদার|adjective|tion_sion|1003|profesional,professonal
+occupation|ˌɒkjuˈpeɪʃn|oc-cu-pa-tion|অকুপেশন|পেশা|noun|tion_sion|1004|ocupation,occupasion
+qualification|ˌkwɒlɪfɪˈkeɪʃn|qua-li-fi-ca-tion|কোয়ালিফিকেশন|যোগ্যতা|noun|q_takes_u|1005|qualifcation,qualificasion
+certificate|səˈtɪfɪkət|cer-ti-fi-cate|সার্টিফিকেট|সনদ|noun|soft_c|1006|certifcate,sertificate
+application|ˌæplɪˈkeɪʃn|ap-pli-ca-tion|অ্যাপ্লিকেশন|আবেদন|noun|tion_sion|1007|aplication,applicasion
+recommendation|ˌrekəmenˈdeɪʃn|re-com-men-da-tion|রেকমেনডেশন|সুপারিশ|noun|tion_sion|1008|recomendation,reccomendation
+communication|kəˌmjuːnɪˈkeɪʃn|com-mu-ni-ca-tion|কমিউনিকেশন|যোগাযোগ|noun|tion_sion|1009|comunication,communicasion
+organisation|ˌɔːɡənaɪˈzeɪʃn|or-ga-ni-sa-tion|অর্গানাইজেশন|সংগঠন|noun|tion_sion|1010|organisaton,organization
+administration|ədˌmɪnɪˈstreɪʃn|ad-mi-nis-tra-tion|অ্যাডমিনিস্ট্রেশন|প্রশাসন|noun|tion_sion|1011|adminstration,administrasion
+registration|ˌredʒɪˈstreɪʃn|re-gis-tra-tion|রেজিস্ট্রেশন|নিবন্ধন|noun|soft_g|1012|registraton,rejistration
+examination|ɪɡˌzæmɪˈneɪʃn|e-xa-mi-na-tion|এক্সামিনেশন|পরীক্ষা|noun|tion_sion|1013|examinaton,examinasion
+preparation|ˌprepəˈreɪʃn|pre-pa-ra-tion|প্রিপারেশন|প্রস্তুতি|noun|tion_sion|1014|preperation,preparasion
+presentation|ˌpreznˈteɪʃn|pre-sen-ta-tion|প্রেজেনটেশন|উপস্থাপনা|noun|tion_sion|1015|presentaton,presantation
+concentration|ˌkɒnsnˈtreɪʃn|con-cen-tra-tion|কনসেনট্রেশন|মনোযোগ|noun|soft_c|1016|concentraton,consentration
+imagination|ɪˌmædʒɪˈneɪʃn|i-ma-gi-na-tion|ইমাজিনেশন|কল্পনা|noun|soft_g|1017|imaginaton,imajination
+determination|dɪˌtɜːmɪˈneɪʃn|de-ter-mi-na-tion|ডিটারমিনেশন|সংকল্প|noun|tion_sion|1018|determinaton,determinasion
+consideration|kənˌsɪdəˈreɪʃn|con-si-de-ra-tion|কনসিডারেশন|বিবেচনা|noun|soft_c|1019|consideraton,considration
+appreciation|əˌpriːʃiˈeɪʃn|ap-pre-cia-tion|অ্যাপ্রিসিয়েশন|প্রশংসা|noun|tion_sion|1020|apreciation,appreciaton
+satisfaction|ˌsætɪsˈfækʃn|sa-tis-fac-tion|স্যাটিসফ্যাকশন|সন্তুষ্টি|noun|tion_sion|1021|satisfacton,satisfaksion
+frustration|frʌˈstreɪʃn|frus-tra-tion|ফ্রাসট্রেশন|হতাশা|noun|tion_sion|1022|frustraton,frustrasion
+disappointment|ˌdɪsəˈpɔɪntmənt|dis-ap-point-ment|ডিসঅ্যাপয়েন্টমেন্ট|হতাশা|noun|prefix_keeps_root|1023|dissapointment,disapointment
+encouragement|ɪnˈkʌrɪdʒmənt|en-cou-rage-ment|এনকারেজমেন্ট|উৎসাহ|noun|soft_g|1024|encoragement,encouragment
+announcement|əˈnaʊnsmənt|an-nounce-ment|অ্যানাউনসমেন্ট|ঘোষণা|noun|soft_c|1025|anouncement,announcment
+advertisement|ədˈvɜːtɪsmənt|ad-ver-tise-ment|অ্যাডভার্টিজমেন্ট|বিজ্ঞাপন|noun|drop_silent_e|1026|advertisment,advertizement
+entertainment|ˌentəˈteɪnmənt|en-ter-tain-ment|এনটারটেইনমেন্ট|বিনোদন|noun||1027|enterainment,entertainmant
+establishment|ɪˈstæblɪʃmənt|es-ta-blish-ment|এসট্যাবলিশমেন্ট|প্রতিষ্ঠান|noun||1028|establishmant,establishmnet
+requirement|rɪˈkwaɪəmənt|re-quire-ment|রিকোয়ারমেন্ট|প্রয়োজনীয়তা|noun|q_takes_u|1029|requirment,requiremant
+retirement|rɪˈtaɪəmənt|re-tire-ment|রিটায়ারমেন্ট|অবসর|noun|drop_silent_e|1030|retirment,retiremant
+settlement|ˈsetlmənt|set-tle-ment|সেটেলমেন্ট|নিষ্পত্তি|noun||1031|settlment,setlement
+punishment|ˈpʌnɪʃmənt|pu-nish-ment|পানিশমেন্ট|শাস্তি|noun||1032|punishmant,punushment
+excitement|ɪkˈsaɪtmənt|ex-cite-ment|এক্সাইটমেন্ট|উত্তেজনা|noun|drop_silent_e|1033|excitment,exitement
+amendment|əˈmendmənt|a-mend-ment|অ্যামেন্ডমেন্ট|সংশোধনী|noun||1034|amendmant,ammendment
+comfort|ˈkʌmfət|com-fort|কমফোর্ট|আরাম|noun||1035|comfert,confort
+discomfort|dɪsˈkʌmfət|dis-com-fort|ডিসকমফোর্ট|অস্বস্তি|noun|prefix_keeps_root|1036|discomfert,discomfrot
+strength|streŋθ|strength|স্ট্রেংথ|শক্তি|noun||1037|stength,strengh
+length|leŋθ|length|লেংথ|দৈর্ঘ্য|noun||1038|lenght,legth
+width|wɪdθ|width|উইডথ|প্রস্থ|noun||1039|widht,wideth
+depth|depθ|depth|ডেপথ|গভীরতা|noun||1040|deapth,deph
+growth|ɡrəʊθ|growth|গ্রোথ|বৃদ্ধি|noun||1041|groth,growht
+truth|truːθ|truth|ট্রুথ|সত্য|noun||1042|truthh,trueth
+youth|juːθ|youth|ইউথ|যৌবন|noun||1043|yuth,youht
+wealth|welθ|wealth|ওয়েলথ|সম্পদ|noun||1044|welth,wealht
+breath|breθ|breath|ব্রেথ|নিঃশ্বাস|noun||1045|breth,breathe
+breathe|briːð|breathe|ব্রিদ|শ্বাস নেওয়া|verb|drop_silent_e|1046|breath,breeth
+clothes|kləʊðz|clothes|ক্লোদজ|জামাকাপড়|noun|silent_letters|1047|cloths,clothse
+cloth|klɒθ|cloth|ক্লথ|কাপড়|noun||1048|clothe,clott
+smooth|smuːð|smooth|স্মুদ|মসৃণ|adjective||1049|smoth,smoothe
+southern|ˈsʌðn|sou-thern|সাদার্ন|দক্ষিণী|adjective||1050|southren,suthern
+northern|ˈnɔːðn|nor-thern|নর্দার্ন|উত্তরী|adjective||1051|northren,nothern
+eastern|ˈiːstn|eas-tern|ইস্টার্ন|পূর্বী|adjective||1052|eastren,easten
+western|ˈwestn|wes-tern|ওয়েস্টার্ন|পশ্চিমী|adjective||1053|westren,westen
+queue|kjuː|queue|কিউ|সারি|noun|q_takes_u|1054|que,queu
+bureau|ˈbjʊərəʊ|bu-reau|বিউরো|দপ্তর|noun||1055|burau,bureu
+plateau|ˈplætəʊ|pla-teau|প্লাটো|মালভূমি|noun||1056|platoe,plateu
+souvenir|ˌsuːvəˈnɪə|sou-ve-nir|সুভেনির|স্মারক|noun|no_final_v|1057|souvenier,suvenir
+boutique|buːˈtiːk|bou-tique|বুটিক|বুটিক|noun|q_takes_u|1058|boutic,botique
+technique|tekˈniːk|tech-nique|টেকনিক|কৌশল|noun|q_takes_u|1059|technic,tecnique
+unique|juˈniːk|u-nique|ইউনিক|অনন্য|adjective|q_takes_u|1060|uniqe,unic
+antique|ænˈtiːk|an-tique|অ্যান্টিক|প্রাচীন জিনিস|noun|q_takes_u|1061|antic,antiqe
+cheque|tʃek|cheque|চেক|চেক|noun|q_takes_u|1062|check,chequ
+opaque|əʊˈpeɪk|o-paque|ওপেক|অস্বচ্ছ|adjective|q_takes_u|1063|opaqe,opake
+colleague|ˈkɒliːɡ|col-league|কলিগ|সহকর্মী|noun|silent_letters|1064|colegue,colleage
+league|liːɡ|league|লিগ|সংঘ|noun|silent_letters|1065|leage,legue
+tongue|tʌŋ|tongue|টাং|জিহ্বা|noun|silent_letters|1066|tounge,tung
+dialogue|ˈdaɪəlɒɡ|dia-logue|ডায়ালগ|সংলাপ|noun|silent_letters|1067|dialoge,dailogue
+catalogue|ˈkætəlɒɡ|ca-ta-logue|ক্যাটালগ|তালিকা|noun|silent_letters|1068|cataloge,catologue
+vague|veɪɡ|vague|ভেগ|অস্পষ্ট|adjective|silent_letters|1069|vage,vaugue
+plague|pleɪɡ|plague|প্লেগ|মহামারি|noun|silent_letters|1070|plage,plauge
+rhythm|ˈrɪðəm|rhy-thm|রিদম|ছন্দ|noun|silent_letters|1071|rythm,rhythem
+rhyme|raɪm|rhyme|রাইম|মিল|noun|silent_letters|1072|ryme,rhym
+chaos|ˈkeɪɒs|cha-os|কেওস|বিশৃঙ্খলা|noun|silent_letters|1073|kaos,chaose
+scheme|skiːm|scheme|স্কিম|পরিকল্পনা|noun|silent_letters|1074|skeme,schem
+schedule|ˈʃedjuːl|sche-dule|শেডিউল|সময়সূচি|noun|silent_letters|1075|schedual,shedule
+orchestra|ˈɔːkɪstrə|or-ches-tra|অর্কেস্ট্রা|বাদ্যদল|noun|silent_letters|1076|orkestra,orchestar
+architect|ˈɑːkɪtekt|ar-chi-tect|আর্কিটেক্ট|স্থপতি|noun|silent_letters|1077|architec,arkitect
+mechanic|məˈkænɪk|me-cha-nic|মেকানিক|মিস্ত্রি|noun|soft_c|1078|mecanic,mechenic
+stomach|ˈstʌmək|sto-mach|স্টমাক|পাকস্থলী|noun|silent_letters|1079|stomache,stumach
+ache|eɪk|ache|এক|ব্যথা|noun|silent_letters|1080|ake,ach
+echo|ˈekəʊ|e-cho|একো|প্রতিধ্বনি|noun|silent_letters|1081|eco,ecoh
+chorus|ˈkɔːrəs|cho-rus|কোরাস|সমবেত গান|noun|silent_letters|1082|corus,chorous
+anchor|ˈæŋkə|an-chor|অ্যাংকর|নোঙর|noun|silent_letters|1083|ancor,anchour
+monarch|ˈmɒnək|mo-narch|মোনার্ক|রাজা|noun|silent_letters|1084|monark,monarc
+technical|ˈteknɪkl|tech-ni-cal|টেকনিক্যাল|কারিগরি|adjective|silent_letters|1085|tecnical,technicle
+chemical|ˈkemɪkl|che-mi-cal|কেমিক্যাল|রাসায়নিক|adjective|silent_letters|1086|chemicle,kemical
+mechanical|məˈkænɪkl|me-cha-ni-cal|মেকানিক্যাল|যান্ত্রিক|adjective|silent_letters|1087|mecanical,mechanicle
+psychological|ˌsaɪkəˈlɒdʒɪkl|psy-cho-lo-gi-cal|সাইকোলজিক্যাল|মানসিক|adjective|soft_g|1088|sychological,psycological
+physical|ˈfɪzɪkl|phy-si-cal|ফিজিক্যাল|শারীরিক|adjective||1089|fysical,phisical
+practical|ˈpræktɪkl|prac-ti-cal|প্র্যাকটিক্যাল|ব্যবহারিক|adjective||1090|practicle,practicall
+theoretical|ˌθɪəˈretɪkl|the-o-re-ti-cal|থিওরেটিক্যাল|তাত্ত্বিক|adjective||1091|theoritical,theoreticle
+critical|ˈkrɪtɪkl|cri-ti-cal|ক্রিটিক্যাল|সংকটপূর্ণ|adjective|soft_c|1092|criticle,critcal
+logical|ˈlɒdʒɪkl|lo-gi-cal|লজিক্যাল|যৌক্তিক|adjective|soft_g|1093|logicle,lojical
+typical|ˈtɪpɪkl|ty-pi-cal|টিপিক্যাল|সাধারণ|adjective||1094|typicle,tipical
+medical|ˈmedɪkl|me-di-cal|মেডিক্যাল|চিকিৎসা-সংক্রান্ত|adjective|soft_c|1095|medicle,medcal
+electrical|ɪˈlektrɪkl|e-lec-tri-cal|ইলেকট্রিক্যাল|বৈদ্যুতিক|adjective|soft_c|1096|electricle,electical
+historical|hɪˈstɒrɪkl|his-to-ri-cal|হিসটোরিক্যাল|ঐতিহাসিক|adjective||1097|historicle,histrical
+tropical|ˈtrɒpɪkl|tro-pi-cal|ট্রপিক্যাল|ক্রান্তীয়|adjective||1098|tropicle,trapical
+musical|ˈmjuːzɪkl|mu-si-cal|মিউজিক্যাল|সাংগীতিক|adjective|soft_c|1099|musicle,muzical
+magical|ˈmædʒɪkl|ma-gi-cal|ম্যাজিক্যাল|জাদুকরী|adjective|soft_g|1100|magicle,majical
+reliable|rɪˈlaɪəbl|re-lia-ble|রিলায়েবল|নির্ভরযোগ্য|adjective|able_ible|1101|reliible,relyable
+remarkable|rɪˈmɑːkəbl|re-mar-ka-ble|রিমার্কেবল|উল্লেখযোগ্য|adjective|able_ible|1102|remarkible,remarcable
+flexible|ˈfleksəbl|fle-xi-ble|ফ্লেক্সিবল|নমনীয়|adjective|able_ible|1103|flexable,flexibel
+incredible|ɪnˈkredəbl|in-cre-di-ble|ইনক্রেডিবল|অবিশ্বাস্য|adjective|able_ible|1104|incredable,increadible
+invisible|ɪnˈvɪzəbl|in-vi-si-ble|ইনভিজিবল|অদৃশ্য|adjective|able_ible|1105|invisable,invizible
+compatible|kəmˈpætəbl|com-pa-ti-ble|কমপ্যাটিবল|সামঞ্জস্যপূর্ণ|adjective|able_ible|1106|compatable,compatibel
+accessible|əkˈsesəbl|ac-ces-si-ble|অ্যাকসেসিবল|প্রবেশযোগ্য|adjective|able_ible|1107|accessable,acessible
+eligible|ˈelɪdʒəbl|e-li-gi-ble|এলিজিবল|যোগ্য|adjective|soft_g|1108|eligable,elijible
+legible|ˈledʒəbl|le-gi-ble|লেজিবল|পাঠযোগ্য|adjective|soft_g|1109|legable,lejible
+edible|ˈedəbl|e-di-ble|এডিবল|ভোজ্য|adjective|able_ible|1110|edable,edibel
+audible|ˈɔːdəbl|au-di-ble|অডিবল|শ্রবণযোগ্য|adjective|able_ible|1111|audable,audibel
+analyse|ˈænəlaɪz|a-na-lyse|অ্যানালাইজ|বিশ্লেষণ করা|verb|drop_silent_e|1112|analyze,analize
+analysis|əˈnæləsɪs|a-na-ly-sis|অ্যানালাইসিস|বিশ্লেষণ|noun||1113|analisis,analysys
+emphasis|ˈemfəsɪs|em-pha-sis|এমফাসিস|জোর|noun||1114|emphasys,emfasis
+emphasise|ˈemfəsaɪz|em-pha-sise|এমফাসাইজ|জোর দেওয়া|verb|drop_silent_e|1115|emphasize,emfasise
+summarise|ˈsʌməraɪz|sum-ma-rise|সামারাইজ|সংক্ষেপ করা|verb|drop_silent_e|1116|summarize,summerise
+summary|ˈsʌməri|sum-ma-ry|সামারি|সারসংক্ষেপ|noun|y_to_i|1117|summery,summry|review
+conclude|kənˈkluːd|con-clude|কনক্লুড|উপসংহার টানা|verb|drop_silent_e|1118|conclud,conclued
+assume|əˈsjuːm|as-sume|অ্যাসিউম|ধরে নেওয়া|verb|drop_silent_e|1119|assum,asume
+consider|kənˈsɪdə|con-si-der|কনসিডার|বিবেচনা করা|verb||1120|considar,concider
+presume|prɪˈzjuːm|pre-sume|প্রিজিউম|অনুমান করা|verb|drop_silent_e|1121|presum,prezume
+determine|dɪˈtɜːmɪn|de-ter-mine|ডিটারমিন|নির্ধারণ করা|verb|drop_silent_e|1122|determin,determaine
+establish|ɪˈstæblɪʃ|es-ta-blish|এসট্যাবলিশ|প্রতিষ্ঠা করা|verb|plural_es|1123|estabish,establsh
+maintain|meɪnˈteɪn|main-tain|মেইনটেইন|বজায় রাখা|verb||1124|maintian,maintane
+obtain|əbˈteɪn|ob-tain|অবটেইন|লাভ করা|verb||1125|obtian,obtane
+contain|kənˈteɪn|con-tain|কনটেইন|ধারণ করা|verb||1126|contian,contane
+remain|rɪˈmeɪn|re-main|রিমেইন|থেকে যাওয়া|verb||1127|remian,remane
+sustain|səˈsteɪn|sus-tain|সাসটেইন|টিকিয়ে রাখা|verb||1128|sustian,sustane
+complain|kəmˈpleɪn|com-plain|কমপ্লেইন|অভিযোগ করা|verb||1129|complian,complane
+entertain|ˌentəˈteɪn|en-ter-tain|এনটারটেইন|বিনোদন দেওয়া|verb||1130|entertian,entertane
+certain|ˈsɜːtn|cer-tain|সার্টেন|নিশ্চিত|adjective|soft_c|1131|certian,sertain
+uncertain|ʌnˈsɜːtn|un-cer-tain|আনসার্টেন|অনিশ্চিত|adjective|prefix_keeps_root|1132|uncertian,unsertain
+captain|ˈkæptɪn|cap-tain|ক্যাপ্টেন|অধিনায়ক|noun||1133|captian,capten
+curtain|ˈkɜːtn|cur-tain|কার্টেন|পর্দা|noun||1134|curtian,curten
+bargain|ˈbɑːɡɪn|bar-gain|বার্গেইন|দরদাম|noun||1135|bargian,bargin
+villain|ˈvɪlən|vil-lain|ভিলেন|খলনায়ক|noun||1136|villian,vilain
+fountain|ˈfaʊntɪn|foun-tain|ফাউনটেন|ঝর্ণা|noun||1137|fountian,founten
+chieftain|ˈtʃiːftɪn|chief-tain|চিফটেন|সর্দার|noun|i_before_e|1138|cheiftain,chieften
+proceed|prəˈsiːd|pro-ceed|প্রসিড|এগিয়ে যাওয়া|verb|soft_c|1139|procede,proseed
+exceed|ɪkˈsiːd|ex-ceed|এক্সিড|অতিক্রম করা|verb|soft_c|1140|excede,exseed
+precede|prɪˈsiːd|pre-cede|প্রিসিড|আগে আসা|verb|soft_c|1141|preceed,presede
+recede|rɪˈsiːd|re-cede|রিসিড|পিছিয়ে যাওয়া|verb|soft_c|1142|receed,resede
+concede|kənˈsiːd|con-cede|কনসিড|স্বীকার করা|verb|soft_c|1143|conceed,consede
+interfere|ˌɪntəˈfɪə|in-ter-fere|ইনটারফিয়ার|হস্তক্ষেপ করা|verb|drop_silent_e|1144|interfeer,intefere
+interrupt|ˌɪntəˈrʌpt|in-ter-rupt|ইনটারাপ্ট|বাধা দেওয়া|verb||1145|interupt,intrupt
+interpret|ɪnˈtɜːprɪt|in-ter-pret|ইনটারপ্রেট|ব্যাখ্যা করা|verb||1146|interprete,intepret
+introduce|ˌɪntrəˈdjuːs|in-tro-duce|ইনট্রোডিউস|পরিচয় করানো|verb|soft_c|1147|introduse,intoduce
+translate|trænzˈleɪt|trans-late|ট্রান্সলেট|অনুবাদ করা|verb|drop_silent_e|1148|tranlate,translat
+transfer|trænsˈfɜː|trans-fer|ট্রান্সফার|স্থানান্তর করা|verb|doubling_1_1_1|1149|tranfer,transfar
+transform|trænsˈfɔːm|trans-form|ট্রান্সফর্ম|রূপান্তর করা|verb||1150|tranform,transfrom
+transmit|trænzˈmɪt|trans-mit|ট্রান্সমিট|প্রেরণ করা|verb|doubling_1_1_1|1151|tranmit,transmitt
+permit|pəˈmɪt|per-mit|পারমিট|অনুমতি দেওয়া|verb|doubling_1_1_1|1152|permitt,parmit
+admit|ədˈmɪt|ad-mit|অ্যাডমিট|স্বীকার করা|verb|doubling_1_1_1|1153|admitt,admet
+commit|kəˈmɪt|com-mit|কমিট|প্রতিশ্রুতিবদ্ধ হওয়া|verb|doubling_1_1_1|1154|comit,committ
+submit|səbˈmɪt|sub-mit|সাবমিট|জমা দেওয়া|verb|doubling_1_1_1|1155|submitt,sumbit
+prefer|prɪˈfɜː|pre-fer|প্রিফার|পছন্দ করা|verb|doubling_1_1_1|1156|preffer,prefar
+refer|rɪˈfɜː|re-fer|রিফার|উল্লেখ করা|verb|doubling_1_1_1|1157|reffer,refar
+occur|əˈkɜː|oc-cur|অকার|ঘটা|verb|doubling_1_1_1|1158|ocur,occurr
+control|kənˈtrəʊl|con-trol|কনট্রোল|নিয়ন্ত্রণ|noun|doubling_1_1_1|1159|controll,contol
+patrol|pəˈtrəʊl|pa-trol|প্যাট্রোল|টহল|noun|doubling_1_1_1|1160|patroll,patrole
+cancel|ˈkænsl|can-cel|ক্যানসেল|বাতিল করা|verb|soft_c|1161|cancle,cansel
+quarrel|ˈkwɒrəl|quar-rel|কোয়ারেল|ঝগড়া|noun|q_takes_u|1162|quarel,quarrell
+label|ˈleɪbl|la-bel|লেবেল|লেবেল|noun||1163|lable,labell
+model|ˈmɒdl|mo-del|মডেল|নমুনা|noun||1164|modle,modell
+level|ˈlevl|le-vel|লেভেল|স্তর|noun|no_final_v|1165|levle,levell
+signal|ˈsɪɡnl|sig-nal|সিগন্যাল|সংকেত|noun|silent_letters|1166|signle,singal
+total|ˈtəʊtl|to-tal|টোটাল|মোট|noun||1167|totle,totall
+metal|ˈmetl|me-tal|মেটাল|ধাতু|noun||1168|mettal,metle
+capital|ˈkæpɪtl|ca-pi-tal|ক্যাপিটাল|রাজধানী|noun||1169|capitle,capitall
+vital|ˈvaɪtl|vi-tal|ভাইটাল|অত্যাবশ্যক|adjective||1170|vitle,vitall
+digital|ˈdɪdʒɪtl|di-gi-tal|ডিজিটাল|ডিজিটাল|adjective|soft_g|1171|digitle,dijital
+original|əˈrɪdʒənl|o-ri-gi-nal|অরিজিনাল|মূল|adjective|soft_g|1172|orignal,orijinal
+individual|ˌɪndɪˈvɪdʒuəl|in-di-vi-dual|ইনডিভিজুয়াল|ব্যক্তি|noun|no_final_v|1173|indivdual,individal
+casual|ˈkæʒuəl|ca-sual|ক্যাজুয়াল|অনানুষ্ঠানিক|adjective||1174|casuel,casaul
+annual|ˈænjuəl|an-nual|অ্যানুয়াল|বার্ষিক|adjective|doubling_1_1_1|1175|anual,annuel
+manual|ˈmænjuəl|ma-nual|ম্যানুয়াল|হাতে করা|adjective||1176|manuel,manaul
+actual|ˈæktʃuəl|ac-tual|অ্যাকচুয়াল|প্রকৃত|adjective||1177|actuel,actaul
+equal|ˈiːkwəl|e-qual|ইকোয়াল|সমান|adjective|q_takes_u|1178|equel,eqal
+frequent|ˈfriːkwənt|fre-quent|ফ্রিকোয়েন্ট|ঘন ঘন|adjective|q_takes_u|1179|frequant,frecuent
+sequence|ˈsiːkwəns|se-quence|সিকোয়েন্স|ক্রম|noun|q_takes_u|1180|sequance,secuence
+adequate|ˈædɪkwət|a-de-quate|অ্যাডিকোয়েট|পর্যাপ্ত|adjective|q_takes_u|1181|adequete,adecuate
+liquid|ˈlɪkwɪd|li-quid|লিকুইড|তরল|noun|q_takes_u|1182|licuid,liqid
+squeeze|skwiːz|squeeze|স্কুইজ|চাপা|verb|q_takes_u|1183|squeaze,skweeze
+square|skweə|square|স্কয়ার|বর্গ|noun|q_takes_u|1184|squar,skware
+quarter|ˈkwɔːtə|quar-ter|কোয়ার্টার|এক-চতুর্থাংশ|noun|q_takes_u|1185|quartar,kwarter
+quotation|kwəʊˈteɪʃn|quo-ta-tion|কোটেশন|উদ্ধৃতি|noun|q_takes_u|1186|quotasion,quotaton
+acquire|əˈkwaɪə|ac-quire|অ্যাকোয়ার|অর্জন করা|verb|q_takes_u|1187|aquire,acquier
+inquire|ɪnˈkwaɪə|in-quire|ইনকোয়ার|অনুসন্ধান করা|verb|q_takes_u|1188|inquier,enquire
+conquer|ˈkɒŋkə|con-quer|কনকার|জয় করা|verb|q_takes_u|1189|conqer,conquor
+banquet|ˈbæŋkwɪt|ban-quet|ব্যাংকোয়েট|ভোজসভা|noun|q_takes_u|1190|banqet,banquit
+conquest|ˈkɒŋkwest|con-quest|কনকোয়েস্ট|বিজয়|noun|q_takes_u|1191|conqest,conquast
+acknowledge|əkˈnɒlɪdʒ|ac-know-ledge|অ্যাকনলেজ|স্বীকার করা|verb|silent_letters|1192|aknowledge,acknowlege
+column|ˈkɒləm|col-umn|কলাম|স্তম্ভ|noun|silent_letters|1193|colum,colomn
+solemn|ˈsɒləm|so-lemn|সলেম|গম্ভীর|adjective|silent_letters|1194|solem,solomn
+condemn|kənˈdem|con-demn|কনডেম|নিন্দা করা|verb|silent_letters|1195|condem,condemm
+hymn|hɪm|hymn|হিম|স্তোত্র|noun|silent_letters|1196|him,hymne
+muscle|ˈmʌsl|mus-cle|মাসল|পেশি|noun|silent_letters|1197|musle,muscel
+scissors|ˈsɪzəz|scis-sors|সিজরস|কাঁচি|noun|silent_letters|1198|sissors,scisors
+scene|siːn|scene|সিন|দৃশ্য|noun|silent_letters|1199|seen,scen
+scent|sent|scent|সেন্ট|সুগন্ধ|noun|silent_letters|1200|sent,scennt
+descend|dɪˈsend|des-cend|ডিসেন্ড|নামা|verb|soft_c|1201|desend,descened
+ascend|əˈsend|as-cend|অ্যাসেন্ড|ওঠা|verb|soft_c|1202|asend,ascened
+discipline|ˈdɪsəplɪn|dis-ci-pline|ডিসিপ্লিন|শৃঙ্খলা|noun|soft_c|1203|disipline,disciplin
+fascinate|ˈfæsɪneɪt|fas-ci-nate|ফ্যাসিনেট|মুগ্ধ করা|verb|soft_c|1204|fasinate,facinate
+adolescent|ˌædəˈlesnt|a-do-les-cent|অ্যাডোলেসেন্ট|কিশোর|noun|soft_c|1205|adolecent,adolescant
+reign|reɪn|reign|রেইন|রাজত্ব|noun|i_before_e|1206|rein,riegn
+resign|rɪˈzaɪn|re-sign|রিজাইন|পদত্যাগ করা|verb|silent_letters|1207|resine,rezign
+accommodate|əˈkɒmədeɪt|ac-com-mo-date|অ্যাকোমোডেট|জায়গা দেওয়া|verb|drop_silent_e|1208|acommodate,accomodate
+appropriate|əˈprəʊpriət|ap-pro-pri-ate|অ্যাপ্রোপ্রিয়েট|উপযুক্ত|adjective||1209|apropriate,appropiate
+approximate|əˈprɒksɪmət|ap-pro-xi-mate|অ্যাপ্রক্সিমেট|আনুমানিক|adjective||1210|aproximate,approxmate
+appreciate|əˈpriːʃieɪt|ap-pre-ci-ate|অ্যাপ্রিসিয়েট|প্রশংসা করা|verb|soft_c|1211|apreciate,appriciate
+associate|əˈsəʊʃieɪt|as-so-ci-ate|অ্যাসোসিয়েট|যুক্ত করা|verb|soft_c|1212|asociate,assocate
+communicate|kəˈmjuːnɪkeɪt|com-mu-ni-cate|কমিউনিকেট|যোগাযোগ করা|verb|drop_silent_e|1213|comunicate,communcate
+concentrate|ˈkɒnsntreɪt|con-cen-trate|কনসেনট্রেট|মনোযোগ দেওয়া|verb|soft_c|1214|consentrate,concentrat
+demonstrate|ˈdemənstreɪt|de-mons-trate|ডেমনস্ট্রেট|প্রদর্শন করা|verb|drop_silent_e|1215|demostrate,demonstate
+illustrate|ˈɪləstreɪt|il-lus-trate|ইলাসট্রেট|চিত্রিত করা|verb|floss_doubling|1216|ilustrate,illustate
+participate|pɑːˈtɪsɪpeɪt|par-ti-ci-pate|পার্টিসিপেট|অংশগ্রহণ করা|verb|soft_c|1217|particpate,participat
+cooperate|kəʊˈɒpəreɪt|co-o-pe-rate|কোঅপারেট|সহযোগিতা করা|verb|drop_silent_e|1218|coperate,cooparate
+celebrate|ˈseləbreɪt|ce-le-brate|সেলিব্রেট|উদযাপন করা|verb|soft_c|1219|celebrat,selebrate
+separate|ˈsepəreɪt|se-pa-rate|সেপারেট|আলাদা করা|verb|drop_silent_e|1220|seperate,separat
+operate|ˈɒpəreɪt|o-pe-rate|অপারেট|পরিচালনা করা|verb|drop_silent_e|1221|operat,oparate
+generate|ˈdʒenəreɪt|ge-ne-rate|জেনারেট|উৎপন্ন করা|verb|soft_g|1222|generat,jenerate
+estimate|ˈestɪmeɪt|es-ti-mate|এসটিমেট|অনুমান করা|verb|drop_silent_e|1223|estimat,estmate
+calculate|ˈkælkjuleɪt|cal-cu-late|ক্যালকুলেট|গণনা করা|verb|drop_silent_e|1224|calcualte,calculat
+indicate|ˈɪndɪkeɪt|in-di-cate|ইনডিকেট|নির্দেশ করা|verb|drop_silent_e|1225|indicat,indecate
+educate|ˈedʒukeɪt|e-du-cate|এডুকেট|শিক্ষা দেওয়া|verb|drop_silent_e|1226|educat,edicate
+graduate|ˈɡrædʒuət|gra-du-ate|গ্র্যাজুয়েট|স্নাতক|noun||1227|graduat,gradute
+immediate|ɪˈmiːdiət|im-me-diate|ইমিডিয়েট|তাৎক্ষণিক|adjective||1228|imediate,immediat
+intermediate|ˌɪntəˈmiːdiət|in-ter-me-diate|ইনটারমিডিয়েট|মধ্যবর্তী|adjective||1229|intermidiate,intermediat
+accurate|ˈækjərət|ac-cu-rate|অ্যাকিউরেট|নির্ভুল|adjective||1230|acurate,accurat
+literate|ˈlɪtərət|li-te-rate|লিটারেট|শিক্ষিত|adjective||1231|literat,littrate
+illiterate|ɪˈlɪtərət|il-li-te-rate|ইলিটারেট|নিরক্ষর|adjective|floss_doubling|1232|iliterate,illitarate
+private|ˈpraɪvət|pri-vate|প্রাইভেট|ব্যক্তিগত|adjective|no_final_v|1233|privat,privet
+delicate|ˈdelɪkət|de-li-cate|ডেলিকেট|সূক্ষ্ম|adjective|soft_c|1234|delicat,delecate
+moderate|ˈmɒdərət|mo-de-rate|মডারেট|পরিমিত|adjective||1235|moderat,modarate
+opposite|ˈɒpəzɪt|op-po-site|অপোজিট|বিপরীত|adjective||1236|opposit,oposite
+definite|ˈdefɪnət|de-fi-nite|ডেফিনিট|নির্দিষ্ট|adjective||1237|definate,definit
+infinite|ˈɪnfɪnət|in-fi-nite|ইনফিনিট|অসীম|adjective||1238|infinate,infinit
+favourite|ˈfeɪvrɪt|fa-vou-rite|ফেভারিট|প্রিয়|adjective|no_final_v|1239|favorite,favourit
+temporary|ˈtemprəri|tem-po-ra-ry|টেমপোরারি|অস্থায়ী|adjective|y_to_i|1240|temporery,tempary|review
