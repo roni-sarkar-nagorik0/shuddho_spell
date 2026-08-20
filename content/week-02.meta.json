@@ -1,0 +1,12 @@
+{
+  "doc": "/**\n * Week 2 — the endings that decide most of the spellings a learner meets next.\n *\n * -tion and -sion, -able and -ible, the silent letters English keeps from\n * languages it borrowed from, the three sounds of -ed, and the -ough family\n * that spells six different vowels with four letters.\n *\n * The misspellings stay diagnostic rather than random. `nashion` and `acsion`\n * are what a learner writes when they spell -tion the way it sounds;\n * `possable` and `terrable` are the -ible half of a rule with no audible\n * difference; `wierd`, `nieghbour` and `hieght` are the i-before-e rule applied\n * where it does not hold. Several pairs are in deliberately together —\n * `advice`/`advise`, `effect`/`affect`, `except`/`accept`, `whether`/`weather`,\n * `break`/`brake`, `whole`/`hole` — because each is the other's commonest\n * misspelling and teaching them apart is the point.\n */\n",
+  "days": [
+    { "title": "Nation, station, question", "focus": "The -tion and -sion endings, and why they sound the same and are spelled apart." },
+    { "title": "Able and ible", "focus": "A rule with no audible difference: comfortable but possible, and how to tell." },
+    { "title": "Letters you do not say", "focus": "Silent k, w, b, gh and h — knee, wrist, thumb, honest, island." },
+    { "title": "The three sounds of -ed", "focus": "Walked, opened and wanted end in /t/, /d/ and /ɪd/, and the spelling never changes." },
+    { "title": "Words that trade places", "focus": "Advice and advise, effect and affect, except and accept, whether and weather." },
+    { "title": "Tough, though, through", "focus": "The -ough family, and the numbers and seasons that carry silent letters too." },
+    { "title": "Endings that build words", "focus": "-ness, -ly and -age: happiness, carefully, message — and the doubling they do not cause." }
+  ]
+}
