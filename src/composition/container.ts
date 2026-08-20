@@ -29,7 +29,9 @@ import { SupabaseReviewItemRepository } from '@/modules/review/infrastructure/pe
 import { type ILessonWriteUnit } from '@/modules/lessons/application/ports/lesson-write-unit';
 import { SupabaseLessonWriteUnit } from '@/modules/lessons/infrastructure/adapters/supabase-lesson-write-unit';
 import { type IClock } from '@/modules/shared/application/ports/clock';
+import { type ISpeechScorer } from '@/modules/shared/application/ports/speech-scorer';
 import { type IIdGenerator } from '@/modules/shared/application/ports/id-generator';
+import { ConfusionMapSpeechScorer } from '@/modules/speech/infrastructure/adapters/confusion-map-speech-scorer';
 import { SystemClock } from '@/modules/shared/infrastructure/adapters/system-clock';
 import { UuidGenerator } from '@/modules/shared/infrastructure/adapters/uuid-generator';
 import { RetryingDatabase } from '@/modules/shared/infrastructure/persistence/retrying-database';
@@ -69,6 +71,9 @@ export interface IContainer {
   readonly reviewPolicy: IReviewSchedulingPolicy;
   readonly errorTagger: ErrorTagger;
 
+  /** Pure and stateless too — a lookup over the confusion map, never a model. */
+  readonly speechScorer: ISpeechScorer;
+
   /** The writes that must not half-happen — 013 and 014's Postgres functions. */
   readonly lessonWrites: ILessonWriteUnit;
 
@@ -104,6 +109,7 @@ export function createContainer(requestId: string): IContainer {
 
     reviewPolicy: new IntervalLadderPolicy(),
     errorTagger: new ErrorTagger(),
+    speechScorer: new ConfusionMapSpeechScorer(),
 
     lessonWrites: new SupabaseLessonWriteUnit(db),
 
