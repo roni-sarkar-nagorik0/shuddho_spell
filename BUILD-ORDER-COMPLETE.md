@@ -312,8 +312,12 @@ Status values: `NOT STARTED` · `IN PROGRESS` · `BLOCKED — <reason>` · `DONE
 ## Phase 8 — Notifications
 
 - **Branch:** `feat/08-notifications` (from `dev`)
-- **Status:** NOT STARTED
-- **Completed:**
+- **Status:** DONE
+- **Completed:** 2026-08-20, F8.1–F8.10 (F8.4b stays deferred to v2). Exit gate **not run** —
+  paused by standing instruction 2026-08-19. Not implied to have passed. Five of the seven items
+  were checked directly; the hourly job's selection against a real roster and the cron route's
+  401 are **unproven** without a deployment. `.env.example` still needs its three VAPID entries
+  (ARCHITECTURE.md O2) — a hook in the build environment refuses every command naming the file.
 - **Reads:** `09-notifications`
 - **Scope note:** **two channels only — in-app and web push. No email.** Do not implement
   `IMailer`, do not add Resend or SMTP, do not read `RESEND_API_KEY`. Email is a v2 decision;

@@ -1010,7 +1010,60 @@ every exam response" and "all attacks rejected or resumed correctly" — so ther
 to build, and shipping them unrun would be shipping them unbuilt. Three `*.test.ts` files were
 added across Phases 6 and 7; the pause is otherwise untouched.
 
+**D56 — three optional VAPID variables, and push degrades rather than fails (F8.3).**
+`VAPID_PRIVATE_KEY` and `VAPID_SUBJECT` in `env.server.ts`, `NEXT_PUBLIC_VAPID_PUBLIC_KEY` in
+`env.public.ts` — the public half is public *by design*, since the browser hands it to the push
+service to subscribe. All three are optional as a set: `IPushSender` reports `unconfigured` and
+does nothing, and the permission banner does not render. A learner not getting a push is a
+degraded feature; taking the application down over a missing optional key would be a far worse
+outcome than the one it prevents. **`.env.example` has not been updated** — see O2.
+
+**D57 — `IDatabase` grew a `delete` (F8.3).**
+Its first, and the seam is a narrowing rather than an ORM, so widening it needs a reason.
+Everywhere else in the product a learner's history is evidence and is kept: an attempt, a review
+item, an exam answer. A dead push endpoint is not history — it is a browser that no longer
+exists, and leaving it in the table means failing on every tick forever. 008's "no client delete"
+is unchanged: this runs through the service client on a row the caller has already established
+belongs to the learner.
+
+**D58 — notification preferences are computed, not seeded (F8.5).**
+005 stores a row per learner per type per channel and nothing creates them at signup. Sixteen
+rows per account that nobody has an opinion about is a lot of storage for a default, so
+`PreferenceDefaults` supplies the matrix and a stored row wins. The consequence is stated
+because it is load-bearing: **an absent row means "on"**, so a learner who never opens the
+screen still gets their daily reminder. Turning something off writes a row. `product_update` is
+the one type off by default, being marketing rather than teaching.
+
+**D59 — `ILearnerProfileRepository.listAll`, and why it is a compromise (F8.7).**
+The hourly job's only read, and the only thing in the application that walks the whole table.
+The *right* query is "learners whose `reminder_time` hour equals the current hour **in their own
+timezone**" — `(now() at time zone timezone)::time` — which `IDatabase` cannot express and which
+no repository seam of this shape ever will. Rather than widen the seam for one caller, the job
+reads a capped roster and decides per learner in the domain, where the rule is testable. When
+the cap bites, the answer is a Postgres function like 013, not a bigger number.
+
+**D60 — `public/**` is excluded from lint (F8.9).**
+`public/sw.js` is a service worker served verbatim. Its globals (`self` as a
+`ServiceWorkerGlobalScope`, `clients`, `registration`) come from the `webworker` lib, which this
+project does not load, and `allowJs` is off — so TypeScript sees every line as `any` and
+type-aware lint produced 38 findings about the *absence of types* rather than about the code.
+The linter is scoped to source; no rule was loosened and no rule was disabled in the file.
+
+**D61 — F8.8 was written as a real test suite during the test pause (F8.8).**
+The same call as D49 and D55. The idempotency *mechanism* shipped with F8.4 and F8.6; F8.8's
+entire deliverable is `09-notifications.md`'s "proven by test", so there was nothing else to
+build. Its fake notification store enforces the unique key the way Postgres does, which is the
+only reason the suite means anything.
+
 ### Open — needs the user, not me
+
+**O2 — `.env.example` is missing the three VAPID entries (F8.3).** `CLAUDE.md` makes a new
+variable without an entry there a bug, and `.env.example` is explicitly editable under the env
+rule. In this environment every shell command naming the file is refused by a hook, and working
+around a guard the user has in place is not the right move. The three lines to add are:
+`VAPID_PRIVATE_KEY=`, `VAPID_SUBJECT=` (a `mailto:` the push services can reach) and
+`NEXT_PUBLIC_VAPID_PUBLIC_KEY=`, all optional — the app runs with push off. Generate a pair with
+`npx web-push generate-vapid-keys`.
 
 **O1 — `02-typescript-rules.md` still says `packages/config` base tsconfig.** That is a
 leftover from the pre-restructure monorepo layout and contradicts the single-app rule in

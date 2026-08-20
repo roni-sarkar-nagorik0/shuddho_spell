@@ -80,8 +80,8 @@ and 2. No feature starts without it. **Never read the file** — existence check
 
 ## NEXT
 
-> **Phase 9 · Content pipeline — not started**
-> Working on `feat/08-notifications`, cut from an up-to-date `dev`.
+> **Phase 9 · Content pipeline and seeding — not started**
+> Cut `feat/09-content-pipeline` from an up-to-date `dev`. Phase 8 is closed and merged.
 >
 > **What Phase 5 leaves Phase 6**
 > - `ISpeechScorer` is declared (F4.10) and **has no implementation**. Phase 6 is that, plus the
@@ -409,7 +409,17 @@ needing a live database: that pg_cron actually auto-submits, and that the transa
 ---
 
 ## Phase 8 — Notifications
-Branch `feat/08-notifications` · Status: `NOT STARTED`
+Branch `feat/08-notifications` · Status: `DONE` (10/10 built, F8.4b deferred to v2, 2026-08-20).
+Exit gate **not run** — paused by standing instruction 2026-08-19. Five of the seven gate items
+were checked directly and are recorded in the Log: the policy cases, the retried dispatch, the
+`email` channel never selected, no mail dependency, and no Email column. The two **not** proven
+are the ones needing a live deployment: that the hourly job selects by learner-local time against
+a real roster, and that `/api/cron/notifications` 401s without the bearer secret (the `withCron`
+guard it is built on has its own 14 tests from F3.8, re-run green).
+
+> **Open, needs the user:** `.env.example` is missing `VAPID_PRIVATE_KEY`, `VAPID_SUBJECT` and
+> `NEXT_PUBLIC_VAPID_PUBLIC_KEY`. Every shell command naming that file is refused by a hook in
+> this environment, so it could not be edited from here. See `ARCHITECTURE.md` **O2**.
 
 > **In-app and web push only. The app sends no email.** No `IMailer`, no Resend, no SMTP,
 > no `RESEND_API_KEY`. `email` stays in the channel union and the DB constraint so v2 needs
