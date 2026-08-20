@@ -4,6 +4,7 @@ import { MasteryMatrix } from '@/components/data/mastery-matrix';
 import { PhonemeStrip, type IPhonemeCell } from '@/components/learning/phoneme-strip';
 import { serverEnv } from '@/lib/env.server';
 import { PHONEME_CELLS, RULE_FAMILY_CELLS, UNATTEMPTED_PHONEME_CELLS } from './fixtures';
+import { TableDemo } from './table-demo';
 
 /**
  * The component gallery — every state of every shared component, on one page.
@@ -108,6 +109,21 @@ export default function GalleryPage(): ReactElement {
               dimension="phoneme"
               drillLabel="Drill this"
             />
+          </State>
+        </div>
+      </section>
+
+      <section className="flex flex-col gap-3">
+        <h2 className="font-display text-base tracking-tight">DataTable</h2>
+        <div className="flex flex-col gap-4">
+          <State name="Two cursor pages" note="Pinned first column, sticky header, 32px rows.">
+            <TableDemo state="loaded" />
+          </State>
+          <State name="Empty" note="A sentence, not an illustration.">
+            <TableDemo state="empty" />
+          </State>
+          <State name="Loading" note="Both pagination controls disabled.">
+            <TableDemo state="loading" />
           </State>
         </div>
       </section>
