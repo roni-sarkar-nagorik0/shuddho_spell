@@ -27,7 +27,7 @@ product|ˈprɒdʌkt|pro-duct|প্রোডাক্ট|পণ্য|noun||644|
 quality|ˈkwɒləti|qua-li-ty|কোয়ালিটি|গুণমান|noun|q_takes_u|645|qality,quallity
 quantity|ˈkwɒntəti|quan-ti-ty|কোয়ান্টিটি|পরিমাণ|noun|q_takes_u|646|qantity,quantety
 delivery|dɪˈlɪvəri|de-li-ve-ry|ডেলিভারি|সরবরাহ|noun|y_to_i|647|delivary,dilivery
-factory|ˈfæktri|fac-to-ry|ফ্যাক্টরি|কারখানা|noun|y_to_i|648|factry,factery
+factory|ˈfæktri|fac-to-ry|ফ্যাক্টরি|কারখানা|noun|y_to_i|648|factry,factery|review
 industry|ˈɪndəstri|in-dus-try|ইন্ডাস্ট্রি|শিল্প|noun|y_to_i|649|industy,industery
 machine|məˈʃiːn|ma-chine|মেশিন|যন্ত্র|noun|drop_silent_e|650|machin,mashine
 engine|ˈendʒɪn|en-gine|ইঞ্জিন|ইঞ্জিন|noun|soft_g|651|engin,enjine
@@ -44,11 +44,11 @@ ancient|ˈeɪnʃnt|an-cient|এনশেন্ট|প্রাচীন|adjectiv
 university|ˌjuːnɪˈvɜːsəti|u-ni-ver-si-ty|ইউনিভার্সিটি|বিশ্ববিদ্যালয়|noun|y_to_i|662|univercity,universty
 college|ˈkɒlɪdʒ|col-lege|কলেজ|কলেজ|noun|soft_g|663|colege,collage
 sufficient|səˈfɪʃnt|suf-fi-cient|সাফিশিয়েন্ট|যথেষ্ট|adjective|i_before_e|664|sufficent,suficient
-library|ˈlaɪbrəri|li-bra-ry|লাইব্রেরি|গ্রন্থাগার|noun|y_to_i|665|libary,libery
-laboratory|ləˈbɒrətri|la-bo-ra-to-ry|ল্যাবরেটরি|গবেষণাগার|noun|y_to_i|666|labratory,laboratary
-dictionary|ˈdɪkʃənri|dic-tio-na-ry|ডিকশনারি|অভিধান|noun|tion_sion|667|dictionery,dictonary
-secretary|ˈsekrətri|se-cre-ta-ry|সেক্রেটারি|সচিব|noun|y_to_i|668|secratary,secretery
-category|ˈkætəɡri|ca-te-go-ry|ক্যাটাগরি|শ্রেণি|noun|y_to_i|669|catagory,categary
+library|ˈlaɪbrəri|li-bra-ry|লাইব্রেরি|গ্রন্থাগার|noun|y_to_i|665|libary,libery|review
+laboratory|ləˈbɒrətri|la-bo-ra-to-ry|ল্যাবরেটরি|গবেষণাগার|noun|y_to_i|666|labratory,laboratary|review
+dictionary|ˈdɪkʃənri|dic-tio-na-ry|ডিকশনারি|অভিধান|noun|tion_sion|667|dictionery,dictonary|review
+secretary|ˈsekrətri|se-cre-ta-ry|সেক্রেটারি|সচিব|noun|y_to_i|668|secratary,secretery|review
+category|ˈkætəɡri|ca-te-go-ry|ক্যাটাগরি|শ্রেণি|noun|y_to_i|669|catagory,categary|review
 ceremony|ˈserəməni|ce-re-mo-ny|সেরিমনি|অনুষ্ঠান|noun|soft_c|670|ceremoney,seremony
 committee|kəˈmɪti|com-mit-tee|কমিটি|কমিটি|noun|doubling_1_1_1|671|comittee,commitee
 conscience|ˈkɒnʃns|con-science|কনশেন্স|বিবেক|noun|i_before_e|672|concience,consience
@@ -95,7 +95,7 @@ entrance|ˈentrəns|en-trance|এনট্রান্স|প্রবেশপ�
 arrival|əˈraɪvl|ar-ri-val|অ্যারাইভাল|আগমন|noun|no_final_v|713|arival,arrivel
 departure|dɪˈpɑːtʃə|de-par-ture|ডিপারচার|প্রস্থান|noun||714|departur,depature
 hotel|həʊˈtel|ho-tel|হোটেল|হোটেল|noun||715|hotell,hotal
-restaurant|ˈrestrɒnt|res-tau-rant|রেস্তোরাঁ|রেস্তোরাঁ|noun||716|resturant,restarant
+restaurant|ˈrestrɒnt|res-tau-rant|রেস্তোরাঁ|রেস্তোরাঁ|noun||716|resturant,restarant|review
 baggage|ˈbæɡɪdʒ|bag-gage|ব্যাগেজ|মালপত্র|noun|soft_g|717|bagage,baggaje
 tourist|ˈtʊərɪst|tou-rist|টুরিস্ট|পর্যটক|noun||718|turist,tourest
 guide|ɡaɪd|guide|গাইড|পথপ্রদর্শক|noun|silent_letters|719|gide,guid

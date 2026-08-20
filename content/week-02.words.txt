@@ -24,7 +24,7 @@ permission|pəˈmɪʃn|per-mis-sion|পারমিশন|অনুমতি|nou
 occasion|əˈkeɪʒn|oc-ca-sion|অকেশন|উপলক্ষ|noun|tion_sion|332|occation,ocasion
 mission|ˈmɪʃn|mis-sion|মিশন|অভিযান|noun|tion_sion|333|mition,mision
 passion|ˈpæʃn|pas-sion|প্যাশন|আবেগ|noun|tion_sion|334|pasion,passsion
-comfortable|ˈkʌmftəbl|com-for-ta-ble|কমফোর্টেবল|আরামদায়ক|adjective|able_ible|335|comfortible,confortable
+comfortable|ˈkʌmftəbl|com-for-ta-ble|কমফোর্টেবল|আরামদায়ক|adjective|able_ible|335|comfortible,confortable|review
 reasonable|ˈriːznəbl|rea-so-na-ble|রিজনেবল|যুক্তিসঙ্গত|adjective|able_ible|336|reasonible,resonable
 valuable|ˈvæljuəbl|va-lua-ble|ভ্যালুয়েবল|মূল্যবান|adjective|able_ible|337|valuible,valueable
 available|əˈveɪləbl|a-vai-la-ble|অ্যাভেইলেবল|উপলব্ধ|adjective|able_ible|338|availible,avaliable
@@ -95,13 +95,13 @@ result|rɪˈzʌlt|re-sult|রেজাল্ট|ফলাফল|noun||402|resaul
 reason|ˈriːzn|rea-son|রিজন|কারণ|noun||403|reasen,resson
 weather|ˈweðə|wea-ther|ওয়েদার|আবহাওয়া|noun||404|wether,weater
 holiday|ˈhɒlədeɪ|ho-li-day|হলিডে|ছুটি|noun||405|holliday,holaday
-history|ˈhɪstri|his-to-ry|হিস্টরি|ইতিহাস|noun|y_to_i|406|histry,histery
+history|ˈhɪstri|his-to-ry|হিস্টরি|ইতিহাস|noun|y_to_i|406|histry,histery|review
 memory|ˈmeməri|me-mo-ry|মেমরি|স্মৃতি|noun|y_to_i|407|memery,memmory
 language|ˈlæŋɡwɪdʒ|lan-guage|ল্যাঙ্গুয়েজ|ভাষা|noun|soft_g|408|languge,langauge
 practice|ˈpræktɪs|prac-tice|প্র্যাকটিস|অনুশীলন|noun|soft_c|409|practise,practis
 exercise|ˈeksəsaɪz|e-xer-cise|এক্সারসাইজ|ব্যায়াম|noun||410|excercise,exercize
 lesson|ˈlesn|les-son|লেসন|পাঠ|noun||411|leson,lessen
-medicine|ˈmedsn|me-di-cine|মেডিসিন|ওষুধ|noun|soft_c|412|medecine,medicin
+medicine|ˈmedsn|me-di-cine|মেডিসিন|ওষুধ|noun|soft_c|412|medecine,medicin|review
 subject|ˈsʌbdʒɪkt|sub-ject|সাবজেক্ট|বিষয়|noun||413|subjekt,subjact
 sentence|ˈsentəns|sen-tence|সেনটেন্স|বাক্য|noun|soft_c|414|sentance,sentense
 grammar|ˈɡræmə|gram-mar|গ্রামার|ব্যাকরণ|noun||415|grammer,gramar
@@ -135,7 +135,7 @@ capable|ˈkeɪpəbl|ca-pa-ble|কেপেবল|সক্ষম|adjective|able_
 impossible|ɪmˈpɒsəbl|im-pos-si-ble|ইমপসিবল|অসম্ভব|adjective|prefix_keeps_root|443|imposible,impossable
 unusual|ʌnˈjuːʒuəl|un-u-su-al|আনইউজুয়াল|অস্বাভাবিক|adjective|prefix_keeps_root|444|unusal,unnusual
 unnecessary|ʌnˈnesəsri|un-ne-ces-sa-ry|আননেসেসারি|অপ্রয়োজনীয়|adjective|prefix_keeps_root|445|unecessary,unnecesary
-necessary|ˈnesəsri|ne-ces-sa-ry|নেসেসারি|প্রয়োজনীয়|adjective||446|neccessary,necesary
+necessary|ˈnesəsri|ne-ces-sa-ry|নেসেসারি|প্রয়োজনীয়|adjective||446|neccessary,necesary|review
 dissatisfied|dɪsˈsætɪsfaɪd|dis-sa-tis-fied|ডিসস্যাটিসফাইড|অসন্তুষ্ট|adjective|prefix_keeps_root|447|disatisfied,dissatisfyed
 misunderstand|ˌmɪsʌndəˈstænd|mis-un-der-stand|মিসআন্ডারস্ট্যান্ড|ভুল বোঝা|verb|prefix_keeps_root|448|missunderstand,misunderstend
 happen|ˈhæpən|hap-pen|হ্যাপেন|ঘটা|verb||449|hapen,happan
@@ -294,7 +294,7 @@ spring|sprɪŋ|spring|স্প্রিং|বসন্ত|noun||601|sprin,spri
 autumn|ˈɔːtəm|au-tumn|অটাম|শরৎ|noun|silent_letters|602|autum,autom
 cloud|klaʊd|cloud|ক্লাউড|মেঘ|noun||603|clowd,claud
 climate|ˈklaɪmət|cli-mate|ক্লাইমেট|জলবায়ু|noun|drop_silent_e|604|climat,clymate
-temperature|ˈtemprətʃə|tem-pe-ra-ture|টেম্পারেচার|তাপমাত্রা|noun||605|temprature,temperatur
+temperature|ˈtemprətʃə|tem-pe-ra-ture|টেম্পারেচার|তাপমাত্রা|noun||605|temprature,temperatur|review
 degree|dɪˈɡriː|de-gree|ডিগ্রি|ডিগ্রি|noun||606|degre,digree
 health|helθ|health|হেলথ|স্বাস্থ্য|noun||607|helth,healt
 disease|dɪˈziːz|di-sease|ডিজিজ|রোগ|noun||608|desease,diseese

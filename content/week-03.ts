@@ -353,7 +353,7 @@ export const WEEK_03: WeekEntry = {
       ruleFamily: 'y_to_i',
       frequencyRank: 648,
       commonMisspellings: ['factry', 'factery'],
-      ipaNeedsReview: false,
+      ipaNeedsReview: true,
     },
     {
       text: 'industry',
@@ -557,7 +557,7 @@ export const WEEK_03: WeekEntry = {
       ruleFamily: 'y_to_i',
       frequencyRank: 665,
       commonMisspellings: ['libary', 'libery'],
-      ipaNeedsReview: false,
+      ipaNeedsReview: true,
     },
     {
       text: 'laboratory',
@@ -569,7 +569,7 @@ export const WEEK_03: WeekEntry = {
       ruleFamily: 'y_to_i',
       frequencyRank: 666,
       commonMisspellings: ['labratory', 'laboratary'],
-      ipaNeedsReview: false,
+      ipaNeedsReview: true,
     },
     {
       text: 'dictionary',
@@ -581,7 +581,7 @@ export const WEEK_03: WeekEntry = {
       ruleFamily: 'tion_sion',
       frequencyRank: 667,
       commonMisspellings: ['dictionery', 'dictonary'],
-      ipaNeedsReview: false,
+      ipaNeedsReview: true,
     },
     {
       text: 'secretary',
@@ -593,7 +593,7 @@ export const WEEK_03: WeekEntry = {
       ruleFamily: 'y_to_i',
       frequencyRank: 668,
       commonMisspellings: ['secratary', 'secretery'],
-      ipaNeedsReview: false,
+      ipaNeedsReview: true,
     },
     {
       text: 'category',
@@ -605,7 +605,7 @@ export const WEEK_03: WeekEntry = {
       ruleFamily: 'y_to_i',
       frequencyRank: 669,
       commonMisspellings: ['catagory', 'categary'],
-      ipaNeedsReview: false,
+      ipaNeedsReview: true,
     },
     {
       text: 'ceremony',
@@ -1169,7 +1169,7 @@ export const WEEK_03: WeekEntry = {
       ruleFamily: null,
       frequencyRank: 716,
       commonMisspellings: ['resturant', 'restarant'],
-      ipaNeedsReview: false,
+      ipaNeedsReview: true,
     },
     {
       text: 'baggage',

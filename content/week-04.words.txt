@@ -25,21 +25,21 @@ violence|ˈvaɪələns|vio-lence|ভায়োলেন্স|সহিংস�
 obedience|əˈbiːdiəns|o-be-dience|ওবিডিয়েন্স|আনুগত্য|noun|soft_c|952|obediance,obedeince
 intelligence|ɪnˈtelɪdʒəns|in-tel-li-gence|ইনটেলিজেন্স|বুদ্ধিমত্তা|noun|soft_g|953|inteligence,intelligance
 convenience|kənˈviːniəns|con-ve-nience|কনভিনিয়েন্স|সুবিধা|noun|no_final_v|954|conveniance,convienience
-machinery|məˈʃiːnəri|ma-chi-ne-ry|মেশিনারি|যন্ত্রপাতি|noun|y_to_i|955|machinary,machinry
+machinery|məˈʃiːnəri|ma-chi-ne-ry|মেশিনারি|যন্ত্রপাতি|noun|y_to_i|955|machinary,machinry|review
 jewellery|ˈdʒuːəlri|je-wel-le-ry|জুয়েলারি|গয়না|noun|soft_g|956|jewelry,jewellary
 discovery|dɪˈskʌvəri|dis-co-ve-ry|ডিসকভারি|আবিষ্কার|noun|no_final_v|957|discovary,discovry
 recovery|rɪˈkʌvəri|re-co-ve-ry|রিকভারি|আরোগ্য|noun|no_final_v|958|recovary,recovry
 mystery|ˈmɪstri|mys-te-ry|মিস্ট্রি|রহস্য|noun|y_to_i|959|mistery,mystary
 bakery|ˈbeɪkəri|ba-ke-ry|বেকারি|বেকারি|noun|drop_silent_e|960|bakary,bakry
 scenery|ˈsiːnəri|sce-ne-ry|সিনারি|দৃশ্য|noun|soft_c|961|scenary,senery
-stationery|ˈsteɪʃənri|sta-tio-ne-ry|স্টেশনারি|লেখার সরঞ্জাম|noun|tion_sion|962|stationary,stationry
-stationary|ˈsteɪʃənri|sta-tio-na-ry|স্টেশনারি|স্থির|adjective|tion_sion|963|stationery,stationry
-cemetery|ˈsemətri|ce-me-te-ry|সেমেট্রি|কবরস্থান|noun|soft_c|964|cemetary,cematery
-territory|ˈterətri|ter-ri-to-ry|টেরিটরি|অঞ্চল|noun|y_to_i|965|teritory,territry
-directory|dəˈrektəri|di-rec-to-ry|ডিরেক্টরি|তালিকা|noun|y_to_i|966|directry,directary
-inventory|ˈɪnvəntri|in-ven-to-ry|ইনভেনটরি|মজুদ তালিকা|noun|no_final_v|967|inventry,inventary
-boundary|ˈbaʊndri|boun-da-ry|বাউনডারি|সীমানা|noun|y_to_i|968|boundry,boundery
-February|ˈfebruəri|Feb-ru-a-ry|ফেব্রুয়ারি|ফেব্রুয়ারি|noun|y_to_i|969|febuary,feburary
+stationery|ˈsteɪʃənri|sta-tio-ne-ry|স্টেশনারি|লেখার সরঞ্জাম|noun|tion_sion|962|stationary,stationry|review
+stationary|ˈsteɪʃənri|sta-tio-na-ry|স্টেশনারি|স্থির|adjective|tion_sion|963|stationery,stationry|review
+cemetery|ˈsemətri|ce-me-te-ry|সেমেট্রি|কবরস্থান|noun|soft_c|964|cemetary,cematery|review
+territory|ˈterətri|ter-ri-to-ry|টেরিটরি|অঞ্চল|noun|y_to_i|965|teritory,territry|review
+directory|dəˈrektəri|di-rec-to-ry|ডিরেক্টরি|তালিকা|noun|y_to_i|966|directry,directary|review
+inventory|ˈɪnvəntri|in-ven-to-ry|ইনভেনটরি|মজুদ তালিকা|noun|no_final_v|967|inventry,inventary|review
+boundary|ˈbaʊndri|boun-da-ry|বাউনডারি|সীমানা|noun|y_to_i|968|boundry,boundery|review
+February|ˈfebruəri|Feb-ru-a-ry|ফেব্রুয়ারি|ফেব্রুয়ারি|noun|y_to_i|969|febuary,feburary|review
 January|ˈdʒænjuəri|Ja-nu-a-ry|জানুয়ারি|জানুয়ারি|noun|soft_g|970|janurary,januray
 Wednesday|ˈwenzdeɪ|Wed-nes-day|ওয়েনজডে|বুধবার|noun|silent_letters|971|wenesday,wendsday
 Tuesday|ˈtjuːzdeɪ|Tues-day|টিউজডে|মঙ্গলবার|noun||972|teusday,tusday
@@ -55,7 +55,7 @@ politics|ˈpɒlətɪks|po-li-tics|পলিটিক্স|রাজনীতি
 political|pəˈlɪtɪkl|po-li-ti-cal|পলিটিক্যাল|রাজনৈতিক|adjective||982|politcal,politicle
 leisure|ˈleʒə|lei-sure|লেজার|অবসর|noun|i_before_e|983|liesure,leasure
 heritage|ˈherɪtɪdʒ|he-ri-tage|হেরিটেজ|ঐতিহ্য|noun|soft_g|984|heritege,heritaje
-literature|ˈlɪtrətʃə|li-te-ra-ture|লিটারেচার|সাহিত্য|noun||985|literatur,litrature
+literature|ˈlɪtrətʃə|li-te-ra-ture|লিটারেচার|সাহিত্য|noun||985|literatur,litrature|review
 philosophy|fəˈlɒsəfi|phi-lo-so-phy|ফিলোসফি|দর্শন|noun|y_to_i|986|filosophy,philosphy
 psychology|saɪˈkɒlədʒi|psy-cho-lo-gy|সাইকোলজি|মনোবিজ্ঞান|noun|soft_g|987|psycology,sychology
 geography|dʒiˈɒɡrəfi|ge-o-gra-phy|জিওগ্রাফি|ভূগোল|noun|soft_g|988|geografy,geograhpy
@@ -187,7 +187,7 @@ analysis|əˈnæləsɪs|a-na-ly-sis|অ্যানালাইসিস|বি�
 emphasis|ˈemfəsɪs|em-pha-sis|এমফাসিস|জোর|noun||1114|emphasys,emfasis
 emphasise|ˈemfəsaɪz|em-pha-sise|এমফাসাইজ|জোর দেওয়া|verb|drop_silent_e|1115|emphasize,emfasise
 summarise|ˈsʌməraɪz|sum-ma-rise|সামারাইজ|সংক্ষেপ করা|verb|drop_silent_e|1116|summarize,summerise
-summary|ˈsʌməri|sum-ma-ry|সামারি|সারসংক্ষেপ|noun|y_to_i|1117|summery,summry
+summary|ˈsʌməri|sum-ma-ry|সামারি|সারসংক্ষেপ|noun|y_to_i|1117|summery,summry|review
 conclude|kənˈkluːd|con-clude|কনক্লুড|উপসংহার টানা|verb|drop_silent_e|1118|conclud,conclued
 assume|əˈsjuːm|as-sume|অ্যাসিউম|ধরে নেওয়া|verb|drop_silent_e|1119|assum,asume
 consider|kənˈsɪdə|con-si-der|কনসিডার|বিবেচনা করা|verb||1120|considar,concider
@@ -297,7 +297,7 @@ estimate|ˈestɪmeɪt|es-ti-mate|এসটিমেট|অনুমান কর
 calculate|ˈkælkjuleɪt|cal-cu-late|ক্যালকুলেট|গণনা করা|verb|drop_silent_e|1224|calcualte,calculat
 indicate|ˈɪndɪkeɪt|in-di-cate|ইনডিকেট|নির্দেশ করা|verb|drop_silent_e|1225|indicat,indecate
 educate|ˈedʒukeɪt|e-du-cate|এডুকেট|শিক্ষা দেওয়া|verb|drop_silent_e|1226|educat,edicate
-graduate|ˈɡrædʒueɪt|gra-du-ate|গ্র্যাজুয়েট|স্নাতক|noun||1227|graduat,gradute
+graduate|ˈɡrædʒuət|gra-du-ate|গ্র্যাজুয়েট|স্নাতক|noun||1227|graduat,gradute
 immediate|ɪˈmiːdiət|im-me-diate|ইমিডিয়েট|তাৎক্ষণিক|adjective||1228|imediate,immediat
 intermediate|ˌɪntəˈmiːdiət|in-ter-me-diate|ইনটারমিডিয়েট|মধ্যবর্তী|adjective||1229|intermidiate,intermediat
 accurate|ˈækjərət|ac-cu-rate|অ্যাকিউরেট|নির্ভুল|adjective||1230|acurate,accurat
@@ -310,4 +310,4 @@ opposite|ˈɒpəzɪt|op-po-site|অপোজিট|বিপরীত|adjective|
 definite|ˈdefɪnət|de-fi-nite|ডেফিনিট|নির্দিষ্ট|adjective||1237|definate,definit
 infinite|ˈɪnfɪnət|in-fi-nite|ইনফিনিট|অসীম|adjective||1238|infinate,infinit
 favourite|ˈfeɪvrɪt|fa-vou-rite|ফেভারিট|প্রিয়|adjective|no_final_v|1239|favorite,favourit
-temporary|ˈtemprəri|tem-po-ra-ry|টেমপোরারি|অস্থায়ী|adjective|y_to_i|1240|temporery,tempary
+temporary|ˈtemprəri|tem-po-ra-ry|টেমপোরারি|অস্থায়ী|adjective|y_to_i|1240|temporery,tempary|review

@@ -319,7 +319,7 @@ export const WEEK_02: WeekEntry = {
       ruleFamily: 'able_ible',
       frequencyRank: 335,
       commonMisspellings: ['comfortible', 'confortable'],
-      ipaNeedsReview: false,
+      ipaNeedsReview: true,
     },
     {
       text: 'reasonable',
@@ -1171,7 +1171,7 @@ export const WEEK_02: WeekEntry = {
       ruleFamily: 'y_to_i',
       frequencyRank: 406,
       commonMisspellings: ['histry', 'histery'],
-      ipaNeedsReview: false,
+      ipaNeedsReview: true,
     },
     {
       text: 'memory',
@@ -1243,7 +1243,7 @@ export const WEEK_02: WeekEntry = {
       ruleFamily: 'soft_c',
       frequencyRank: 412,
       commonMisspellings: ['medecine', 'medicin'],
-      ipaNeedsReview: false,
+      ipaNeedsReview: true,
     },
     {
       text: 'subject',
@@ -1651,7 +1651,7 @@ export const WEEK_02: WeekEntry = {
       ruleFamily: null,
       frequencyRank: 446,
       commonMisspellings: ['neccessary', 'necesary'],
-      ipaNeedsReview: false,
+      ipaNeedsReview: true,
     },
     {
       text: 'dissatisfied',
@@ -3559,7 +3559,7 @@ export const WEEK_02: WeekEntry = {
       ruleFamily: null,
       frequencyRank: 605,
       commonMisspellings: ['temprature', 'temperatur'],
-      ipaNeedsReview: false,
+      ipaNeedsReview: true,
     },
     {
       text: 'degree',

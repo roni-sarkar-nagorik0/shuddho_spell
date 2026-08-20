@@ -23,7 +23,8 @@
     "prebuild": "pnpm content:validate",
     "content:seed": "node --env-file-if-exists=.env.local --env-file-if-exists=.env --import tsx scripts/content-seed.ts",
     "content:seed:dry": "tsx scripts/content-seed.ts --dry-run",
-    "content:author": "tsx scripts/author-week.ts"
+    "content:author": "tsx scripts/author-week.ts",
+    "content:report": "tsx scripts/content-report.ts"
   },
   "dependencies": {
     "@supabase/ssr": "0.7.0",

@@ -321,7 +321,7 @@ export const WEEK_04: WeekEntry = {
       ruleFamily: 'y_to_i',
       frequencyRank: 955,
       commonMisspellings: ['machinary', 'machinry'],
-      ipaNeedsReview: false,
+      ipaNeedsReview: true,
     },
     {
       text: 'jewellery',
@@ -405,7 +405,7 @@ export const WEEK_04: WeekEntry = {
       ruleFamily: 'tion_sion',
       frequencyRank: 962,
       commonMisspellings: ['stationary', 'stationry'],
-      ipaNeedsReview: false,
+      ipaNeedsReview: true,
     },
     {
       text: 'stationary',
@@ -417,7 +417,7 @@ export const WEEK_04: WeekEntry = {
       ruleFamily: 'tion_sion',
       frequencyRank: 963,
       commonMisspellings: ['stationery', 'stationry'],
-      ipaNeedsReview: false,
+      ipaNeedsReview: true,
     },
     {
       text: 'cemetery',
@@ -429,7 +429,7 @@ export const WEEK_04: WeekEntry = {
       ruleFamily: 'soft_c',
       frequencyRank: 964,
       commonMisspellings: ['cemetary', 'cematery'],
-      ipaNeedsReview: false,
+      ipaNeedsReview: true,
     },
     {
       text: 'territory',
@@ -441,7 +441,7 @@ export const WEEK_04: WeekEntry = {
       ruleFamily: 'y_to_i',
       frequencyRank: 965,
       commonMisspellings: ['teritory', 'territry'],
-      ipaNeedsReview: false,
+      ipaNeedsReview: true,
     },
     {
       text: 'directory',
@@ -453,7 +453,7 @@ export const WEEK_04: WeekEntry = {
       ruleFamily: 'y_to_i',
       frequencyRank: 966,
       commonMisspellings: ['directry', 'directary'],
-      ipaNeedsReview: false,
+      ipaNeedsReview: true,
     },
     {
       text: 'inventory',
@@ -465,7 +465,7 @@ export const WEEK_04: WeekEntry = {
       ruleFamily: 'no_final_v',
       frequencyRank: 967,
       commonMisspellings: ['inventry', 'inventary'],
-      ipaNeedsReview: false,
+      ipaNeedsReview: true,
     },
     {
       text: 'boundary',
@@ -477,7 +477,7 @@ export const WEEK_04: WeekEntry = {
       ruleFamily: 'y_to_i',
       frequencyRank: 968,
       commonMisspellings: ['boundry', 'boundery'],
-      ipaNeedsReview: false,
+      ipaNeedsReview: true,
     },
     {
       text: 'February',
@@ -489,7 +489,7 @@ export const WEEK_04: WeekEntry = {
       ruleFamily: 'y_to_i',
       frequencyRank: 969,
       commonMisspellings: ['febuary', 'feburary'],
-      ipaNeedsReview: false,
+      ipaNeedsReview: true,
     },
     {
       text: 'January',
@@ -681,7 +681,7 @@ export const WEEK_04: WeekEntry = {
       ruleFamily: null,
       frequencyRank: 985,
       commonMisspellings: ['literatur', 'litrature'],
-      ipaNeedsReview: false,
+      ipaNeedsReview: true,
     },
     {
       text: 'philosophy',
@@ -2265,7 +2265,7 @@ export const WEEK_04: WeekEntry = {
       ruleFamily: 'y_to_i',
       frequencyRank: 1117,
       commonMisspellings: ['summery', 'summry'],
-      ipaNeedsReview: false,
+      ipaNeedsReview: true,
     },
     {
       text: 'conclude',
@@ -3577,7 +3577,7 @@ export const WEEK_04: WeekEntry = {
     },
     {
       text: 'graduate',
-      ipa: 'ˈɡrædʒueɪt',
+      ipa: 'ˈɡrædʒuət',
       syllables: ['gra', 'du', 'ate'],
       banglaSound: 'গ্র্যাজুয়েট',
       banglaMeaning: 'স্নাতক',
@@ -3741,7 +3741,7 @@ export const WEEK_04: WeekEntry = {
       ruleFamily: 'y_to_i',
       frequencyRank: 1240,
       commonMisspellings: ['temporery', 'tempary'],
-      ipaNeedsReview: false,
+      ipaNeedsReview: true,
     },
   ],
 
