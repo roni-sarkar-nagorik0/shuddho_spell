@@ -80,33 +80,30 @@ and 2. No feature starts without it. **Never read the file** — existence check
 
 ## NEXT
 
-> **Phase 5 · Infrastructure and presentation wiring — not started**
-> Cut `feat/05-infrastructure` from an up-to-date `dev`. Phase 4 is closed and
-> merged; do not reuse its branch.
+> **Phase 6 · Speech scoring — not started**
+> Cut `feat/06-speech-scoring` from an up-to-date `dev`. Phase 5 is closed and merged; do not
+> reuse its branch.
 >
-> **What Phase 4 leaves Phase 5**
-> - **Eleven repository ports and four application ports, none of them implemented** except
->   `ILearnerProfileRepository` (Phase 3) and `IRateLimiter` (F4.10a). Phase 5's job is the
->   adapters behind them, plus `src/composition/` wiring, plus the route handlers.
-> - `src/modules/shared/` is new — value objects, `LocalDate`, `normaliseAnswer`, the four
->   application ports. See **D29**.
-> - `LearnerProfile` is now **named-construction with twelve fields** and `currentDayIndex` is a
->   `DayIndex`, not a number. The Supabase repository has `save`; its narrow `IProfileDatabase`
->   slice gained `update`.
-> - **`GetLearnerDashboard` is written to be five queries and always five.** The gate's N+1
->   assertion has something real to assert against.
-> - `IUnitOfWork` has no implementation. Four use cases call `run()`; until an adapter exists,
->   a failure part-way through a lesson completion is not actually rolled back.
-> - Migration **012** ships `rate_limits` and `consume_rate_limit`.
+> **What Phase 5 leaves Phase 6**
+> - `ISpeechScorer` is declared (F4.10) and **has no implementation**. Phase 6 is that, plus the
+>   Bengali confusion map `07-speech-scoring.md` specifies as data rather than branches.
+> - The whole write path is real: `IDatabase` → eleven repositories → 013/014's Postgres
+>   functions. A pronunciation attempt should reach `record_lesson_attempt` like any other.
+> - **Phoneme-dimension mastery is still never written.** Dictation credits rule families only,
+>   correctly — the matrix's phoneme axis stays empty until pronunciation attempts land here.
+> - `withApi` takes `paramsSchema` and `rateLimit` now. A speech endpoint is a write route and
+>   wants a ceiling.
+> - `Word` carries `ipa` but **no `phonemeIds`** — the `word_phonemes` join table exists in 002
+>   and nothing reads it. Per-phoneme scoring needs a repository method that does.
 >
-> **Spotted, still open — none of these belonged to a Phase 4 feature**
+> **Spotted, still open — none of these belonged to a Phase 5 feature**
 > - `src/lib/logger.ts:14` still reads `process.env['LOG_LEVEL']` directly. Carried from Phase 3.
 > - 008 still grants `authenticated` a table-wide update on `learner_profiles`, so a learner can
->   write their own `current_day_index`. F4.12 made that column meaningful, which makes the hole
->   worth more than it was. Column-level grants or a trigger guard; it is a Phase 2 RLS decision.
+>   write their own `current_day_index`. F4.12 made that column meaningful and 014 now writes it
+>   inside a transaction, which makes the hole worth more than it was.
+> - `pnpm test` takes ~28s, most of it PGlite booting Postgres four times. Two full runs at once
+>   contend badly enough to time out — worth one shared instance if it grows further.
 > - The repo has never been prettier-clean: `pnpm format` rewrites files no feature touched.
-> - Phoneme-dimension mastery is never written. Dictation credits rule families only (correctly),
->   and pronunciation attempts arrive in Phase 6 — the matrix's phoneme axis stays empty until then.
 
 ## Phase 0 — Specification and architecture record
 Branch `docs/00-architecture-record` · Status: `COMPLETE`
@@ -319,7 +316,10 @@ and the 40→25 review queue. Coverage was not measured and most use cases have 
 ---
 
 ## Phase 5 — Infrastructure and presentation wiring
-Branch `feat/05-infrastructure` · Status: `NOT STARTED`
+Branch `feat/05-infrastructure` · Status: `DONE` (9/9, 2026-08-20). F1.11 closed with F5.9a.
+**Exit gate not run — paused by standing instruction 2026-08-19** (`CLAUDE.md` section 0).
+Five of its seven items happen to be proven by sweeps and probes kept while building; the two
+that are not are named on the phase's **Completed** line in `BUILD-ORDER-COMPLETE.md`.
 
 - [x] **F5.1** (2026-08-19) Repositories use the `server-only` service client and nothing else
   - Test: grep finds no `createClient` outside `src/lib/supabase/`

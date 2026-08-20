@@ -864,6 +864,71 @@ tags are reachable from a real wrong answer, that `consume_rate_limit` refuses t
 and that the review queue returns 25 of 40 in the right order. Everything else in Phase 4 is
 typechecked and linted and otherwise unverified, which is the trade that was asked for.
 
+**D39 — one `IDatabase` seam instead of a Supabase type per repository (F5.1).**
+`IDatabase` describes a single-table query rather than chaining one: no joins, no mapping, no
+identity map. Two reasons, both learned in Phase 3. Supabase's fluent builder is generic enough
+that checking a test double against it makes the compiler give up (TS2589), which is why the auth
+repository had hand-rolled its own narrow slice; and "only `src/lib/supabase/` constructs a
+client" is enforceable by grep only if a repository cannot *name* the client type. The Phase 3
+slice was migrated onto the shared seam and deleted rather than excepted from the sweep.
+
+The adapter lives in `shared/infrastructure`, not beside the client in `src/lib`, because `lib`
+may not import `infrastructure` and the dependency runs the other way anyway.
+
+**D40 — `IUnitOfWork` could not be built, and was replaced (F5.4).**
+`05-domain-model.md` lists it and `01-architecture.md` assumes it. A callback unit of work
+assumes the caller can open a transaction and run statements inside it; Supabase speaks
+PostgREST, where every call is its own HTTP request and therefore its own transaction.
+`run(work)` would have compiled, run, and provided **no atomicity at all** — a lie in a type,
+worse than the missing feature.
+
+`ILessonWriteUnit` replaces it. Each method is one Postgres function call, and the domain has
+already decided every value. Two migrations came with it:
+
+- **013 `record_lesson_attempt`** — the per-answer transaction 009 never had. One answer touches
+  four tables; a failure after the second leaves a learner whose review ladder advanced and whose
+  mastery did not.
+- **014 `complete_lesson_day`** — 009's function does not touch `learner_profiles`, which only
+  became a problem when F4.12 made `current_day_index` something the application moves. A new
+  function rather than a replacement: `create or replace` with a different argument list makes an
+  overload, and migrations are forward-only.
+
+Session counters are incremented **inside** 013 rather than written from a TypeScript-computed
+total — two concurrent answers would each write "the total as I saw it" and one would be lost.
+
+**D41 — the limiter and the seam both fail in a chosen direction (F4.10a, F5.5).**
+`PostgresRateLimiter` **fails open and logs loudly**: rate limiting is abuse protection, not an
+authorisation control, and locking every learner out because a counter table hiccuped is the
+worse failure. `RetryingDatabase` retries 40001 **exactly once**, with no backoff — the
+conflicting transaction has already committed, so there is nothing to wait for, and a second
+retry turns a contended row into a queue of clients all retrying at once.
+
+**D42 — `withApi` validates path params (F5.7).**
+A path segment is as untrusted as a body: `:dayIndex` arrives as `"99"` or `"../../etc"` as
+readily as `"3"`. A handler coercing it itself hands `NaN` to a use case, where `DayIndex.of`
+throws and the result is a **500 for what is really a 422**.
+
+Statuses are kept apart deliberately: a locked day is 403, a missing day 404, an illegal stage
+transition **409 rather than 422** — the body was well-formed, and saying otherwise sends the
+client looking in the wrong place.
+
+**D43 — `src/composition/reads.ts` is the read path for pages (F5.8).**
+It calls the same factories `handlers.ts` calls, so a Server Component and its endpoint are one
+implementation with two callers rather than two that agree on the day they were written. Four
+sweeps hold it over `src/app`: no page fetches this app's own API, none constructs a use case,
+none imports a repository or a domain type, and both composition files draw from one factory
+module.
+
+**D44 — the public-routes sweep now follows the re-export (F5.9a).**
+A real hole, open since Phase 3 and only reachable from F5.7. The sweep read `route.ts` and
+nothing else; every handler now lives behind a three-line re-export, so a module handler could
+have been made public without appearing on F3.7's written list. It follows two hops now, proven
+by making `/review/due` public in its handler and watching the sweep fail.
+
+This is the third time a sweep has been tripped by a **comment** describing the thing it bans
+(F3.11's pino redaction, F4.5's ladder interval, F5.8's "no fetch here"). The answer has been the
+same every time: reword the comment, never add an exception.
+
 ### Open — needs the user, not me
 
 **O1 — `02-typescript-rules.md` still says `packages/config` base tsconfig.** That is a

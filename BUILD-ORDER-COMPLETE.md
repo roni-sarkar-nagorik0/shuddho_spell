@@ -228,8 +228,19 @@ Status values: `NOT STARTED` · `IN PROGRESS` · `BLOCKED — <reason>` · `DONE
 ## Phase 5 — Infrastructure and presentation wiring
 
 - **Branch:** `feat/05-infrastructure` (from `dev`)
-- **Status:** NOT STARTED
-- **Completed:**
+- **Status:** DONE
+- **Completed:** 2026-08-20 — F5.1 … F5.9a, nine features, and F1.11 closed with them.
+  **Exit gate not run — paused by standing instruction 2026-08-19.** No checkbox below was
+  ticked. Five of the seven are nonetheless covered by sweeps and probes kept while building:
+  no row interface escapes `infrastructure/` (the Phase 2 sweep, still green); the dashboard's
+  query count asserted at exactly five; session completion atomic via 013/014 with the
+  **mid-write rollback proven** against real Postgres; no route handler carries a business
+  conditional and every DB-touching handler declares `runtime = 'nodejs'` with
+  `dynamic = 'force-dynamic'`; and the Server Component and handler paths share one use-case
+  factory, held by four sweeps over `src/app`.
+  **Two items are NOT covered and are not claimed:** there are no integration tests against a
+  real local Supabase — the repositories have never run against Postgres, only their SQL has —
+  and coverage was not measured.
 - **Reads:** `03-database`, `01-architecture`, `11-api-surface`
 - **Deliverables:** one repository implementation per port; a single `SupabaseClientProvider`
   (no other file constructs a client); bidirectional row↔entity mappers (the only place that knows
