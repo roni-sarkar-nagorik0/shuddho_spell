@@ -81,7 +81,7 @@ and 2. No feature starts without it. **Never read the file** — existence check
 ## NEXT
 
 > **Phase 11 · Learning screens — in progress on `feat/11-learning-screens`**
-> Current: **F11.9** — `/practice`.
+> Current: **F11.10** — `/weak-spots`.
 >
 > **What Phase 10 leaves Phase 11**
 > - The shell is real: `(learn)/layout.tsx` gives every screen the rail, the top bar and a
@@ -546,7 +546,7 @@ Branch `feat/11-learning-screens` · Status: `IN PROGRESS`
   - Test: pointer-event reordering **and** full keyboard reordering as a first-class path
 - [x] **F11.8** (2026-08-20) Audio manager
   - Test: a new play cancels the previous utterance — no overlap, ever
-- [ ] **F11.9** `/practice`
+- [x] **F11.9** (2026-08-20) `/practice`
   - Test: drills are selected by actual weakness, not at random
 - [ ] **F11.10** `/weak-spots`
   - Test: the spaced-repetition schedule axis matches `review_items.due_at`
@@ -621,6 +621,7 @@ Out of scope for this build. Do not start these, and do not leave stubs for them
 Newest first. One line per finished feature: date · id · what · test result.
 
 | Date | Feature | What landed | Tests |
+| 2026-08-20 | F11.9 | `/practice` — `GetPracticeQueue` ranks weaknesses by expected loss and orders drills weakness-first then most-overdue; every item carries the reason it is there. Nothing sampled or shuffled | typecheck + lint green (tests paused) |
 | 2026-08-20 | F11.8 | Audio manager — one `AudioProvider` over all five stages, unconditional cancel-before-speak, the learner's own accent and playback rate, best-effort named voice | typecheck + lint green (tests paused); `grep SpeechSynthesisUtterance src` finds it in one file |
 | 2026-08-20 | F11.7 | Build stage — `SentenceChips` reorderable by pointer events **and** by keyboard (lift, move, drop, Escape to cancel), plus the missing `POST /lessons/sessions/:id/complete` route that closes a day | typecheck + lint green (tests paused) |
 | 2026-08-20 | F11.6 | Speak stage — feature-detected `SpeechRecognition` with a real self-assessment fallback, unambiguous and announced recording state, recoverable permission-denied; transcript only, never audio | typecheck + lint green (tests paused) |

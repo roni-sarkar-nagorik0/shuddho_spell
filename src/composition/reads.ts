@@ -11,6 +11,7 @@ import { type IMasterySnapshot } from '@/modules/progress/application/dto/master
 import { type IProgressSummary } from '@/modules/progress/application/dto/progress-summary';
 import { type IWeeklyActivity } from '@/modules/progress/application/dto/weekly-activity';
 import { type IDueReviewQueue } from '@/modules/review/application/dto/due-review-item';
+import { type IPracticeQueue } from '@/modules/review/application/dto/practice-queue';
 import { createContainer } from './container';
 import {
   makeGetDueReviewItems,
@@ -22,6 +23,7 @@ import {
   makeGetProgressSummary,
   makeGetMe,
   makeGetPhonemeStrips,
+  makeGetPracticeQueue,
   makeGetWeeklyActivity,
   makeListExamMilestones,
 } from './use-cases';
@@ -116,6 +118,13 @@ export const readDueReviews = cache(
 export const readPhonemeStrips = cache(
   async (userId: string, wordIds: readonly string[]): Promise<readonly IWordPhonemeStrip[]> =>
     makeGetPhonemeStrips(createContainer(crypto.randomUUID())).execute({ userId, wordIds }),
+);
+
+export const readPracticeQueue = cache(
+  async (userId: string, focusDimensionId: string | undefined): Promise<IPracticeQueue> =>
+    makeGetPracticeQueue(createContainer(crypto.randomUUID())).execute(
+      focusDimensionId === undefined ? { userId } : { userId, focusDimensionId },
+    ),
 );
 
 export const readExamMilestones = cache(

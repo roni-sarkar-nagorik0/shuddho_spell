@@ -28,31 +28,11 @@ export const lessonSessionSchema = z.object({
 
 export type LessonSessionView = z.infer<typeof lessonSessionSchema>;
 
-export const dueReviewQueueSchema = z.object({
-  items: z.array(
-    z.object({
-      reviewItemId: z.string(),
-      itemId: z.string(),
-      itemType: z.string(),
-      prompt: z.string(),
-      daysOverdue: z.number(),
-      lastErrorTags: z.array(z.string()),
-    }),
-  ),
-  totalDue: z.number(),
-});
-
-export type DueReviewQueue = z.infer<typeof dueReviewQueueSchema>;
-
-export const reviewResultSchema = z.object({
-  isCorrect: z.boolean(),
-  errorTags: z.array(z.string()),
-  correctValue: z.string().nullable(),
-  isMastered: z.boolean(),
-  nextDueAt: z.string(),
-});
-
-export type ReviewResult = z.infer<typeof reviewResultSchema>;
+/*
+ * The review schemas used to live here. They moved to
+ * `components/lesson/review-contracts.ts` when `/practice` needed the same
+ * drill (F11.9) — one contract beside the one component that reads it.
+ */
 
 export const attemptResultSchema = z.object({
   attemptId: z.string(),
