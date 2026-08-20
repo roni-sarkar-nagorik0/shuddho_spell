@@ -1,6 +1,8 @@
 import 'server-only';
 import { createGetMeHandler } from '@/modules/auth/presentation/handlers/get-me';
 import { createGetActiveAttemptHandler } from '@/modules/exams/presentation/handlers/get-active-attempt';
+import { createGetAnswerReviewHandler } from '@/modules/exams/presentation/handlers/get-answer-review';
+import { createGetResultHandler } from '@/modules/exams/presentation/handlers/get-result';
 import { createSaveAnswerHandler } from '@/modules/exams/presentation/handlers/save-answer';
 import { createStartAttemptHandler } from '@/modules/exams/presentation/handlers/start-attempt';
 import { createSubmitAttemptHandler as createSubmitExamAttemptHandler } from '@/modules/exams/presentation/handlers/submit-attempt';
@@ -25,6 +27,8 @@ import {
   makeGetProgressSummary,
   makeFlagExamQuestion,
   makeGetActiveExamAttempt,
+  makeGetExamAnswerReview,
+  makeGetExamResult,
   makeSaveExamAnswer,
   makeStartExamAttempt,
   makeSubmitExamAttempt,
@@ -116,4 +120,10 @@ export const getActiveExamAttemptHandler = createGetActiveAttemptHandler(() =>
 
 export const submitExamAttemptHandler = createSubmitExamAttemptHandler(() =>
   makeSubmitExamAttempt(container()),
+);
+
+export const getExamResultHandler = createGetResultHandler(() => makeGetExamResult(container()));
+
+export const getExamAnswerReviewHandler = createGetAnswerReviewHandler(() =>
+  makeGetExamAnswerReview(container()),
 );

@@ -2,6 +2,8 @@ import 'server-only';
 import { BootstrapProfileUseCase } from '@/modules/auth/application/use-cases/bootstrap-profile';
 import { GetMeUseCase } from '@/modules/auth/application/use-cases/get-me';
 import { GetActiveExamAttemptUseCase } from '@/modules/exams/application/use-cases/get-active-exam-attempt';
+import { GetExamAnswerReviewUseCase } from '@/modules/exams/application/use-cases/get-exam-answer-review';
+import { GetExamResultUseCase } from '@/modules/exams/application/use-cases/get-exam-result';
 import { FlagExamQuestionUseCase } from '@/modules/exams/application/use-cases/flag-exam-question';
 import { SaveExamAnswerUseCase } from '@/modules/exams/application/use-cases/save-exam-answer';
 import { StartExamAttemptUseCase } from '@/modules/exams/application/use-cases/start-exam-attempt';
@@ -249,5 +251,18 @@ export function makeSubmitExamAttempt(c: IContainer): SubmitExamAttemptUseCase {
     c.ids,
     c.examWrites,
     c.pronunciationJudge,
+  );
+}
+
+export function makeGetExamResult(c: IContainer): GetExamResultUseCase {
+  return new GetExamResultUseCase(c.learnerProfiles, c.examDefinitions, c.examAttempts);
+}
+
+export function makeGetExamAnswerReview(c: IContainer): GetExamAnswerReviewUseCase {
+  return new GetExamAnswerReviewUseCase(
+    c.learnerProfiles,
+    c.examAttempts,
+    c.examQuestions,
+    c.examAnswers,
   );
 }

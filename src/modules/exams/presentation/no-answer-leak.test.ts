@@ -185,9 +185,27 @@ const GENERATION_AND_MARKING = [
 ];
 
 /**
- * Where a response is shaped. **No exceptions, now or ever** — anything here
- * naming the answer key is a leak by definition, because everything here exists
- * to be serialised.
+ * The **one** response shape allowed to carry the answer key, and the guard
+ * that makes it allowed.
+ *
+ * `08-exam-engine.md` is precise: "`GET /exams/attempts/:id/review` returns
+ * correct answers. Every other exam route must not, **before submission**."
+ * Rule 3 bounds the key by *time*, not by route — so the exception is not a
+ * hole in the rule, it is the rule stated in full.
+ *
+ * Both files are listed together because neither is safe without the other: a
+ * DTO with the field and no gate is a leak, and a gate protecting nothing is
+ * theatre. The assertion below checks the gate is really there.
+ */
+const AFTER_SUBMISSION_ONLY = [
+  join('src', 'modules', 'exams', 'application', 'dto', 'exam-result-view.ts'),
+  join('src', 'modules', 'exams', 'application', 'use-cases', 'get-exam-answer-review.ts'),
+];
+
+/**
+ * Where a response is shaped. Anything here naming the answer key is a leak by
+ * definition — everything here exists to be serialised — **except** the two
+ * files above, which are gated on submission.
  */
 const RESPONSE_SHAPING = [
   join('src', 'modules', 'exams', 'presentation'),
@@ -202,12 +220,29 @@ describe('the answer key stays where it is allowed to be', () => {
   it('nothing that shapes a response names it', () => {
     const offenders = RESPONSE_SHAPING.flatMap(filesUnder)
       .filter((path) => !path.includes('.test.'))
+      .filter((path) => !AFTER_SUBMISSION_ONLY.includes(path))
       .filter((path) => NAMES_THE_KEY.test(readFileSync(path, 'utf8')));
 
     expect(
       offenders,
       'these files shape responses and name the answer key — that is the leak rule 3 forbids',
     ).toEqual([]);
+  });
+
+  it('the one shape that may carry it is gated on submission', () => {
+    // Without this the exception above would be a hole: a review use case that
+    // stopped checking would still pass every other assertion in the file.
+    const review = readFileSync(
+      join('src', 'modules', 'exams', 'application', 'use-cases', 'get-exam-answer-review.ts'),
+      'utf8',
+    );
+
+    expect(review).toContain('ExamNotSubmittedError');
+    // And the check comes before the read that carries the key, so a premature
+    // request never loads it into memory at all.
+    expect(review.indexOf('ExamNotSubmittedError')).toBeLessThan(
+      review.indexOf('this.questions.findByAttempt('),
+    );
   });
 
   it('only the generation and marking path names it anywhere in the module', () => {
@@ -217,6 +252,7 @@ describe('the answer key stays where it is allowed to be', () => {
     ]
       .filter((path) => !path.includes('.test.'))
       .filter((path) => !GENERATION_AND_MARKING.includes(path))
+      .filter((path) => !AFTER_SUBMISSION_ONLY.includes(path))
       .filter((path) => NAMES_THE_KEY.test(readFileSync(path, 'utf8')));
 
     expect(
@@ -240,7 +276,7 @@ describe('the answer key stays where it is allowed to be', () => {
   it('every listed generation file still names it — the list is not stale', () => {
     // A file that stopped naming the key would sit on the allowlist forever,
     // quietly widening it. This is what notices.
-    const silent = GENERATION_AND_MARKING.filter(
+    const silent = [...GENERATION_AND_MARKING, ...AFTER_SUBMISSION_ONLY].filter(
       (path) => !NAMES_THE_KEY.test(readFileSync(path, 'utf8')),
     );
 

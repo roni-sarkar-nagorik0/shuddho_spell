@@ -5,6 +5,7 @@ import { ExamCooldownActiveError } from '../../domain/errors/exam-cooldown-activ
 import { ExamLockedError } from '../../domain/errors/exam-locked.error';
 import { ExamTimeExpiredError } from '../../domain/errors/exam-time-expired.error';
 import { ExamNotFoundError } from '../../domain/errors/exam-not-found.error';
+import { ExamNotSubmittedError } from '../../domain/errors/exam-not-submitted.error';
 import { IllegalAttemptTransitionError } from '../../domain/errors/illegal-attempt-transition.error';
 import { SectionNotCurrentError } from '../../domain/errors/section-not-current.error';
 
@@ -28,6 +29,13 @@ export function toApiError(caught: unknown): ApiError | null {
 
   if (caught instanceof ExamLockedError) {
     return ApiError.forbidden();
+  }
+
+  if (caught instanceof ExamNotSubmittedError) {
+    // 409, not 403: the attempt is theirs and the endpoint is real. The request
+    // is premature and will succeed later without anything changing about who
+    // they are.
+    return ApiError.conflict('This attempt has not been submitted yet.');
   }
 
   if (caught instanceof ExamAttemptsExhaustedError) {

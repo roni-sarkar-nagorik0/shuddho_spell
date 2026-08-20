@@ -215,6 +215,26 @@ registry.registerPath({
   responses: ok(z.unknown(), 'The score, the outcome and what happens next.'),
 });
 
+registry.registerPath({
+  method: 'get',
+  path: '/api/v1/exams/attempts/{id}/result',
+  summary: 'The mark, after the paper is in.',
+  description:
+    '409 before submission. Carries the score and the section breakdown, and no correct answers — the result screen never needs one.',
+  request: { params: attemptParamsSchema },
+  responses: ok(z.unknown(), 'The score, the outcome and the section breakdown.'),
+});
+
+registry.registerPath({
+  method: 'get',
+  path: '/api/v1/exams/attempts/{id}/review',
+  summary: 'The paper opened up, question by question.',
+  description:
+    'The only route in the API that returns correct answers, and only once the attempt is submitted — 409 before that. Rule 3 bounds the answer key by time, not by route.',
+  request: { params: attemptParamsSchema },
+  responses: ok(z.unknown(), 'Every question, the learner’s answer, and the right one.'),
+});
+
 export function buildOpenApiDocument(): ReturnType<OpenApiGeneratorV3['generateDocument']> {
   return new OpenApiGeneratorV3(registry.definitions).generateDocument({
     openapi: '3.0.3',
