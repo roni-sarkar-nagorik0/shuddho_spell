@@ -81,7 +81,7 @@ and 2. No feature starts without it. **Never read the file** — existence check
 ## NEXT
 
 > **Phase 8 · Notifications — not started**
-> Working on `feat/07-exam-engine`, cut from an up-to-date `dev`.
+> Cut `feat/08-notifications` from an up-to-date `dev`. Phase 7 is closed and merged.
 >
 > **What Phase 5 leaves Phase 6**
 > - `ISpeechScorer` is declared (F4.10) and **has no implementation**. Phase 6 is that, plus the
@@ -371,7 +371,11 @@ not proven by a sweep.
 ---
 
 ## Phase 7 — Exam engine
-Branch `feat/07-exam-engine` · Status: `NOT STARTED`
+Branch `feat/07-exam-engine` · Status: `DONE` (14/14, 2026-08-20). Exit gate **not run** — paused
+by standing instruction 2026-08-19. Of the nine gate items, seven are covered by the two suites
+F7.9 and F7.14 shipped (36 assertions, green); the two that are **not** proven are the ones
+needing a live database: that pg_cron actually auto-submits, and that the transactional writes in
+015/016/017 roll back. Their guards are written and unexercised.
 
 - [x] **F7.1** (2026-08-20) Exam entities + `ExamStatus` union
   - Test: illegal status transitions rejected

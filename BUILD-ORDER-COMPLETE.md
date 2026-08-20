@@ -285,8 +285,11 @@ Status values: `NOT STARTED` · `IN PROGRESS` · `BLOCKED — <reason>` · `DONE
 ## Phase 7 — Exam engine
 
 - **Branch:** `feat/07-exam-engine` (from `dev`)
-- **Status:** NOT STARTED
-- **Completed:**
+- **Status:** DONE
+- **Completed:** 2026-08-20, F7.1–F7.14. Exit gate **not run** — paused by standing instruction
+  2026-08-19. Not implied to have passed. Seven of the nine items are covered by F7.9's and
+  F7.14's suites (36 assertions green); the pg_cron auto-submit and the transactional rollback of
+  015/016/017 are **unproven** — they need a live database.
 - **Reads:** `08-exam-engine`, `05-domain-model`
 - **Deliverables:** exam entities; pure `ExamScoringService` and `ExamBlueprintService`
   (seed-deterministic); the ten use cases; the `pg_cron` auto-submit job for abandoned attempts,

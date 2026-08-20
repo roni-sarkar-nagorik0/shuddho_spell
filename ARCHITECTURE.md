@@ -257,6 +257,7 @@ Recorded as decisions in section 5. Same convention, same wiring.
 | `EXAM_ATTEMPT_REPOSITORY` | `IExamAttemptRepository` | exams | 7 |
 | `EXAM_QUESTION_REPOSITORY` | `IExamQuestionRepository` | exams | 7 |
 | `EXAM_ANSWER_REPOSITORY` | `IExamAnswerRepository` | exams | 7 |
+| `EXAM_WRITE_UNIT` | `IExamWriteUnit` | exams *(application port — 015/016/017)* | 7 |
 | `NOTIFICATION_REPOSITORY` | `INotificationRepository` | notifications | 8 |
 | `NOTIFICATION_PREFERENCE_REPOSITORY` | `INotificationPreferenceRepository` | notifications | 8 |
 | `PUSH_SUBSCRIPTION_REPOSITORY` | `IPushSubscriptionRepository` | notifications | 8 |
@@ -964,6 +965,50 @@ because that is what the ceiling already means: above it there is no named error
 `CLAUDE.md` section 0 pauses test-writing, and F6.7's entire deliverable is a table of ≥40
 cases. There was nothing else to build for it, so it was built as a suite and run (75/75). It
 is the only file this run added under `*.test.ts`, and the pause is otherwise untouched.
+
+**D50 — `GET /exams/attempts/:id/result` is a route `11-api-surface.md` does not list (F7.11).**
+The table lists eight exam routes and a review among them, but no way to re-read a score. A
+learner who closes the result screen and comes back needs one, and folding it into the review
+would make the result page download 150 questions **and the answer key** to show a single
+number. An addition, not a contradiction: nothing else changed.
+
+**D51 — three Postgres functions for the exam engine (F7.4, F7.10, F7.13).**
+Following D40's finding that PostgREST gives one transaction per call: **015** writes an attempt
+and its whole paper together (a row without questions is unanswerable *and* blocks the exam
+forever, via the one-live-attempt index); **016** writes marks, outcome, prescription and the
+learner's position together; **017** `create or replace`s 016 to widen its guard from "still
+open" to "still open, or handed in and never marked", which is what lets the cron backstop
+finish what 009's pg_cron job hands in ungraded. Migrations stay forward-only — 016 was not
+edited.
+
+**D52 — `IPronunciationJudge` is declared in the exams domain (F7.10).**
+Marking a pronunciation question needs Phase 6's scorer, and an exams domain service importing
+an application port would invert the dependency rule. So the exams module states what it needs —
+a number out of 100 for a transcript against a target — and one infrastructure adapter connects
+it to `ISpeechScorer`. It is asynchronous, which `ISpeechScorer` deliberately is not: cutting
+stored IPA into sounds needs the 44-phoneme inventory, and the inventory is a table.
+
+**D53 — how an exam's candidate pool is assembled (F7.4).**
+No doc says where questions come from. Words are filtered by `week_index` against the exam's
+coverage, which is derived from the **fraction of the track** the unlock day sits at rather than
+`day / 7` — the sprint compresses four weeks into 21 days, so `ceil(11 / 7)` would ask a
+sprint learner about material they have not reached. Sentences carry no week (they are placed by
+`program_day_items`), so the whole set is read once and the blueprint's weakness ranking chooses.
+Weakness comes from the learner's review items; an item never tested scores **0.5**, because 0
+would mean an exam never asks anything new and 1 would fill the paper with unseen material.
+
+**D54 — the public-routes sweep follows the handler, not the barrel (F7.13).**
+It used to read `route.ts`, then join the text of **every** import of `src/composition/handlers.ts`.
+The first cron route made all 22 routes look like opt-outs. A sweep that fails for everything is
+as useless as one that passes for everything and fails in the direction that gets it switched
+off, so it now resolves the symbol the route re-exports, the single `export const` that defines
+it, and the factory that declaration calls. Mutation-probed with a planted `auth: 'public'`.
+
+**D55 — F7.9 and F7.14 were written as real test suites during the test pause (F7.9, F7.14).**
+The same call as D49. Both features' entire deliverable is an assertion — "a snapshot test over
+every exam response" and "all attacks rejected or resumed correctly" — so there was nothing else
+to build, and shipping them unrun would be shipping them unbuilt. Three `*.test.ts` files were
+added across Phases 6 and 7; the pause is otherwise untouched.
 
 ### Open — needs the user, not me
 
