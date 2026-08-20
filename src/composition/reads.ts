@@ -1,5 +1,6 @@
 import 'server-only';
 import { cache } from 'react';
+import { type IExamMilestone } from '@/modules/exams/application/dto/exam-milestone';
 import { type INextExam } from '@/modules/exams/application/dto/next-exam';
 import { type IProgramDayDetail } from '@/modules/program/application/dto/program-day-detail';
 import { type IProgramOverview } from '@/modules/program/application/dto/program-overview';
@@ -18,6 +19,7 @@ import {
   makeGetProgramOverview,
   makeGetProgressSummary,
   makeGetWeeklyActivity,
+  makeListExamMilestones,
 } from './use-cases';
 
 /**
@@ -84,6 +86,11 @@ export const readWeeklyActivity = cache(
 export const readDueReviews = cache(
   async (userId: string): Promise<IDueReviewQueue> =>
     makeGetDueReviewItems(createContainer(crypto.randomUUID())).execute({ userId }),
+);
+
+export const readExamMilestones = cache(
+  async (userId: string): Promise<readonly IExamMilestone[]> =>
+    makeListExamMilestones(createContainer(crypto.randomUUID())).execute({ userId }),
 );
 
 export const readNextExam = cache(
