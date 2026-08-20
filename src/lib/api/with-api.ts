@@ -106,6 +106,10 @@ function toFieldErrors(error: ZodError): readonly IFieldError[] {
   }));
 }
 
+/** A v4 UUID and nothing else. See where it is used for why this is strict. */
+const INBOUND_REQUEST_ID =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/iu;
+
 /**
  * The one route-handler wrapper. Owns request ids, auth, Zod parsing, logging,
  * and the mapping from any thrown value to RFC 7807 problem+json.
@@ -121,7 +125,13 @@ export function withApi<TBody = undefined, TQuery = undefined, TParams = undefin
     request: NextRequest,
     context?: IRouteContext,
   ): Promise<NextResponse> {
-    const requestId = crypto.randomUUID();
+    // Honour an inbound id so a trace survives the proxy in front of us, and
+    // fall back to a fresh one. Validated as a UUID before it is trusted:
+    // this value is echoed in a response header and written into every log
+    // line, so an unvalidated one is a header-injection and log-forging
+    // primitive handed to any caller (F13.8).
+    const inbound = request.headers.get('x-request-id') ?? '';
+    const requestId = INBOUND_REQUEST_ID.test(inbound) ? inbound : crypto.randomUUID();
     const instance = new URL(request.url).pathname;
     const startedAt = Date.now();
     let retryAfterSeconds: number | null = null;

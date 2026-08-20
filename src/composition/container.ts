@@ -62,6 +62,7 @@ import { SystemClock } from '@/modules/shared/infrastructure/adapters/system-clo
 import { UuidGenerator } from '@/modules/shared/infrastructure/adapters/uuid-generator';
 import { RetryingDatabase } from '@/modules/shared/infrastructure/persistence/retrying-database';
 import { toDatabase } from '@/modules/shared/infrastructure/persistence/supabase-database';
+import { type IDatabase } from '@/modules/shared/infrastructure/persistence/database';
 
 /**
  * The composition root — plain construction, no DI framework, no decorators.
@@ -140,6 +141,9 @@ export interface IContainer {
    * same rules as one handed in on time.
    */
   readonly examSubmissions: ExamSubmissionService;
+
+  /** The raw handle. Only the metrics reader needs it; every module takes a port. */
+  readonly db: IDatabase;
 
   readonly clock: IClock;
   readonly ids: IIdGenerator;
@@ -223,6 +227,7 @@ export function createContainer(requestId: string): IContainer {
       certificates,
     ),
 
+    db,
     clock: new SystemClock(),
     ids,
   };

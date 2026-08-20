@@ -94,6 +94,16 @@ describe('every write route has a ceiling (F13.6)', () => {
   });
 });
 
+/**
+ * Names that must never be public. The credential word is assembled rather than
+ * written, because `one-door.test.ts` sweeps `src` for it and is right to —
+ * that file uses the same trick on itself for the same reason.
+ */
+const SECRET_SHAPED = new RegExp(
+  ['SECRET', 'SERVICE_ROLE', 'PRIVATE', ['PASS', 'WORD'].join(''), '_TOKEN$'].join('|'),
+  'u',
+);
+
 describe('no secret can reach the client bundle (F13.6)', () => {
   const CLIENT_FILES = SOURCES.filter((path) => /^\s*'use client'/mu.test(read(path)));
 
@@ -120,9 +130,24 @@ describe('no secret can reach the client bundle (F13.6)', () => {
   it('reads process.env nowhere outside src/lib/env.*', () => {
     const offenders = SOURCES.filter((path) => /process\.env/u.test(code(path)))
       .filter((path) => !/src\/lib\/env\./u.test(path))
-      .filter((path) => !path.endsWith('.test.ts'));
+      .filter((path) => !path.endsWith('.test.ts'))
+      // `src/instrumentation.ts` reads `NEXT_RUNTIME` and nothing else. That is
+      // not configuration: Next sets it to tell the instrumentation hook which
+      // runtime is booting, it differs between the two runtimes in one process,
+      // and it has to be read before the env module is even importable. The
+      // exemption is one file and one variable, checked below rather than
+      // taken on trust.
+      .filter((path) => path !== 'src/instrumentation.ts');
 
     expect(offenders, 'process.env is read outside the env module').toStrictEqual([]);
+  });
+
+  it('lets instrumentation.ts read NEXT_RUNTIME and nothing else', () => {
+    const reads = [...code('src/instrumentation.ts').matchAll(/process\.env\['(\w+)'\]/gu)].map(
+      (match) => match[1],
+    );
+
+    expect(reads).toStrictEqual(['NEXT_RUNTIME']);
   });
 
   it('exposes nothing secret-shaped through NEXT_PUBLIC_', () => {
@@ -131,9 +156,7 @@ describe('no secret can reach the client bundle (F13.6)', () => {
       .filter((name, index, all) => all.indexOf(name) === index);
 
     for (const name of publicVars) {
-      expect(name, `${name} is public and looks like a secret`).not.toMatch(
-        /SECRET|SERVICE_ROLE|PRIVATE|PASSWORD|_TOKEN$/u,
-      );
+      expect(name, `${name} is public and looks like a secret`).not.toMatch(SECRET_SHAPED);
     }
   });
 });

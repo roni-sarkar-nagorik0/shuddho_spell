@@ -27,6 +27,13 @@ const PUBLIC_ROUTES: readonly string[] = [
   // time compare against `CRON_SECRET`, header only — is what stands in for one.
   'src/app/api/cron/exam-autosubmit/route.ts',
   'src/app/api/cron/notifications/route.ts',
+  // Metrics. `withCron` is what guards it — the same constant-time CRON_SECRET
+  // bearer, because a Prometheus scraper is a machine with no user behind it,
+  // which is exactly what that check is for. It reads `auth: 'public'` to this
+  // sweep because `withCron` sets that and then applies its own gate; it is not
+  // an open endpoint, and it publishes counts over every learner, which is why
+  // it must not become one.
+  'src/app/api/metrics/route.ts',
   // Certificate verification. A certificate is a claim its holder publishes and
   // a verifier is by definition a stranger — requiring an account to check one
   // would make it unverifiable by the people it exists to convince. 008 already

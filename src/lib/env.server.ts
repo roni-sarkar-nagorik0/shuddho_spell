@@ -29,6 +29,13 @@ const serverEnvSchema = z.object({
   DATABASE_URL: z.string().min(1),
   CRON_SECRET: z.string().min(16).optional(),
   /**
+   * Optional. With no DSN, Sentry initialises inert and reports nothing — which
+   * is what a developer running locally wants, and what a fork of this repo
+   * gets by default rather than silently posting somebody's stack traces to a
+   * project they do not own.
+   */
+  SENTRY_DSN: z.string().url().optional(),
+  /**
    * The VAPID keypair's private half and the contact the push services are
    * told to reach if something goes wrong. Optional as a set: the app runs
    * perfectly well with push switched off, and `IPushSender` reports itself
@@ -50,6 +57,7 @@ export interface IServerEnv {
   readonly SUPABASE_SERVICE_ROLE_KEY: string;
   readonly DATABASE_URL: string;
   readonly CRON_SECRET?: string | undefined;
+  readonly SENTRY_DSN?: string | undefined;
   readonly VAPID_PRIVATE_KEY?: string | undefined;
   readonly VAPID_SUBJECT?: string | undefined;
 }
@@ -60,6 +68,7 @@ const parsed = serverEnvSchema.safeParse({
   SUPABASE_SERVICE_ROLE_KEY: process.env['SUPABASE_SERVICE_ROLE_KEY'],
   DATABASE_URL: process.env['DATABASE_URL'],
   CRON_SECRET: absentIfBlank(process.env['CRON_SECRET']),
+  SENTRY_DSN: absentIfBlank(process.env['SENTRY_DSN']),
   VAPID_PRIVATE_KEY: absentIfBlank(process.env['VAPID_PRIVATE_KEY']),
   VAPID_SUBJECT: absentIfBlank(process.env['VAPID_SUBJECT']),
 });

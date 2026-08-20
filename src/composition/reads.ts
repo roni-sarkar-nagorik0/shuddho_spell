@@ -20,6 +20,8 @@ import { type IWeeklyActivity } from '@/modules/progress/application/dto/weekly-
 import { type IDueReviewQueue } from '@/modules/review/application/dto/due-review-item';
 import { type IPracticeQueue } from '@/modules/review/application/dto/practice-queue';
 import { type IWeakSpots } from '@/modules/review/application/dto/weak-spots';
+import { DatabaseMetricsReader } from '@/modules/shared/infrastructure/adapters/database-metrics-reader';
+import { type IMetricsSnapshot } from '@/modules/shared/application/ports/metrics-reader';
 import { createContainer } from './container';
 import {
   makeGetDueReviewItems,
@@ -206,3 +208,16 @@ export const readNextExam = cache(
   async (userId: string): Promise<INextExam | null> =>
     makeGetNextExam(createContainer(crypto.randomUUID())).execute({ userId }),
 );
+
+/**
+ * The operational counts (F13.8).
+ *
+ * **Not** memoised: a scraper asks for fresh numbers and a cached gauge is a
+ * lie with a timestamp on it. This is also the one read here with no learner
+ * behind it — it counts the whole installation.
+ */
+export async function readMetrics(): Promise<IMetricsSnapshot> {
+  const container = createContainer(crypto.randomUUID());
+
+  return new DatabaseMetricsReader(container.db).snapshot(container.clock.now());
+}

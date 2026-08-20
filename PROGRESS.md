@@ -619,7 +619,7 @@ Branch `feat/13-hardening` · Status: `IN PROGRESS`
 - [x] **F13.5** (2026-08-20) Playwright — a failed exam producing its drill prescription. **Written, not executed.**
 - [x] **F13.6** (2026-08-20) Security pass — CSP + 5 headers, 14-assertion sweep (rate limits, client-bundle isolation, `process.env` containment), `pnpm security:rls` two-user script. **The RLS script was not executed** — no live database here. The `correct_answer` snapshot already existed from F7.9 and is green.
 - [x] **F13.7** (2026-08-20) Performance pass — index review (migration 018: two real gaps found), N+1 counted by counting fakes. **p95 and the bundle budget were NOT measured** — both need a deployed app, and no number is claimed for either.
-- [ ] **F13.8** Observability — request ids, Sentry both apps, `/metrics`
+- [x] **F13.8** (2026-08-20) Observability — inbound request-id continuity (validated), Sentry behind an optional DSN, `/metrics` behind `withCron`. **`/metrics` answers JSON, not Prometheus text** — `renderMetrics` produces the exposition format for a scrape adapter.
 - [ ] **F13.9** CI — typecheck, lint, unit, integration (Supabase service container), e2e, build
 - [ ] **F13.10** Deployment config with migrations as a gated step
 - [ ] **F13.11** `README.md` + `DECISIONS.md`
@@ -642,6 +642,7 @@ Out of scope for this build. Do not start these, and do not leave stubs for them
 Newest first. One line per finished feature: date · id · what · test result.
 
 | Date | Feature | What landed | Tests |
+| 2026-08-20 | F13.8 | `instrumentation.ts` (inert without a DSN), request ids honoured from upstream **only when a valid UUID**, `IMetricsReader` port + `/api/metrics`. Three sweeps caught my own work and all three were fixed properly | **553 tests green**, typecheck + lint clean |
 | 2026-08-20 | F13.7 | Migration 018 — `attempts (profile_id, created_at desc)` and `exam_attempts (profile_id, definition_id, …)`, the latter because 004's index is **partial** and cannot serve the catalogue; `n-plus-one.test.ts` proves 40 words still cost 4 reads | 3 new assertions green; **p95 and bundle budget not measured** |
 | 2026-08-20 | F13.6 | CSP + X-Frame-Options/nosniff/Referrer-Policy/Permissions-Policy/HSTS; `security-sweep.test.ts` (14 assertions); `scripts/rls-two-user.mjs`. Found and fixed the Phase-3 `process.env` read in `logger.ts` | 14 new assertions green; RLS script **not executed** (no live DB) |
 | 2026-08-20 | F13.3–F13.5 | Three e2e specs: the whole five-stage day-12 lesson, `milestone2` with a mid-exam refresh, and a failed exam producing its prescription | typecheck + lint green; **none executed** — no live Supabase in this environment |
