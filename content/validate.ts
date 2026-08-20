@@ -1,0 +1,246 @@
+import { type z } from 'zod';
+import {
+  phonemeSchema,
+  ruleFamilySchema,
+  weekSchema,
+  type PhonemeEntry,
+  type RuleFamilyEntry,
+  type WeekEntry,
+} from './schema';
+
+/**
+ * The checks a single entry cannot make about itself.
+ *
+ * Everything in `schema.ts` is local: this word's misspellings, this sentence's
+ * alternatives. The rules here are **cross-file** — a phoneme id referenced by
+ * a word in another file, a duplicate `text` across two weeks, a day whose word
+ * list names something the week does not contain. Those are exactly the errors
+ * that survive a per-file validator and surface as a missing lesson item three
+ * months later.
+ */
+
+export interface IValidationIssue {
+  readonly file: string;
+  readonly path: string;
+  readonly message: string;
+}
+
+export interface IContentCounts {
+  readonly words: number;
+  readonly sentenceItems: number;
+  readonly phonemes: number;
+  readonly ruleFamilies: number;
+  readonly days: number;
+  readonly ipaNeedsReview: readonly string[];
+  readonly phonemesNeedReview: readonly string[];
+}
+
+export interface IValidationResult {
+  readonly issues: readonly IValidationIssue[];
+  readonly counts: IContentCounts;
+}
+
+/** Roughly how long one item takes, from `06-spaced-repetition.md`'s pacing. */
+const SECONDS_PER_WORD = 45;
+const SECONDS_PER_SENTENCE = 75;
+const SECONDS_PER_MINUTE = 60;
+/** A day may claim within this factor of what its content actually takes. */
+const MINUTES_TOLERANCE = 1.5;
+
+function fromZod(file: string, error: z.ZodError): readonly IValidationIssue[] {
+  return error.issues.map((issue) => ({
+    file,
+    path: issue.path.join('.'),
+    message: issue.message,
+  }));
+}
+
+export function validateContent(input: {
+  readonly phonemes: readonly unknown[];
+  readonly ruleFamilies: readonly unknown[];
+  readonly weeks: readonly unknown[];
+}): IValidationResult {
+  const issues: IValidationIssue[] = [];
+
+  const phonemes: PhonemeEntry[] = [];
+  const ruleFamilies: RuleFamilyEntry[] = [];
+  const weeks: WeekEntry[] = [];
+
+  input.phonemes.forEach((entry, index) => {
+    const parsed = phonemeSchema.safeParse(entry);
+
+    if (parsed.success) {
+      phonemes.push(parsed.data);
+    } else {
+      issues.push(...fromZod(`content/phonemes.ts[${String(index)}]`, parsed.error));
+    }
+  });
+
+  input.ruleFamilies.forEach((entry, index) => {
+    const parsed = ruleFamilySchema.safeParse(entry);
+
+    if (parsed.success) {
+      ruleFamilies.push(parsed.data);
+    } else {
+      issues.push(...fromZod(`content/rule-families.ts[${String(index)}]`, parsed.error));
+    }
+  });
+
+  input.weeks.forEach((entry, index) => {
+    const parsed = weekSchema.safeParse(entry);
+
+    if (parsed.success) {
+      weeks.push(parsed.data);
+    } else {
+      issues.push(...fromZod(`content/week-0${String(index + 1)}.ts`, parsed.error));
+    }
+  });
+
+  const ruleCodes = new Set(ruleFamilies.map((family) => family.code));
+  const seenWords = new Map<string, number>();
+  const seenSentences = new Map<string, number>();
+  const ipaNeedsReview: string[] = [];
+  const phonemesNeedReview = phonemes
+    .filter((phoneme) => phoneme.needsReview)
+    .map((phoneme) => phoneme.symbol);
+
+  let dayCount = 0;
+
+  for (const week of weeks) {
+    const file = `content/week-0${String(week.weekIndex)}.ts`;
+    const wordTexts = new Set(week.words.map((word) => word.text));
+    const sentenceTexts = new Set(week.sentenceItems.map((item) => item.englishText));
+
+    for (const word of week.words) {
+      // A word taught twice is a learner being told something is new when it is
+      // not, and two `words` rows with the same `text` violate 002's unique
+      // index — so this is a build failure rather than a seed failure.
+      const first = seenWords.get(word.text);
+
+      if (first !== undefined) {
+        issues.push({
+          file,
+          path: `words.${word.text}`,
+          message: `duplicate word — already defined in week ${String(first)}`,
+        });
+      }
+
+      seenWords.set(word.text, week.weekIndex);
+
+      if (word.ruleFamily !== null && !ruleCodes.has(word.ruleFamily)) {
+        issues.push({
+          file,
+          path: `words.${word.text}.ruleFamily`,
+          message: `unknown rule family "${word.ruleFamily}"`,
+        });
+      }
+
+      if (word.ipaNeedsReview) {
+        ipaNeedsReview.push(`${word.text} /${word.ipa}/`);
+      }
+    }
+
+    for (const item of week.sentenceItems) {
+      const first = seenSentences.get(item.englishText);
+
+      if (first !== undefined) {
+        issues.push({
+          file,
+          path: `sentenceItems.${item.englishText}`,
+          message: `duplicate sentence — already defined in week ${String(first)}`,
+        });
+      }
+
+      seenSentences.set(item.englishText, week.weekIndex);
+
+      for (const code of item.grammarRuleCodes) {
+        if (!ruleCodes.has(code)) {
+          issues.push({
+            file,
+            path: `sentenceItems.${item.englishText}.grammarRuleCodes`,
+            message: `unknown rule family "${code}"`,
+          });
+        }
+      }
+
+      // A distractor that is a word of the answer makes the word bank a lie:
+      // the learner picks it because it is correct and is marked wrong.
+      const answerWords = new Set(item.englishText.toLowerCase().replaceAll(/[.,!?]/gu, '').split(' '));
+
+      for (const distractor of item.distractorWords) {
+        if (answerWords.has(distractor.toLowerCase())) {
+          issues.push({
+            file,
+            path: `sentenceItems.${item.englishText}.distractorWords`,
+            message: `"${distractor}" appears in the answer, so it is not a distractor`,
+          });
+        }
+      }
+    }
+
+    for (const day of week.days) {
+      dayCount += 1;
+
+      for (const text of day.wordTexts) {
+        if (!wordTexts.has(text)) {
+          issues.push({
+            file,
+            path: `days.${String(day.dayIndex)}.wordTexts`,
+            message: `day ${String(day.dayIndex)} names "${text}", which week ${String(week.weekIndex)} does not define`,
+          });
+        }
+      }
+
+      for (const text of day.sentenceTexts) {
+        if (!sentenceTexts.has(text)) {
+          issues.push({
+            file,
+            path: `days.${String(day.dayIndex)}.sentenceTexts`,
+            message: `day ${String(day.dayIndex)} names a sentence week ${String(week.weekIndex)} does not define`,
+          });
+        }
+      }
+
+      for (const code of day.ruleFamilyCodes) {
+        if (!ruleCodes.has(code)) {
+          issues.push({
+            file,
+            path: `days.${String(day.dayIndex)}.ruleFamilyCodes`,
+            message: `unknown rule family "${code}"`,
+          });
+        }
+      }
+
+      // The promise the streak is built on. A day claiming thirty minutes and
+      // holding seventy costs the learner the streak they were told they could
+      // keep.
+      const seconds =
+        day.wordTexts.length * SECONDS_PER_WORD + day.sentenceTexts.length * SECONDS_PER_SENTENCE;
+      const actualMinutes = seconds / SECONDS_PER_MINUTE;
+
+      if (
+        actualMinutes > day.estimatedMinutes * MINUTES_TOLERANCE ||
+        actualMinutes * MINUTES_TOLERANCE < day.estimatedMinutes
+      ) {
+        issues.push({
+          file,
+          path: `days.${String(day.dayIndex)}.estimatedMinutes`,
+          message: `claims ${String(day.estimatedMinutes)} minutes but its ${String(day.wordTexts.length)} words and ${String(day.sentenceTexts.length)} sentences take about ${String(Math.round(actualMinutes))}`,
+        });
+      }
+    }
+  }
+
+  return {
+    issues,
+    counts: {
+      words: seenWords.size,
+      sentenceItems: seenSentences.size,
+      phonemes: phonemes.length,
+      ruleFamilies: ruleFamilies.length,
+      days: dayCount,
+      ipaNeedsReview,
+      phonemesNeedReview,
+    },
+  };
+}

@@ -18,7 +18,9 @@
     "format": "prettier --write .",
     "setup:check": "node scripts/check-setup.mjs",
     "db:migrate": "node --env-file-if-exists=.env.local --env-file-if-exists=.env scripts/migrate.mjs",
-    "db:migrate:dry": "node scripts/migrate.mjs --dry-run"
+    "db:migrate:dry": "node scripts/migrate.mjs --dry-run",
+    "content:validate": "tsx scripts/content-validate.ts",
+    "prebuild": "pnpm content:validate"
   },
   "dependencies": {
     "@supabase/ssr": "0.7.0",
@@ -59,6 +61,7 @@
     "postcss": "8.5.6",
     "prettier": "3.6.2",
     "tailwindcss": "3.4.18",
+    "tsx": "^4.23.12",
     "typescript": "5.9.3",
     "typescript-eslint": "8.45.0",
     "vitest": "3.2.4"
