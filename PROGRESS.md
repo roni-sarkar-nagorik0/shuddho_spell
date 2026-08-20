@@ -81,7 +81,7 @@ and 2. No feature starts without it. **Never read the file** — existence check
 ## NEXT
 
 > **Phase 11 · Learning screens — in progress on `feat/11-learning-screens`**
-> Current: **F11.11** — `/library`.
+> Current: **F11.12** — `/progress`.
 >
 > **What Phase 10 leaves Phase 11**
 > - The shell is real: `(learn)/layout.tsx` gives every screen the rail, the top bar and a
@@ -550,7 +550,7 @@ Branch `feat/11-learning-screens` · Status: `IN PROGRESS`
   - Test: drills are selected by actual weakness, not at random
 - [x] **F11.10** (2026-08-20) `/weak-spots`
   - Test: the spaced-repetition schedule axis matches `review_items.due_at`
-- [ ] **F11.11** `/library`
+- [x] **F11.11** (2026-08-20) `/library`
   - Test: filters, column control, CSV export, detail drawer; cursor pagination
 - [ ] **F11.12** `/progress`
   - Test: accuracy over time with milestone markers; both mastery matrices; activity heatmap
@@ -621,6 +621,7 @@ Out of scope for this build. Do not start these, and do not leave stubs for them
 Newest first. One line per finished feature: date · id · what · test result.
 
 | Date | Feature | What landed | Tests |
+| 2026-08-20 | F11.11 | `/library` — keyset cursor pagination on unique `words.text` (new `gt`/`ilike` on `IDatabase`, `search` on `IWordRepository`), four filters, column control, CSV export with formula-injection guard, detail drawer | typecheck + lint green (tests paused) |
 | 2026-08-20 | F11.10 | `/weak-spots` — master-detail on `DataTable` + `Drawer`, schedule axis bucketed straight from `review_items.due_at` in the learner's timezone | typecheck + lint green (tests paused) |
 | 2026-08-20 | F11.9 | `/practice` — `GetPracticeQueue` ranks weaknesses by expected loss and orders drills weakness-first then most-overdue; every item carries the reason it is there. Nothing sampled or shuffled | typecheck + lint green (tests paused) |
 | 2026-08-20 | F11.8 | Audio manager — one `AudioProvider` over all five stages, unconditional cancel-before-speak, the learner's own accent and playback rate, best-effort named voice | typecheck + lint green (tests paused); `grep SpeechSynthesisUtterance src` finds it in one file |

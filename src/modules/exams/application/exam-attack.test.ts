@@ -266,6 +266,9 @@ function wire(world: IWorld): {
     findById: () => Promise.resolve(null),
     findByIds: () => Promise.resolve([] as readonly Word[]),
     findUpToWeek: () => Promise.resolve([] as readonly Word[]),
+    // F11.11 widened IWordRepository with a paginated `search`. Neither of
+    // these use cases calls it; the fake satisfies the port and nothing else.
+    search: () => Promise.resolve([] as readonly Word[]),
   };
 
   const sentences: ISentenceItemRepository = {

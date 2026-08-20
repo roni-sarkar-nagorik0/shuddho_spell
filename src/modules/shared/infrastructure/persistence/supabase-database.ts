@@ -52,6 +52,14 @@ export function toDatabase(): IDatabase {
       builder = builder.lte(query.lte.column, query.lte.value);
     }
 
+    if (query.gt !== undefined) {
+      builder = builder.gt(query.gt.column, query.gt.value);
+    }
+
+    if (query.ilike !== undefined) {
+      builder = builder.ilike(query.ilike.column, query.ilike.pattern);
+    }
+
     if (query.orderBy !== undefined) {
       builder = builder.order(query.orderBy.column, { ascending: query.orderBy.ascending });
     }
@@ -109,6 +117,14 @@ export function toDatabase(): IDatabase {
 
       if (query.lte !== undefined) {
         builder = builder.lte(query.lte.column, query.lte.value);
+      }
+
+      if (query.gt !== undefined) {
+        builder = builder.gt(query.gt.column, query.gt.value);
+      }
+
+      if (query.ilike !== undefined) {
+        builder = builder.ilike(query.ilike.column, query.ilike.pattern);
       }
 
       const { count, error } = await builder;

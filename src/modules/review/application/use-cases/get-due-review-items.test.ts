@@ -63,6 +63,9 @@ function useCaseOver(items: readonly ReviewItem[]): GetDueReviewItemsUseCase {
     findById: () => Promise.resolve(null),
     findByIds: (ids) => Promise.resolve(ids.map(word)),
     findUpToWeek: () => Promise.resolve([] as readonly Word[]),
+    // F11.11 widened IWordRepository with a paginated `search`. Neither of
+    // these use cases calls it; the fake satisfies the port and nothing else.
+    search: () => Promise.resolve([] as readonly Word[]),
   };
   const sentences: ISentenceItemRepository = {
     findById: () => Promise.resolve(null),

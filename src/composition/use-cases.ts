@@ -40,6 +40,7 @@ import { GetMasterySnapshotUseCase } from '@/modules/progress/application/use-ca
 import { GetWeeklyActivityUseCase } from '@/modules/progress/application/use-cases/get-weekly-activity';
 import { GetNextExamUseCase } from '@/modules/exams/application/use-cases/get-next-exam';
 import { ListExamMilestonesUseCase } from '@/modules/exams/application/use-cases/list-exam-milestones';
+import { GetLibraryPageUseCase } from '@/modules/library/application/use-cases/get-library-page';
 import { GetPhonemeStripsUseCase } from '@/modules/library/application/use-cases/get-phoneme-strips';
 import { GetPracticeQueueUseCase } from '@/modules/review/application/use-cases/get-practice-queue';
 import { GetWeakSpotsUseCase } from '@/modules/review/application/use-cases/get-weak-spots';
@@ -224,6 +225,10 @@ export function makeGetPracticeQueue(c: IContainer): GetPracticeQueueUseCase {
     c.ruleFamilies,
     makeGetDueReviewItems(c),
   );
+}
+
+export function makeGetLibraryPage(c: IContainer): GetLibraryPageUseCase {
+  return new GetLibraryPageUseCase(c.learnerProfiles, c.words, c.ruleFamilies, c.reviewItems);
 }
 
 export function makeGetPhonemeStrips(c: IContainer): GetPhonemeStripsUseCase {

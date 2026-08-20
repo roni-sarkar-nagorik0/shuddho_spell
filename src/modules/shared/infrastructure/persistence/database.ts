@@ -25,6 +25,15 @@ export interface ISelectQuery {
   readonly whereIn?: { readonly column: string; readonly values: readonly string[] };
   /** `column <= value`, for due dates. */
   readonly lte?: { readonly column: string; readonly value: string };
+  /**
+   * Strictly greater than. Added by F11.11 for **keyset pagination**: the
+   * library's cursor is the last row's `text`, and `gt` is what "everything
+   * after it" means. Offset paging would repeat or skip rows whenever content
+   * is seeded under a reader.
+   */
+  readonly gt?: { readonly column: string; readonly value: string };
+  /** Case-insensitive pattern match. The caller supplies the `%` wildcards. */
+  readonly ilike?: { readonly column: string; readonly pattern: string };
   readonly orderBy?: { readonly column: string; readonly ascending: boolean };
   readonly limit?: number;
 }

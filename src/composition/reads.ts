@@ -3,6 +3,7 @@ import { cache } from 'react';
 import { type AccentPreference } from '@/modules/auth/domain/value-objects/accent-preference';
 import { type IExamMilestone } from '@/modules/exams/application/dto/exam-milestone';
 import { type INextExam } from '@/modules/exams/application/dto/next-exam';
+import { type ILibraryPage } from '@/modules/library/application/dto/library-page';
 import { type IWordPhonemeStrip } from '@/modules/library/application/dto/phoneme-strip';
 import { type IProgramDayDetail } from '@/modules/program/application/dto/program-day-detail';
 import { type IProgramOverview } from '@/modules/program/application/dto/program-overview';
@@ -23,6 +24,7 @@ import {
   makeGetProgramOverview,
   makeGetProgressSummary,
   makeGetMe,
+  makeGetLibraryPage,
   makeGetPhonemeStrips,
   makeGetPracticeQueue,
   makeGetWeakSpots,
@@ -115,6 +117,24 @@ export const readWeeklyActivity = cache(
 export const readDueReviews = cache(
   async (userId: string): Promise<IDueReviewQueue> =>
     makeGetDueReviewItems(createContainer(crypto.randomUUID())).execute({ userId }),
+);
+
+/**
+ * The 24 rule families, for the library's filter. Reference data, identical for
+ * every learner, so it takes the container's repository directly rather than a
+ * use case that would only forward the call.
+ */
+export const readRuleFamilies = cache(
+  async (): Promise<readonly { readonly id: string; readonly code: string }[]> => {
+    const families = await createContainer(crypto.randomUUID()).ruleFamilies.listAll();
+
+    return families.map((family) => ({ id: family.id, code: family.code }));
+  },
+);
+
+export const readLibraryPage = cache(
+  async (userId: string, pageSize: number): Promise<ILibraryPage> =>
+    makeGetLibraryPage(createContainer(crypto.randomUUID())).execute({ userId, pageSize }),
 );
 
 export const readPhonemeStrips = cache(

@@ -1,5 +1,16 @@
 import { type Word } from '../entities/word';
 
+export interface IWordSearch {
+  /** The last `text` of the previous page. Omit for the first page. */
+  readonly after?: string;
+  readonly limit: number;
+  /** Case-insensitive substring of the headword. */
+  readonly contains?: string;
+  readonly weekIndex?: number;
+  readonly partOfSpeech?: string;
+  readonly ruleFamilyId?: string;
+}
+
 export const WORD_REPOSITORY = Symbol('WORD_REPOSITORY');
 
 export interface IWordRepository {
@@ -18,4 +29,18 @@ export interface IWordRepository {
    * a walk over the programme's days collecting ids.
    */
   readonly findUpToWeek: (weekIndex: number) => Promise<readonly Word[]>;
+
+  /**
+   * A page of the library, **keyset-paginated on `words.text`**.
+   *
+   * `text` is unique in 002, which is what makes it a safe cursor: "everything
+   * after `subtle`" is one row's worth of state and cannot drift. An offset
+   * would repeat or skip rows whenever the content pipeline seeded a word
+   * alphabetically behind the reader.
+   *
+   * The filters are optional and combine with AND. `limit` is a page size, and
+   * the caller asks for one more than it means to show — that extra row is how
+   * it learns whether a next page exists without a second count query.
+   */
+  readonly search: (options: IWordSearch) => Promise<readonly Word[]>;
 }

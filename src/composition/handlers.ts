@@ -9,6 +9,7 @@ import { createSaveAnswerHandler } from '@/modules/exams/presentation/handlers/s
 import { createStartAttemptHandler } from '@/modules/exams/presentation/handlers/start-attempt';
 import { createSubmitAttemptHandler as createSubmitExamAttemptHandler } from '@/modules/exams/presentation/handlers/submit-attempt';
 import { createSubmitSectionHandler } from '@/modules/exams/presentation/handlers/submit-section';
+import { createGetLibraryHandler } from '@/modules/library/presentation/handlers/get-library';
 import { createCompleteSessionHandler } from '@/modules/lessons/presentation/handlers/complete-session';
 import { createAdvanceStageHandler } from '@/modules/lessons/presentation/handlers/advance-stage';
 import { createStartSessionHandler } from '@/modules/lessons/presentation/handlers/start-session';
@@ -34,6 +35,7 @@ import {
   makeAdvanceLessonStage,
   makeCompleteLessonSession,
   makeGetDueReviewItems,
+  makeGetLibraryPage,
   makeGetMe,
   makeGetNotificationPreferences,
   makeGetProgramDay,
@@ -114,6 +116,8 @@ export const submitLessonAttemptHandler = createSubmitAttemptHandler(() => {
     construction: makeSubmitConstructionAttempt(c),
   };
 });
+
+export const getLibraryHandler = createGetLibraryHandler(() => makeGetLibraryPage(container()));
 
 export const getDueReviewHandler = createGetDueHandler(() => makeGetDueReviewItems(container()));
 
