@@ -614,7 +614,7 @@ Branch `feat/13-hardening` · Status: `IN PROGRESS`
   **The ≥90% floor is NOT met — 57.20% lines / 72.26% functions / 78.41% branches.** Reported,
   not claimed. See the Log row and the closing report (F13.12).
   - Test: `domain` + `application` ≥ 90%, per-module numbers reported
-- [ ] **F13.2** Playwright — Google sign-in → dashboard
+- [x] **F13.2** (2026-08-20) Playwright — Google sign-in → dashboard. **Written, not executed:** needs a live Supabase and a seeded learner; the Google consent screen is deliberately never automated.
 - [ ] **F13.3** Playwright — a complete day-12 lesson
 - [ ] **F13.4** Playwright — a full `milestone2` exam **including a mid-exam refresh**
 - [ ] **F13.5** Playwright — a failed exam producing its drill prescription
@@ -643,6 +643,7 @@ Out of scope for this build. Do not start these, and do not leave stubs for them
 Newest first. One line per finished feature: date · id · what · test result.
 
 | Date | Feature | What landed | Tests |
+| 2026-08-20 | F13.2 | `e2e/fixtures/session.ts` (mints a session via Supabase rather than driving Google) + `sign-in-to-dashboard.spec.ts`, incl. an assertion that the dashboard makes **no** call to its own API | typecheck + lint green; **spec not executed** — no live Supabase here |
 | 2026-08-20 | F13.1 | Fixed 3 red tests (2 mine, 1 red since Phase 7); covered the weakest three modules — `program/application` 0→100%, `library/application` 0→98.5%, `lessons/application` 0→14.1% | **501→533 tests, all green.** Coverage 50.57→57.20% lines. **Floor of 90% NOT met** |
 | 2026-08-20 | F12.12 | `/onboarding` — five steps, resumable from `localStorage` **and** from the stored profile; `CompleteOnboarding` refuses to rewrite a finished profile; reminder written through the preferences endpoint that owns the field | typecheck + lint green (tests paused) |
 | 2026-08-20 | F12.11 | Inline dictation demo — the **real** `LetterTiles` on the hero, unauthenticated, three real corpus words each carrying a real Bengali-speaker error; the only thing in the product that grades in the browser, and it says so | typecheck + lint green (tests paused) |
