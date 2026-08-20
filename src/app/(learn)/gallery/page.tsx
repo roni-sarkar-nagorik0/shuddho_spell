@@ -219,6 +219,48 @@ export default function GalleryPage(): ReactElement {
           </State>
         </div>
       </section>
+
+      <section className="flex flex-col gap-3">
+        <h2 className="font-display text-base tracking-tight">Accessibility baseline</h2>
+        <div className="grid grid-cols-3 gap-4">
+          <State name="Focus ring" note="Tab through these. 2px secondary-500, 2px offset.">
+            <span className="flex flex-wrap items-center gap-2">
+              <button className="h-8 rounded-control bg-primary-900 px-3 text-surface" type="button">
+                On a fill
+              </button>
+              <button
+                className="h-8 rounded-control border border-primary-900 px-3 text-primary-900"
+                type="button"
+              >
+                On the canvas
+              </button>
+              <a className="text-primary-900 underline" href="#content">
+                On a link
+              </a>
+            </span>
+          </State>
+
+          <State name="Reduced motion" note="The one animated surface, and what the setting does.">
+            <p className="text-muted">
+              The drawer is the only thing in the shell that moves. Its slide is behind{' '}
+              <code className="num">motion-safe:</code>, and a global{' '}
+              <code className="num">prefers-reduced-motion</code> rule collapses every remaining
+              transition to one instant frame — run to its end state, without the movement.
+            </p>
+          </State>
+
+          <State name="No colour-only cue" note="Every signal is paired with a word or a number.">
+            <ul className="flex flex-col gap-1 text-muted">
+              <li>Heat cells — percentage in the accessible name; unattempted is dashed.</li>
+              <li>StatCell delta — arrow and sign as well as hue.</li>
+              <li>StatusBadge — the label is required; there is no icon-only variant.</li>
+              <li>Matrix weakness — a tertiary-500 ring, and the word in the detail row.</li>
+              <li>Rail active item — <code className="num">aria-current</code>, not only a fill.</li>
+              <li>Toast severity — the word Note, Done, Warning or Problem beside the accent.</li>
+            </ul>
+          </State>
+        </div>
+      </section>
     </section>
   );
 }

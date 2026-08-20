@@ -26,8 +26,40 @@
     @apply font-mono tabular-nums;
   }
 
+  /*
+    2px secondary-500 at 2px offset — 12-design-system.md, and never removed.
+
+    A real `outline`, not a ring. Tailwind's ring is a box-shadow, so its offset
+    has to be painted in the colour of whatever is behind the element: the old
+    rule hard-coded `ring-offset-neutral-50`, which is right on the page canvas
+    and wrong on every white card, inside every overlay, and against the
+    primary-900 exam runtime. An outline needs no such guess, it follows the
+    element's border-radius, and it survives forced-colors mode where
+    box-shadows are dropped entirely.
+  */
   :focus-visible {
-    @apply outline-none ring-2 ring-secondary-500 ring-offset-2 ring-offset-neutral-50;
+    outline: 2px solid theme('colors.secondary.500');
+    outline-offset: 2px;
+  }
+
+  /*
+    Respect the system setting rather than a preference toggle of our own.
+    Motion sickness and vestibular disorders are the reason this exists, and a
+    learner who has told their OS already should not have to tell us again.
+
+    Not `animation: none`: killing an animation outright can strand an element
+    mid-keyframe. Collapsing it to a single instant frame runs it to its final
+    state without the movement.
+  */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
   }
 }
 

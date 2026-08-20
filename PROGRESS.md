@@ -80,8 +80,20 @@ and 2. No feature starts without it. **Never read the file** — existence check
 
 ## NEXT
 
-> **Phase 10 · Web shell and core components — in progress on `feat/10-web-shell`**
-> Current: **F10.9** — accessibility baseline.
+> **Phase 11 · Learning screens — not started**
+> Phase 10 is closed and merged (9/9). Cut `feat/11-learning-screens` from an up-to-date `dev`.
+>
+> **What Phase 10 leaves Phase 11**
+> - The shell is real: `(learn)/layout.tsx` gives every screen the rail, the top bar and a
+>   12-column paper grid. A page renders `col-span-*` children and nothing else.
+> - `PhonemeStrip`, `MasteryMatrix`, `DataTable` and the six primitives are built and shown in
+>   three states each at `/gallery` (dev only). Nothing in Phase 11 should build a second one.
+> - `DataTable` takes `render`/`rowKey` **functions**, so every screen using it needs a thin
+>   Client Component wrapper — `gallery/table-demo.tsx` is the pattern.
+> - TanStack Query is mounted in the root layout. Reads retry, **writes never do**.
+>   `useSaveExamAnswer` is the optimistic template for Phase 12.
+> - `useDismissable` is the one focus-trap/Escape/restore implementation. Do not write a second.
+> - `pnpm i18n:check` runs in `prebuild`: a new `en` key without its `bn` twin fails the build.
 >
 > **What Phase 5 leaves Phase 6**
 > - `ISpeechScorer` is declared (F4.10) and **has no implementation**. Phase 6 is that, plus the
@@ -486,7 +498,7 @@ written and **unproven**: it needs a live database, and there is none in this en
 ---
 
 ## Phase 10 — Web shell and core components
-Branch `feat/10-web-shell` · Status: `IN PROGRESS`
+Branch `feat/10-web-shell` · Status: `DONE` (9/9 built 2026-08-20; exit gate not run — paused by standing instruction 2026-08-19)
 
 - [x] **F10.1** (2026-08-20) App shell — 232px sidebar collapsing to 56px, 48px top bar, 1280px grid
   - Test: collapse state persists; keyboard reachable
@@ -504,7 +516,7 @@ Branch `feat/10-web-shell` · Status: `IN PROGRESS`
   - Test: **exam writes are not retried**; other reads retry
 - [x] **F10.8** (2026-08-20) i18n key-parity CI check
   - Test: deleting a `bn` key fails CI (paste output, restore key)
-- [ ] **F10.9** Accessibility baseline
+- [x] **F10.9** (2026-08-20) Accessibility baseline
   - Test: focus rings 2px secondary-500 / 2px offset; `prefers-reduced-motion` respected; no colour-only cue
 
 ---
@@ -603,6 +615,7 @@ Out of scope for this build. Do not start these, and do not leave stubs for them
 Newest first. One line per finished feature: date · id · what · test result.
 
 | Date | Feature | What landed | Tests |
+| 2026-08-20 | F10.9 | Focus ring rebuilt as a real `outline` (2px secondary-500 / 2px offset, background-independent), global `prefers-reduced-motion` rule, colour-only-cue audit in the gallery | typecheck + lint green (tests paused) |
 | 2026-08-20 | F10.8 | `pnpm i18n:check` — missing, orphaned and placeholder-mismatched keys; wired into `prebuild`. Proved by deleting `nav.weakSpots` and breaking `dashboard.dayOf`, then restoring both | typecheck + lint green; check exits 1 on a deleted key (output in the run report) |
 | 2026-08-20 | F10.7 | TanStack Query: per-tab client, read retry policy (never on 4xx, always on 429/5xx), `NEVER_RETRY` on every mutation, optimistic `useSaveExamAnswer` | typecheck + lint green (tests paused) |
 | 2026-08-20 | F10.6 | Overlays: `Toast` (moved from notifications, upgraded and mounted in the shell), `Popover`, `Drawer`, `ConfirmDialog`, all on one `useDismissable` hook | typecheck + lint green (tests paused) |

@@ -366,8 +366,14 @@ Status values: `NOT STARTED` · `IN PROGRESS` · `BLOCKED — <reason>` · `DONE
 ## Phase 10 — Web shell and core components
 
 - **Branch:** `feat/10-web-shell` (from `dev`)
-- **Status:** NOT STARTED
-- **Completed:**
+- **Status:** DONE
+- **Completed:** 2026-08-20 — F10.1 through F10.9, all nine built and merged into `dev`.
+  **Exit gate not run — paused by standing instruction 2026-08-19.** Of its four items, the
+  `MasteryMatrix` dimension prop and the i18n parity check were both demonstrated during the
+  build (the parity check's failure output is in the run report); the Storybook item is
+  superseded by the `/gallery` route (ARCHITECTURE.md D66); the no-shadow/no-gradient/no-emoji
+  sweep was run by grep and came back clean, shadows appearing only on the three overlays the
+  design system permits.
 - **Reads:** `12-design-system`, `13-frontend`
 - **Deliverables:** app shell (232px primary-900 sidebar collapsing to 56px, 48px top bar, 1280px
   12-column content region); `PhonemeStrip` and `MasteryMatrix` built once, properly, typed, tested,
