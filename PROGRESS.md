@@ -81,7 +81,7 @@ and 2. No feature starts without it. **Never read the file** — existence check
 ## NEXT
 
 > **Phase 12 · Exam and marketing screens — in progress on `feat/12-exam-marketing-screens`**
-> Current: **F12.2** — `/exams/[code]` lobby and system check.
+> Current: **F12.3** — `/exams/attempt/[id]` runtime shell.
 >
 > **What Phase 11 leaves Phase 12**
 > - `useSaveExamAnswer` (F10.7) is the optimistic template for the exam runtime; writes never retry.
@@ -572,7 +572,7 @@ Branch `feat/12-exam-marketing-screens` · Status: `IN PROGRESS`
 
 - [x] **F12.1** (2026-08-20) `/exams` catalogue
   - Test: lock state and readiness reflect the server, not local state
-- [ ] **F12.2** `/exams/[code]` lobby + system check
+- [x] **F12.2** (2026-08-20) `/exams/[code]` lobby + system check
   - Test: the begin button is gated on **both** the checkbox and the mic/audio check
 - [ ] **F12.3** `/exams/attempt/[id]` runtime shell
   - Test: no navigation out; `beforeunload` warning active
@@ -631,6 +631,7 @@ Out of scope for this build. Do not start these, and do not leave stubs for them
 Newest first. One line per finished feature: date · id · what · test result.
 
 | Date | Feature | What landed | Tests |
+| 2026-08-20 | F12.2 | `/exams/[code]` lobby — spec and section tables, rules, a system check that really calls `getUserMedia`, begin gated on the checkbox **and** the check **and** the server's lock | typecheck + lint green (tests paused) |
 | 2026-08-20 | F12.1 | `/exams` — `GetExamCatalogue` produces the lock from the same `ExamEligibilityPolicy` `StartExamAttempt` consults; readiness only once unlocked; a live attempt always outranks starting a new one | typecheck + lint green (tests paused) |
 | 2026-08-20 | F11.12 | `/progress` — daily accuracy with gaps left open and dashed rules where each milestone was passed, 84-day activity heatmap, **both** mastery matrices from one component | typecheck + lint green (tests paused) |
 | 2026-08-20 | F11.11 | `/library` — keyset cursor pagination on unique `words.text` (new `gt`/`ilike` on `IDatabase`, `search` on `IWordRepository`), four filters, column control, CSV export with formula-injection guard, detail drawer | typecheck + lint green (tests paused) |
