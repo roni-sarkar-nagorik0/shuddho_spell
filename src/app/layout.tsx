@@ -3,6 +3,7 @@ import { NextIntlClientProvider } from 'next-intl';
 import { getLocale, getMessages } from 'next-intl/server';
 import { Bricolage_Grotesque, IBM_Plex_Mono, Noto_Sans_Bengali, Public_Sans } from 'next/font/google';
 import { SessionBoundary } from '@/lib/auth/session-boundary';
+import { QueryProvider } from '@/lib/query/query-provider';
 import './globals.css';
 
 const display = Bricolage_Grotesque({ subsets: ['latin'], variable: '--font-display' });
@@ -30,7 +31,9 @@ export default async function RootLayout({
     >
       <body>
         <NextIntlClientProvider messages={messages}>
-          <SessionBoundary>{children}</SessionBoundary>
+          <QueryProvider>
+            <SessionBoundary>{children}</SessionBoundary>
+          </QueryProvider>
         </NextIntlClientProvider>
       </body>
     </html>
