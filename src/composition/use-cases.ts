@@ -5,6 +5,7 @@ import { GetActiveExamAttemptUseCase } from '@/modules/exams/application/use-cas
 import { FlagExamQuestionUseCase } from '@/modules/exams/application/use-cases/flag-exam-question';
 import { SaveExamAnswerUseCase } from '@/modules/exams/application/use-cases/save-exam-answer';
 import { StartExamAttemptUseCase } from '@/modules/exams/application/use-cases/start-exam-attempt';
+import { SubmitExamAttemptUseCase } from '@/modules/exams/application/use-cases/submit-exam-attempt';
 import { SubmitExamSectionUseCase } from '@/modules/exams/application/use-cases/submit-exam-section';
 import { AdvanceLessonStageUseCase } from '@/modules/lessons/application/use-cases/advance-lesson-stage';
 import { CompleteLessonSessionUseCase } from '@/modules/lessons/application/use-cases/complete-lesson-session';
@@ -232,5 +233,21 @@ export function makeGetActiveExamAttempt(c: IContainer): GetActiveExamAttemptUse
     c.examQuestions,
     c.examAnswers,
     c.clock,
+  );
+}
+
+export function makeSubmitExamAttempt(c: IContainer): SubmitExamAttemptUseCase {
+  return new SubmitExamAttemptUseCase(
+    c.learnerProfiles,
+    c.examDefinitions,
+    c.examAttempts,
+    c.examQuestions,
+    c.examAnswers,
+    c.reviewItems,
+    c.reviewPolicy,
+    c.clock,
+    c.ids,
+    c.examWrites,
+    c.pronunciationJudge,
   );
 }

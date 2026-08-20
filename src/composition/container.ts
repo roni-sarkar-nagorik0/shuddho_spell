@@ -10,6 +10,8 @@ import { SupabaseExamAttemptRepository } from '@/modules/exams/infrastructure/pe
 import { SupabaseExamDefinitionRepository } from '@/modules/exams/infrastructure/persistence/supabase/exam-definition.repository';
 import { SupabaseExamQuestionRepository } from '@/modules/exams/infrastructure/persistence/supabase/exam-question.repository';
 import { SupabaseExamWriteUnit } from '@/modules/exams/infrastructure/adapters/supabase-exam-write-unit';
+import { SpeechScorerPronunciationJudge } from '@/modules/exams/infrastructure/adapters/speech-scorer-pronunciation-judge';
+import { type IPronunciationJudge } from '@/modules/exams/domain/services/exam-answer-marker';
 import { SupabaseLearnerProfileRepository } from '@/modules/auth/infrastructure/persistence/supabase/learner-profile.repository';
 import { type IAttemptRepository } from '@/modules/lessons/domain/repositories/attempt-repository';
 import { type ILessonRepository } from '@/modules/lessons/domain/repositories/lesson-repository';
@@ -89,6 +91,13 @@ export interface IContainer {
   /** Pure and stateless too — a lookup over the confusion map, never a model. */
   readonly speechScorer: ISpeechScorer;
 
+  /**
+   * The exams module's view of that scorer. One per request, so the 44-phoneme
+   * inventory it caches is read once per submission rather than once per
+   * pronunciation question.
+   */
+  readonly pronunciationJudge: IPronunciationJudge;
+
   /** The writes that must not half-happen — 013 and 014's Postgres functions. */
   readonly lessonWrites: ILessonWriteUnit;
 
@@ -109,6 +118,11 @@ export function createContainer(requestId: string): IContainer {
   // messages a caller would have to string-match.
   const db = new RetryingDatabase(toDatabase());
 
+  // Built before the object literal because two entries below share it: the
+  // judge wraps the scorer, and both are handed out.
+  const phonemes = new SupabasePhonemeRepository(db);
+  const speechScorer = new ConfusionMapSpeechScorer();
+
   return {
     requestId,
 
@@ -117,7 +131,7 @@ export function createContainer(requestId: string): IContainer {
     wordPhonemes: new SupabaseWordPhonemeRepository(db),
     sentenceItems: new SupabaseSentenceItemRepository(db),
     ruleFamilies: new SupabaseRuleFamilyRepository(db),
-    phonemes: new SupabasePhonemeRepository(db),
+    phonemes,
     program: new SupabaseProgramRepository(db),
     lessons: new SupabaseLessonRepository(db),
     attempts: new SupabaseAttemptRepository(db),
@@ -132,7 +146,8 @@ export function createContainer(requestId: string): IContainer {
 
     reviewPolicy: new IntervalLadderPolicy(),
     errorTagger: new ErrorTagger(),
-    speechScorer: new ConfusionMapSpeechScorer(),
+    speechScorer,
+    pronunciationJudge: new SpeechScorerPronunciationJudge(phonemes, speechScorer),
 
     lessonWrites: new SupabaseLessonWriteUnit(db),
     examWrites: new SupabaseExamWriteUnit(db),

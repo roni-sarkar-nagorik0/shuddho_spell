@@ -205,6 +205,16 @@ registry.registerPath({
   responses: ok(z.unknown(), 'The live attempt, or null.'),
 });
 
+registry.registerPath({
+  method: 'post',
+  path: '/api/v1/exams/attempts/{id}/submit',
+  summary: 'Hand the paper in. Marks it, scores it, and acts on the result.',
+  description:
+    'A pass advances the learner and a fail writes a prescription of drills into the review queue — never just a number. Idempotent: a second submit on a handed-in attempt changes nothing. Carries no correct answers.',
+  request: { params: attemptParamsSchema },
+  responses: ok(z.unknown(), 'The score, the outcome and what happens next.'),
+});
+
 export function buildOpenApiDocument(): ReturnType<OpenApiGeneratorV3['generateDocument']> {
   return new OpenApiGeneratorV3(registry.definitions).generateDocument({
     openapi: '3.0.3',

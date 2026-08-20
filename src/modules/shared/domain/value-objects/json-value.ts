@@ -14,3 +14,15 @@ export type JsonValue =
   | null
   | readonly JsonValue[]
   | { readonly [key: string]: JsonValue };
+
+/**
+ * Narrows a `JsonValue` to a JSON **object**.
+ *
+ * A type predicate rather than a cast, and it has to exist because
+ * `Array.isArray` does not narrow a `readonly T[]` out of a union — without it
+ * the only route to a property is `as`, which the rules permit at a validated
+ * boundary and a jsonb payload read inside the domain is not one.
+ */
+export function isJsonObject(value: JsonValue): value is { readonly [key: string]: JsonValue } {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}

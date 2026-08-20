@@ -3,6 +3,7 @@ import { createGetMeHandler } from '@/modules/auth/presentation/handlers/get-me'
 import { createGetActiveAttemptHandler } from '@/modules/exams/presentation/handlers/get-active-attempt';
 import { createSaveAnswerHandler } from '@/modules/exams/presentation/handlers/save-answer';
 import { createStartAttemptHandler } from '@/modules/exams/presentation/handlers/start-attempt';
+import { createSubmitAttemptHandler as createSubmitExamAttemptHandler } from '@/modules/exams/presentation/handlers/submit-attempt';
 import { createSubmitSectionHandler } from '@/modules/exams/presentation/handlers/submit-section';
 import { createAdvanceStageHandler } from '@/modules/lessons/presentation/handlers/advance-stage';
 import { createStartSessionHandler } from '@/modules/lessons/presentation/handlers/start-session';
@@ -26,6 +27,7 @@ import {
   makeGetActiveExamAttempt,
   makeSaveExamAnswer,
   makeStartExamAttempt,
+  makeSubmitExamAttempt,
   makeSubmitExamSection,
   makeStartLessonSession,
   makeSubmitConstructionAttempt,
@@ -110,4 +112,8 @@ export const submitExamSectionHandler = createSubmitSectionHandler(() =>
 
 export const getActiveExamAttemptHandler = createGetActiveAttemptHandler(() =>
   makeGetActiveExamAttempt(container()),
+);
+
+export const submitExamAttemptHandler = createSubmitExamAttemptHandler(() =>
+  makeSubmitExamAttempt(container()),
 );

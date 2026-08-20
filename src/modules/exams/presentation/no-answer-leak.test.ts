@@ -180,6 +180,8 @@ const GENERATION_AND_MARKING = [
   join('src', 'modules', 'exams', 'domain', 'repositories', 'exam-question-repository.ts'),
   // Persists the generated paper at attempt start.
   join('src', 'modules', 'exams', 'application', 'use-cases', 'start-exam-attempt.ts'),
+  // Reads it back to mark an answer — the one legitimate consumer.
+  join('src', 'modules', 'exams', 'domain', 'services', 'exam-answer-marker.ts'),
 ];
 
 /**
