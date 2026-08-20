@@ -9,6 +9,7 @@ import { apiFetch } from '@/lib/api/client';
 import { lessonSessionSchema, type LessonSessionView } from './lesson-contracts';
 import { DictateStage } from './dictate-stage';
 import { LearnStage, type ILearnWord } from './learn-stage';
+import { SpeakStage } from './speak-stage';
 import { ReviewStage } from './review-stage';
 
 export interface ILessonRule {
@@ -168,6 +169,13 @@ export function LessonRuntime({
               <LearnStage onDone={advance} rules={rules} words={words} />
             ) : session.stage === 'dictate' ? (
               <DictateStage
+                onDone={advance}
+                onSessionCounts={updateCounts}
+                sessionId={session.sessionId}
+                words={words}
+              />
+            ) : session.stage === 'speak' ? (
+              <SpeakStage
                 onDone={advance}
                 onSessionCounts={updateCounts}
                 sessionId={session.sessionId}
