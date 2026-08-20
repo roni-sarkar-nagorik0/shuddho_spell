@@ -7,12 +7,23 @@ import { StageTracker, type TrackerStage } from '@/components/lesson/stage-track
 import { MonoValue } from '@/components/primitives/mono-value';
 import { apiFetch } from '@/lib/api/client';
 import { lessonSessionSchema, type LessonSessionView } from './lesson-contracts';
+import { LearnStage, type ILearnWord } from './learn-stage';
 import { ReviewStage } from './review-stage';
+
+export interface ILessonRule {
+  readonly id: string;
+  readonly code: string;
+  readonly statement: string;
+  readonly examples: readonly string[];
+  readonly counterexamples: readonly string[];
+}
 
 export interface ILessonRuntimeProps {
   readonly dayIndex: number;
   readonly title: string;
   readonly description: string;
+  readonly words: readonly ILearnWord[];
+  readonly rules: readonly ILessonRule[];
 }
 
 const NEXT_STAGE: Readonly<Record<TrackerStage, TrackerStage | null>> = {
@@ -43,7 +54,13 @@ const NEXT_STAGE: Readonly<Record<TrackerStage, TrackerStage | null>> = {
  * the tracker and the server-enforced ordering are already the real thing, so
  * those features add the stage's content and nothing else.
  */
-export function LessonRuntime({ dayIndex, title, description }: ILessonRuntimeProps): ReactElement {
+export function LessonRuntime({
+  dayIndex,
+  title,
+  description,
+  words,
+  rules,
+}: ILessonRuntimeProps): ReactElement {
   const [session, setSession] = useState<LessonSessionView | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [advancing, setAdvancing] = useState(false);
@@ -135,6 +152,8 @@ export function LessonRuntime({ dayIndex, title, description }: ILessonRuntimePr
           <div className="mt-6">
             {session.stage === 'review' ? (
               <ReviewStage onDone={advance} />
+            ) : session.stage === 'learn' ? (
+              <LearnStage onDone={advance} rules={rules} words={words} />
             ) : (
               <button
                 className="h-9 rounded-control bg-primary-900 px-4 text-surface disabled:bg-cold"

@@ -81,7 +81,7 @@ and 2. No feature starts without it. **Never read the file** — existence check
 ## NEXT
 
 > **Phase 11 · Learning screens — in progress on `feat/11-learning-screens`**
-> Current: **F11.4** — Learn stage.
+> Current: **F11.5** — Dictate stage, the letter tiles.
 >
 > **What Phase 10 leaves Phase 11**
 > - The shell is real: `(learn)/layout.tsx` gives every screen the rail, the top bar and a
@@ -530,7 +530,7 @@ Branch `feat/11-learning-screens` · Status: `IN PROGRESS`
   - Test: 28 rows grouped by week with milestone rows; expandable day rows
 - [x] **F11.3** (2026-08-20) `/lesson/[day]` shell + five-stage tracker
   - Test: stage order enforced by the server, not just the UI
-- [ ] **F11.4** Learn stage
+- [x] **F11.4** (2026-08-20) Learn stage
   - Test: `PhonemeStrip` renders per word; audio plays
 - [ ] **F11.5** Dictate stage — the letter tiles
   - Test: keyboard input · auto-advance · backspace moves back **and** clears · arrows navigate · **paste blocked** · Enter submits · fully operable with no mouse
@@ -615,6 +615,7 @@ Out of scope for this build. Do not start these, and do not leave stubs for them
 Newest first. One line per finished feature: date · id · what · test result.
 
 | Date | Feature | What landed | Tests |
+| 2026-08-20 | F11.4 | Learn stage — a real `PhonemeStrip` per word from `GetPhonemeStrips` (four batched reads for the day), cancel-before-speak audio, the day's rules with their counterexamples | typecheck + lint green (tests paused) |
 | 2026-08-20 | F11.3 | `/lesson/[day]` focus mode — `(focus)` layout, idempotent session open/resume, `StageTracker`, the review stage, every transition taken from the server's response | typecheck + lint green (tests paused) |
 | 2026-08-20 | F11.2 | `/program` — 28 rows grouped by week, five exam milestones interleaved at their unlock day, expandable day rows, stats rail; `ListExamMilestones` use case | typecheck + lint green (tests paused) |
 | 2026-08-20 | F11.1 | `/dashboard` — four stat panels, today's session, next-exam readiness, weekly time-on-task, due-review table, phoneme matrix; six parallel memoised reads, plus `GetWeeklyActivity` and `GetNextExam` | typecheck + lint green (tests paused) |

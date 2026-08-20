@@ -2,6 +2,7 @@ import 'server-only';
 import { cache } from 'react';
 import { type IExamMilestone } from '@/modules/exams/application/dto/exam-milestone';
 import { type INextExam } from '@/modules/exams/application/dto/next-exam';
+import { type IWordPhonemeStrip } from '@/modules/library/application/dto/phoneme-strip';
 import { type IProgramDayDetail } from '@/modules/program/application/dto/program-day-detail';
 import { type IProgramOverview } from '@/modules/program/application/dto/program-overview';
 import { type ILearnerDashboard } from '@/modules/progress/application/dto/learner-dashboard';
@@ -18,6 +19,7 @@ import {
   makeGetProgramDay,
   makeGetProgramOverview,
   makeGetProgressSummary,
+  makeGetPhonemeStrips,
   makeGetWeeklyActivity,
   makeListExamMilestones,
 } from './use-cases';
@@ -86,6 +88,11 @@ export const readWeeklyActivity = cache(
 export const readDueReviews = cache(
   async (userId: string): Promise<IDueReviewQueue> =>
     makeGetDueReviewItems(createContainer(crypto.randomUUID())).execute({ userId }),
+);
+
+export const readPhonemeStrips = cache(
+  async (userId: string, wordIds: readonly string[]): Promise<readonly IWordPhonemeStrip[]> =>
+    makeGetPhonemeStrips(createContainer(crypto.randomUUID())).execute({ userId, wordIds }),
 );
 
 export const readExamMilestones = cache(

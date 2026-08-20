@@ -40,6 +40,7 @@ import { GetMasterySnapshotUseCase } from '@/modules/progress/application/use-ca
 import { GetWeeklyActivityUseCase } from '@/modules/progress/application/use-cases/get-weekly-activity';
 import { GetNextExamUseCase } from '@/modules/exams/application/use-cases/get-next-exam';
 import { ListExamMilestonesUseCase } from '@/modules/exams/application/use-cases/list-exam-milestones';
+import { GetPhonemeStripsUseCase } from '@/modules/library/application/use-cases/get-phoneme-strips';
 import { GetProgressSummaryUseCase } from '@/modules/progress/application/use-cases/get-progress-summary';
 import { GetDueReviewItemsUseCase } from '@/modules/review/application/use-cases/get-due-review-items';
 import { SubmitReviewAttemptUseCase } from '@/modules/review/application/use-cases/submit-review-attempt';
@@ -207,6 +208,10 @@ export function makeGetNextExam(c: IContainer): GetNextExamUseCase {
 
 export function makeListExamMilestones(c: IContainer): ListExamMilestonesUseCase {
   return new ListExamMilestonesUseCase(c.learnerProfiles, c.examDefinitions, c.examAttempts);
+}
+
+export function makeGetPhonemeStrips(c: IContainer): GetPhonemeStripsUseCase {
+  return new GetPhonemeStripsUseCase(c.learnerProfiles, c.words, c.wordPhonemes, c.phonemes, c.mastery);
 }
 
 export function makeGetMasterySnapshot(c: IContainer): GetMasterySnapshotUseCase {
