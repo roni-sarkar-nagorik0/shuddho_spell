@@ -84,7 +84,14 @@ export const phonemeSchema = z
 export type PhonemeEntry = z.infer<typeof phonemeSchema>;
 
 export const ruleFamilySchema = z.object({
-  code: z.string().regex(/^[a-z0-9-]+$/u),
+  /**
+   * Snake case, because that is what `010_seed_reference` already stores and
+   * what `rule_families.code` is unique on. The pattern was hyphen-only when
+   * this schema was written and would have renamed all 24 families on the first
+   * seed — a rename that orphans every `mastery_records` row keyed on the old
+   * code. Matching the database is not a preference here.
+   */
+  code: z.string().regex(/^[a-z0-9_]+$/u),
   statement: z.string().min(20),
   /**
    * Exactly three and exactly two, matching 002's constraints. The
