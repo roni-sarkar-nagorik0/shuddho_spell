@@ -11,11 +11,11 @@ export interface ICertificateView {
   readonly examAttemptId: string;
   readonly isValid: boolean;
   readonly revokedReason: string | null;
-  readonly comparison: readonly ICertificateComparisonRow[];
+  readonly comparison: readonly ICertificateComparisonLine[];
 }
 
 /** One line of the day-1 against day-28 comparison. */
-export interface ICertificateComparisonRow {
+export interface ICertificateComparisonLine {
   readonly label: string;
   readonly before: number;
   readonly after: number;

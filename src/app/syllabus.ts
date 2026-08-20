@@ -49,13 +49,13 @@ export const SYLLABUS: readonly ISyllabusDay[] = [
 ];
 
 /** Where the exams fall on the standard 28-day track — 08-exam-engine.md. */
-export interface IMilestoneRow {
+export interface IMilestoneEntry {
   readonly afterDay: number;
   readonly title: string;
   readonly detail: string;
 }
 
-export const MILESTONES: readonly IMilestoneRow[] = [
+export const MILESTONES: readonly IMilestoneEntry[] = [
   { afterDay: 7, title: 'Milestone 1', detail: '45 minutes · 60 questions · pass at 70%' },
   { afterDay: 14, title: 'Milestone 2', detail: '60 minutes · 80 questions · pass at 75%' },
   { afterDay: 21, title: 'Milestone 3', detail: '60 minutes · 80 questions · pass at 80%' },

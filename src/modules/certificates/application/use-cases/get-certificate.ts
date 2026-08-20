@@ -2,7 +2,7 @@ import { ProfileNotFoundError } from '@/modules/auth/domain/errors/profile-not-f
 import { type ILearnerProfileRepository } from '@/modules/auth/domain/repositories/learner-profile-repository';
 import { type ICertificateRepository } from '../../domain/repositories/certificate-repository';
 import {
-  type ICertificateComparisonRow,
+  type ICertificateComparisonLine,
   type ICertificateView,
 } from '../dto/certificate-view';
 
@@ -61,14 +61,14 @@ export class GetCertificateUseCase {
  */
 function toComparisonRows(
   comparison: Readonly<Record<string, unknown>>,
-): readonly ICertificateComparisonRow[] {
+): readonly ICertificateComparisonLine[] {
   const rows = comparison['rows'];
 
   if (!Array.isArray(rows)) {
     return [];
   }
 
-  return rows.flatMap((entry): readonly ICertificateComparisonRow[] => {
+  return rows.flatMap((entry): readonly ICertificateComparisonLine[] => {
     if (typeof entry !== 'object' || entry === null) {
       return [];
     }

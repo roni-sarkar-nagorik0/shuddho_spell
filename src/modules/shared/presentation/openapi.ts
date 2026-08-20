@@ -26,6 +26,9 @@ import {
 import { programDayParamsSchema } from '@/modules/program/presentation/dto/program-params';
 import { submitReviewBodySchema } from '@/modules/review/presentation/dto/review-requests';
 import { meResponseSchema } from '@/modules/auth/presentation/dto/me.response';
+import { completeOnboardingBodySchema } from '@/modules/auth/presentation/dto/onboarding-requests';
+import { verifyParamsSchema } from '@/modules/certificates/presentation/dto/certificate-requests';
+import { libraryQuerySchema } from '@/modules/library/presentation/dto/library-requests';
 
 extendZodWithOpenApi(z);
 
@@ -138,6 +141,46 @@ registry.registerPath({
     body: { content: { 'application/json': { schema: submitAttemptBodySchema } } },
   },
   responses: ok(z.unknown(), 'The marked answer.'),
+});
+
+registry.registerPath({
+  method: 'post',
+  path: '/api/v1/lessons/sessions/{id}/complete',
+  summary: 'Close the day — session, position and streak, in one transaction.',
+  request: { params: sessionParamsSchema },
+  responses: { ...ok(z.unknown(), 'The closed session and the new position.'), 409: PROBLEM },
+});
+
+registry.registerPath({
+  method: 'get',
+  path: '/api/v1/onboarding',
+  summary: 'What onboarding has stored so far, so an abandoned run resumes.',
+  responses: ok(z.unknown(), 'The stored choices, and whether they are final.'),
+});
+
+registry.registerPath({
+  method: 'post',
+  path: '/api/v1/onboarding',
+  summary: 'Record the learner’s track, daily minutes and accent. Written once.',
+  request: { body: { content: { 'application/json': { schema: completeOnboardingBodySchema } } } },
+  responses: ok(z.unknown(), 'The stored choices. A second call changes nothing.'),
+});
+
+registry.registerPath({
+  method: 'get',
+  path: '/api/v1/library',
+  summary: 'A keyset page of the word library, annotated with the learner’s own accuracy.',
+  request: { query: libraryQuerySchema },
+  responses: ok(z.unknown(), 'The page, and the cursor for the next one.'),
+});
+
+registry.registerPath({
+  method: 'get',
+  path: '/api/v1/certificates/verify/{code}',
+  summary:
+    'Verify a certificate. Public — no session. Returns only the fields 008’s public view exposes, and reports a revoked certificate as revoked rather than as missing.',
+  request: { params: verifyParamsSchema },
+  responses: ok(z.unknown(), 'The public face of the certificate.'),
 });
 
 registry.registerPath({

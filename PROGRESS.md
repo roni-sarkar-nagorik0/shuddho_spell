@@ -608,9 +608,11 @@ Branch `feat/12-exam-marketing-screens` · Status: `DONE` (12/12 built 2026-08-2
 ---
 
 ## Phase 13 — Hardening and delivery
-Branch `feat/13-hardening` · Status: `NOT STARTED`
+Branch `feat/13-hardening` · Status: `IN PROGRESS`
 
-- [ ] **F13.1** Coverage to the floor; fix the weakest three modules
+- [x] **F13.1** (2026-08-20) Weakest three modules fixed; per-module numbers reported.
+  **The ≥90% floor is NOT met — 57.20% lines / 72.26% functions / 78.41% branches.** Reported,
+  not claimed. See the Log row and the closing report (F13.12).
   - Test: `domain` + `application` ≥ 90%, per-module numbers reported
 - [ ] **F13.2** Playwright — Google sign-in → dashboard
 - [ ] **F13.3** Playwright — a complete day-12 lesson
@@ -641,6 +643,7 @@ Out of scope for this build. Do not start these, and do not leave stubs for them
 Newest first. One line per finished feature: date · id · what · test result.
 
 | Date | Feature | What landed | Tests |
+| 2026-08-20 | F13.1 | Fixed 3 red tests (2 mine, 1 red since Phase 7); covered the weakest three modules — `program/application` 0→100%, `library/application` 0→98.5%, `lessons/application` 0→14.1% | **501→533 tests, all green.** Coverage 50.57→57.20% lines. **Floor of 90% NOT met** |
 | 2026-08-20 | F12.12 | `/onboarding` — five steps, resumable from `localStorage` **and** from the stored profile; `CompleteOnboarding` refuses to rewrite a finished profile; reminder written through the preferences endpoint that owns the field | typecheck + lint green (tests paused) |
 | 2026-08-20 | F12.11 | Inline dictation demo — the **real** `LetterTiles` on the hero, unauthenticated, three real corpus words each carrying a real Bengali-speaker error; the only thing in the product that grades in the browser, and it says so | typecheck + lint green (tests paused) |
 | 2026-08-20 | F12.10 | `/` — dark hero, the 8-row Bengali-speaker error table, the real 28-day syllabus with milestone rows, session-timing band, pricing, FAQ, footer. Server Component with **no data reads**. Lighthouse not run; static rendering blocked by the root layout's cookie reads — both stated in the run report | typecheck + lint green (tests paused) |

@@ -7,7 +7,8 @@ import { MonoValue } from '@/components/primitives/mono-value';
 import { StatusBadge } from '@/components/primitives/status-badge';
 import { cn } from '@/lib/cn';
 
-export interface IProgramDayRow {
+/** One day line of the programme table. `...Line`, not `...Row` — see `rows.test.ts`. */
+export interface IProgramDayLine {
   readonly dayIndex: number;
   readonly weekIndex: number;
   readonly title: string;
@@ -16,7 +17,7 @@ export interface IProgramDayRow {
   readonly isUnlocked: boolean;
 }
 
-export interface IProgramMilestoneRow {
+export interface IProgramMilestoneLine {
   readonly code: string;
   readonly title: string;
   readonly unlockDayIndex: number;
@@ -25,18 +26,18 @@ export interface IProgramMilestoneRow {
 }
 
 export interface IProgramTableProps {
-  readonly days: readonly IProgramDayRow[];
-  readonly milestones: readonly IProgramMilestoneRow[];
+  readonly days: readonly IProgramDayLine[];
+  readonly milestones: readonly IProgramMilestoneLine[];
   readonly currentDayIndex: number;
 }
 
 interface IWeek {
   readonly weekIndex: number;
-  readonly days: readonly IProgramDayRow[];
+  readonly days: readonly IProgramDayLine[];
 }
 
-function groupByWeek(days: readonly IProgramDayRow[]): readonly IWeek[] {
-  const weeks = new Map<number, IProgramDayRow[]>();
+function groupByWeek(days: readonly IProgramDayLine[]): readonly IWeek[] {
+  const weeks = new Map<number, IProgramDayLine[]>();
 
   for (const day of days) {
     const bucket = weeks.get(day.weekIndex) ?? [];
@@ -70,7 +71,7 @@ export function ProgramTable({
   const [expanded, setExpanded] = useState<number | null>(currentDayIndex);
   const weeks = groupByWeek(days);
 
-  const milestonesBefore = (dayIndex: number): readonly IProgramMilestoneRow[] =>
+  const milestonesBefore = (dayIndex: number): readonly IProgramMilestoneLine[] =>
     milestones.filter((milestone) => milestone.unlockDayIndex === dayIndex);
 
   return (
@@ -118,8 +119,8 @@ export function ProgramTable({
 }
 
 interface IProgramRowsProps {
-  readonly day: IProgramDayRow;
-  readonly milestones: readonly IProgramMilestoneRow[];
+  readonly day: IProgramDayLine;
+  readonly milestones: readonly IProgramMilestoneLine[];
   readonly expanded: boolean;
   readonly isCurrent: boolean;
   readonly onToggle: () => void;

@@ -7,7 +7,8 @@ import { HeatCell } from '@/components/primitives/heat-cell';
 import { MonoValue } from '@/components/primitives/mono-value';
 import { StatusBadge } from '@/components/primitives/status-badge';
 
-export interface IWeakSpotRow {
+/** One line of the weak-spots table. `...Line`, not `...Row` — see `rows.test.ts`. */
+export interface IWeakSpotLine {
   readonly reviewItemId: string;
   readonly itemType: string;
   readonly prompt: string;
@@ -31,7 +32,7 @@ function dueLabel(daysUntilDue: number): string {
   return daysUntilDue === 0 ? 'today' : `in ${String(daysUntilDue)}d`;
 }
 
-const COLUMNS: readonly IColumn<IWeakSpotRow>[] = [
+const COLUMNS: readonly IColumn<IWeakSpotLine>[] = [
   { id: 'prompt', header: 'Item', pinned: true, width: '16rem', render: (row) => row.prompt },
   { id: 'type', header: 'Type', width: '7rem', render: (row) => row.itemType },
   {
@@ -82,8 +83,8 @@ const COLUMNS: readonly IColumn<IWeakSpotRow>[] = [
  * `onActivate` does the opening. The drawer traps focus and returns it to the
  * cell that opened it.
  */
-export function WeakSpotTable({ rows }: { readonly rows: readonly IWeakSpotRow[] }): ReactElement {
-  const [selected, setSelected] = useState<IWeakSpotRow | null>(null);
+export function WeakSpotTable({ rows }: { readonly rows: readonly IWeakSpotLine[] }): ReactElement {
+  const [selected, setSelected] = useState<IWeakSpotLine | null>(null);
 
   return (
     <>

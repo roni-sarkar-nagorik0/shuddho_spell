@@ -27,13 +27,13 @@ import { MILESTONES, SYLLABUS } from './syllabus';
  */
 export const dynamic = 'force-dynamic';
 
-interface IErrorRow {
+interface IErrorExample {
   readonly written: string;
   readonly meant: string;
   readonly why: string;
 }
 
-const BENGALI_ERRORS: readonly IErrorRow[] = [
+const BENGALI_ERRORS: readonly IErrorExample[] = [
   { written: 'wery', meant: 'very', why: 'Bangla has no /v/. The nearest sound is /w/, so it takes its place.' },
   { written: 'bhery', meant: 'very', why: 'The other substitution for /v/ — the aspirated ভ, which is closer in the mouth but not the sound.' },
   { written: 'tink', meant: 'think', why: 'Bangla has no /θ/. The dental stop ট stands in and the fricative disappears.' },
@@ -44,12 +44,12 @@ const BENGALI_ERRORS: readonly IErrorRow[] = [
   { written: 'schoolo', meant: 'school', why: 'Bangla syllables do not end in a bare consonant cluster, so a vowel gets added to close them.' },
 ];
 
-interface IFaqRow {
+interface IFaqEntry {
   readonly question: string;
   readonly answer: string;
 }
 
-const FAQ: readonly IFaqRow[] = [
+const FAQ: readonly IFaqEntry[] = [
   {
     question: 'Do I need a microphone?',
     answer:

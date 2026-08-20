@@ -7,7 +7,8 @@ import { MonoValue } from '@/components/primitives/mono-value';
 import { StatusBadge } from '@/components/primitives/status-badge';
 import { answerText, diffCharacters } from './diff';
 
-export interface IReviewRow {
+/** One line of the answer-review table. `...Line`, not `...Row` — see `rows.test.ts`. */
+export interface IAnswerReviewLine {
   readonly questionId: string;
   readonly sectionCode: string;
   readonly orderIndex: number;
@@ -19,7 +20,7 @@ export interface IReviewRow {
   readonly flagged: boolean;
 }
 
-const COLUMNS: readonly IColumn<IReviewRow>[] = [
+const COLUMNS: readonly IColumn<IAnswerReviewLine>[] = [
   {
     id: 'order',
     header: '#',
@@ -72,8 +73,8 @@ const COLUMNS: readonly IColumn<IReviewRow>[] = [
  * cell. Nothing new is needed for the keyboard; `DataTable` and `Drawer`
  * already carry it.
  */
-export function ExamReviewTable({ rows }: { readonly rows: readonly IReviewRow[] }): ReactElement {
-  const [selected, setSelected] = useState<IReviewRow | null>(null);
+export function ExamReviewTable({ rows }: { readonly rows: readonly IAnswerReviewLine[] }): ReactElement {
+  const [selected, setSelected] = useState<IAnswerReviewLine | null>(null);
 
   return (
     <>

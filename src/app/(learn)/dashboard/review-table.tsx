@@ -5,7 +5,15 @@ import { type ReactElement } from 'react';
 import { DataTable, type IColumn } from '@/components/data/data-table';
 import { StatusBadge } from '@/components/primitives/status-badge';
 
-export interface IReviewRow {
+/**
+ * One line of the due-review table.
+ *
+ * Named `...Line`, not `...Row`: `I*Row` is reserved in this codebase for a
+ * hand-written **database** row shape and must live in `infrastructure/rows/`.
+ * `rows.test.ts` enforces that, and a view model borrowing the name would make
+ * the convention unreadable.
+ */
+export interface IDueReviewLine {
   readonly reviewItemId: string;
   readonly prompt: string;
   readonly itemType: string;
@@ -13,7 +21,7 @@ export interface IReviewRow {
   readonly lastErrorTags: readonly string[];
 }
 
-const COLUMNS: readonly IColumn<IReviewRow>[] = [
+const COLUMNS: readonly IColumn<IDueReviewLine>[] = [
   { id: 'prompt', header: 'Item', pinned: true, width: '14rem', render: (row) => row.prompt },
   { id: 'type', header: 'Type', width: '8rem', render: (row) => row.itemType },
   {
@@ -51,7 +59,7 @@ const COLUMNS: readonly IColumn<IReviewRow>[] = [
  * `06-spaced-repetition.md` at a size a learner can finish, so there is never a
  * second page of it. `/weak-spots` is where the whole backlog lives.
  */
-export function ReviewTable({ rows }: { readonly rows: readonly IReviewRow[] }): ReactElement {
+export function ReviewTable({ rows }: { readonly rows: readonly IDueReviewLine[] }): ReactElement {
   const router = useRouter();
 
   return (

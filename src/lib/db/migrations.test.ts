@@ -365,6 +365,27 @@ describe('correct_answer is never handed to a client (F2.7)', () => {
     }
   });
 
+  /**
+   * Everything a function does with `correct_answer` **except write it**.
+   *
+   * The original assertion was "the body must not contain the string", which
+   * was right until 015 arrived: `start_exam_attempt` inserts an attempt and
+   * its whole paper in one transaction, and a paper has correct answers. It has
+   * to write the column, and writing is not leaking. The blunt check made the
+   * suite red from Phase 7 onwards, and the pause on running tests is why
+   * nobody saw it — F13.1 found it.
+   *
+   * So `insert` statements are removed first and **everything else** is
+   * checked. That is narrower than the old rule in exactly one place — the
+   * insert — and identical everywhere else: a `select`, a `return query`, a
+   * `returns table`, an `out` parameter or a plain mention anywhere outside an
+   * insert still fails. `provesItCatchesALeak` below is the guard on that
+   * claim.
+   */
+  function nonWritingBody(functionSql: string): string {
+    return functionSql.replace(/\binsert\s+into\b[\s\S]*?(?=;)/gi, '');
+  }
+
   it('no migration creates a view or function selecting correct_answer', () => {
     // A view runs as its owner and would bypass the table privileges entirely.
     for (const file of files) {
@@ -377,11 +398,39 @@ describe('correct_answer is never handed to a client (F2.7)', () => {
       }
       const functions = body.match(/create (or replace )?function[\s\S]*?\$\$[\s\S]*?\$\$/gi) ?? [];
       for (const fn of functions) {
-        expect(fn, `${file.name} exposes correct_answer through a function`).not.toMatch(
-          /\bcorrect_answer\b/i,
-        );
+        expect(
+          nonWritingBody(fn),
+          `${file.name} exposes correct_answer through a function`,
+        ).not.toMatch(/\bcorrect_answer\b/i);
       }
     }
+  });
+
+  /**
+   * The assertion above was relaxed by one clause, so this proves the clause is
+   * the only thing it lets through. A leak that reads the column back out is
+   * still caught, and 015's write is still allowed.
+   */
+  it('the insert exemption still catches a function that reads correct_answer back', () => {
+    const leaking = `create or replace function public.peek(p_id uuid)
+      returns jsonb language sql as $$
+        select correct_answer from public.exam_questions where id = p_id;
+      $$`;
+    expect(nonWritingBody(leaking)).toMatch(/\bcorrect_answer\b/i);
+
+    const leakingViaReturnQuery = `create or replace function public.peek2()
+      returns setof jsonb language plpgsql as $$
+      begin
+        return query select q.correct_answer from public.exam_questions q;
+      end; $$`;
+    expect(nonWritingBody(leakingViaReturnQuery)).toMatch(/\bcorrect_answer\b/i);
+
+    const writing = `create or replace function public.write_paper(p jsonb)
+      returns void language sql as $$
+        insert into public.exam_questions (id, correct_answer)
+        select gen_random_uuid(), p -> 'correct_answer';
+      $$`;
+    expect(nonWritingBody(writing)).not.toMatch(/\bcorrect_answer\b/i);
   });
 });
 
