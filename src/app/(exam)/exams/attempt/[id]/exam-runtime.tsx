@@ -4,8 +4,8 @@ import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useMemo, useState, type ReactElement } from 'react';
 import { z } from 'zod';
 import { examAttemptSchema, type ExamAttemptView } from '@/app/(learn)/exams/[code]/exam-contracts';
+import { ExamCountdown } from '@/components/exam/exam-countdown';
 import { ConfirmDialog } from '@/components/overlays/confirm-dialog';
-import { MonoValue } from '@/components/primitives/mono-value';
 import { apiFetch } from '@/lib/api/client';
 import { useSaveExamAnswer } from '@/lib/query/use-save-exam-answer';
 import { QuestionView } from './question-view';
@@ -53,6 +53,12 @@ export function ExamRuntime({ attemptId }: { readonly attemptId: string }): Reac
   const [confirming, setConfirming] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [finished, setFinished] = useState(false);
+  /**
+   * Bumped on every response that carries a fresh `remainingSeconds`, so the
+   * countdown re-anchors to the server's figure rather than drifting on the
+   * browser's.
+   */
+  const [syncToken, setSyncToken] = useState(0);
   const router = useRouter();
   const save = useSaveExamAnswer(attemptId);
 
@@ -69,6 +75,7 @@ export function ExamRuntime({ attemptId }: { readonly attemptId: string }): Reac
         }
 
         setAttempt(active);
+        setSyncToken((token) => token + 1);
         setDrafts(
           Object.fromEntries(
             active.answers.map((answer) => [answer.questionId, answer.submittedValue ?? '']),
@@ -127,12 +134,40 @@ export function ExamRuntime({ attemptId }: { readonly attemptId: string }): Reac
         // server's new view of the attempt rather than from a local guess at
         // which section is next.
         return apiFetch('/api/v1/exams/attempts/active', { schema: examAttemptSchema.nullable() })
-          .then((active) => { setAttempt(active); });
+          .then((active) => {
+            setAttempt(active);
+            setSyncToken((token) => token + 1);
+          });
       })
       .catch(() => {
         setError('That section could not be submitted. Your answers are saved — try again.');
       });
   }, [attempt, attemptId, router]);
+
+  /**
+   * The clock reached zero on the learner's screen.
+   *
+   * This hands the paper in; it does not decide anything. Rule 9's cron would
+   * auto-submit the attempt anyway, and rule 2 already refuses any write past
+   * `serverDeadlineAt` — so a browser clock running fast submits early (the
+   * learner's loss of a few seconds, and their own device's fault) and one
+   * running slow changes nothing, because the server stopped accepting writes
+   * when it said it would.
+   */
+  const onExpired = useCallback(() => {
+    if (finished) {
+      return;
+    }
+
+    setFinished(true);
+
+    void apiFetch(`/api/v1/exams/attempts/${attemptId}/submit`, {
+      method: 'POST',
+      schema: outcomeSchema,
+    })
+      .catch(() => undefined)
+      .finally(() => { router.push(`/exams/result/${attemptId}`); });
+  }, [attemptId, finished, router]);
 
   if (error !== null && attempt === null) {
     return <p className="p-8 text-tertiary-100">{error}</p>;
@@ -157,9 +192,12 @@ export function ExamRuntime({ attemptId }: { readonly attemptId: string }): Reac
           {answered}/{sectionQuestions.length} answered
         </span>
 
-        <span className="ml-auto flex items-center gap-2">
-          <span className="label text-primary-100">Remaining</span>
-          <MonoValue unit="s" value={attempt.remainingSeconds} />
+        <span className="ml-auto">
+          <ExamCountdown
+            onExpired={onExpired}
+            serverRemainingSeconds={attempt.remainingSeconds}
+            syncToken={syncToken}
+          />
         </span>
       </header>
 
