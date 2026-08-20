@@ -96,6 +96,14 @@ export class ApiError extends Error {
     return new ApiError(409, PROBLEM_CODES.EXAM_TIME_EXPIRED, detail);
   }
 
+  static examAttemptsExhausted(detail: string): ApiError {
+    return new ApiError(409, PROBLEM_CODES.EXAM_ATTEMPTS_EXHAUSTED, detail);
+  }
+
+  static examCooldownActive(detail: string): ApiError {
+    return new ApiError(409, PROBLEM_CODES.EXAM_COOLDOWN_ACTIVE, detail);
+  }
+
   static forbidden(): ApiError {
     return new ApiError(403, PROBLEM_CODES.FORBIDDEN, 'You cannot access this resource.');
   }

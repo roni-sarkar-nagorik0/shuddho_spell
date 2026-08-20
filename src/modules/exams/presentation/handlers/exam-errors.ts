@@ -1,5 +1,7 @@
 import { ApiError } from '@/lib/api/problem';
 import { ProfileNotFoundError } from '@/modules/auth/domain/errors/profile-not-found.error';
+import { ExamAttemptsExhaustedError } from '../../domain/errors/exam-attempts-exhausted.error';
+import { ExamCooldownActiveError } from '../../domain/errors/exam-cooldown-active.error';
 import { ExamLockedError } from '../../domain/errors/exam-locked.error';
 import { ExamTimeExpiredError } from '../../domain/errors/exam-time-expired.error';
 import { ExamNotFoundError } from '../../domain/errors/exam-not-found.error';
@@ -28,6 +30,20 @@ export function toApiError(caught: unknown): ApiError | null {
     return ApiError.forbidden();
   }
 
+  if (caught instanceof ExamAttemptsExhaustedError) {
+    return ApiError.examAttemptsExhausted(
+      `You have used all ${String(caught.maxAttempts)} attempts at this exam.`,
+    );
+  }
+
+  if (caught instanceof ExamCooldownActiveError) {
+    // The remaining time is in the detail because rule 5 asks for it there:
+    // "come back later" with no number reads as a bug.
+    return ApiError.examCooldownActive(
+      `This exam can be retaken in ${formatWait(caught.remainingSeconds)}, from ${caught.retryAt.toISOString()}.`,
+    );
+  }
+
   if (caught instanceof ExamTimeExpiredError) {
     // Its own code, not a plain conflict: the runtime has to stop the clock and
     // stop accepting input, and it cannot tell that from a replayed request
@@ -46,4 +62,18 @@ export function toApiError(caught: unknown): ApiError | null {
   }
 
   return null;
+}
+
+/** Hours and minutes, because "43,187 seconds" is not something anybody waits. */
+function formatWait(seconds: number): string {
+  const hours = Math.floor(seconds / 3600);
+  const minutes = Math.ceil((seconds % 3600) / 60);
+
+  if (hours === 0) {
+    return `${String(minutes)} minutes`;
+  }
+
+  return minutes === 0
+    ? `${String(hours)} hours`
+    : `${String(hours)} hours and ${String(minutes)} minutes`;
 }

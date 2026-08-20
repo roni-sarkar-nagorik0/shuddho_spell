@@ -40,6 +40,19 @@ export const PROBLEM_CODES = Object.freeze({
    * reaction.
    */
   EXAM_TIME_EXPIRED: 'EXAM_TIME_EXPIRED',
+  /**
+   * Every attempt at this exam has been used — three for a milestone, two for
+   * the final. Terminal for the learner, so the client shows a different screen
+   * from the one it shows for a cooldown: there is no waiting this out.
+   */
+  EXAM_ATTEMPTS_EXHAUSTED: 'EXAM_ATTEMPTS_EXHAUSTED',
+  /**
+   * A retake asked for inside the cooldown. Distinct from exhausted because the
+   * answer is "not yet" rather than "never", and the detail carries how long —
+   * `08-exam-engine.md` rule 5 asks for the remaining time to be in the
+   * problem.
+   */
+  EXAM_COOLDOWN_ACTIVE: 'EXAM_COOLDOWN_ACTIVE',
   INTERNAL: 'INTERNAL',
 });
 

@@ -8,6 +8,8 @@ import { type IIdGenerator } from '@/modules/shared/application/ports/id-generat
 import { ExamAttempt } from '../../domain/entities/exam-attempt';
 import { type ExamDefinition } from '../../domain/entities/exam-definition';
 import { ExamQuestion } from '../../domain/entities/exam-question';
+import { ExamAttemptsExhaustedError } from '../../domain/errors/exam-attempts-exhausted.error';
+import { ExamCooldownActiveError } from '../../domain/errors/exam-cooldown-active.error';
 import { ExamLockedError } from '../../domain/errors/exam-locked.error';
 import { ExamNotFoundError } from '../../domain/errors/exam-not-found.error';
 import { type IExamAttemptRepository } from '../../domain/repositories/exam-attempt-repository';
@@ -15,6 +17,7 @@ import { type IExamDefinitionRepository } from '../../domain/repositories/exam-d
 import { type IExamQuestionRepository } from '../../domain/repositories/exam-question-repository';
 import { ExamBlueprintService } from '../../domain/services/exam-blueprint.service';
 import { ExamCandidateBuilder } from '../../domain/services/exam-candidate-builder';
+import { ExamEligibilityPolicy } from '../../domain/services/exam-eligibility.policy';
 import { type ExamCode } from '../../domain/value-objects/exam-code';
 import { type IExamAttemptView } from '../dto/exam-attempt-view';
 import { type IExamWriteUnit } from '../ports/exam-write-unit';
@@ -47,6 +50,7 @@ export interface IStartExamAttemptInput {
 export class StartExamAttemptUseCase {
   private readonly blueprint = new ExamBlueprintService();
   private readonly candidates = new ExamCandidateBuilder();
+  private readonly eligibility = new ExamEligibilityPolicy();
 
   constructor(
     private readonly profiles: ILearnerProfileRepository,
@@ -87,6 +91,28 @@ export class StartExamAttemptUseCase {
     // guarantee: there is no code here that could extend a deadline.
     if (existing !== null) {
       return this.view(definition, existing, now);
+    }
+
+    // Only now, after the resume path has been ruled out. Checking eligibility
+    // first would refuse a learner their own live attempt on the third try at
+    // an exam that allows three — they are not starting a fourth, they are
+    // coming back to the one they are sitting.
+    const verdict = this.eligibility.evaluate(
+      definition,
+      await this.attempts.findForExam(profile.id, definition.id),
+      now,
+    );
+
+    if (verdict.kind === 'exhausted') {
+      throw new ExamAttemptsExhaustedError(definition.code, verdict.maxAttempts);
+    }
+
+    if (verdict.kind === 'cooling_down') {
+      throw new ExamCooldownActiveError(
+        definition.code,
+        verdict.remainingSeconds,
+        verdict.retryAt,
+      );
     }
 
     const attemptId = this.ids.next();
