@@ -4,6 +4,7 @@ import { GetMeUseCase } from '@/modules/auth/application/use-cases/get-me';
 import { FlagExamQuestionUseCase } from '@/modules/exams/application/use-cases/flag-exam-question';
 import { SaveExamAnswerUseCase } from '@/modules/exams/application/use-cases/save-exam-answer';
 import { StartExamAttemptUseCase } from '@/modules/exams/application/use-cases/start-exam-attempt';
+import { SubmitExamSectionUseCase } from '@/modules/exams/application/use-cases/submit-exam-section';
 import { AdvanceLessonStageUseCase } from '@/modules/lessons/application/use-cases/advance-lesson-stage';
 import { CompleteLessonSessionUseCase } from '@/modules/lessons/application/use-cases/complete-lesson-session';
 import { StartLessonSessionUseCase } from '@/modules/lessons/application/use-cases/start-lesson-session';
@@ -215,4 +216,8 @@ export function makeFlagExamQuestion(c: IContainer): FlagExamQuestionUseCase {
     c.clock,
     c.ids,
   );
+}
+
+export function makeSubmitExamSection(c: IContainer): SubmitExamSectionUseCase {
+  return new SubmitExamSectionUseCase(c.learnerProfiles, c.examDefinitions, c.examAttempts, c.clock);
 }

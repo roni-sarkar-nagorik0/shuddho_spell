@@ -15,6 +15,7 @@ import {
   attemptParamsSchema,
   examCodeParamsSchema,
   saveAnswerBodySchema,
+  sectionParamsSchema,
 } from '@/modules/exams/presentation/dto/exam-requests';
 import { programDayParamsSchema } from '@/modules/program/presentation/dto/program-params';
 import { submitReviewBodySchema } from '@/modules/review/presentation/dto/review-requests';
@@ -183,6 +184,16 @@ registry.registerPath({
     body: { content: { 'application/json': { schema: saveAnswerBodySchema } } },
   },
   responses: ok(z.unknown(), 'The saved answer and the time left.'),
+});
+
+registry.registerPath({
+  method: 'post',
+  path: '/api/v1/exams/attempts/{id}/sections/{code}/submit',
+  summary: 'Lock a section. One way, forwards, one at a time.',
+  description:
+    'There is no endpoint that reopens a submitted section. Submitting a section that is not the open one is 409 — behind is a replay, ahead would lock the section between unsat.',
+  request: { params: sectionParamsSchema },
+  responses: ok(z.unknown(), 'The next section, and whether the paper is complete.'),
 });
 
 export function buildOpenApiDocument(): ReturnType<OpenApiGeneratorV3['generateDocument']> {

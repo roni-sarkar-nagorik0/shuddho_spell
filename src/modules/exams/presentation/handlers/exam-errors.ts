@@ -4,6 +4,7 @@ import { ExamLockedError } from '../../domain/errors/exam-locked.error';
 import { ExamTimeExpiredError } from '../../domain/errors/exam-time-expired.error';
 import { ExamNotFoundError } from '../../domain/errors/exam-not-found.error';
 import { IllegalAttemptTransitionError } from '../../domain/errors/illegal-attempt-transition.error';
+import { SectionNotCurrentError } from '../../domain/errors/section-not-current.error';
 
 /**
  * The one mapping from an exam domain error to a status.
@@ -36,7 +37,7 @@ export function toApiError(caught: unknown): ApiError | null {
     );
   }
 
-  if (caught instanceof IllegalAttemptTransitionError) {
+  if (caught instanceof IllegalAttemptTransitionError || caught instanceof SectionNotCurrentError) {
     return ApiError.conflict(caught.message);
   }
 

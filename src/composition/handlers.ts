@@ -2,6 +2,7 @@ import 'server-only';
 import { createGetMeHandler } from '@/modules/auth/presentation/handlers/get-me';
 import { createSaveAnswerHandler } from '@/modules/exams/presentation/handlers/save-answer';
 import { createStartAttemptHandler } from '@/modules/exams/presentation/handlers/start-attempt';
+import { createSubmitSectionHandler } from '@/modules/exams/presentation/handlers/submit-section';
 import { createAdvanceStageHandler } from '@/modules/lessons/presentation/handlers/advance-stage';
 import { createStartSessionHandler } from '@/modules/lessons/presentation/handlers/start-session';
 import { createSubmitAttemptHandler } from '@/modules/lessons/presentation/handlers/submit-attempt';
@@ -23,6 +24,7 @@ import {
   makeFlagExamQuestion,
   makeSaveExamAnswer,
   makeStartExamAttempt,
+  makeSubmitExamSection,
   makeStartLessonSession,
   makeSubmitConstructionAttempt,
   makeSubmitDictationAttempt,
@@ -99,3 +101,7 @@ export const saveExamAnswerHandler = createSaveAnswerHandler(() => {
 
   return { save: makeSaveExamAnswer(c), flag: makeFlagExamQuestion(c) };
 });
+
+export const submitExamSectionHandler = createSubmitSectionHandler(() =>
+  makeSubmitExamSection(container()),
+);

@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { EXAM_CODES } from '../../domain/value-objects/exam-code';
+import { EXAM_SECTION_CODES } from '../../domain/value-objects/exam-section-code';
 
 /**
  * As everywhere else in this application, **no schema here declares an identity
@@ -54,3 +55,16 @@ export type SaveAnswerBody = z.infer<typeof saveAnswerBodySchema>;
 
 const _attemptParamsMatch: z.ZodType<IAttemptParams> = attemptParamsSchema;
 void _attemptParamsMatch;
+
+export const sectionParamsSchema = z.object({
+  id: z.string().uuid(),
+  code: z.enum(EXAM_SECTION_CODES),
+});
+
+export interface ISectionParams {
+  readonly id: string;
+  readonly code: (typeof EXAM_SECTION_CODES)[number];
+}
+
+const _sectionParamsMatch: z.ZodType<ISectionParams> = sectionParamsSchema;
+void _sectionParamsMatch;
