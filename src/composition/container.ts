@@ -8,11 +8,13 @@ import { SupabaseLessonRepository } from '@/modules/lessons/infrastructure/persi
 import { type IPhonemeRepository } from '@/modules/library/domain/repositories/phoneme-repository';
 import { type IRuleFamilyRepository } from '@/modules/library/domain/repositories/rule-family-repository';
 import { type ISentenceItemRepository } from '@/modules/library/domain/repositories/sentence-item-repository';
+import { type IWordPhonemeRepository } from '@/modules/library/domain/repositories/word-phoneme-repository';
 import { type IWordRepository } from '@/modules/library/domain/repositories/word-repository';
 import { ErrorTagger } from '@/modules/library/domain/services/error-tagger';
 import { SupabasePhonemeRepository } from '@/modules/library/infrastructure/persistence/supabase/phoneme.repository';
 import { SupabaseRuleFamilyRepository } from '@/modules/library/infrastructure/persistence/supabase/rule-family.repository';
 import { SupabaseSentenceItemRepository } from '@/modules/library/infrastructure/persistence/supabase/sentence-item.repository';
+import { SupabaseWordPhonemeRepository } from '@/modules/library/infrastructure/persistence/supabase/word-phoneme.repository';
 import { SupabaseWordRepository } from '@/modules/library/infrastructure/persistence/supabase/word.repository';
 import { type IProgramRepository } from '@/modules/program/domain/repositories/program-repository';
 import { SupabaseProgramRepository } from '@/modules/program/infrastructure/persistence/supabase/program.repository';
@@ -47,6 +49,8 @@ export interface IContainer {
 
   readonly learnerProfiles: ILearnerProfileRepository;
   readonly words: IWordRepository;
+  /** The stored G2P — 002's `word_phonemes`, read at last. */
+  readonly wordPhonemes: IWordPhonemeRepository;
   readonly sentenceItems: ISentenceItemRepository;
   readonly ruleFamilies: IRuleFamilyRepository;
   readonly phonemes: IPhonemeRepository;
@@ -87,6 +91,7 @@ export function createContainer(requestId: string): IContainer {
 
     learnerProfiles: new SupabaseLearnerProfileRepository(db),
     words: new SupabaseWordRepository(db),
+    wordPhonemes: new SupabaseWordPhonemeRepository(db),
     sentenceItems: new SupabaseSentenceItemRepository(db),
     ruleFamilies: new SupabaseRuleFamilyRepository(db),
     phonemes: new SupabasePhonemeRepository(db),
