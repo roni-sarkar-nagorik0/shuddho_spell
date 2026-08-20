@@ -1,0 +1,12 @@
+{
+  "doc": "/**\n * Week 1 — the foundations a Bengali speaker needs before anything else.\n *\n * The rule families introduced here are the ones that decide most English\n * spellings a learner will meet in the first fortnight: doubling before a vowel\n * suffix, dropping a silent e, y to i, the -es plural, a/an, the ck/tch/dge\n * spellings after a short vowel, the floss doubling, q always taking u, and no\n * English word ending in v.\n *\n * The vocabulary is high-frequency first — `frequencyRank` drives the order\n * within a day — and every `commonMisspellings` entry is an error a Bengali\n * speaker actually produces rather than a random corruption: `dis` for `this`\n * and `tink` for `think` from the missing dental fricatives, `vil` for `will`\n * and `bhery` for `very` from the missing /v/ and /w/, `recieve` and `beleive`\n * from the i-before-e rule itself.\n *\n * IPA is the standard British reference accent, which is what\n * `learner_profiles.accent_preference` defaults to.\n */\n",
+  "days": [
+    { "title": "First words", "focus": "The commonest words in English, and the sounds Bangla does not have: /v/, /w/, /θ/ and /ð/." },
+    { "title": "Around the house", "focus": "Everyday nouns, the a/an rule, and the short-vowel ck spelling." },
+    { "title": "People and family", "focus": "Family words, subject-verb agreement, and the -es plural." },
+    { "title": "Doubling and dropping", "focus": "Double the final consonant before a vowel suffix; drop the silent e before one." },
+    { "title": "Y becomes I", "focus": "Consonant plus y turns to i before a suffix — happier, carried, cities." },
+    { "title": "Soft c and soft g", "focus": "Why c sounds like s and g like j before e, i and y, and the tch and dge spellings." },
+    { "title": "I before E, and no final V", "focus": "The i-before-e rule with its real exceptions, and why no English word ends in v." }
+  ]
+}

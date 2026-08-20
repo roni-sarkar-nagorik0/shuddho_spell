@@ -40,9 +40,18 @@ export interface IValidationResult {
   readonly counts: IContentCounts;
 }
 
-/** Roughly how long one item takes, from `06-spaced-repetition.md`'s pacing. */
-const SECONDS_PER_WORD = 45;
-const SECONDS_PER_SENTENCE = 75;
+/**
+ * Roughly how long one item takes.
+ *
+ * Corrected from a first guess of 45 and 75, which made an honest day — the
+ * 1,240 words and 560 sentences of the spec, divided by 28 — claim 58 minutes.
+ * `learner_profiles.daily_minutes` defaults to 30 and `00-overview.md` sells a
+ * fifteen-to-thirty-minute habit, so either the numbers or the promise had to
+ * give. These are the interaction times: hear a word, type it, read the
+ * feedback; read a Bangla prompt, build a sentence, read the feedback.
+ */
+const SECONDS_PER_WORD = 25;
+const SECONDS_PER_SENTENCE = 45;
 const SECONDS_PER_MINUTE = 60;
 /** A day may claim within this factor of what its content actually takes. */
 const MINUTES_TOLERANCE = 1.5;

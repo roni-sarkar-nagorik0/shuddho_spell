@@ -1,0 +1,310 @@
+the|ðə|the|দ্য|নির্দিষ্টতাবোধক পদ|determiner||1|de,da
+be|biː|be|বি|হওয়া|verb||2|bee,bi
+to|tuː|to|টু|প্রতি|preposition||3|too,tu
+of|ɒv|of|অভ্|এর|preposition||4|ov,off
+and|ænd|and|অ্যান্ড|এবং|conjunction||5|an,end
+a|ə|a|আ|একটি|determiner|article_a_an|6|aa,ay
+in|ɪn|in|ইন|ভিতরে|preposition||7|inn,en
+that|ðæt|that|দ্যাট|সেই|determiner||8|dat,tat
+have|hæv|have|হ্যাভ|থাকা|verb|no_final_v|9|hav,haf
+it|ɪt|it|ইট|এটি|pronoun||10|itt,et
+for|fɔː|for|ফর|জন্য|preposition||11|four,fore
+not|nɒt|not|নট|না|adverb||12|nott,nat
+on|ɒn|on|অন|উপরে|preposition||13|onn,aun
+with|wɪð|with|উইদ্|সঙ্গে|preposition||14|widh,wid
+he|hiː|he|হি|সে|pronoun||15|hee,hi
+as|æz|as|অ্যাজ|যেমন|conjunction||16|az,ass
+you|juː|you|ইউ|তুমি|pronoun||17|yu,u
+do|duː|do|ডু|করা|verb||18|doo,du
+at|æt|at|অ্যাট|-এ|preposition||19|att,et
+this|ðɪs|this|দিস|এটি|determiner||20|dis,tis
+but|bʌt|but|বাট|কিন্তু|conjunction||21|butt,bat
+his|hɪz|his|হিজ|তার|determiner||22|hiz,hees
+by|baɪ|by|বাই|দ্বারা|preposition||23|bye,bai
+from|frɒm|from|ফ্রম|থেকে|preposition||24|frome,fram
+they|ðeɪ|they|দে|তারা|pronoun||25|dey,thay
+we|wiː|we|উই|আমরা|pronoun||26|wee,vee
+say|seɪ|say|সে|বলা|verb||27|sey,sai
+her|hɜː|her|হার|তার|determiner||28|hur,har
+she|ʃiː|she|শি|সে|pronoun||29|shee,see
+or|ɔː|or|অর|অথবা|conjunction||30|our,ore
+an|æn|an|অ্যান|একটি|determiner|article_a_an|31|ann,en
+will|wɪl|will|উইল|করবে|verb||32|wil,vil
+my|maɪ|my|মাই|আমার|determiner||33|mai,mie
+one|wʌn|one|ওয়ান|এক|determiner||34|won,wone
+all|ɔːl|all|অল|সব|determiner|floss_doubling|35|al,aul
+would|wʊd|would|উড|করত|verb|silent_letters|36|wud,wold
+there|ðeə|there|দেয়ার|সেখানে|adverb||37|their,thier
+their|ðeə|their|দেয়ার|তাদের|determiner|i_before_e|38|thier,there
+what|wɒt|what|হোয়াট|কী|pronoun||39|wat,vat
+so|səʊ|so|সো|তাই|conjunction||40|soe,sow
+up|ʌp|up|আপ|উপরে|adverb||41|upp,ap
+out|aʊt|out|আউট|বাইরে|adverb||42|owt,aut
+if|ɪf|if|ইফ|যদি|conjunction||43|iff,ef
+about|əˈbaʊt|a-bout|অ্যাবাউট|সম্পর্কে|preposition||44|abaut,abowt
+who|huː|who|হু|কে|pronoun|silent_letters|45|hoo,hu
+get|ɡet|get|গেট|পাওয়া|verb||46|gett,git
+which|wɪtʃ|which|উইচ|কোনটি|pronoun||47|wich,witch
+go|ɡəʊ|go|গো|যাওয়া|verb||48|goe,gow
+me|miː|me|মি|আমাকে|pronoun||49|mee,mi
+when|wen|when|হোয়েন|কখন|conjunction||50|wen,ven
+make|meɪk|make|মেক|তৈরি করা|verb|drop_silent_e|51|mak,maik
+can|kæn|can|ক্যান|পারা|verb||52|cann,ken
+like|laɪk|like|লাইক|পছন্দ করা|verb|drop_silent_e|53|lik,laik
+time|taɪm|time|টাইম|সময়|noun|drop_silent_e|54|tim,taim
+no|nəʊ|no|নো|না|determiner||55|noe,know
+just|dʒʌst|just|জাস্ট|শুধু|adverb||56|jast,jush
+him|hɪm|him|হিম|তাকে|pronoun||57|hem,himm
+know|nəʊ|know|নো|জানা|verb|silent_letters|58|no,now
+take|teɪk|take|টেক|নেওয়া|verb|drop_silent_e|59|tak,taik
+people|ˈpiːpl|peo-ple|পিপল|মানুষ|noun||60|pepole,peopel
+year|jɪə|year|ইয়ার|বছর|noun||61|yeer,yar
+your|jɔː|your|ইয়োর|তোমার|determiner||62|yor,youre
+good|ɡʊd|good|গুড|ভালো|adjective||63|gud,goot
+some|sʌm|some|সাম|কিছু|determiner||64|sum,som
+could|kʊd|could|কুড|পারত|verb|silent_letters|65|cud,kould
+them|ðem|them|দেম|তাদের|pronoun||66|dem,tem
+see|siː|see|সি|দেখা|verb||67|se,sea
+other|ˈʌðə|o-ther|আদার|অন্য|adjective||68|ather,oder
+than|ðæn|than|দ্যান|চেয়ে|conjunction||69|then,dan
+then|ðen|then|দেন|তখন|adverb||70|than,den
+now|naʊ|now|নাউ|এখন|adverb||71|nao,nou
+look|lʊk|look|লুক|তাকানো|verb||72|luk,lok
+only|ˈəʊnli|on-ly|ওনলি|শুধু|adverb||73|onely,onlee
+come|kʌm|come|কাম|আসা|verb|drop_silent_e|74|kom,cum
+over|ˈəʊvə|o-ver|ওভার|উপর দিয়ে|preposition||75|ovar,ober
+think|θɪŋk|think|থিংক|ভাবা|verb||76|tink,thinck
+also|ˈɔːlsəʊ|al-so|অলসো|এছাড়াও|adverb||77|alsoe,olso
+back|bæk|back|ব্যাক|পিছনে|adverb|ck_after_short_vowel|78|bak,bac
+after|ˈɑːftə|af-ter|আফটার|পরে|preposition||79|aftar,affter
+use|juːz|use|ইউজ|ব্যবহার করা|verb|drop_silent_e|80|uze,yuse
+two|tuː|two|টু|দুই|determiner|silent_letters|81|to,tow
+how|haʊ|how|হাউ|কীভাবে|adverb||82|hao,hou
+our|aʊə|our|আওয়ার|আমাদের|determiner||83|hour,aur
+work|wɜːk|work|ওয়ার্ক|কাজ|noun||84|vork,werk
+first|fɜːst|first|ফার্স্ট|প্রথম|adjective||85|frist,furst
+well|wel|well|ওয়েল|ভালোভাবে|adverb|floss_doubling|86|wel,vell
+way|weɪ|way|ওয়ে|উপায়|noun||87|wey,vay
+even|ˈiːvn|e-ven|ইভন|এমনকি|adverb||88|evan,ivan
+new|njuː|new|নিউ|নতুন|adjective||89|nue,niew
+want|wɒnt|want|ওয়ান্ট|চাওয়া|verb||90|wont,vant
+because|bɪˈkɒz|be-cause|বিকজ|কারণ|conjunction||91|becuase,becoz
+any|ˈeni|a-ny|এনি|যেকোনো|determiner||92|eny,anny
+these|ðiːz|these|দিজ|এইগুলি|determiner||93|dese,thease
+give|ɡɪv|give|গিভ|দেওয়া|verb|no_final_v|94|giv,gife
+day|deɪ|day|ডে|দিন|noun||95|dey,dai
+most|məʊst|most|মোস্ট|সবচেয়ে|adverb||96|moast,mosst
+us|ʌs|us|আস|আমাদের|pronoun||97|uss,as
+water|ˈwɔːtə|wa-ter|ওয়াটার|পানি|noun||98|watar,vater
+school|skuːl|school|স্কুল|বিদ্যালয়|noun||99|skool,shcool
+family|ˈfæməli|fa-mi-ly|ফ্যামিলি|পরিবার|noun|y_to_i|100|familly,famely
+house|haʊs|house|হাউস|বাড়ি|noun||101|hows,haus
+country|ˈkʌntri|coun-try|কান্ট্রি|দেশ|noun|y_to_i|102|contry,countree
+city|ˈsɪti|ci-ty|সিটি|শহর|noun|soft_c|103|citty,sity
+book|bʊk|book|বুক|বই|noun||104|buk,boock
+money|ˈmʌni|mo-ney|মানি|টাকা|noun||105|monney,mony
+food|fuːd|food|ফুড|খাবার|noun||106|fud,foud
+friend|frend|friend|ফ্রেন্ড|বন্ধু|noun|i_before_e|107|freind,frend
+mother|ˈmʌðə|mo-ther|মাদার|মা|noun||108|moder,mothar
+father|ˈfɑːðə|fa-ther|ফাদার|বাবা|noun||109|fader,fathar
+teacher|ˈtiːtʃə|tea-cher|টিচার|শিক্ষক|noun||110|teecher,techer
+student|ˈstjuːdnt|stu-dent|স্টুডেন্ট|ছাত্র|noun||111|studant,stodent
+morning|ˈmɔːnɪŋ|mor-ning|মর্নিং|সকাল|noun||112|moring,morrning
+night|naɪt|night|নাইট|রাত|noun|silent_letters|113|nite,nyte
+today|təˈdeɪ|to-day|টুডে|আজ|adverb||114|to-day,tuday
+week|wiːk|week|উইক|সপ্তাহ|noun||115|weak,wik
+month|mʌnθ|month|মান্থ|মাস|noun||116|munth,mont
+name|neɪm|name|নেম|নাম|noun|drop_silent_e|117|naim,nem
+place|pleɪs|place|প্লেস|জায়গা|noun|soft_c|118|plase,plaice
+thing|θɪŋ|thing|থিং|জিনিস|noun||119|ting,thin
+man|mæn|man|ম্যান|পুরুষ|noun||120|mann,men
+woman|ˈwʊmən|wo-man|উইমেন|নারী|noun||121|women,wuman
+child|tʃaɪld|child|চাইল্ড|শিশু|noun||122|chield,chaild
+boy|bɔɪ|boy|বয়|ছেলে|noun||123|boi,boye
+girl|ɡɜːl|girl|গার্ল|মেয়ে|noun||124|gril,gurl
+hand|hænd|hand|হ্যান্ড|হাত|noun||125|hend,haand
+eye|aɪ|eye|আই|চোখ|noun||126|ey,aye
+head|hed|head|হেড|মাথা|noun||127|hed,heed
+door|dɔː|door|ডোর|দরজা|noun||128|dor,doer
+room|ruːm|room|রুম|ঘর|noun||129|rum,rooom
+road|rəʊd|road|রোড|রাস্তা|noun||130|rode,rood
+car|kɑː|car|কার|গাড়ি|noun||131|kar,carr
+tree|triː|tree|ট্রি|গাছ|noun||132|tri,thee
+sun|sʌn|sun|সান|সূর্য|noun||133|son,sunn
+moon|muːn|moon|মুন|চাঁদ|noun||134|mun,moone
+rain|reɪn|rain|রেইন|বৃষ্টি|noun||135|rian,rane
+river|ˈrɪvə|ri-ver|রিভার|নদী|noun|no_final_v|136|rivar,ribber
+fish|fɪʃ|fish|ফিশ|মাছ|noun||137|fis,phish
+bird|bɜːd|bird|বার্ড|পাখি|noun||138|berd,burd
+milk|mɪlk|milk|মিল্ক|দুধ|noun||139|melk,milck
+rice|raɪs|rice|রাইস|ভাত|noun|soft_c|140|rais,ryce
+egg|eɡ|egg|এগ|ডিম|noun||141|eg,agg
+salt|sɔːlt|salt|সল্ট|লবণ|noun||142|solt,sault
+sugar|ˈʃʊɡə|su-gar|সুগার|চিনি|noun||143|suger,shugar
+tea|tiː|tea|টি|চা|noun||144|tee,thea
+bread|bred|bread|ব্রেড|রুটি|noun||145|bred,braed
+apple|ˈæpl|ap-ple|অ্যাপল|আপেল|noun||146|appel,aple
+red|red|red|রেড|লাল|adjective||147|redd,raid
+blue|bluː|blue|ব্লু|নীল|adjective||148|blu,bloo
+green|ɡriːn|green|গ্রিন|সবুজ|adjective||149|grin,greeen
+black|blæk|black|ব্ল্যাক|কালো|adjective|ck_after_short_vowel|150|blak,blac
+white|waɪt|white|হোয়াইট|সাদা|adjective|silent_letters|151|wite,whyte
+big|bɪɡ|big|বিগ|বড়|adjective|doubling_1_1_1|152|bigg,beg
+small|smɔːl|small|স্মল|ছোট|adjective|floss_doubling|153|smal,smoll
+long|lɒŋ|long|লং|লম্বা|adjective||154|longg,lang
+short|ʃɔːt|short|শর্ট|ছোট|adjective||155|shot,sort
+old|əʊld|old|ওল্ড|পুরনো|adjective||156|olde,auld
+young|jʌŋ|young|ইয়াং|তরুণ|adjective||157|yung,yong
+hot|hɒt|hot|হট|গরম|adjective|doubling_1_1_1|158|hott,hat
+cold|kəʊld|cold|কোল্ড|ঠান্ডা|adjective||159|colde,kold
+happy|ˈhæpi|hap-py|হ্যাপি|খুশি|adjective|y_to_i|160|hapy,happpy
+sad|sæd|sad|স্যাড|দুঃখিত|adjective|doubling_1_1_1|161|sadd,sed
+easy|ˈiːzi|ea-sy|ইজি|সহজ|adjective|y_to_i|162|easey,eazy
+hard|hɑːd|hard|হার্ড|কঠিন|adjective||163|hardd,hardt
+right|raɪt|right|রাইট|সঠিক|adjective|silent_letters|164|rite,wright
+wrong|rɒŋ|wrong|রং|ভুল|adjective|silent_letters|165|rong,wrang
+open|ˈəʊpən|o-pen|ওপেন|খোলা|verb||166|opan,oppen
+close|kləʊz|close|ক্লোজ|বন্ধ করা|verb|drop_silent_e|167|cloze,clos
+stop|stɒp|stop|স্টপ|থামা|verb|doubling_1_1_1|168|stopp,stap
+start|stɑːt|start|স্টার্ট|শুরু করা|verb||169|strat,startt
+run|rʌn|run|রান|দৌড়ানো|verb|doubling_1_1_1|170|runn,ran
+walk|wɔːk|walk|ওয়াক|হাঁটা|verb|silent_letters|171|wak,valk
+eat|iːt|eat|ইট|খাওয়া|verb||172|eet,eate
+drink|drɪŋk|drink|ড্রিংক|পান করা|verb||173|drinck,drenk
+sleep|sliːp|sleep|স্লিপ|ঘুমানো|verb||174|slep,sleap
+read|riːd|read|রিড|পড়া|verb||175|red,reed
+write|raɪt|write|রাইট|লেখা|verb|silent_letters|176|rite,wrigth
+speak|spiːk|speak|স্পিক|বলা|verb||177|speek,spek
+listen|ˈlɪsn|lis-ten|লিসন|শোনা|verb|silent_letters|178|lisen,listan
+learn|lɜːn|learn|লার্ন|শেখা|verb||179|lern,laern
+teach|tiːtʃ|teach|টিচ|শেখানো|verb||180|teech,tich
+help|help|help|হেল্প|সাহায্য করা|verb||181|halp,helpp
+buy|baɪ|buy|বাই|কেনা|verb||182|by,bye
+sell|sel|sell|সেল|বিক্রি করা|verb|floss_doubling|183|sel,cell
+pay|peɪ|pay|পে|মূল্য দেওয়া|verb||184|pey,paye
+send|send|send|সেন্ড|পাঠানো|verb||185|sand,cend
+bring|brɪŋ|bring|ব্রিং|আনা|verb||186|bringg,breng
+carry|ˈkæri|car-ry|ক্যারি|বহন করা|verb|y_to_i|187|cary,carrie
+call|kɔːl|call|কল|ডাকা|verb|floss_doubling|188|cal,coll
+ask|ɑːsk|ask|আস্ক|জিজ্ঞাসা করা|verb||189|aks,esk
+answer|ˈɑːnsə|an-swer|আনসার|উত্তর|noun|silent_letters|190|anser,ansewer
+question|ˈkwestʃən|ques-tion|কোয়েশ্চন|প্রশ্ন|noun|tion_sion|191|questin,queston
+number|ˈnʌmbə|num-ber|নাম্বার|সংখ্যা|noun||192|numbar,nomber
+letter|ˈletə|let-ter|লেটার|চিঠি|noun||193|leter,lettar
+word|wɜːd|word|ওয়ার্ড|শব্দ|noun||194|werd,vord
+line|laɪn|line|লাইন|রেখা|noun|drop_silent_e|195|lain,lyne
+page|peɪdʒ|page|পেজ|পৃষ্ঠা|noun|soft_g|196|paje,paige
+paper|ˈpeɪpə|pa-per|পেপার|কাগজ|noun||197|papar,peper
+pen|pen|pen|পেন|কলম|noun||198|penn,pan
+table|ˈteɪbl|ta-ble|টেবিল|টেবিল|noun||199|tabel,tabl
+chair|tʃeə|chair|চেয়ার|চেয়ার|noun||200|chiar,cheir
+window|ˈwɪndəʊ|win-dow|উইন্ডো|জানালা|noun||201|windo,vindow
+floor|flɔː|floor|ফ্লোর|মেঝে|noun||202|flor,flore
+wall|wɔːl|wall|ওয়াল|দেয়াল|noun|floss_doubling|203|wal,voll
+garden|ˈɡɑːdn|gar-den|গার্ডেন|বাগান|noun||204|gardan,gardin
+market|ˈmɑːkɪt|mar-ket|মার্কেট|বাজার|noun||205|markit,marcket
+shop|ʃɒp|shop|শপ|দোকান|noun|doubling_1_1_1|206|shopp,sop
+office|ˈɒfɪs|of-fice|অফিস|অফিস|noun|soft_c|207|ofice,offise
+hospital|ˈhɒspɪtl|hos-pi-tal|হসপিটাল|হাসপাতাল|noun||208|hospitel,hospitle
+doctor|ˈdɒktə|doc-tor|ডক্টর|ডাক্তার|noun||209|docter,doktor
+bus|bʌs|bus|বাস|বাস|noun||210|buss,bas
+train|treɪn|train|ট্রেন|ট্রেন|noun||211|tran,trian
+village|ˈvɪlɪdʒ|vil-lage|ভিলেজ|গ্রাম|noun|soft_g|212|vilage,villege
+town|taʊn|town|টাউন|শহর|noun||213|toun,tawn
+street|striːt|street|স্ট্রিট|রাস্তা|noun||214|stret,streat
+bridge|brɪdʒ|bridge|ব্রিজ|সেতু|noun|dge_after_short_vowel|215|brige,bridg
+field|fiːld|field|ফিল্ড|মাঠ|noun|i_before_e|216|feild,filed
+sky|skaɪ|sky|স্কাই|আকাশ|noun||217|skie,sci
+wind|wɪnd|wind|উইন্ড|বাতাস|noun||218|vind,wend
+fire|ˈfaɪə|fire|ফায়ার|আগুন|noun||219|fier,fyre
+land|lænd|land|ল্যান্ড|জমি|noun||220|lend,laand
+sea|siː|sea|সি|সমুদ্র|noun||221|see,sae
+lunch|lʌntʃ|lunch|লাঞ্চ|দুপুরের খাবার|noun||222|launch,lanch
+dinner|ˈdɪnə|din-ner|ডিনার|রাতের খাবার|noun|doubling_1_1_1|223|diner,dinnar
+kitchen|ˈkɪtʃɪn|kit-chen|কিচেন|রান্নাঘর|noun|tch_after_short_vowel|224|kichen,kitchan
+match|mætʃ|match|ম্যাচ|খেলা|noun|tch_after_short_vowel|225|mach,matsh
+watch|wɒtʃ|watch|ওয়াচ|ঘড়ি|noun|tch_after_short_vowel|226|wach,votch
+catch|kætʃ|catch|ক্যাচ|ধরা|verb|tch_after_short_vowel|227|cach,katch
+badge|bædʒ|badge|ব্যাজ|ব্যাজ|noun|dge_after_short_vowel|228|badg,baje
+edge|edʒ|edge|এজ|প্রান্ত|noun|dge_after_short_vowel|229|edg,eje
+judge|dʒʌdʒ|judge|জাজ|বিচারক|noun|dge_after_short_vowel|230|judg,juge
+quick|kwɪk|quick|কুইক|দ্রুত|adjective|q_takes_u|231|qick,kwick
+queen|kwiːn|queen|কুইন|রানি|noun|q_takes_u|232|qeen,kween
+quiet|ˈkwaɪət|qui-et|কোয়ায়েট|শান্ত|adjective|q_takes_u|233|quite,qiet
+quite|kwaɪt|quite|কোয়াইট|বেশ|adverb|q_takes_u|234|quiet,qite
+box|bɒks|box|বক্স|বাক্স|noun|plural_es|235|boxx,bocks
+class|klɑːs|class|ক্লাস|শ্রেণি|noun|floss_doubling|236|clas,klass
+glass|ɡlɑːs|glass|গ্লাস|কাঁচ|noun|floss_doubling|237|glas,glasss
+grass|ɡrɑːs|grass|গ্রাস|ঘাস|noun|floss_doubling|238|gras,grasss
+pass|pɑːs|pass|পাস|পাস করা|verb|floss_doubling|239|pas,passs
+miss|mɪs|miss|মিস|মিস করা|verb|floss_doubling|240|mis,misss
+dress|dres|dress|ড্রেস|পোশাক|noun|floss_doubling|241|dres,dresss
+off|ɒf|off|অফ|বন্ধ|adverb|floss_doubling|242|of,offf
+staff|stɑːf|staff|স্টাফ|কর্মী|noun|floss_doubling|243|staf,stafff
+kick|kɪk|kick|কিক|লাথি মারা|verb|ck_after_short_vowel|244|kik,kic
+lock|lɒk|lock|লক|তালা|noun|ck_after_short_vowel|245|lok,loc
+pick|pɪk|pick|পিক|বাছা|verb|ck_after_short_vowel|246|pik,pic
+sick|sɪk|sick|সিক|অসুস্থ|adjective|ck_after_short_vowel|247|sik,sic
+duck|dʌk|duck|ডাক|হাঁস|noun|ck_after_short_vowel|248|duk,duc
+clock|klɒk|clock|ক্লক|ঘড়ি|noun|ck_after_short_vowel|249|clok,cloc
+face|feɪs|face|ফেস|মুখ|noun|soft_c|250|fase,faice
+race|reɪs|race|রেস|দৌড়|noun|soft_c|251|rase,rais
+price|praɪs|price|প্রাইস|দাম|noun|soft_c|252|prise,pryce
+nice|naɪs|nice|নাইস|সুন্দর|adjective|soft_c|253|nise,nyce
+dance|dɑːns|dance|ড্যান্স|নাচ|noun|soft_c|254|danse,dence
+age|eɪdʒ|age|এজ|বয়স|noun|soft_g|255|aje,aige
+cage|keɪdʒ|cage|কেজ|খাঁচা|noun|soft_g|256|caje,kage
+large|lɑːdʒ|large|লার্জ|বড়|adjective|soft_g|257|larje,larg
+change|tʃeɪndʒ|change|চেঞ্জ|পরিবর্তন|noun|soft_g|258|chanje,chnage
+orange|ˈɒrɪndʒ|o-range|অরেঞ্জ|কমলা|noun|soft_g|259|orenge,oranje
+dish|dɪʃ|dish|ডিশ|থালা|noun|plural_es|260|dis,dich
+church|tʃɜːtʃ|church|চার্চ|গির্জা|noun|plural_es|261|churtch,chruch
+fox|fɒks|fox|ফক্স|শিয়াল|noun|plural_es|262|foxx,focks
+bench|bentʃ|bench|বেঞ্চ|বেঞ্চ|noun|plural_es|263|banch,bensh
+brush|brʌʃ|brush|ব্রাশ|ব্রাশ|noun|plural_es|264|bruch,brash
+bush|bʊʃ|bush|বুশ|ঝোপ|noun|plural_es|265|buch,busch
+wish|wɪʃ|wish|উইশ|ইচ্ছা|noun|plural_es|266|wich,vish
+knife|naɪf|knife|নাইফ|ছুরি|noun|f_to_ves|267|nife,knive
+leaf|liːf|leaf|লিফ|পাতা|noun|f_to_ves|268|leef,lief
+wife|waɪf|wife|ওয়াইফ|স্ত্রী|noun|f_to_ves|269|wive,waif
+life|laɪf|life|লাইফ|জীবন|noun|f_to_ves|270|lyfe,live
+shelf|ʃelf|shelf|শেল্ফ|তাক|noun|f_to_ves|271|self,shelve
+half|hɑːf|half|হাফ|অর্ধেক|noun|f_to_ves|272|haf,halfe
+believe|bɪˈliːv|be-lieve|বিলিভ|বিশ্বাস করা|verb|i_before_e|273|beleive,belive
+receive|rɪˈsiːv|re-ceive|রিসিভ|গ্রহণ করা|verb|i_before_e|274|recieve,receve
+piece|piːs|piece|পিস|টুকরো|noun|i_before_e|275|peice,pice
+chief|tʃiːf|chief|চিফ|প্রধান|noun|i_before_e|276|cheif,chef
+ceiling|ˈsiːlɪŋ|cei-ling|সিলিং|ছাদ|noun|i_before_e|277|cieling,ceilling
+achieve|əˈtʃiːv|a-chieve|অ্যাচিভ|অর্জন করা|verb|i_before_e|278|acheive,achive
+study|ˈstʌdi|stu-dy|স্টাডি|পড়াশোনা|verb|y_to_i|279|studdy,studie
+try|traɪ|try|ট্রাই|চেষ্টা করা|verb|y_to_i|280|trie,trai
+cry|kraɪ|cry|ক্রাই|কাঁদা|verb|y_to_i|281|crie,krai
+copy|ˈkɒpi|co-py|কপি|অনুলিপি|verb|y_to_i|282|coppy,copie
+baby|ˈbeɪbi|ba-by|বেবি|শিশু|noun|y_to_i|283|babie,bebi
+lady|ˈleɪdi|la-dy|লেডি|ভদ্রমহিলা|noun|y_to_i|284|ladie,ledy
+story|ˈstɔːri|sto-ry|স্টোরি|গল্প|noun|y_to_i|285|storey,storie
+hurry|ˈhʌri|hur-ry|হারি|তাড়াহুড়ো|verb|y_to_i|286|hury,hurrie
+worry|ˈwʌri|wor-ry|ওয়ারি|চিন্তা করা|verb|y_to_i|287|wory,worrie
+plan|plæn|plan|প্ল্যান|পরিকল্পনা|noun|doubling_1_1_1|288|plann,plen
+sit|sɪt|sit|সিট|বসা|verb|doubling_1_1_1|289|sitt,set
+swim|swɪm|swim|সুইম|সাঁতার কাটা|verb|doubling_1_1_1|290|swimm,svim
+win|wɪn|win|উইন|জেতা|verb|doubling_1_1_1|291|winn,ven
+cut|kʌt|cut|কাট|কাটা|verb|doubling_1_1_1|292|cutt,kut
+put|pʊt|put|পুট|রাখা|verb|doubling_1_1_1|293|putt,poot
+hope|həʊp|hope|হোপ|আশা করা|verb|drop_silent_e|294|hoap,hopp
+love|lʌv|love|লাভ|ভালোবাসা|verb|no_final_v|295|luv,lov
+move|muːv|move|মুভ|নড়া|verb|no_final_v|296|muv,moove
+save|seɪv|save|সেভ|রক্ষা করা|verb|no_final_v|297|sav,saive
+leave|liːv|leave|লিভ|ছেড়ে যাওয়া|verb|no_final_v|298|leav,leve
+arrive|əˈraɪv|ar-rive|অ্যারাইভ|পৌঁছানো|verb|no_final_v|299|arive,arrave
+serve|sɜːv|serve|সার্ভ|পরিবেশন করা|verb|no_final_v|300|serv,surve
+above|əˈbʌv|a-bove|অ্যাবাভ|উপরে|preposition|no_final_v|301|abuv,abov
+unhappy|ʌnˈhæpi|un-hap-py|আনহ্যাপি|অসুখী|adjective|prefix_keeps_root|302|unhapy,unhappi
+unable|ʌnˈeɪbl|un-a-ble|আনএবল|অক্ষম|adjective|prefix_keeps_root|303|unabel,unnable
+misspell|ˌmɪsˈspel|mis-spell|মিসস্পেল|ভুল বানান করা|verb|prefix_keeps_root|304|mispell,misspel
+disappear|ˌdɪsəˈpɪə|dis-ap-pear|ডিসঅ্যাপিয়ার|অদৃশ্য হওয়া|verb|prefix_keeps_root|305|dissapear,disapear
+careful|ˈkeəfl|care-ful|কেয়ারফুল|সতর্ক|adjective|suffix_ful_one_l|306|carefull,carful
+useful|ˈjuːsfl|use-ful|ইউজফুল|উপযোগী|adjective|suffix_ful_one_l|307|usefull,usful
+helpful|ˈhelpfl|help-ful|হেল্পফুল|সহায়ক|adjective|suffix_ful_one_l|308|helpfull,helful
+beautiful|ˈbjuːtɪfl|beau-ti-ful|বিউটিফুল|সুন্দর|adjective|suffix_ful_one_l|309|beautifull,beutiful
+wonderful|ˈwʌndəfl|won-der-ful|ওয়ান্ডারফুল|চমৎকার|adjective|suffix_ful_one_l|310|wonderfull,wondorful
