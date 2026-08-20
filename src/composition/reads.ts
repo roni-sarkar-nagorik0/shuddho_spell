@@ -1,6 +1,7 @@
 import 'server-only';
 import { cache } from 'react';
 import { type AccentPreference } from '@/modules/auth/domain/value-objects/accent-preference';
+import { type IExamResultView, type IExamAnswerReviewView } from '@/modules/exams/application/dto/exam-result-view';
 import { type IExamCatalogue } from '@/modules/exams/application/dto/exam-catalogue';
 import { type IExamMilestone } from '@/modules/exams/application/dto/exam-milestone';
 import { type INextExam } from '@/modules/exams/application/dto/next-exam';
@@ -25,7 +26,9 @@ import {
   makeGetProgramOverview,
   makeGetProgressSummary,
   makeGetMe,
+  makeGetExamAnswerReview,
   makeGetExamCatalogue,
+  makeGetExamResult,
   makeGetLibraryPage,
   makeGetPhonemeStrips,
   makeGetPracticeQueue,
@@ -159,6 +162,16 @@ export const readWeakSpots = cache(
 export const readExamCatalogue = cache(
   async (userId: string): Promise<IExamCatalogue> =>
     makeGetExamCatalogue(createContainer(crypto.randomUUID())).execute({ userId }),
+);
+
+export const readExamResult = cache(
+  async (userId: string, attemptId: string): Promise<IExamResultView> =>
+    makeGetExamResult(createContainer(crypto.randomUUID())).execute({ userId, attemptId }),
+);
+
+export const readExamAnswerReview = cache(
+  async (userId: string, attemptId: string): Promise<IExamAnswerReviewView> =>
+    makeGetExamAnswerReview(createContainer(crypto.randomUUID())).execute({ userId, attemptId }),
 );
 
 export const readExamMilestones = cache(
