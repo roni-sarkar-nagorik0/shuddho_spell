@@ -10,6 +10,7 @@ import { PanelHeader } from '@/components/primitives/panel-header';
 import { Sparkline } from '@/components/primitives/sparkline';
 import { StatCell } from '@/components/primitives/stat-cell';
 import { StatusBadge, STATUS_TONES } from '@/components/primitives/status-badge';
+import { ConfirmDemo, DrawerDemo, PopoverDemo, ToastDemo } from './overlays-demo';
 import { TableDemo } from './table-demo';
 
 /**
@@ -193,6 +194,28 @@ export default function GalleryPage(): ReactElement {
               <Sparkline className="text-muted" label="Flat at 70%" values={[70, 70, 70, 70]} />
               <Sparkline className="text-muted" label="One session only" values={[70]} />
             </span>
+          </State>
+        </div>
+      </section>
+
+      <section className="flex flex-col gap-3">
+        <h2 className="font-display text-base tracking-tight">Overlays</h2>
+        <p className="text-muted">
+          All four: Escape closes, focus goes in on open and returns to the trigger on close. The
+          three modal ones trap Tab; the popover deliberately does not.
+        </p>
+        <div className="grid grid-cols-4 gap-4">
+          <State name="Popover" note="Non-modal. Tab-out and outside-click both dismiss.">
+            <PopoverDemo />
+          </State>
+          <State name="Drawer" note="Modal, right side, motion-safe slide.">
+            <DrawerDemo />
+          </State>
+          <State name="ConfirmDialog" note="Destructive. Cancel is focused, not Confirm.">
+            <ConfirmDemo />
+          </State>
+          <State name="Toast" note="Three severities, each with its word beside the accent.">
+            <ToastDemo />
           </State>
         </div>
       </section>

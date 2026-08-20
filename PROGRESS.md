@@ -81,7 +81,7 @@ and 2. No feature starts without it. **Never read the file** — existence check
 ## NEXT
 
 > **Phase 10 · Web shell and core components — in progress on `feat/10-web-shell`**
-> Current: **F10.6** — overlays.
+> Current: **F10.7** — TanStack Query wiring.
 >
 > **What Phase 5 leaves Phase 6**
 > - `ISpeechScorer` is declared (F4.10) and **has no implementation**. Phase 6 is that, plus the
@@ -103,6 +103,11 @@ and 2. No feature starts without it. **Never read the file** — existence check
 > - `pnpm test` takes ~28s, most of it PGlite booting Postgres four times. Two full runs at once
 >   contend badly enough to time out — worth one shared instance if it grows further.
 > - The repo has never been prettier-clean: `pnpm format` rewrites files no feature touched.
+> - `NotificationBell` still hand-rolls its own popover markup rather than using F10.6's
+>   `Popover`, and still renders as a bordered text button instead of the top bar's bell glyph.
+>   Both are working and accessible (Escape closes, focus returns); converting them needs
+>   `Popover` to expose an on-open callback for the feed refresh, which is a change to a shipped
+>   Phase 8 feature and did not belong to any Phase 10 feature.
 
 ## Phase 0 — Specification and architecture record
 Branch `docs/00-architecture-record` · Status: `COMPLETE`
@@ -493,7 +498,7 @@ Branch `feat/10-web-shell` · Status: `IN PROGRESS`
   - Test: pagination with a cursor; keyboard navigation
 - [x] **F10.5** (2026-08-20) Primitives — `StatCell`, `PanelHeader`, `HeatCell`, `MonoValue`, `StatusBadge`, `Sparkline`
   - Test: tabular numerals on every numeric primitive
-- [ ] **F10.6** Overlays — `Toast`, `Popover`, `Drawer`, `ConfirmDialog`
+- [x] **F10.6** (2026-08-20) Overlays — `Toast`, `Popover`, `Drawer`, `ConfirmDialog`
   - Test: focus trap, Escape closes, focus returns to the trigger
 - [ ] **F10.7** TanStack Query wiring + optimistic answer saving
   - Test: **exam writes are not retried**; other reads retry
@@ -598,6 +603,7 @@ Out of scope for this build. Do not start these, and do not leave stubs for them
 Newest first. One line per finished feature: date · id · what · test result.
 
 | Date | Feature | What landed | Tests |
+| 2026-08-20 | F10.6 | Overlays: `Toast` (moved from notifications, upgraded and mounted in the shell), `Popover`, `Drawer`, `ConfirmDialog`, all on one `useDismissable` hook | typecheck + lint green (tests paused) |
 | 2026-08-20 | F10.5 | Primitives: `MonoValue`, `StatCell`, `PanelHeader`, `HeatCell`, `StatusBadge`, `Sparkline` — tabular figures on every numeric one | typecheck + lint green (tests paused) |
 | 2026-08-20 | F10.4 | `DataTable` — sticky header, sticky pinned columns with computed offsets, cursor stack pagination, ARIA grid with roving focus | typecheck + lint green (tests paused) |
 | 2026-08-20 | F10.3 | `MasteryMatrix` — one component, 44 phoneme cells and 24 rule-family cells via `dimension`; keyboard cells, detail row, drill link, legend | typecheck + lint green (tests paused) |

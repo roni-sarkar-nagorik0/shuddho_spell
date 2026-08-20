@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useState, type ReactElement, type ReactNode } from 'react';
+import { ToastProvider } from '@/components/overlays/toast';
 import { Sidebar } from './sidebar';
 import { sidebarCookieValue } from './sidebar-preference';
 import { TopBar } from './top-bar';
@@ -43,23 +44,27 @@ export function AppShell({
   }, []);
 
   return (
-    <div className="flex h-screen overflow-hidden bg-neutral-50">
-      <a
-        className="sr-only focus:not-sr-only focus:absolute focus:left-2 focus:top-2 focus:z-50 focus:rounded-control focus:bg-primary-900 focus:px-3 focus:py-2 focus:text-surface"
-        href="#content"
-      >
-        Skip to content
-      </a>
+    <ToastProvider>
+      <div className="flex h-screen overflow-hidden bg-neutral-50">
+        <a
+          className="sr-only focus:not-sr-only focus:absolute focus:left-2 focus:top-2 focus:z-50 focus:rounded-control focus:bg-primary-900 focus:px-3 focus:py-2 focus:text-surface"
+          href="#content"
+        >
+          Skip to content
+        </a>
 
-      <Sidebar collapsed={collapsed} onToggle={toggle} />
+        <Sidebar collapsed={collapsed} onToggle={toggle} />
 
-      <div className="flex min-w-0 flex-1 flex-col">
-        <TopBar displayName={displayName} streakDays={streakDays} />
+        <div className="flex min-w-0 flex-1 flex-col">
+          <TopBar displayName={displayName} streakDays={streakDays} />
 
-        <main className="paper flex-1 overflow-y-auto" id="content" tabIndex={-1}>
-          <div className="mx-auto grid max-w-content grid-cols-12 gap-4 px-6 py-6">{children}</div>
-        </main>
+          <main className="paper flex-1 overflow-y-auto" id="content" tabIndex={-1}>
+            <div className="mx-auto grid max-w-content grid-cols-12 gap-4 px-6 py-6">
+              {children}
+            </div>
+          </main>
+        </div>
       </div>
-    </div>
+    </ToastProvider>
   );
 }

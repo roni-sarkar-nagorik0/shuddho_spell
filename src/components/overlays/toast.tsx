@@ -1,6 +1,16 @@
 'use client';
 
-import { createContext, useCallback, useContext, useMemo, useState, type ReactNode } from 'react';
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useMemo,
+  useState,
+  type ReactElement,
+  type ReactNode,
+} from 'react';
+import { Glyph } from '@/components/icons/glyph';
+import { cn } from '@/lib/cn';
 
 export interface IToast {
   readonly id: string;
@@ -48,7 +58,22 @@ const DISMISS_AFTER_MS = 6000;
  * at the next pause instead of mid-sentence, which is the right manners for
  * something the learner did not ask for.
  */
-export function ToastProvider({ children }: { readonly children: ReactNode }) {
+const SEVERITY_CLASSES: Readonly<Record<IToast['severity'], string>> = {
+  info: 'border-hairline',
+  success: 'border-l-2 border-l-mastered',
+  warning: 'border-l-2 border-l-secondary-500',
+  critical: 'border-l-2 border-l-tertiary-500',
+};
+
+/** The word beside the accent, because the accent alone is a colour-only cue. */
+const SEVERITY_WORDS: Readonly<Record<IToast['severity'], string>> = {
+  info: 'Note',
+  success: 'Done',
+  warning: 'Warning',
+  critical: 'Problem',
+};
+
+export function ToastProvider({ children }: { readonly children: ReactNode }): ReactElement {
   const [toasts, setToasts] = useState<readonly IToast[]>([]);
 
   const show = useCallback((toast: Omit<IToast, 'id'>) => {
@@ -61,6 +86,10 @@ export function ToastProvider({ children }: { readonly children: ReactNode }) {
     }, DISMISS_AFTER_MS);
   }, []);
 
+  const dismiss = useCallback((id: string) => {
+    setToasts((current) => current.filter((entry) => entry.id !== id));
+  }, []);
+
   const api = useMemo(() => ({ show }), [show]);
 
   return (
@@ -69,15 +98,37 @@ export function ToastProvider({ children }: { readonly children: ReactNode }) {
 
       <div
         aria-live="polite"
-        className="pointer-events-none fixed bottom-4 right-4 flex w-80 flex-col gap-2"
+        className="pointer-events-none fixed bottom-4 right-4 z-50 flex w-80 flex-col gap-2"
       >
         {toasts.map((toast) => (
           <article
+            className={cn(
+              'pointer-events-auto flex gap-3 rounded-card border bg-surface px-3 py-2.5 shadow-lg',
+              SEVERITY_CLASSES[toast.severity],
+            )}
             key={toast.id}
-            className="pointer-events-auto border border-neutral-300 bg-white px-4 py-3 text-sm"
           >
-            <p className="font-medium">{toast.title}</p>
-            <p className="mt-1">{toast.body}</p>
+            <div className="min-w-0 flex-1">
+              <p className="font-medium text-primary-900">
+                <span className="label mr-1.5">{SEVERITY_WORDS[toast.severity]}</span>
+                {toast.title}
+              </p>
+              <p className="mt-1 text-neutral-700">{toast.body}</p>
+            </div>
+
+            {/*
+              A dismiss button, not only a timeout: six seconds is a guess about
+              reading speed, and a learner who has read it should not have to
+              wait out the rest of somebody's guess.
+            */}
+            <button
+              aria-label="Dismiss"
+              className="h-6 w-6 shrink-0 rounded-full text-muted hover:bg-primary-50"
+              onClick={() => { dismiss(toast.id); }}
+              type="button"
+            >
+              <Glyph className="mx-auto" name="close" size={14} />
+            </button>
           </article>
         ))}
       </div>
