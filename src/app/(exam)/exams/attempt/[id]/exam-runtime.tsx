@@ -5,6 +5,7 @@ import { useCallback, useEffect, useMemo, useState, type ReactElement } from 're
 import { z } from 'zod';
 import { examAttemptSchema, type ExamAttemptView } from '@/app/(learn)/exams/[code]/exam-contracts';
 import { ExamCountdown } from '@/components/exam/exam-countdown';
+import { QuestionNavigator } from '@/components/exam/question-navigator';
 import { ConfirmDialog } from '@/components/overlays/confirm-dialog';
 import { apiFetch } from '@/lib/api/client';
 import { useSaveExamAnswer } from '@/lib/query/use-save-exam-answer';
@@ -49,6 +50,7 @@ const outcomeSchema = z.object({
 export function ExamRuntime({ attemptId }: { readonly attemptId: string }): ReactElement {
   const [attempt, setAttempt] = useState<ExamAttemptView | null>(null);
   const [drafts, setDrafts] = useState<Readonly<Record<string, string>>>({});
+  const [flags, setFlags] = useState<Readonly<Record<string, boolean>>>({});
   const [index, setIndex] = useState(0);
   const [confirming, setConfirming] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -81,6 +83,9 @@ export function ExamRuntime({ attemptId }: { readonly attemptId: string }): Reac
             active.answers.map((answer) => [answer.questionId, answer.submittedValue ?? '']),
           ),
         );
+        setFlags(
+          Object.fromEntries(active.answers.map((answer) => [answer.questionId, answer.flagged])),
+        );
       })
       .catch(() => { setError('This attempt could not be opened.'); });
   }, [attemptId, router]);
@@ -103,6 +108,29 @@ export function ExamRuntime({ attemptId }: { readonly attemptId: string }): Reac
       save.mutate({ questionId, submittedValue: value, timeSpentMs: null });
     },
     [save],
+  );
+
+  /**
+   * Flagging is a write like any other, and the same rule applies: the local
+   * state moves first so the navigator repaints instantly, and the request is
+   * never retried. A flag that failed to save is a mark the learner will not
+   * find on their next visit, which is a smaller loss than a duplicated write
+   * against a deadline.
+   */
+  const toggleFlag = useCallback(
+    (questionId: string) => {
+      const flagged = !(flags[questionId] ?? false);
+      setFlags((existing) => ({ ...existing, [questionId]: flagged }));
+
+      void apiFetch(`/api/v1/exams/attempts/${attemptId}/answers`, {
+        method: 'PATCH',
+        schema: z.undefined(),
+        body: { action: 'flag', questionId, flagged },
+      }).catch(() => {
+        setFlags((existing) => ({ ...existing, [questionId]: !flagged }));
+      });
+    },
+    [attemptId, flags],
   );
 
   const submitSection = useCallback(() => {
@@ -222,6 +250,15 @@ export function ExamRuntime({ attemptId }: { readonly attemptId: string }): Reac
 
               <div className="flex flex-wrap items-center gap-2">
                 <button
+                  aria-pressed={flags[current.id] ?? false}
+                  className="h-9 rounded-control border border-secondary-500 px-3 text-secondary-500"
+                  onClick={() => { toggleFlag(current.id); }}
+                  type="button"
+                >
+                  {flags[current.id] === true ? 'Unflag' : 'Flag for review'}
+                </button>
+
+                <button
                   className="h-9 rounded-control border border-primary-100 px-3 text-primary-100 disabled:border-primary-700 disabled:text-primary-700"
                   disabled={index === 0}
                   onClick={() => { setIndex((position) => position - 1); }}
@@ -245,6 +282,18 @@ export function ExamRuntime({ attemptId }: { readonly attemptId: string }): Reac
                 >
                   Submit this section
                 </button>
+              </div>
+
+              <div className="mt-2 border-t border-primary-700 pt-4">
+                <QuestionNavigator
+                  currentIndex={index}
+                  entries={sectionQuestions.map((question) => ({
+                    questionId: question.id,
+                    answered: (drafts[question.id] ?? '') !== '',
+                    flagged: flags[question.id] ?? false,
+                  }))}
+                  onJump={setIndex}
+                />
               </div>
             </>
           )}
