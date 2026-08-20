@@ -80,8 +80,18 @@ and 2. No feature starts without it. **Never read the file** — existence check
 
 ## NEXT
 
-> **Phase 11 · Learning screens — in progress on `feat/11-learning-screens`**
-> Current: **F11.12** — `/progress`.
+> **Phase 12 · Exam and marketing screens — not started**
+> Phase 11 is closed and merged (12/12). Cut `feat/12-exam-marketing-screens` from `dev`.
+>
+> **What Phase 11 leaves Phase 12**
+> - `useSaveExamAnswer` (F10.7) is the optimistic template for the exam runtime; writes never retry.
+> - `LetterTiles`, `SentenceChips` and `ReviewDrill` are built and keyboard-complete — the exam's
+>   spelling and construction questions should use them, not build a second set.
+> - `AudioProvider` is mounted per route group. The exam runtime needs its own, or none.
+> - `DataTable` + `Drawer` is the master-detail pattern `/exams/review/[id]` wants.
+> - `GetNextExam` and `ListExamMilestones` exist; the `/exams` catalogue needs attempts used,
+>   cooldown and best score, which neither carries yet.
+> - `AccuracyChart` is a Server Component and reusable for the result screen's by-section chart.
 >
 > **What Phase 10 leaves Phase 11**
 > - The shell is real: `(learn)/layout.tsx` gives every screen the rail, the top bar and a
@@ -528,7 +538,7 @@ Branch `feat/10-web-shell` · Status: `DONE` (9/9 built 2026-08-20; exit gate no
 ---
 
 ## Phase 11 — Learning screens
-Branch `feat/11-learning-screens` · Status: `IN PROGRESS`
+Branch `feat/11-learning-screens` · Status: `DONE` (12/12 built 2026-08-20; exit gate not run — paused by standing instruction 2026-08-19)
 
 - [x] **F11.1** (2026-08-20) `/dashboard`
   - Test: renders with zero data and with full data; no N+1 on the API call
@@ -552,7 +562,7 @@ Branch `feat/11-learning-screens` · Status: `IN PROGRESS`
   - Test: the spaced-repetition schedule axis matches `review_items.due_at`
 - [x] **F11.11** (2026-08-20) `/library`
   - Test: filters, column control, CSV export, detail drawer; cursor pagination
-- [ ] **F11.12** `/progress`
+- [x] **F11.12** (2026-08-20) `/progress`
   - Test: accuracy over time with milestone markers; both mastery matrices; activity heatmap
 
 ---
@@ -621,6 +631,7 @@ Out of scope for this build. Do not start these, and do not leave stubs for them
 Newest first. One line per finished feature: date · id · what · test result.
 
 | Date | Feature | What landed | Tests |
+| 2026-08-20 | F11.12 | `/progress` — daily accuracy with gaps left open and dashed rules where each milestone was passed, 84-day activity heatmap, **both** mastery matrices from one component | typecheck + lint green (tests paused) |
 | 2026-08-20 | F11.11 | `/library` — keyset cursor pagination on unique `words.text` (new `gt`/`ilike` on `IDatabase`, `search` on `IWordRepository`), four filters, column control, CSV export with formula-injection guard, detail drawer | typecheck + lint green (tests paused) |
 | 2026-08-20 | F11.10 | `/weak-spots` — master-detail on `DataTable` + `Drawer`, schedule axis bucketed straight from `review_items.due_at` in the learner's timezone | typecheck + lint green (tests paused) |
 | 2026-08-20 | F11.9 | `/practice` — `GetPracticeQueue` ranks weaknesses by expected loss and orders drills weakness-first then most-overdue; every item carries the reason it is there. Nothing sampled or shuffled | typecheck + lint green (tests paused) |

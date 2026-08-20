@@ -17,4 +17,13 @@ export interface IExamMilestone {
   readonly unlockDayIndex: number;
   readonly isUnlocked: boolean;
   readonly hasPassed: boolean;
+  /**
+   * When the passing attempt was submitted, as an ISO instant, or `null`.
+   *
+   * Added by F11.12 so `/progress` can mark the accuracy chart on the day a
+   * milestone was actually passed. The programme's day index cannot do that —
+   * it says where in the course the exam sits, not what date the learner sat
+   * it, and a chart drawn against dates needs a date.
+   */
+  readonly passedAt: string | null;
 }

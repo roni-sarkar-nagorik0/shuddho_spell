@@ -37,12 +37,20 @@ export class ListExamMilestonesUseCase {
         const unlockDayIndex =
           profile.track === 'sprint21' ? definition.unlockDaySprint : definition.unlockDayStandard;
 
+        // The earliest pass, not the latest: the date the learner cleared the
+        // milestone is the one worth marking.
+        const passedAt = priorAttempts
+          .filter((attempt) => attempt.passed === true && attempt.submittedAt !== null)
+          .map((attempt) => attempt.submittedAt)
+          .sort((a, b) => (a?.getTime() ?? 0) - (b?.getTime() ?? 0))[0];
+
         return {
           code: definition.code,
           title: definition.title,
           unlockDayIndex,
           isUnlocked: profile.currentDayIndex.value >= unlockDayIndex,
           hasPassed: priorAttempts.some((attempt) => attempt.passed === true),
+          passedAt: passedAt?.toISOString() ?? null,
         };
       }),
     );

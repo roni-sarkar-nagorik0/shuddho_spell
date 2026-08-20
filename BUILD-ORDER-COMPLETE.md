@@ -392,8 +392,16 @@ Status values: `NOT STARTED` · `IN PROGRESS` · `BLOCKED — <reason>` · `DONE
 ## Phase 11 — Learning screens
 
 - **Branch:** `feat/11-learning-screens` (from `dev`)
-- **Status:** NOT STARTED
-- **Completed:**
+- **Status:** DONE
+- **Completed:** 2026-08-20 — F11.1 through F11.12, all twelve built and merged into `dev`.
+  **Exit gate not run — paused by standing instruction 2026-08-19.** Of its five items, four
+  were built to deliberately: the dictation tiles are one real input per letter with
+  back-and-clear on a single backspace, arrow navigation, blocked paste and Enter to submit;
+  the mic flow feature-detects `SpeechRecognition` and falls back to self-assessment on
+  Firefox; the chips reorder by pointer events and by keyboard; audio goes through one
+  provider that cancels before every play (`grep SpeechSynthesisUtterance src` returns one
+  file). The library's filters, column control, CSV export and drawer are all present.
+  None of it has been exercised against a live browser or a live database in this run.
 - **Reads:** `13-frontend`, `06-spaced-repetition`, `07-speech-scoring`
 - **Deliverables:** `/dashboard` · `/program` · `/lesson/[day]` (five-stage tracker: Learn, Dictate,
   Speak, Build) · `/practice` · `/weak-spots` · `/library` · `/progress`.

@@ -14,7 +14,7 @@ import {
   readMasterySnapshot,
   readNextExam,
   readProgressSummary,
-  readWeeklyActivity,
+  readActivity,
 } from '@/composition/reads';
 import { requireUser } from '@/lib/auth/current-user';
 import { publicEnv } from '@/lib/env.public';
@@ -67,7 +67,7 @@ export default async function DashboardPage(): Promise<ReactElement> {
     readLearnerDashboard(user.userId),
     readProgressSummary(user.userId),
     readMasterySnapshot(user.userId),
-    readWeeklyActivity(user.userId),
+    readActivity(user.userId, 7),
     readDueReviews(user.userId),
     readNextExam(user.userId),
   ]);

@@ -108,9 +108,9 @@ export const readMasterySnapshot = cache(
     makeGetMasterySnapshot(createContainer(crypto.randomUUID())).execute({ userId }),
 );
 
-export const readWeeklyActivity = cache(
-  async (userId: string): Promise<IWeeklyActivity> =>
-    makeGetWeeklyActivity(createContainer(crypto.randomUUID())).execute({ userId }),
+export const readActivity = cache(
+  async (userId: string, days: number): Promise<IWeeklyActivity> =>
+    makeGetWeeklyActivity(createContainer(crypto.randomUUID())).execute({ userId, days }),
 );
 
 /** The cap is the use case's own product decision (`06-spaced-repetition.md`), not a page's. */
