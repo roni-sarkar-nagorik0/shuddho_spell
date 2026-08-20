@@ -57,8 +57,10 @@ import { SupabaseLessonWriteUnit } from '@/modules/lessons/infrastructure/adapte
 import { type IClock } from '@/modules/shared/application/ports/clock';
 import { type ISpeechScorer } from '@/modules/shared/application/ports/speech-scorer';
 import { type IIdGenerator } from '@/modules/shared/application/ports/id-generator';
+import { type IRandomSource } from '@/modules/shared/application/ports/random';
 import { ConfusionMapSpeechScorer } from '@/modules/speech/infrastructure/adapters/confusion-map-speech-scorer';
 import { SystemClock } from '@/modules/shared/infrastructure/adapters/system-clock';
+import { MathRandomSource } from '@/modules/shared/infrastructure/adapters/math-random-source';
 import { UuidGenerator } from '@/modules/shared/infrastructure/adapters/uuid-generator';
 import { RetryingDatabase } from '@/modules/shared/infrastructure/persistence/retrying-database';
 import { toDatabase } from '@/modules/shared/infrastructure/persistence/supabase-database';
@@ -147,6 +149,8 @@ export interface IContainer {
 
   readonly clock: IClock;
   readonly ids: IIdGenerator;
+  /** Variety, not unpredictability — see `MathRandomSource`. One caller: the demo. */
+  readonly random: IRandomSource;
 }
 
 export function createContainer(requestId: string): IContainer {
@@ -230,5 +234,6 @@ export function createContainer(requestId: string): IContainer {
     db,
     clock: new SystemClock(),
     ids,
+    random: new MathRandomSource(),
   };
 }

@@ -1,6 +1,8 @@
 import 'server-only';
 import { BootstrapProfileUseCase } from '@/modules/auth/application/use-cases/bootstrap-profile';
 import { GetMeUseCase } from '@/modules/auth/application/use-cases/get-me';
+import { ListUsersUseCase } from '@/modules/auth/application/use-cases/list-users';
+import { SetUserRoleUseCase } from '@/modules/auth/application/use-cases/set-user-role';
 import { GetActiveExamAttemptUseCase } from '@/modules/exams/application/use-cases/get-active-exam-attempt';
 import { GetExamAnswerReviewUseCase } from '@/modules/exams/application/use-cases/get-exam-answer-review';
 import { GetExamReadinessUseCase } from '@/modules/exams/application/use-cases/get-exam-readiness';
@@ -44,6 +46,7 @@ import { VerifyCertificateUseCase } from '@/modules/certificates/application/use
 import { GetExamCatalogueUseCase } from '@/modules/exams/application/use-cases/get-exam-catalogue';
 import { GetNextExamUseCase } from '@/modules/exams/application/use-cases/get-next-exam';
 import { ListExamMilestonesUseCase } from '@/modules/exams/application/use-cases/list-exam-milestones';
+import { GetDictationDemoWordUseCase } from '@/modules/library/application/use-cases/get-dictation-demo-word';
 import { GetLibraryPageUseCase } from '@/modules/library/application/use-cases/get-library-page';
 import { GetPhonemeStripsUseCase } from '@/modules/library/application/use-cases/get-phoneme-strips';
 import { GetPracticeQueueUseCase } from '@/modules/review/application/use-cases/get-practice-queue';
@@ -69,6 +72,19 @@ export function makeBootstrapProfile(c: IContainer): BootstrapProfileUseCase {
 
 export function makeGetMe(c: IContainer): GetMeUseCase {
   return new GetMeUseCase(c.learnerProfiles);
+}
+
+/**
+ * The two admin use cases. One repository each and nothing else — the whole
+ * permission model is "read the caller's own profile first", so neither of them
+ * needs a service, a clock or a second table.
+ */
+export function makeListUsers(c: IContainer): ListUsersUseCase {
+  return new ListUsersUseCase(c.learnerProfiles);
+}
+
+export function makeSetUserRole(c: IContainer): SetUserRoleUseCase {
+  return new SetUserRoleUseCase(c.learnerProfiles);
 }
 
 export function makeGetProgramOverview(c: IContainer): GetProgramOverviewUseCase {
@@ -464,4 +480,12 @@ export function makeRunHourlyNotifications(c: IContainer): RunHourlyNotification
     makeSendReviewItemsDue(c),
     makeSendStreakAtRisk(c),
   );
+}
+
+/**
+ * The marketing page's demo. One repository and a coin — no profile, no clock,
+ * nothing that knows who is asking, because nobody is.
+ */
+export function makeGetDictationDemoWord(c: IContainer): GetDictationDemoWordUseCase {
+  return new GetDictationDemoWordUseCase(c.words, c.random);
 }

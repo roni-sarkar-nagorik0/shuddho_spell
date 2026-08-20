@@ -1,6 +1,7 @@
 import 'server-only';
 import { cache } from 'react';
 import { type AccentPreference } from '@/modules/auth/domain/value-objects/accent-preference';
+import { type IUserRoster } from '@/modules/auth/application/dto/user-summary';
 import { type IExamResultView, type IExamAnswerReviewView } from '@/modules/exams/application/dto/exam-result-view';
 import {
   type ICertificateVerification,
@@ -9,6 +10,7 @@ import {
 import { type IExamCatalogue } from '@/modules/exams/application/dto/exam-catalogue';
 import { type IExamMilestone } from '@/modules/exams/application/dto/exam-milestone';
 import { type INextExam } from '@/modules/exams/application/dto/next-exam';
+import { type IDictationDemoWord } from '@/modules/library/application/dto/dictation-demo-word';
 import { type ILibraryPage } from '@/modules/library/application/dto/library-page';
 import { type IWordPhonemeStrip } from '@/modules/library/application/dto/phoneme-strip';
 import { type IProgramDayDetail } from '@/modules/program/application/dto/program-day-detail';
@@ -32,10 +34,12 @@ import {
   makeGetProgramOverview,
   makeGetProgressSummary,
   makeGetMe,
+  makeListUsers,
   makeGetCertificate,
   makeGetExamAnswerReview,
   makeGetExamCatalogue,
   makeGetExamResult,
+  makeGetDictationDemoWord,
   makeGetLibraryPage,
   makeGetPhonemeStrips,
   makeGetPracticeQueue,
@@ -105,6 +109,34 @@ export const readAudioPreferences = cache(
     return { accent: profile.accentPreference, playbackRate: profile.playbackRate };
   },
 );
+
+/**
+ * The admin roster, for `/admin`.
+ *
+ * Throws `NotAnAdminError` for anyone else, and the page lets it — a screen
+ * that checked the role itself and then called this would be two places
+ * deciding the same thing, and the one that matters is the one in front of the
+ * data. `ListUsersUseCase` reads the caller's role from the database before it
+ * reads a single other row.
+ */
+export const readUserRoster = cache(
+  async (userId: string): Promise<IUserRoster> =>
+    makeListUsers(createContainer(crypto.randomUUID())).execute({ userId }),
+);
+
+/**
+ * Whether to draw the Admin link in the rail.
+ *
+ * Memoised alongside every other per-request read, so the layout asking this
+ * and the page asking for the roster cost one profile lookup between them.
+ * It is a presentation decision only: hiding the link protects nothing, and the
+ * endpoints behind it do their own checking.
+ */
+export const readIsAdmin = cache(async (userId: string): Promise<boolean> => {
+  const profile = await makeGetMe(createContainer(crypto.randomUUID())).execute({ userId });
+
+  return profile.isAdmin();
+});
 
 export const readProgramOverview = cache(
   async (userId: string): Promise<IProgramOverview> =>
@@ -220,4 +252,16 @@ export async function readMetrics(): Promise<IMetricsSnapshot> {
   const container = createContainer(crypto.randomUUID());
 
   return new DatabaseMetricsReader(container.db).snapshot(container.clock.now());
+}
+
+/**
+ * The demo's first word, resolved during the landing page's own render.
+ *
+ * **Not** memoised, and that is the one deliberate exception on this page: every
+ * other read here is wrapped in `cache` so a layout and its page share one
+ * execution, but the whole value of this one is that it differs. Memoising a
+ * random pick is a way of making it stop being random.
+ */
+export async function readDictationDemoWord(): Promise<IDictationDemoWord | null> {
+  return makeGetDictationDemoWord(createContainer(crypto.randomUUID())).execute();
 }

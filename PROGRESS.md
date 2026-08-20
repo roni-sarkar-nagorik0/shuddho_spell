@@ -88,8 +88,16 @@ and 2. No feature starts without it. **Never read the file** — existence check
 > **What Phase 12 leaves Phase 13**
 > - Lighthouse has never been run. F12.10's ≥95/100 is unproven, and D67 records that static
 >   rendering is blocked by the root layout's cookie reads.
-> - `/exams/diagnostic` is linked from onboarding and is a lobby route like any other code — it
->   works if a `diagnostic` definition is seeded, and nothing verifies that it is.
+> - ~~`/exams/diagnostic` is linked from onboarding and is a lobby route like any other code — it
+>   works if a `diagnostic` definition is seeded, and nothing verifies that it is.~~
+>   **Happened, 2026-08-20.** Nothing seeded it, so every new learner's first act after signing
+>   up was a 404. `content/exams.ts` now carries the five definitions from `08-exam-engine.md`,
+>   `content/schema.ts` holds the three invariants 004 cannot (weights total 100, section counts
+>   total the paper, grading is all-or-nothing) and the validator fails the build if any of the
+>   five codes is missing — so "nothing verifies that it is" is no longer true.
+>   The same run found `program_days` empty on both tracks: the day plans had been in the week
+>   files since Phase 9 and the seeder never wrote them. Both tracks are seeded now, the sprint
+>   derived from the standard by `SPRINT_DAYS_PER_WEEK` rather than authored twice.
 > - Certificate issuance is in `ExamSubmissionService` and has never been exercised: nothing in
 >   this run has passed a final exam against a live database.
 > - The whole of Phases 10–12 is typecheck-and-lint clean and **has not been run in a browser**.

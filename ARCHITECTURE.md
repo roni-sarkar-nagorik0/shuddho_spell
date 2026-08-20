@@ -1110,6 +1110,119 @@ tree or moving locale resolution off cookies — both are changes to shipped Pha
 decisions, so this is recorded rather than worked around. Lighthouse was not run in this
 environment; no number is claimed for it.
 
+**D68 — roles live on `learner_profiles`, and the first account is made an admin by the
+database (user request, 2026-08-21).** Nothing in `.claude/docs/` mentions administration at
+all: `04-authentication.md` describes one kind of person, a learner. Asked for a user table,
+two roles and an API to grant the second one, I added `role` and `email` columns to
+`learner_profiles` in migration **020** rather than a `users` table beside it. That table is
+already defined as "one row per signed-in user, created by a trigger" — a second one would be
+a second answer to *who has signed in*, reconciled by hand.
+
+Three parts of this were decisions rather than implementation:
+
+- **The first admin is assigned by a `before insert` trigger on the table** (`assign_first_admin`),
+  not by the signup trigger and not by the application. There are two paths that create a
+  profile — 009's `on_auth_user_created` and `BootstrapProfileUseCase` reconciling one the
+  trigger missed — and a rule written into only the first is a rule the second breaks. It takes
+  a transaction-scoped advisory lock, so two signups into an empty database cannot both claim
+  it. It only ever grants, so it cannot fire again once an owner exists.
+- **008's table-wide `update` grant to `authenticated` was replaced with a column list.** The
+  policy was right — the row *is* the learner's — but with `role` on it, `update
+  learner_profiles set role = 'admin' where user_id = auth.uid()` through PostgREST would have
+  been the whole feature given away. `id`, `user_id`, `started_at`, `role` and `email` are now
+  ungrantable to the client; the server writes them through the service client.
+- **Every admin after the first is made by one who already is.** No invite, no env var of
+  addresses, no bootstrap endpoint — a back door that stands open for the life of the product.
+  `SetUserRoleUseCase` refuses to demote the last admin, because nobody left holding the role
+  means the only way back is a hand-written `update` against production.
+
+`email` is a copy and copies go stale, so `BootstrapProfileUseCase` — the one piece of code
+that sees a verified address on **every** sign-in — rewrites it. `GET /api/v1/me` still reads
+the session's address, not this column; the column exists for the roster, which is looking at
+people it holds no session for.
+
+**D69 — the landing page's demo draws from the seeded corpus over an endpoint, not from a
+list in the bundle (user request, 2026-08-21).** The demo shipped with three words hard-coded
+in `dictation-demo.tsx`, so a visitor who pressed *Next word* twice was back at the start, and
+the demo could drift from the course it advertised. Asked for "more than 2000 words, randomly
+rendered", I made it read the real corpus through a public `GET /api/v1/demo/word`.
+
+- **An endpoint, not a generated module.** `syllabus.ts` sets the precedent for copying content
+  into `src/app` at authoring time, and it is right for 28 lines of prose. It is wrong for
+  1,240 words: the landing page has a performance budget in its acceptance criteria, and
+  shipping the whole vocabulary to every anonymous visitor to show them five of it is a strange
+  way to spend it — and hands out the course's content to anyone who opens devtools.
+- **One word per response — no cursor, no filter, no count.** That is the line between
+  demonstrating the corpus and publishing it.
+- **The payload carries the answer**, which nothing else in the product does. `08-exam-engine.md`
+  rule 3 is about assessment; a visitor with no account is not being assessed, and the demo has
+  no attempt row to mark against, so it grades in the browser. Every path a *learner* takes still
+  gets `IExamQuestionForLearner`, which has no `text`.
+- **`IRandomSource`** was added beside `IClock` for the same stated reason: a use case that calls
+  `Math.random()` cannot be tested. `MathRandomSource` is explicitly *variety, not
+  unpredictability* — nothing scored goes through it.
+
+The pool is **~1,065 of the 1,240 words**, not 2,000: words with no recorded
+`commonMisspellings`, with non-letters, or outside 3–9 letters are filtered out. Producing 760
+more words would mean inventing IPA and Bangla, which `CLAUDE.md` §7.6 forbids; growing the
+corpus is a content-pipeline job (`content/week-*.ts`), and the demo picks up whatever is
+seeded without a code change.
+
+**D70 — the demo picks its voice and offers an Indian-English one; the course still does not
+(user request, 2026-08-21).** The report was that the demo's audio could not be made out. Two
+separate causes, and only one of them is about accent.
+
+- **Nobody was choosing the voice.** Both the demo and `AudioProvider` set `utterance.lang` and
+  stopped, which leaves the pick to the browser — and the browser's default for `en-GB` is the
+  small offline voice bundled with the OS, the least intelligible one on the device. Dictation is
+  the worst case for that: a lone word has no sentence around it to recover a mangled vowel from.
+  `src/lib/audio/voices.ts` now ranks candidates (network/Google/Enhanced/Natural/Siri first, then
+  exact tag, then same language) and **both** callers use it, so the course benefits too.
+- **The rate was 1.00**, the profile default, which is right for a sentence and too fast for one
+  word. The demo now speaks at 0.85 with a **Slower** control at 0.6 — the thing that makes a
+  missed consonant recoverable instead of a guess.
+- **An `en-IN` option was added and then removed the same day, at the user's request.** The
+  reasoning for offering it stands — a Bengali visitor has heard Indian English all their life and
+  British English for perhaps hours — but a control asking someone to choose an accent *before
+  they have heard a word* hands them a decision they have nothing to base on, and it sat above
+  the tiles taking the attention the exercise needs. The demo now speaks `en-GB` only, which is
+  `learner_profiles.accent_preference`'s own default, and says nothing about it. The course's
+  accents were never touched: it trains *towards* British or American, day one is /v/ and /θ/,
+  and South Asian English does not distinguish them — teaching from a voice that merges them
+  would defeat the product.
+
+Verified in-browser on the development machine: `Daniel` at 0.85, and at 0.60 on **Slower**, with
+the voice set explicitly on the utterance both times. That machine has only Apple's local voices,
+so the *ranking* changes nothing there — the rate and the replay are what a listener notices on
+it, and the ranking pays off on a device with Google or Enhanced voices installed.
+
+**D71 — a wrong answer in the demo re-opens the question instead of ending it (user request,
+2026-08-21).** The panel used to reveal the spelling on the first miss and offer only *Next word*,
+which meant a visitor got one attempt at the exercise the product is entirely made of. Now a wrong
+answer marks the letters, keeps the word hidden and leaves the tiles live — *Try again* clears
+them and refocuses, as many times as the visitor likes — with *Show me* there for anyone who would
+rather be told — and **the reveal does not close the question either**. Reading a word is not the
+same as being able to write it, and the moment straight after being told is the one moment a
+visitor can; locking the tiles there (which the first cut did) removed the only useful thing left
+to do. The single state that locks them is getting it right. A `Clear` control appears once the
+tiles are full, because `LetterTiles` has nowhere to advance to at that point and eight backspaces
+is enough friction to end the exercise. The headline distinguishes the three outcomes — worked it
+out (`Correct — 2 tries.`), worked it out after being told (`That is it —`), and told but not yet
+typed (`The word is:`) — because a single "Correct." for all three would be flattering two of
+them.
+
+The result panel was also relabelled and shortened. It printed `/rɪst/ রিস্ট — কব্জি` as one run-on
+row followed by the word's `RuleFamily.statement` — a paragraph of grammar terminology under a
+word the visitor had just got wrong — and a reader had no way to tell which part was the sound,
+which the meaning, and which a rule. It is now a `<dl>` of three labelled facts (Sound, Meaning,
+Common mistake) and **the rule statement is gone from the demo entirely**: the course is where a
+rule belongs, where a learner has met the vocabulary and has a reason to read it. That also
+removed the rule-family lookup from `GetDictationDemoWordUseCase`, so the endpoint is one query
+per request rather than two.
+
+
+
+
 ### Open — needs the user, not me
 
 **O3 — the 24 flagged transcriptions need a human ear (F9.9).** They are listed by

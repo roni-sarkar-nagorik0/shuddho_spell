@@ -1,14 +1,19 @@
 import Link from 'next/link';
 import { type ReactElement } from 'react';
+import { readDictationDemoWord } from '@/composition/reads';
 import { DictationDemo } from './dictation-demo';
 import { MILESTONES, SYLLABUS } from './syllabus';
 
 /**
  * The marketing landing page.
  *
- * A **Server Component with no data reads at all** — no `requireUser`, no
- * database, no `fetch`. Everything on it is either literal or generated at
- * build time from `syllabus.ts`, so the only work a request does is render.
+ * A Server Component with **one** data read and no session: the demo's first
+ * word, so the drill is playable on first paint. Everything else on the page is
+ * literal or generated at authoring time from `syllabus.ts`.
+ *
+ * That one read is why the demo can draw from the real corpus without the
+ * corpus reaching the browser. The landing page's budget is the reason it is a
+ * word rather than a word list.
  *
  * `13-frontend.md` asks for it to be statically rendered and score ≥95
  * Lighthouse performance and 100 accessibility. What is under this file's
@@ -97,7 +102,9 @@ function Section({
   );
 }
 
-export default function LandingPage(): ReactElement {
+export default async function LandingPage(): Promise<ReactElement> {
+  const demoWord = await readDictationDemoWord();
+
   return (
     <main className="bg-neutral-50">
       {/* The hero. Dark, per 13-frontend.md, with the demo mounted inside it. */}
@@ -137,7 +144,7 @@ export default function LandingPage(): ReactElement {
           </div>
 
           <div id="demo">
-            <DictationDemo />
+            <DictationDemo initialWord={demoWord} />
           </div>
         </div>
       </section>
