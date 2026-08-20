@@ -1,3 +1,5 @@
+import { PushPermissionBanner } from '@/components/notifications/push-permission-banner';
+import { publicEnv } from '@/lib/env.public';
 import { readLearnerDashboard } from '@/composition/reads';
 import { requireUser } from '@/lib/auth/current-user';
 
@@ -27,7 +29,14 @@ export default async function DashboardPage() {
 
   return (
     <main className="paper mx-auto max-w-2xl px-6 py-16">
-      <h1 className="text-2xl font-semibold">{dashboard.displayName}</h1>
+      {/*
+        Inline, above the content, after the page has rendered — never a modal
+        on load. The key is passed down because a Client Component importing the
+        env schema would pull it into the bundle; it is public either way.
+      */}
+      <PushPermissionBanner vapidPublicKey={publicEnv.NEXT_PUBLIC_VAPID_PUBLIC_KEY} />
+
+      <h1 className="mt-8 text-2xl font-semibold">{dashboard.displayName}</h1>
 
       <dl className="mt-8 grid grid-cols-2 gap-6">
         <div>

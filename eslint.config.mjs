@@ -6,7 +6,23 @@ import importPlugin from 'eslint-plugin-import';
 import prettier from 'eslint-config-prettier';
 
 export default defineConfig(
-  { ignores: ['.next/**', 'node_modules/**', 'coverage/**', 'next-env.d.ts'] },
+  {
+    ignores: [
+      '.next/**',
+      'node_modules/**',
+      'coverage/**',
+      'next-env.d.ts',
+      // Static assets, served verbatim and never compiled. `public/sw.js` is a
+      // service worker whose globals (`self` as a `ServiceWorkerGlobalScope`,
+      // `clients`, `registration`) come from the `webworker` lib, which this
+      // project does not load — `allowJs` is off, so TypeScript sees the file
+      // as untyped and every line becomes an `any`. Linting it produces 38
+      // findings about the absence of types rather than anything about the
+      // code, so the linter is scoped to source instead of the rules being
+      // loosened to accommodate it.
+      'public/**',
+    ],
+  },
   js.configs.recommended,
   ...tseslint.configs.strictTypeChecked,
   {
