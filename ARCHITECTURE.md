@@ -1098,6 +1098,18 @@ gained is that a broken state fails `pnpm typecheck` here instead of passing in 
 tree. If Storybook is wanted, the gallery converts to story files close to mechanically —
 each `<State>` is already one story.
 
+**D67 — the landing page cannot be statically rendered, and the reason is upstream (F12.10).**
+`13-frontend.md` asks for `/` to be a statically rendered Server Component scoring ≥95
+Lighthouse performance. The page itself does everything it can: no data reads, no images, no
+client JavaScript except the dictation demo, and its syllabus is generated into `src/app/syllabus.ts`
+at authoring time rather than imported from `content/`. **Static rendering is prevented one level
+up**: `src/app/layout.tsx` calls `getLocale()` (a cookie read, from F1's `next-intl` wiring) and
+mounts `SessionBoundary` (a cookie read, from F3.10), and a cookie read opts the whole tree into
+dynamic rendering. Making `/` static would mean either a second root layout for the marketing
+tree or moving locale resolution off cookies — both are changes to shipped Phase 1 and Phase 3
+decisions, so this is recorded rather than worked around. Lighthouse was not run in this
+environment; no number is claimed for it.
+
 ### Open — needs the user, not me
 
 **O3 — the 24 flagged transcriptions need a human ear (F9.9).** They are listed by
