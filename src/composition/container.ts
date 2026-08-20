@@ -1,5 +1,15 @@
 import 'server-only';
 import { type ILearnerProfileRepository } from '@/modules/auth/domain/repositories/learner-profile-repository';
+import { type INotificationPreferenceRepository } from '@/modules/notifications/domain/repositories/notification-preference-repository';
+import { type INotificationRepository } from '@/modules/notifications/domain/repositories/notification-repository';
+import { type IPushSubscriptionRepository } from '@/modules/notifications/domain/repositories/push-subscription-repository';
+import { type IInAppNotifier } from '@/modules/notifications/application/ports/in-app-notifier';
+import { type IPushSender } from '@/modules/notifications/application/ports/push-sender';
+import { SupabaseNotificationPreferenceRepository } from '@/modules/notifications/infrastructure/persistence/supabase/notification-preference.repository';
+import { SupabaseNotificationRepository } from '@/modules/notifications/infrastructure/persistence/supabase/notification.repository';
+import { SupabasePushSubscriptionRepository } from '@/modules/notifications/infrastructure/persistence/supabase/push-subscription.repository';
+import { NotificationWriter } from '@/modules/notifications/infrastructure/adapters/notification-writer';
+import { WebPushSender } from '@/modules/notifications/infrastructure/adapters/web-push-sender';
 import { type IExamAnswerRepository } from '@/modules/exams/domain/repositories/exam-answer-repository';
 import { type IExamAttemptRepository } from '@/modules/exams/domain/repositories/exam-attempt-repository';
 import { type IExamDefinitionRepository } from '@/modules/exams/domain/repositories/exam-definition-repository';
@@ -81,6 +91,10 @@ export interface IContainer {
   readonly examQuestions: IExamQuestionRepository;
   readonly examAnswers: IExamAnswerRepository;
 
+  readonly notifications: INotificationRepository;
+  readonly notificationPreferences: INotificationPreferenceRepository;
+  readonly pushSubscriptions: IPushSubscriptionRepository;
+
   /**
    * Domain services. Stateless and pure, so one instance per request costs
    * nothing and keeps the rule that a use case is handed what it needs rather
@@ -88,6 +102,10 @@ export interface IContainer {
    */
   readonly reviewPolicy: IReviewSchedulingPolicy;
   readonly errorTagger: ErrorTagger;
+
+  /** The two live channels. There is no third, and no `IMailer` to be one. */
+  readonly inAppNotifier: IInAppNotifier;
+  readonly pushSender: IPushSender;
 
   /** Pure and stateless too — a lookup over the confusion map, never a model. */
   readonly speechScorer: ISpeechScorer;
@@ -135,6 +153,8 @@ export function createContainer(requestId: string): IContainer {
   const reviewPolicy = new IntervalLadderPolicy();
   const ids = new UuidGenerator();
   const pronunciationJudge = new SpeechScorerPronunciationJudge(phonemes, speechScorer);
+  const notifications = new SupabaseNotificationRepository(db);
+  const pushSubscriptions = new SupabasePushSubscriptionRepository(db);
 
   return {
     requestId,
@@ -156,6 +176,13 @@ export function createContainer(requestId: string): IContainer {
     examAttempts: new SupabaseExamAttemptRepository(db),
     examQuestions: new SupabaseExamQuestionRepository(db),
     examAnswers: new SupabaseExamAnswerRepository(db),
+
+    notifications,
+    notificationPreferences: new SupabaseNotificationPreferenceRepository(db),
+    pushSubscriptions,
+
+    inAppNotifier: new NotificationWriter(notifications),
+    pushSender: new WebPushSender(pushSubscriptions),
 
     reviewPolicy,
     errorTagger: new ErrorTagger(),

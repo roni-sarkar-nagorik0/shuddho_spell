@@ -17,6 +17,12 @@ import {
   saveAnswerBodySchema,
   sectionParamsSchema,
 } from '@/modules/exams/presentation/dto/exam-requests';
+import {
+  notificationParamsSchema,
+  subscribePushBodySchema,
+  unsubscribePushBodySchema,
+  updatePreferencesBodySchema,
+} from '@/modules/notifications/presentation/dto/notification-requests';
 import { programDayParamsSchema } from '@/modules/program/presentation/dto/program-params';
 import { submitReviewBodySchema } from '@/modules/review/presentation/dto/review-requests';
 import { meResponseSchema } from '@/modules/auth/presentation/dto/me.response';
@@ -243,6 +249,67 @@ registry.registerPath({
     'What makes the lobby honest instead of decorative. The topics are ranked by expected loss, not by accuracy — a weak rule inside a heavier section costs more of the final mark than a weaker phoneme inside a lighter one.',
   request: { params: examCodeParamsSchema },
   responses: ok(z.unknown(), 'The prediction, per section, and the three costliest topics.'),
+});
+
+registry.registerPath({
+  method: 'get',
+  path: '/api/v1/notifications',
+  summary: 'The bell feed and the unread count.',
+  responses: ok(z.unknown(), 'A page of notifications, newest first, and the badge number.'),
+});
+
+registry.registerPath({
+  method: 'patch',
+  path: '/api/v1/notifications/{id}/read',
+  summary: 'Mark one notification read.',
+  description:
+    'Reading twice is not an error and does not move the timestamp. A notification that is not yours is 404, the same answer as one that does not exist.',
+  request: { params: notificationParamsSchema },
+  responses: ok(z.unknown(), 'The new unread count.'),
+});
+
+registry.registerPath({
+  method: 'post',
+  path: '/api/v1/notifications/read-all',
+  summary: 'Clear the badge.',
+  responses: ok(z.unknown(), 'The new unread count, which is zero.'),
+});
+
+registry.registerPath({
+  method: 'get',
+  path: '/api/v1/notifications/preferences',
+  summary: 'The complete preferences matrix.',
+  description:
+    'Every type on both live channels, with stored rows over the defaults. There is no email channel in the response and no way to ask for one.',
+  responses: ok(z.unknown(), 'Eight types across In-app and Push.'),
+});
+
+registry.registerPath({
+  method: 'put',
+  path: '/api/v1/notifications/preferences',
+  summary: 'Save preference changes.',
+  description:
+    'The channel enum is the two live channels: a body asking to configure `email` is a 422 naming the field rather than an accepted request that does nothing.',
+  request: { body: { content: { 'application/json': { schema: updatePreferencesBodySchema } } } },
+  responses: ok(z.unknown(), 'The complete matrix after saving.'),
+});
+
+registry.registerPath({
+  method: 'post',
+  path: '/api/v1/notifications/push/subscribe',
+  summary: 'Register this browser for push.',
+  description:
+    'The endpoint is unique across the table because it identifies a browser install, not a learner: a shared device moves the row rather than duplicating it.',
+  request: { body: { content: { 'application/json': { schema: subscribePushBodySchema } } } },
+  responses: ok(z.unknown(), 'The registered endpoint.'),
+});
+
+registry.registerPath({
+  method: 'post',
+  path: '/api/v1/notifications/push/unsubscribe',
+  summary: 'Turn push off for this browser.',
+  request: { body: { content: { 'application/json': { schema: unsubscribePushBodySchema } } } },
+  responses: ok(z.unknown(), 'Whether a subscription of yours was removed.'),
 });
 
 // `/api/cron/*` is deliberately **not** registered. This document describes the

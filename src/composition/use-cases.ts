@@ -17,6 +17,13 @@ import { StartLessonSessionUseCase } from '@/modules/lessons/application/use-cas
 import { SubmitConstructionAttemptUseCase } from '@/modules/lessons/application/use-cases/submit-construction-attempt';
 import { SubmitDictationAttemptUseCase } from '@/modules/lessons/application/use-cases/submit-dictation-attempt';
 import { SubmitPronunciationAttemptUseCase } from '@/modules/lessons/application/use-cases/submit-pronunciation-attempt';
+import { GetNotificationPreferencesUseCase } from '@/modules/notifications/application/use-cases/get-notification-preferences';
+import { ListNotificationsUseCase } from '@/modules/notifications/application/use-cases/list-notifications';
+import { MarkAllNotificationsReadUseCase } from '@/modules/notifications/application/use-cases/mark-all-notifications-read';
+import { MarkNotificationReadUseCase } from '@/modules/notifications/application/use-cases/mark-notification-read';
+import { RegisterPushSubscriptionUseCase } from '@/modules/notifications/application/use-cases/register-push-subscription';
+import { RevokePushSubscriptionUseCase } from '@/modules/notifications/application/use-cases/revoke-push-subscription';
+import { UpdateNotificationPreferencesUseCase } from '@/modules/notifications/application/use-cases/update-notification-preferences';
 import { GetProgramDayUseCase } from '@/modules/program/application/use-cases/get-program-day';
 import { GetProgramOverviewUseCase } from '@/modules/program/application/use-cases/get-program-overview';
 import { GetLearnerDashboardUseCase } from '@/modules/progress/application/use-cases/get-learner-dashboard';
@@ -286,4 +293,47 @@ export function makeGetExamReadiness(c: IContainer): GetExamReadinessUseCase {
     c.examAttempts,
     c.mastery,
   );
+}
+
+export function makeListNotifications(c: IContainer): ListNotificationsUseCase {
+  return new ListNotificationsUseCase(c.learnerProfiles, c.notifications);
+}
+
+export function makeMarkNotificationRead(c: IContainer): MarkNotificationReadUseCase {
+  return new MarkNotificationReadUseCase(c.learnerProfiles, c.notifications, c.clock);
+}
+
+export function makeMarkAllNotificationsRead(c: IContainer): MarkAllNotificationsReadUseCase {
+  return new MarkAllNotificationsReadUseCase(c.learnerProfiles, c.notifications, c.clock);
+}
+
+export function makeGetNotificationPreferences(c: IContainer): GetNotificationPreferencesUseCase {
+  return new GetNotificationPreferencesUseCase(
+    c.learnerProfiles,
+    c.notificationPreferences,
+    c.ids,
+  );
+}
+
+export function makeUpdateNotificationPreferences(
+  c: IContainer,
+): UpdateNotificationPreferencesUseCase {
+  return new UpdateNotificationPreferencesUseCase(
+    c.learnerProfiles,
+    c.notificationPreferences,
+    c.ids,
+  );
+}
+
+export function makeRegisterPushSubscription(c: IContainer): RegisterPushSubscriptionUseCase {
+  return new RegisterPushSubscriptionUseCase(
+    c.learnerProfiles,
+    c.pushSubscriptions,
+    c.clock,
+    c.ids,
+  );
+}
+
+export function makeRevokePushSubscription(c: IContainer): RevokePushSubscriptionUseCase {
+  return new RevokePushSubscriptionUseCase(c.learnerProfiles, c.pushSubscriptions);
 }

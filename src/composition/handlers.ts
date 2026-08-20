@@ -12,6 +12,15 @@ import { createSubmitSectionHandler } from '@/modules/exams/presentation/handler
 import { createAdvanceStageHandler } from '@/modules/lessons/presentation/handlers/advance-stage';
 import { createStartSessionHandler } from '@/modules/lessons/presentation/handlers/start-session';
 import { createSubmitAttemptHandler } from '@/modules/lessons/presentation/handlers/submit-attempt';
+import {
+  createGetPreferencesHandler,
+  createListNotificationsHandler,
+  createMarkAllReadHandler,
+  createMarkReadHandler,
+  createSubscribePushHandler,
+  createUnsubscribePushHandler,
+  createUpdatePreferencesHandler,
+} from '@/modules/notifications/presentation/handlers/notification-handlers';
 import { createGetProgramDayHandler } from '@/modules/program/presentation/handlers/get-program-day';
 import { createGetProgramHandler } from '@/modules/program/presentation/handlers/get-program';
 import { createGetMasteryHandler } from '@/modules/progress/presentation/handlers/get-mastery';
@@ -23,7 +32,14 @@ import {
   makeAdvanceLessonStage,
   makeGetDueReviewItems,
   makeGetMe,
+  makeGetNotificationPreferences,
   makeGetProgramDay,
+  makeListNotifications,
+  makeMarkAllNotificationsRead,
+  makeMarkNotificationRead,
+  makeRegisterPushSubscription,
+  makeRevokePushSubscription,
+  makeUpdateNotificationPreferences,
   makeGetMasterySnapshot,
   makeGetProgramOverview,
   makeGetProgressSummary,
@@ -138,4 +154,32 @@ export const getExamReadinessHandler = createGetReadinessHandler(() =>
 
 export const examAutoSubmitCronHandler = createAutoSubmitCronHandler(() =>
   makeAutoSubmitAbandonedExams(container()),
+);
+
+export const listNotificationsHandler = createListNotificationsHandler(() =>
+  makeListNotifications(container()),
+);
+
+export const markNotificationReadHandler = createMarkReadHandler(() =>
+  makeMarkNotificationRead(container()),
+);
+
+export const markAllNotificationsReadHandler = createMarkAllReadHandler(() =>
+  makeMarkAllNotificationsRead(container()),
+);
+
+export const getNotificationPreferencesHandler = createGetPreferencesHandler(() =>
+  makeGetNotificationPreferences(container()),
+);
+
+export const updateNotificationPreferencesHandler = createUpdatePreferencesHandler(() =>
+  makeUpdateNotificationPreferences(container()),
+);
+
+export const subscribePushHandler = createSubscribePushHandler(() =>
+  makeRegisterPushSubscription(container()),
+);
+
+export const unsubscribePushHandler = createUnsubscribePushHandler(() =>
+  makeRevokePushSubscription(container()),
 );
