@@ -345,7 +345,11 @@ that are not are named on the phase's **Completed** line in `BUILD-ORDER-COMPLET
 ---
 
 ## Phase 6 — Speech scoring
-Branch `feat/06-speech-scoring` · Status: `NOT STARTED`
+Branch `feat/06-speech-scoring` · Status: `DONE` (8/8, 2026-08-20). Exit gate **not run** — paused by
+standing instruction 2026-08-19. F6.7's 42-case suite is green (75/75) and covers five of the
+five gate items that are about behaviour; the sixth, "no audio reaches the server unless the
+learner opted into storage", is enforced by the request schema having no audio field and was
+not proven by a sweep.
 
 - [x] **F6.1** (2026-08-20) G2P lookup stored in the `words` table
   - Test: every seeded word resolves to a phoneme sequence

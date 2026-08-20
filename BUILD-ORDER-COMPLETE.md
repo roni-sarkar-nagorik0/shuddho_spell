@@ -262,8 +262,9 @@ Status values: `NOT STARTED` · `IN PROGRESS` · `BLOCKED — <reason>` · `DONE
 ## Phase 6 — Speech scoring
 
 - **Branch:** `feat/06-speech-scoring` (from `dev`)
-- **Status:** NOT STARTED
-- **Completed:**
+- **Status:** DONE
+- **Completed:** 2026-08-20, F6.1–F6.8. Exit gate **not run** — paused by standing instruction
+  2026-08-19. Not implied to have passed.
 - **Reads:** `07-speech-scoring`
 - **Deliverables:** `ISpeechScorer` implementation; G2P lookup stored in the `words` table (not
   computed at runtime); `BengaliConfusionMap` declared as data; the 50/50 Levenshtein + phoneme

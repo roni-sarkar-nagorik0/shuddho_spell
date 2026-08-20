@@ -929,6 +929,42 @@ This is the third time a sweep has been tripped by a **comment** describing the 
 (F3.11's pino redaction, F4.5's ladder interval, F5.8's "no fetch here"). The answer has been the
 same every time: reword the comment, never add an exception.
 
+**D45 — the confusion map carries `kind` and `graphemeShifts` (F6.2).**
+`07-speech-scoring.md` sketches `IPhonemeConfusion` with five fields. Both additions are
+forced by the document's own privacy constraint: the server receives **text**, never audio,
+so a phoneme swap is only ever visible as a spelling shift — `very` arriving as `wery` — and
+`graphemeShifts` is that shadow. `kind` exists because not every confusion casts one: an
+epenthetic vowel adds a syllable at the front, a dropped cluster shortens the end, and a
+stress error changes nothing a recogniser writes down at all. Naming the kind keeps the
+detector one function per shape instead of the `if` chain the doc explicitly bans.
+
+**D46 — `IPronunciationScoreInput` changed shape (F6.6).**
+`expectedIpa: string` is gone; `expected: ISpokenForm` — segmented sounds plus the stressed
+index — replaces it, and `heard: ISpokenForm | null` is new. Cutting IPA into sounds needs the
+44-phoneme inventory, and the port is deliberately synchronous, so a scorer holding a raw
+string would have to load the inventory itself. The caller has already read the stored G2P to
+write per-phoneme mastery, so it hands over what it holds. `heard` is the only route by which
+a stress error is ever diagnosable: a transcript cannot carry it, and it is never guessed.
+The port had no implementation and no caller when this changed.
+
+**D47 — homophones are data, and the orthographic half measures against the closest
+acceptable spelling (F6.5).** `07` requires the homophone case to be handled explicitly and
+does not say how. The recogniser writes a *word*, so a learner who pronounced `there`
+perfectly may well get `their` back; measuring the transcript against the closest acceptable
+rendering makes that cost nothing while a real vowel error still costs what it should. Groups
+that merely merge in some accents are left out — `caught`/`court` is a merger, not homophony,
+and treating it as one would forgive an error the programme is teaching.
+
+**D48 — the near-miss ceiling is also the pronunciation pass mark (F6.8).**
+`attempts.is_correct` needs a threshold and no doc gives one. Rather than invent a second
+number, `isCorrect` is "no diagnosis, and above the 90 the near-miss band tops out at" —
+because that is what the ceiling already means: above it there is no named error left.
+
+**D49 — F6.7 was written as a real test suite during the test pause (F6.7).**
+`CLAUDE.md` section 0 pauses test-writing, and F6.7's entire deliverable is a table of ≥40
+cases. There was nothing else to build for it, so it was built as a suite and run (75/75). It
+is the only file this run added under `*.test.ts`, and the pause is otherwise untouched.
+
 ### Open — needs the user, not me
 
 **O1 — `02-typescript-rules.md` still says `packages/config` base tsconfig.** That is a
