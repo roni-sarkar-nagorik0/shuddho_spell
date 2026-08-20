@@ -81,7 +81,7 @@ and 2. No feature starts without it. **Never read the file** — existence check
 ## NEXT
 
 > **Phase 11 · Learning screens — in progress on `feat/11-learning-screens`**
-> Current: **F11.3** — `/lesson/[day]` shell + five-stage tracker.
+> Current: **F11.4** — Learn stage.
 >
 > **What Phase 10 leaves Phase 11**
 > - The shell is real: `(learn)/layout.tsx` gives every screen the rail, the top bar and a
@@ -528,7 +528,7 @@ Branch `feat/11-learning-screens` · Status: `IN PROGRESS`
   - Test: renders with zero data and with full data; no N+1 on the API call
 - [x] **F11.2** (2026-08-20) `/program`
   - Test: 28 rows grouped by week with milestone rows; expandable day rows
-- [ ] **F11.3** `/lesson/[day]` shell + five-stage tracker
+- [x] **F11.3** (2026-08-20) `/lesson/[day]` shell + five-stage tracker
   - Test: stage order enforced by the server, not just the UI
 - [ ] **F11.4** Learn stage
   - Test: `PhonemeStrip` renders per word; audio plays
@@ -615,6 +615,7 @@ Out of scope for this build. Do not start these, and do not leave stubs for them
 Newest first. One line per finished feature: date · id · what · test result.
 
 | Date | Feature | What landed | Tests |
+| 2026-08-20 | F11.3 | `/lesson/[day]` focus mode — `(focus)` layout, idempotent session open/resume, `StageTracker`, the review stage, every transition taken from the server's response | typecheck + lint green (tests paused) |
 | 2026-08-20 | F11.2 | `/program` — 28 rows grouped by week, five exam milestones interleaved at their unlock day, expandable day rows, stats rail; `ListExamMilestones` use case | typecheck + lint green (tests paused) |
 | 2026-08-20 | F11.1 | `/dashboard` — four stat panels, today's session, next-exam readiness, weekly time-on-task, due-review table, phoneme matrix; six parallel memoised reads, plus `GetWeeklyActivity` and `GetNextExam` | typecheck + lint green (tests paused) |
 | 2026-08-20 | F10.9 | Focus ring rebuilt as a real `outline` (2px secondary-500 / 2px offset, background-independent), global `prefers-reduced-motion` rule, colour-only-cue audit in the gallery | typecheck + lint green (tests paused) |
