@@ -1086,6 +1086,18 @@ can settle, so those 24 carry `ipaNeedsReview: true` and `pnpm content:report` l
 `stationary` and `stationery` are flagged together and identically, which is the point of the
 pair.
 
+**D66 — a component gallery route instead of Storybook (F10.2).**
+`13-frontend.md` asks for `PhonemeStrip`, `MasteryMatrix` and the primitive layer to ship
+"documented with screenshots in three states each" in Storybook. `/gallery` renders exactly
+those states, inside this application, and 404s in production. This one **does** depart from a
+doc, so it is stated plainly rather than filed as an omission: Storybook is a second build, a
+second bundler configuration and roughly fifty devDependencies whose only output is rendering
+components this app already renders, and `CLAUDE.md` §3 is emphatic about one build and one
+deploy target. What is lost is the controls panel and the publishable static site. What is
+gained is that a broken state fails `pnpm typecheck` here instead of passing in a parallel
+tree. If Storybook is wanted, the gallery converts to story files close to mechanically —
+each `<State>` is already one story.
+
 ### Open — needs the user, not me
 
 **O3 — the 24 flagged transcriptions need a human ear (F9.9).** They are listed by

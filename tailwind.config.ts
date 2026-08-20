@@ -37,6 +37,19 @@ const config: Config = {
           700: '#3F4451',
           900: '#1B1D22',
         },
+        /**
+         * The heat scale of 12-design-system.md, low to high. Named by level
+         * rather than by colour so a cell asks for `bg-heat-2` and never has to
+         * know that level 2 happens to be amber — the ramp can be retuned in
+         * one place.
+         */
+        heat: {
+          0: '#EDEFF3',
+          1: '#C7CCD8',
+          2: '#F7DFB8',
+          3: '#E9A13B',
+          4: '#0E7A55',
+        },
         surface: '#FFFFFF',
         hairline: '#E4E6E0',
         muted: '#6B7280',

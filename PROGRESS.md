@@ -81,7 +81,7 @@ and 2. No feature starts without it. **Never read the file** — existence check
 ## NEXT
 
 > **Phase 10 · Web shell and core components — in progress on `feat/10-web-shell`**
-> Current: **F10.2** — `PhonemeStrip`.
+> Current: **F10.3** — `MasteryMatrix`.
 >
 > **What Phase 5 leaves Phase 6**
 > - `ISpeechScorer` is declared (F4.10) and **has no implementation**. Phase 6 is that, plus the
@@ -485,7 +485,7 @@ Branch `feat/10-web-shell` · Status: `IN PROGRESS`
 
 - [x] **F10.1** (2026-08-20) App shell — 232px sidebar collapsing to 56px, 48px top bar, 1280px grid
   - Test: collapse state persists; keyboard reachable
-- [ ] **F10.2** `PhonemeStrip`
+- [x] **F10.2** (2026-08-20) `PhonemeStrip`
   - Test: syllable dividers, 22px cells tinted by learner mastery, Bangla line, mono stat line; 3 states in Storybook
 - [ ] **F10.3** `MasteryMatrix`
   - Test: renders 44 cells **and** 24 cells from the same component via `dimension`; tooltips; drill action
@@ -598,6 +598,7 @@ Out of scope for this build. Do not start these, and do not leave stubs for them
 Newest first. One line per finished feature: date · id · what · test result.
 
 | Date | Feature | What landed | Tests |
+| 2026-08-20 | F10.2 | `PhonemeStrip` — syllable dividers, 22px heat-tinted cells, Bangla line, mono stat line; three states in `/gallery` (D66: gallery, not Storybook) | typecheck + lint green (tests paused) |
 | 2026-08-20 | F10.1 | App shell: 232px→56px rail with cookie-persisted collapse, 48px top bar, 1280px 12-col paper grid, skip link | typecheck + lint green (tests paused) |
 | --- | --- | --- | --- |
 | 2026-08-20 | F9.9 | `pnpm content:report` prints the phase's numbers rather than claiming them, and **exits non-zero when a target is missed** — a report that only described what was there would let 900 words pass as 1,240. All five targets hit exactly. It also reports two things the spec did not ask for and should have: **all 24 rule families are exercised** (a family nobody's content demonstrates is a mastery-matrix row that can never move, and a learner staring at a permanently empty cell), and the 15 phonemes absent from Bangla each carry the substitution learners produce. **I went back and marked my own work uncertain.** 24 of 1,240 transcriptions are now `ipaNeedsReview: true` — the compressed **-ary/-ory/-ery** family and the words whose careful and casual RP differ by a syllable (`library`, `secretary`, `February`, `restaurant`, `medicine`, `comfortable`, `temperature`…). My syllable splits follow the compressed form, and *which register the course teaches* is a real editorial decision a human should make rather than one I quietly settle. `stationary` and `stationery` are flagged **together and identically**, which is the point of the pair. Fixed one genuine error found on review: `graduate` was tagged a noun and carried the **verb's** transcription — the noun reduces its final vowel and the verb does not | typecheck, lint green · `pnpm content:report`: **1,240 / 560 / 44 / 24 / 28 — every target ok**, 33–34 min per day across all four weeks, 24 flagged for human review and listed |
