@@ -1,7 +1,9 @@
 import { notFound } from 'next/navigation';
 import { type ReactElement, type ReactNode } from 'react';
+import { MasteryMatrix } from '@/components/data/mastery-matrix';
 import { PhonemeStrip, type IPhonemeCell } from '@/components/learning/phoneme-strip';
 import { serverEnv } from '@/lib/env.server';
+import { PHONEME_CELLS, RULE_FAMILY_CELLS, UNATTEMPTED_PHONEME_CELLS } from './fixtures';
 
 /**
  * The component gallery — every state of every shared component, on one page.
@@ -83,6 +85,29 @@ export default function GalleryPage(): ReactElement {
           </State>
           <State name="Weak across the word" note="Every sound below the drill threshold.">
             <PhonemeStrip bangla="সাট্‌ল্" cells={SUBTLE_WEAK} syllables={['sub', 'tle']} />
+          </State>
+        </div>
+      </section>
+
+      <section className="flex flex-col gap-3">
+        <h2 className="font-display text-base tracking-tight">MasteryMatrix</h2>
+        <div className="grid grid-cols-2 gap-4">
+          <State name="Phoneme — 44 cells" note={'dimension="phoneme", 11 columns.'}>
+            <MasteryMatrix cells={PHONEME_CELLS} dimension="phoneme" drillLabel="Drill this" />
+          </State>
+          <State name="Rule family — 24 cells" note={'Same component, dimension="rule_family", 6 columns.'}>
+            <MasteryMatrix
+              cells={RULE_FAMILY_CELLS}
+              dimension="rule_family"
+              drillLabel="Drill this"
+            />
+          </State>
+          <State name="Day one" note="44 cells, nothing attempted — dashed, not merely pale.">
+            <MasteryMatrix
+              cells={UNATTEMPTED_PHONEME_CELLS}
+              dimension="phoneme"
+              drillLabel="Drill this"
+            />
           </State>
         </div>
       </section>

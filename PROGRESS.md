@@ -81,7 +81,7 @@ and 2. No feature starts without it. **Never read the file** — existence check
 ## NEXT
 
 > **Phase 10 · Web shell and core components — in progress on `feat/10-web-shell`**
-> Current: **F10.3** — `MasteryMatrix`.
+> Current: **F10.4** — `DataTable`.
 >
 > **What Phase 5 leaves Phase 6**
 > - `ISpeechScorer` is declared (F4.10) and **has no implementation**. Phase 6 is that, plus the
@@ -487,7 +487,7 @@ Branch `feat/10-web-shell` · Status: `IN PROGRESS`
   - Test: collapse state persists; keyboard reachable
 - [x] **F10.2** (2026-08-20) `PhonemeStrip`
   - Test: syllable dividers, 22px cells tinted by learner mastery, Bangla line, mono stat line; 3 states in Storybook
-- [ ] **F10.3** `MasteryMatrix`
+- [x] **F10.3** (2026-08-20) `MasteryMatrix`
   - Test: renders 44 cells **and** 24 cells from the same component via `dimension`; tooltips; drill action
 - [ ] **F10.4** `DataTable` — sticky header, pinned columns, cursor pagination, 32px rows
   - Test: pagination with a cursor; keyboard navigation
@@ -598,6 +598,7 @@ Out of scope for this build. Do not start these, and do not leave stubs for them
 Newest first. One line per finished feature: date · id · what · test result.
 
 | Date | Feature | What landed | Tests |
+| 2026-08-20 | F10.3 | `MasteryMatrix` — one component, 44 phoneme cells and 24 rule-family cells via `dimension`; keyboard cells, detail row, drill link, legend | typecheck + lint green (tests paused) |
 | 2026-08-20 | F10.2 | `PhonemeStrip` — syllable dividers, 22px heat-tinted cells, Bangla line, mono stat line; three states in `/gallery` (D66: gallery, not Storybook) | typecheck + lint green (tests paused) |
 | 2026-08-20 | F10.1 | App shell: 232px→56px rail with cookie-persisted collapse, 48px top bar, 1280px 12-col paper grid, skip link | typecheck + lint green (tests paused) |
 | --- | --- | --- | --- |
