@@ -2,6 +2,7 @@ import 'server-only';
 import { createGetMeHandler } from '@/modules/auth/presentation/handlers/get-me';
 import { createGetActiveAttemptHandler } from '@/modules/exams/presentation/handlers/get-active-attempt';
 import { createGetAnswerReviewHandler } from '@/modules/exams/presentation/handlers/get-answer-review';
+import { createGetReadinessHandler } from '@/modules/exams/presentation/handlers/get-readiness';
 import { createGetResultHandler } from '@/modules/exams/presentation/handlers/get-result';
 import { createSaveAnswerHandler } from '@/modules/exams/presentation/handlers/save-answer';
 import { createStartAttemptHandler } from '@/modules/exams/presentation/handlers/start-attempt';
@@ -28,6 +29,7 @@ import {
   makeFlagExamQuestion,
   makeGetActiveExamAttempt,
   makeGetExamAnswerReview,
+  makeGetExamReadiness,
   makeGetExamResult,
   makeSaveExamAnswer,
   makeStartExamAttempt,
@@ -126,4 +128,8 @@ export const getExamResultHandler = createGetResultHandler(() => makeGetExamResu
 
 export const getExamAnswerReviewHandler = createGetAnswerReviewHandler(() =>
   makeGetExamAnswerReview(container()),
+);
+
+export const getExamReadinessHandler = createGetReadinessHandler(() =>
+  makeGetExamReadiness(container()),
 );

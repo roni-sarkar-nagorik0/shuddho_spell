@@ -235,6 +235,16 @@ registry.registerPath({
   responses: ok(z.unknown(), 'Every question, the learner’s answer, and the right one.'),
 });
 
+registry.registerPath({
+  method: 'get',
+  path: '/api/v1/exams/{code}/readiness',
+  summary: 'A predicted score and the three topics most likely to cost marks.',
+  description:
+    'What makes the lobby honest instead of decorative. The topics are ranked by expected loss, not by accuracy — a weak rule inside a heavier section costs more of the final mark than a weaker phoneme inside a lighter one.',
+  request: { params: examCodeParamsSchema },
+  responses: ok(z.unknown(), 'The prediction, per section, and the three costliest topics.'),
+});
+
 export function buildOpenApiDocument(): ReturnType<OpenApiGeneratorV3['generateDocument']> {
   return new OpenApiGeneratorV3(registry.definitions).generateDocument({
     openapi: '3.0.3',

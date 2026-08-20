@@ -3,6 +3,7 @@ import { BootstrapProfileUseCase } from '@/modules/auth/application/use-cases/bo
 import { GetMeUseCase } from '@/modules/auth/application/use-cases/get-me';
 import { GetActiveExamAttemptUseCase } from '@/modules/exams/application/use-cases/get-active-exam-attempt';
 import { GetExamAnswerReviewUseCase } from '@/modules/exams/application/use-cases/get-exam-answer-review';
+import { GetExamReadinessUseCase } from '@/modules/exams/application/use-cases/get-exam-readiness';
 import { GetExamResultUseCase } from '@/modules/exams/application/use-cases/get-exam-result';
 import { FlagExamQuestionUseCase } from '@/modules/exams/application/use-cases/flag-exam-question';
 import { SaveExamAnswerUseCase } from '@/modules/exams/application/use-cases/save-exam-answer';
@@ -264,5 +265,14 @@ export function makeGetExamAnswerReview(c: IContainer): GetExamAnswerReviewUseCa
     c.examAttempts,
     c.examQuestions,
     c.examAnswers,
+  );
+}
+
+export function makeGetExamReadiness(c: IContainer): GetExamReadinessUseCase {
+  return new GetExamReadinessUseCase(
+    c.learnerProfiles,
+    c.examDefinitions,
+    c.examAttempts,
+    c.mastery,
   );
 }
