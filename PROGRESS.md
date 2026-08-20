@@ -81,7 +81,7 @@ and 2. No feature starts without it. **Never read the file** — existence check
 ## NEXT
 
 > **Phase 10 · Web shell and core components — in progress on `feat/10-web-shell`**
-> Current: **F10.5** — primitives.
+> Current: **F10.6** — overlays.
 >
 > **What Phase 5 leaves Phase 6**
 > - `ISpeechScorer` is declared (F4.10) and **has no implementation**. Phase 6 is that, plus the
@@ -491,7 +491,7 @@ Branch `feat/10-web-shell` · Status: `IN PROGRESS`
   - Test: renders 44 cells **and** 24 cells from the same component via `dimension`; tooltips; drill action
 - [x] **F10.4** (2026-08-20) `DataTable` — sticky header, pinned columns, cursor pagination, 32px rows
   - Test: pagination with a cursor; keyboard navigation
-- [ ] **F10.5** Primitives — `StatCell`, `PanelHeader`, `HeatCell`, `MonoValue`, `StatusBadge`, `Sparkline`
+- [x] **F10.5** (2026-08-20) Primitives — `StatCell`, `PanelHeader`, `HeatCell`, `MonoValue`, `StatusBadge`, `Sparkline`
   - Test: tabular numerals on every numeric primitive
 - [ ] **F10.6** Overlays — `Toast`, `Popover`, `Drawer`, `ConfirmDialog`
   - Test: focus trap, Escape closes, focus returns to the trigger
@@ -598,6 +598,7 @@ Out of scope for this build. Do not start these, and do not leave stubs for them
 Newest first. One line per finished feature: date · id · what · test result.
 
 | Date | Feature | What landed | Tests |
+| 2026-08-20 | F10.5 | Primitives: `MonoValue`, `StatCell`, `PanelHeader`, `HeatCell`, `StatusBadge`, `Sparkline` — tabular figures on every numeric one | typecheck + lint green (tests paused) |
 | 2026-08-20 | F10.4 | `DataTable` — sticky header, sticky pinned columns with computed offsets, cursor stack pagination, ARIA grid with roving focus | typecheck + lint green (tests paused) |
 | 2026-08-20 | F10.3 | `MasteryMatrix` — one component, 44 phoneme cells and 24 rule-family cells via `dimension`; keyboard cells, detail row, drill link, legend | typecheck + lint green (tests paused) |
 | 2026-08-20 | F10.2 | `PhonemeStrip` — syllable dividers, 22px heat-tinted cells, Bangla line, mono stat line; three states in `/gallery` (D66: gallery, not Storybook) | typecheck + lint green (tests paused) |

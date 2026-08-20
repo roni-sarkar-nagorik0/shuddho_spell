@@ -4,6 +4,12 @@ import { MasteryMatrix } from '@/components/data/mastery-matrix';
 import { PhonemeStrip, type IPhonemeCell } from '@/components/learning/phoneme-strip';
 import { serverEnv } from '@/lib/env.server';
 import { PHONEME_CELLS, RULE_FAMILY_CELLS, UNATTEMPTED_PHONEME_CELLS } from './fixtures';
+import { HeatCell } from '@/components/primitives/heat-cell';
+import { MonoValue } from '@/components/primitives/mono-value';
+import { PanelHeader } from '@/components/primitives/panel-header';
+import { Sparkline } from '@/components/primitives/sparkline';
+import { StatCell } from '@/components/primitives/stat-cell';
+import { StatusBadge, STATUS_TONES } from '@/components/primitives/status-badge';
 import { TableDemo } from './table-demo';
 
 /**
@@ -124,6 +130,69 @@ export default function GalleryPage(): ReactElement {
           </State>
           <State name="Loading" note="Both pagination controls disabled.">
             <TableDemo state="loading" />
+          </State>
+        </div>
+      </section>
+
+      <section className="flex flex-col gap-3">
+        <h2 className="font-display text-base tracking-tight">Primitives</h2>
+        <div className="grid grid-cols-3 gap-4">
+          <State name="StatCell — rising" note="Arrow, sign and colour. Never colour alone.">
+            <StatCell delta={4} label="Accuracy" note="up 4 since Monday" unit="%" value={92} />
+          </State>
+          <State name="StatCell — falling" note="Same primitive, tertiary-500.">
+            <StatCell delta={-3} label="Streak" note="broken on Sunday" unit="days" value={11} />
+          </State>
+          <State name="StatCell — no comparison" note="delta null: nothing to compare yet.">
+            <StatCell delta={null} label="Words learned" value={128} />
+          </State>
+
+          <State name="MonoValue" note="Three sizes, tabular figures throughout.">
+            <span className="flex items-baseline gap-4">
+              <MonoValue size="sm" unit="s" value={45} />
+              <MonoValue unit="%" value="87" />
+              <MonoValue size="lg" unit="×" value="1.2" />
+            </span>
+          </State>
+          <State name="PanelHeader" note="Title, note, right-aligned action.">
+            <div className="card">
+              <PanelHeader
+                action={<span className="text-[11px] text-primary-900">View all</span>}
+                note="12 rows"
+                title="Due reviews"
+              />
+              <p className="p-3 text-muted">Panel body.</p>
+            </div>
+          </State>
+          <State name="HeatCell" note="Five steps plus the unattempted dashed square.">
+            <span className="flex gap-1">
+              <HeatCell accuracy={null} label="not seen">ə</HeatCell>
+              <HeatCell accuracy={0.2} label="weak">θ</HeatCell>
+              <HeatCell accuracy={0.5} label="shaky">ð</HeatCell>
+              <HeatCell accuracy={0.8} label="good">v</HeatCell>
+              <HeatCell accuracy={0.97} label="mastered">z</HeatCell>
+            </span>
+          </State>
+
+          <State name="StatusBadge" note="Every tone carries its word.">
+            <span className="flex flex-wrap gap-1.5">
+              {STATUS_TONES.map((tone) => (
+                <StatusBadge key={tone} label={tone} tone={tone} />
+              ))}
+            </span>
+          </State>
+          <State name="Sparkline — a trend" note="Last point dotted; no axes by design.">
+            <Sparkline
+              className="text-primary-900"
+              label="Accuracy over the last nine sessions, rising from 61% to 92%"
+              values={[61, 58, 66, 71, 69, 78, 84, 88, 92]}
+            />
+          </State>
+          <State name="Sparkline — flat and empty" note="Zero span, and fewer than two points.">
+            <span className="flex items-center gap-4">
+              <Sparkline className="text-muted" label="Flat at 70%" values={[70, 70, 70, 70]} />
+              <Sparkline className="text-muted" label="One session only" values={[70]} />
+            </span>
           </State>
         </div>
       </section>
