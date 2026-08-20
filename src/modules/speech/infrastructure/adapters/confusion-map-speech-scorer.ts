@@ -24,12 +24,16 @@ import {
  * a browser, and telling a learner their pronunciation was wrong when the
  * device never heard them is both untrue and discouraging.
  */
-const NOT_HEARD: IPronunciationDiagnosis = Object.freeze({
-  expected: '',
-  heard: '',
-  articulationFix:
-    'Nothing was heard. Check that the microphone is allowed and working, then say the word again — this attempt says nothing about your pronunciation.',
-});
+function notHeard(expectedText: string): IPronunciationDiagnosis {
+  return {
+    expected: expectedText,
+    // Empty, and truthfully so: nothing was heard. Putting anything else here
+    // would be inventing an attempt the learner never made.
+    heard: '',
+    articulationFix:
+      'Nothing was heard. Check that the microphone is allowed and working, then say the word again — this attempt says nothing about your pronunciation.',
+  };
+}
 
 /**
  * `ISpeechScorer` over the Bengali confusion map.
@@ -85,7 +89,7 @@ export class ConfusionMapSpeechScorer implements ISpeechScorer {
     input: IPronunciationScoreInput,
   ): readonly IPronunciationDiagnosis[] {
     if (assessment.isNotHeard) {
-      return [NOT_HEARD];
+      return [notHeard(input.expectedText)];
     }
 
     const seen = new Set<string>();
