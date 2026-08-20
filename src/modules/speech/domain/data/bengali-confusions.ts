@@ -122,7 +122,11 @@ export const BENGALI_CONFUSIONS: readonly IPhonemeConfusion[] = Object.freeze([
       'Begin on the /s/ itself — no vowel in front of it. Hiss first, then let the /k/ follow immediately: s-k, not i-s-k.',
     banglaNote:
       'বাংলায় শব্দের শুরুতে দুটি ব্যঞ্জন পাশাপাশি বসে না, তাই আগে একটি ‘ই’ যোগ হয়ে যায়। শব্দটি সরাসরি ‘স’ দিয়ে শুরু করুন।',
-    graphemeShifts: [],
+    graphemeShifts: [
+      { from: 'sch', to: 'isch' },
+      { from: 'sk', to: 'isk' },
+      { from: 'sc', to: 'isc' },
+    ],
   },
   {
     id: 'epenthesis-before-sp',
@@ -134,7 +138,7 @@ export const BENGALI_CONFUSIONS: readonly IPhonemeConfusion[] = Object.freeze([
       'Start the word on the /s/ and close straight onto the /p/. Anything before the /s/ is an extra syllable the word does not have.',
     banglaNote:
       'শব্দের শুরুতে কোনো স্বর যোগ করবেন না। ‘স’ দিয়েই শুরু করে সঙ্গে সঙ্গে ‘প’ আনুন।',
-    graphemeShifts: [],
+    graphemeShifts: [{ from: 'sp', to: 'isp' }],
   },
   {
     id: 'epenthesis-before-st',
@@ -146,7 +150,7 @@ export const BENGALI_CONFUSIONS: readonly IPhonemeConfusion[] = Object.freeze([
       'Hold the /s/ for a moment and release it directly into the /t/. The word has one syllable fewer than you are giving it.',
     banglaNote:
       'বাংলায় ‘স্ট’ শুরুতে বসে না বলে আগে ‘ই’ চলে আসে। ‘স’ দিয়ে শুরু করে সরাসরি ‘ট’-এ যান।',
-    graphemeShifts: [],
+    graphemeShifts: [{ from: 'st', to: 'ist' }],
   },
   {
     id: 'final-cluster-dropped',

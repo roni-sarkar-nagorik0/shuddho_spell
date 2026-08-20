@@ -36,9 +36,11 @@ export interface IPhonemeConfusion {
   /** Real Bangla script. Never transliteration — `CLAUDE.md` section 10. */
   readonly banglaNote: string;
   /**
-   * Empty for every kind but `substitution`: an epenthetic vowel, a dropped
-   * cluster and a stress error are structural, and a detector recognises their
-   * *shape* rather than a letter swap.
+   * Empty for `cluster-drop` and `stress`, which are structural: one shortens
+   * the end of any word ending in a cluster and the other changes nothing a
+   * recogniser writes down at all, so a detector recognises their *shape*
+   * rather than a letter swap. An epenthetic vowel does leave a trace —
+   * `school` arriving as `ischool` — so it carries shifts like a substitution.
    */
   readonly graphemeShifts: readonly IGraphemeShift[];
 }
