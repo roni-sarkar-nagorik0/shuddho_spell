@@ -1,7 +1,8 @@
 'use client';
 
-import { useCallback, useState, type ReactElement } from 'react';
+import { type ReactElement } from 'react';
 import { Glyph } from '@/components/icons/glyph';
+import { useAudio } from '@/components/lesson/audio-manager';
 import { PhonemeStrip, type IPhonemeCell } from '@/components/learning/phoneme-strip';
 import { StatusBadge } from '@/components/primitives/status-badge';
 
@@ -37,39 +38,17 @@ export interface ILearnStageProps {
  * transcription against the 44-phoneme inventory and joins the learner's
  * mastery rows, four batched queries for the whole day.
  *
- * The audio cancels whatever is speaking before it starts. Overlapping
- * utterances is the single most common bug in speech-synthesis UIs
- * (`13-frontend.md`), and it is a one-line habit rather than a feature. F11.8
- * turns this into the shared audio manager that also carries the learner's
- * `playbackRate` and `accentPreference`; the cancel-first rule is the part that
- * cannot wait, because getting it wrong here would make this stage unusable.
+ * Audio goes through the shared manager (F11.8), which cancels before it
+ * speaks and carries the learner's own accent and playback rate. This stage
+ * holds no `SpeechSynthesisUtterance` of its own, and neither does any other:
+ * one speaker means one thing can be talking.
  */
 export function LearnStage({ words, rules, onDone }: ILearnStageProps): ReactElement {
-  const [speaking, setSpeaking] = useState<string | null>(null);
-  const [unsupported, setUnsupported] = useState(false);
-
-  const say = useCallback((wordId: string, text: string) => {
-    if (typeof window === 'undefined' || !('speechSynthesis' in window)) {
-      setUnsupported(true);
-      return;
-    }
-
-    // Cancel before speak. Every time, without checking whether anything is
-    // currently speaking — the check is the bug.
-    window.speechSynthesis.cancel();
-
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = 'en-GB';
-    utterance.onend = () => { setSpeaking(null); };
-    utterance.onerror = () => { setSpeaking(null); };
-
-    setSpeaking(wordId);
-    window.speechSynthesis.speak(utterance);
-  }, []);
+  const audio = useAudio();
 
   return (
     <div className="flex flex-col gap-6">
-      {unsupported && (
+      {!audio.supported && (
         <p className="text-muted">
           This browser has no speech synthesis. The transcription and the Bangla line still carry
           the pronunciation.
@@ -91,7 +70,7 @@ export function LearnStage({ words, rules, onDone }: ILearnStageProps): ReactEle
               <button
                 aria-label={`Play ${word.text}`}
                 className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-primary-900 text-primary-900"
-                onClick={() => { say(word.wordId, word.text); }}
+                onClick={() => { audio.speak(word.text); }}
                 type="button"
               >
                 <Glyph name="play" size={14} />
@@ -103,7 +82,7 @@ export function LearnStage({ words, rules, onDone }: ILearnStageProps): ReactEle
                 {word.banglaMeaning}
               </span>
               <span className="label">{word.partOfSpeech}</span>
-              {speaking === word.wordId && <StatusBadge label="Playing" tone="active" />}
+              {audio.speaking === word.text && <StatusBadge label="Playing" tone="active" />}
             </p>
           </li>
         ))}

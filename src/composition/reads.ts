@@ -1,5 +1,6 @@
 import 'server-only';
 import { cache } from 'react';
+import { type AccentPreference } from '@/modules/auth/domain/value-objects/accent-preference';
 import { type IExamMilestone } from '@/modules/exams/application/dto/exam-milestone';
 import { type INextExam } from '@/modules/exams/application/dto/next-exam';
 import { type IWordPhonemeStrip } from '@/modules/library/application/dto/phoneme-strip';
@@ -19,6 +20,7 @@ import {
   makeGetProgramDay,
   makeGetProgramOverview,
   makeGetProgressSummary,
+  makeGetMe,
   makeGetPhonemeStrips,
   makeGetWeeklyActivity,
   makeListExamMilestones,
@@ -64,6 +66,27 @@ export async function readProgressSummary(userId: string): Promise<IProgressSumm
  * factory `src/composition/handlers.ts` calls — one implementation, two
  * callers.
  */
+/**
+ * The learner's audio settings, flattened.
+ *
+ * `GetMeUseCase` returns the `LearnerProfile` entity, and `src/app` may not
+ * import a module's domain. Composition may import anything, so the mapping to
+ * a plain readonly shape happens here — the one place allowed to see both
+ * sides.
+ */
+export interface IAudioPreferencesView {
+  readonly accent: AccentPreference;
+  readonly playbackRate: number;
+}
+
+export const readAudioPreferences = cache(
+  async (userId: string): Promise<IAudioPreferencesView> => {
+    const profile = await makeGetMe(createContainer(crypto.randomUUID())).execute({ userId });
+
+    return { accent: profile.accentPreference, playbackRate: profile.playbackRate };
+  },
+);
+
 export const readProgramOverview = cache(
   async (userId: string): Promise<IProgramOverview> =>
     makeGetProgramOverview(createContainer(crypto.randomUUID())).execute({ userId }),

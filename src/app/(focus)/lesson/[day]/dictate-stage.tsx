@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState, type ReactElement } from 'react';
 import { Glyph } from '@/components/icons/glyph';
+import { useAudio } from '@/components/lesson/audio-manager';
 import { LetterTiles } from '@/components/lesson/letter-tiles';
 import { StatusBadge } from '@/components/primitives/status-badge';
 import { apiFetch } from '@/lib/api/client';
@@ -65,20 +66,14 @@ export function DictateStage({
   const [saving, setSaving] = useState(false);
   const [failed, setFailed] = useState(false);
   const startedAt = useRef<number>(0);
+  const audio = useAudio();
+  // `speak` and `cancel` are memoised on the learner's preferences alone; the
+  // manager's `api` object changes identity whenever anything stops speaking.
+  // Destructuring the stable half keeps the prompt from replaying every time an
+  // utterance ends.
+  const { speak } = audio;
 
   const current = words[index] ?? null;
-
-  const say = useCallback((text: string) => {
-    if (typeof window === 'undefined' || !('speechSynthesis' in window)) {
-      return;
-    }
-
-    window.speechSynthesis.cancel();
-
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = 'en-GB';
-    window.speechSynthesis.speak(utterance);
-  }, []);
 
   // A new prompt: reset the clock and play it once, unasked. A dictation drill
   // that waits to be told to speak makes the learner press a button before
@@ -87,9 +82,9 @@ export function DictateStage({
     startedAt.current = Date.now();
 
     if (current !== null) {
-      say(current.text);
+      speak(current.text);
     }
-  }, [current, say]);
+  }, [current, speak]);
 
   const submit = useCallback(
     (value: string) => {
@@ -165,7 +160,7 @@ export function DictateStage({
         <button
           aria-label="Play the word again"
           className="flex h-10 w-10 items-center justify-center rounded-full border border-primary-900 text-primary-900"
-          onClick={() => { say(current.text); }}
+          onClick={() => { speak(current.text); }}
           type="button"
         >
           <Glyph name="play" size={16} />

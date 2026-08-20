@@ -81,7 +81,7 @@ and 2. No feature starts without it. **Never read the file** — existence check
 ## NEXT
 
 > **Phase 11 · Learning screens — in progress on `feat/11-learning-screens`**
-> Current: **F11.8** — audio manager.
+> Current: **F11.9** — `/practice`.
 >
 > **What Phase 10 leaves Phase 11**
 > - The shell is real: `(learn)/layout.tsx` gives every screen the rail, the top bar and a
@@ -544,7 +544,7 @@ Branch `feat/11-learning-screens` · Status: `IN PROGRESS`
   - Test: unsupported browser renders the self-assessment fallback, never a dead button; permission-denied is recoverable
 - [x] **F11.7** (2026-08-20) Build stage — sentence chips
   - Test: pointer-event reordering **and** full keyboard reordering as a first-class path
-- [ ] **F11.8** Audio manager
+- [x] **F11.8** (2026-08-20) Audio manager
   - Test: a new play cancels the previous utterance — no overlap, ever
 - [ ] **F11.9** `/practice`
   - Test: drills are selected by actual weakness, not at random
@@ -621,6 +621,7 @@ Out of scope for this build. Do not start these, and do not leave stubs for them
 Newest first. One line per finished feature: date · id · what · test result.
 
 | Date | Feature | What landed | Tests |
+| 2026-08-20 | F11.8 | Audio manager — one `AudioProvider` over all five stages, unconditional cancel-before-speak, the learner's own accent and playback rate, best-effort named voice | typecheck + lint green (tests paused); `grep SpeechSynthesisUtterance src` finds it in one file |
 | 2026-08-20 | F11.7 | Build stage — `SentenceChips` reorderable by pointer events **and** by keyboard (lift, move, drop, Escape to cancel), plus the missing `POST /lessons/sessions/:id/complete` route that closes a day | typecheck + lint green (tests paused) |
 | 2026-08-20 | F11.6 | Speak stage — feature-detected `SpeechRecognition` with a real self-assessment fallback, unambiguous and announced recording state, recoverable permission-denied; transcript only, never audio | typecheck + lint green (tests paused) |
 | 2026-08-20 | F11.5 | Dictate stage — `LetterTiles`: one real input per letter, auto-advance, backspace back-and-clear in one press, arrows, Home/End, paste blocked, Enter submits, no mouse needed | typecheck + lint green (tests paused) |

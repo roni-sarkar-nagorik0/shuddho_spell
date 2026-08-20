@@ -1,4 +1,6 @@
 import { type ReactElement, type ReactNode } from 'react';
+import { AudioProvider } from '@/components/lesson/audio-manager';
+import { readAudioPreferences } from '@/composition/reads';
 import { requireUser } from '@/lib/auth/current-user';
 
 /**
@@ -12,6 +14,11 @@ import { requireUser } from '@/lib/auth/current-user';
  * `requireUser()` here as well as in the page, for the reason the learn layout
  * gives — Next renders layouts and pages in parallel, so a layout that trusted
  * its child to authenticate would paint before anything checked.
+ *
+ * The audio manager is mounted here rather than inside the runtime so that one
+ * provider spans every stage: moving from Dictate to Speak must not build a
+ * second speaker that knows nothing about the utterance the first one left
+ * running.
  */
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -21,7 +28,12 @@ export default async function FocusLayout({
 }: {
   readonly children: ReactNode;
 }): Promise<ReactElement> {
-  await requireUser();
+  const user = await requireUser();
+  const preferences = await readAudioPreferences(user.userId);
 
-  return <div className="min-h-screen bg-neutral-50">{children}</div>;
+  return (
+    <AudioProvider preferences={preferences}>
+      <div className="min-h-screen bg-neutral-50">{children}</div>
+    </AudioProvider>
+  );
 }

@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState, type ReactElement } from 'react';
 import { Glyph } from '@/components/icons/glyph';
 import { PhonemeStrip } from '@/components/learning/phoneme-strip';
+import { useAudio } from '@/components/lesson/audio-manager';
 import {
   bestResult,
   createRecogniser,
@@ -61,6 +62,7 @@ export function SpeakStage({
   const [supported, setSupported] = useState(true);
   const recogniser = useRef<ISpeechRecogniser | null>(null);
   const startedAt = useRef<number>(0);
+  const { speak, cancel } = useAudio();
 
   const current = words[index] ?? null;
 
@@ -74,17 +76,6 @@ export function SpeakStage({
 
     return () => { recogniser.current?.abort(); };
   }, [index]);
-
-  const say = useCallback((text: string) => {
-    if (typeof window === 'undefined' || !('speechSynthesis' in window)) {
-      return;
-    }
-
-    window.speechSynthesis.cancel();
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = 'en-GB';
-    window.speechSynthesis.speak(utterance);
-  }, []);
 
   const submit = useCallback(
     (heard: string) => {
@@ -129,9 +120,7 @@ export function SpeakStage({
 
     // Speech synthesis and recognition on the same device fight over the audio
     // path. Cancel anything speaking before opening the microphone.
-    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
-      window.speechSynthesis.cancel();
-    }
+    cancel();
 
     engine.lang = 'en-GB';
     engine.continuous = false;
@@ -160,7 +149,7 @@ export function SpeakStage({
     setMic('listening');
     startedAt.current = Date.now();
     engine.start();
-  }, [current, submit]);
+  }, [current, submit, cancel]);
 
   const stop = useCallback(() => {
     recogniser.current?.stop();
@@ -213,7 +202,7 @@ export function SpeakStage({
         <button
           aria-label={`Listen to ${current.text}`}
           className="flex h-9 items-center gap-1.5 rounded-control border border-primary-900 px-3 text-primary-900"
-          onClick={() => { say(current.text); }}
+          onClick={() => { speak(current.text); }}
           type="button"
         >
           <Glyph name="play" size={14} />
