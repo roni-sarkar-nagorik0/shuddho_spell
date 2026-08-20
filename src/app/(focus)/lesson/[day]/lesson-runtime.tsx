@@ -2,11 +2,13 @@
 
 import Link from 'next/link';
 import { useCallback, useEffect, useState, type ReactElement } from 'react';
+import { z } from 'zod';
 import { Glyph } from '@/components/icons/glyph';
 import { StageTracker, type TrackerStage } from '@/components/lesson/stage-tracker';
 import { MonoValue } from '@/components/primitives/mono-value';
 import { apiFetch } from '@/lib/api/client';
 import { lessonSessionSchema, type LessonSessionView } from './lesson-contracts';
+import { BuildStage, type IBuildSentence } from './build-stage';
 import { DictateStage } from './dictate-stage';
 import { LearnStage, type ILearnWord } from './learn-stage';
 import { SpeakStage } from './speak-stage';
@@ -25,8 +27,19 @@ export interface ILessonRuntimeProps {
   readonly title: string;
   readonly description: string;
   readonly words: readonly ILearnWord[];
+  readonly sentences: readonly IBuildSentence[];
   readonly rules: readonly ILessonRule[];
 }
+
+export const lessonCompletionSchema = z.object({
+  sessionId: z.string(),
+  itemsTotal: z.number(),
+  itemsCorrect: z.number(),
+  currentDayIndex: z.number(),
+  currentStreak: z.number(),
+});
+
+export type LessonCompletion = z.infer<typeof lessonCompletionSchema>;
 
 const NEXT_STAGE: Readonly<Record<TrackerStage, TrackerStage | null>> = {
   review: 'learn',
@@ -61,11 +74,13 @@ export function LessonRuntime({
   title,
   description,
   words,
+  sentences,
   rules,
 }: ILessonRuntimeProps): ReactElement {
   const [session, setSession] = useState<LessonSessionView | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [advancing, setAdvancing] = useState(false);
+  const [completion, setCompletion] = useState<LessonCompletion | null>(null);
 
   useEffect(() => {
     void apiFetch('/api/v1/lessons/sessions', {
@@ -114,6 +129,28 @@ export function LessonRuntime({
       .finally(() => { setAdvancing(false); });
   }, [session, advancing]);
 
+  /**
+   * Closing the day. Four writes — the session, the position, the streak and
+   * nothing else — inside one Postgres function, so a failure cannot leave a
+   * learner who finished a day without the streak for it.
+   */
+  const finish = useCallback(() => {
+    if (session === null || advancing) {
+      return;
+    }
+
+    setAdvancing(true);
+    setError(null);
+
+    void apiFetch(`/api/v1/lessons/sessions/${session.sessionId}/complete`, {
+      method: 'POST',
+      schema: lessonCompletionSchema,
+    })
+      .then(setCompletion)
+      .catch(() => { setError('The day could not be closed. Your answers are all saved.'); })
+      .finally(() => { setAdvancing(false); });
+  }, [session, advancing]);
+
   if (error !== null && session === null) {
     return (
       <div className="mx-auto max-w-content px-6 py-16">
@@ -127,6 +164,25 @@ export function LessonRuntime({
 
   if (session === null) {
     return <p className="mx-auto max-w-content px-6 py-16 text-muted">Opening day {dayIndex}…</p>;
+  }
+
+  if (completion !== null) {
+    return (
+      <div className="flex min-h-screen flex-col items-center justify-center gap-4 px-6 text-center">
+        <h1 className="font-display text-2xl tracking-tight text-primary-900">Day {dayIndex} done</h1>
+        <p className="num text-muted">
+          {completion.itemsCorrect} of {completion.itemsTotal} correct · streak{' '}
+          {completion.currentStreak}
+        </p>
+        <p className="text-muted">
+          Next up is day {completion.currentDayIndex}. The words you missed are already scheduled
+          for review.
+        </p>
+        <Link className="h-9 rounded-control bg-primary-900 px-4 py-2 text-surface" href="/dashboard">
+          Back to the dashboard
+        </Link>
+      </div>
+    );
   }
 
   return (
@@ -174,22 +230,26 @@ export function LessonRuntime({
                 sessionId={session.sessionId}
                 words={words}
               />
-            ) : session.stage === 'speak' ? (
+            ) : session.stage === 'build' ? (
+              <BuildStage
+                onDone={finish}
+                onSessionCounts={updateCounts}
+                sentences={sentences}
+                sessionId={session.sessionId}
+              />
+            ) : (
+              /*
+                All five stages have a screen as of F11.7, so this is `speak`
+                and there is no fallback branch. A default here would be dead
+                code the linter flags — and, worse, a place for a sixth stage to
+                land silently instead of failing the build.
+              */
               <SpeakStage
                 onDone={advance}
                 onSessionCounts={updateCounts}
                 sessionId={session.sessionId}
                 words={words}
               />
-            ) : (
-              <button
-                className="h-9 rounded-control bg-primary-900 px-4 text-surface disabled:bg-cold"
-                disabled={advancing || NEXT_STAGE[session.stage] === null}
-                onClick={advance}
-                type="button"
-              >
-                {NEXT_STAGE[session.stage] === null ? 'Finish the day' : 'Continue'}
-              </button>
             )}
           </div>
         </div>

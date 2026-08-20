@@ -81,7 +81,7 @@ and 2. No feature starts without it. **Never read the file** — existence check
 ## NEXT
 
 > **Phase 11 · Learning screens — in progress on `feat/11-learning-screens`**
-> Current: **F11.7** — Build stage, sentence chips.
+> Current: **F11.8** — audio manager.
 >
 > **What Phase 10 leaves Phase 11**
 > - The shell is real: `(learn)/layout.tsx` gives every screen the rail, the top bar and a
@@ -115,6 +115,12 @@ and 2. No feature starts without it. **Never read the file** — existence check
 > - `pnpm test` takes ~28s, most of it PGlite booting Postgres four times. Two full runs at once
 >   contend badly enough to time out — worth one shared instance if it grows further.
 > - The repo has never been prettier-clean: `pnpm format` rewrites files no feature touched.
+> - `IProgramDayDetail.sentences` ships `englishText` to the browser, which is the construction
+>   stage's answer in word order. The chips are shuffled deterministically, but a learner reading
+>   the network tab has the sentence. The DTO chose this in Phase 5 (it excludes
+>   `acceptedAlternatives` and `commonMisspellings` on exactly this reasoning and then keeps
+>   `englishText`); fixing it means a shuffled server-side word bag and belongs to whoever owns
+>   that DTO, not to a screen.
 > - `NotificationBell` still hand-rolls its own popover markup rather than using F10.6's
 >   `Popover`, and still renders as a bordered text button instead of the top bar's bell glyph.
 >   Both are working and accessible (Escape closes, focus returns); converting them needs
@@ -536,7 +542,7 @@ Branch `feat/11-learning-screens` · Status: `IN PROGRESS`
   - Test: keyboard input · auto-advance · backspace moves back **and** clears · arrows navigate · **paste blocked** · Enter submits · fully operable with no mouse
 - [x] **F11.6** (2026-08-20) Speak stage — the mic flow
   - Test: unsupported browser renders the self-assessment fallback, never a dead button; permission-denied is recoverable
-- [ ] **F11.7** Build stage — sentence chips
+- [x] **F11.7** (2026-08-20) Build stage — sentence chips
   - Test: pointer-event reordering **and** full keyboard reordering as a first-class path
 - [ ] **F11.8** Audio manager
   - Test: a new play cancels the previous utterance — no overlap, ever
@@ -615,6 +621,7 @@ Out of scope for this build. Do not start these, and do not leave stubs for them
 Newest first. One line per finished feature: date · id · what · test result.
 
 | Date | Feature | What landed | Tests |
+| 2026-08-20 | F11.7 | Build stage — `SentenceChips` reorderable by pointer events **and** by keyboard (lift, move, drop, Escape to cancel), plus the missing `POST /lessons/sessions/:id/complete` route that closes a day | typecheck + lint green (tests paused) |
 | 2026-08-20 | F11.6 | Speak stage — feature-detected `SpeechRecognition` with a real self-assessment fallback, unambiguous and announced recording state, recoverable permission-denied; transcript only, never audio | typecheck + lint green (tests paused) |
 | 2026-08-20 | F11.5 | Dictate stage — `LetterTiles`: one real input per letter, auto-advance, backspace back-and-clear in one press, arrows, Home/End, paste blocked, Enter submits, no mouse needed | typecheck + lint green (tests paused) |
 | 2026-08-20 | F11.4 | Learn stage — a real `PhonemeStrip` per word from `GetPhonemeStrips` (four batched reads for the day), cancel-before-speak audio, the day's rules with their counterexamples | typecheck + lint green (tests paused) |

@@ -9,6 +9,7 @@ import { createSaveAnswerHandler } from '@/modules/exams/presentation/handlers/s
 import { createStartAttemptHandler } from '@/modules/exams/presentation/handlers/start-attempt';
 import { createSubmitAttemptHandler as createSubmitExamAttemptHandler } from '@/modules/exams/presentation/handlers/submit-attempt';
 import { createSubmitSectionHandler } from '@/modules/exams/presentation/handlers/submit-section';
+import { createCompleteSessionHandler } from '@/modules/lessons/presentation/handlers/complete-session';
 import { createAdvanceStageHandler } from '@/modules/lessons/presentation/handlers/advance-stage';
 import { createStartSessionHandler } from '@/modules/lessons/presentation/handlers/start-session';
 import { createSubmitAttemptHandler } from '@/modules/lessons/presentation/handlers/submit-attempt';
@@ -31,6 +32,7 @@ import { createSubmitReviewAttemptHandler } from '@/modules/review/presentation/
 import { createContainer } from './container';
 import {
   makeAdvanceLessonStage,
+  makeCompleteLessonSession,
   makeGetDueReviewItems,
   makeGetMe,
   makeGetNotificationPreferences,
@@ -95,6 +97,10 @@ export const startLessonSessionHandler = createStartSessionHandler(() =>
 
 export const advanceLessonStageHandler = createAdvanceStageHandler(() =>
   makeAdvanceLessonStage(container()),
+);
+
+export const completeLessonSessionHandler = createCompleteSessionHandler(() =>
+  makeCompleteLessonSession(container()),
 );
 
 export const submitLessonAttemptHandler = createSubmitAttemptHandler(() => {

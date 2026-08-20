@@ -83,6 +83,12 @@ export default async function LessonPage({
       dayIndex={detail.dayIndex}
       description={detail.description}
       rules={detail.rules}
+      sentences={detail.sentences.map((sentence) => ({
+        id: sentence.id,
+        banglaText: sentence.banglaText,
+        englishText: sentence.englishText,
+        distractorWords: sentence.distractorWords,
+      }))}
       title={detail.title}
       words={words}
     />
