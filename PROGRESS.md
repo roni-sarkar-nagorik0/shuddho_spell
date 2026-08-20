@@ -80,8 +80,10 @@ and 2. No feature starts without it. **Never read the file** — existence check
 
 ## NEXT
 
-> **Phase 13 · Hardening and delivery — not started**
-> Phase 12 is closed and merged (12/12). Cut `feat/13-hardening` from an up-to-date `dev`.
+> **All 14 phases are built.** Nothing in this file is `[ ]`.
+> Read the **Closing report** at the end of this file before doing anything else: it names what
+> was never executed, what is fragile, and what to do first. The short version is that the whole
+> user interface has never been rendered in a browser.
 >
 > **What Phase 12 leaves Phase 13**
 > - Lighthouse has never been run. F12.10's ≥95/100 is unproven, and D67 records that static
@@ -607,7 +609,7 @@ Branch `feat/12-exam-marketing-screens` · Status: `DONE` (12/12 built 2026-08-2
 ---
 
 ## Phase 13 — Hardening and delivery
-Branch `feat/13-hardening` · Status: `IN PROGRESS`
+Branch `feat/13-hardening` · Status: `DONE` (12/12 built 2026-08-20; exit gate partly run — see the closing report)
 
 - [x] **F13.1** (2026-08-20) Weakest three modules fixed; per-module numbers reported.
   **The ≥90% floor is NOT met — 57.20% lines / 72.26% functions / 78.41% branches.** Reported,
@@ -623,7 +625,7 @@ Branch `feat/13-hardening` · Status: `IN PROGRESS`
 - [x] **F13.9** (2026-08-20) CI — `.github/workflows/ci.yml`: typecheck, lint, content + i18n gates, tests with a Postgres service, coverage (reported, **not** gated — see below), build, and a Playwright job gated on `dev`. **Never executed** — no GitHub Actions runner here.
 - [x] **F13.10** (2026-08-20) `.github/workflows/deploy.yml` — migrations behind a required-reviewer environment, then verify + build. **The publish command is deliberately absent** (ARCHITECTURE.md O4: no host has been chosen) and the step exits 1 rather than pretending. **Never executed.**
 - [x] **F13.11** (2026-08-20) `README.md` brought to the finished state with a *Verification that has not been run* section; `DECISIONS.md` — the twelve shaping decisions, each with its cost.
-- [ ] **F13.12** The honest closing report — what is incomplete, what is fragile, what is next
+- [x] **F13.12** (2026-08-20) The honest closing report — see **Closing report** below the Log.
 
 ---
 
@@ -642,6 +644,7 @@ Out of scope for this build. Do not start these, and do not leave stubs for them
 Newest first. One line per finished feature: date · id · what · test result.
 
 | Date | Feature | What landed | Tests |
+| 2026-08-20 | F13.12 | The closing report — incomplete, fragile, and what to do next, in order | n/a |
 | 2026-08-20 | F13.11 | `DECISIONS.md` (12 decisions, each with what it costs, pointing at ARCHITECTURE.md's 67 for the full record); README de-staled and given an explicit unproven list | typecheck + lint green |
 | 2026-08-20 | F13.10 | Two jobs with a human gate between them: `migrate` (dry-run printed before the approval, then apply) → `release` (typecheck, lint, test, build). `cancel-in-progress: false`, because cancelling between the two is how a schema gets ahead of its code | YAML parses; **workflow not executed** |
 | 2026-08-20 | F13.9 | One `verify` job (cheapest gate first) + a `playwright` job that only runs where the secrets exist; coverage printed with `continue-on-error` so the 57%→90% gap stays visible without a permanently red pipeline | YAML parses; **workflow not executed** |
@@ -789,3 +792,72 @@ Anything currently `[!]`. This table must be **empty** before a new feature star
 | Feature | What failed | Diagnosis | Fix in progress |
 | --- | --- | --- | --- |
 | — | — | — | — |
+
+---
+
+## Closing report (F13.12)
+
+Written 2026-08-20, at the end of the run that closed Phases 10, 11, 12 and 13.
+
+**What is true.** Every feature in this file is `[x]`. `pnpm typecheck`, `pnpm lint` and
+`pnpm test` are green — **553 tests**, run, not asserted. `pnpm i18n:check` and
+`pnpm content:validate` pass. Every phase branch is merged into `dev`.
+
+**What that does not mean.** Phases 10–13 were built under the build-mode pause, and the
+difference between *built* and *proved* is the subject of the rest of this report.
+
+### Incomplete
+
+| What | Where it stands |
+| --- | --- |
+| **Coverage** | 57.20% lines, 72.26% functions, 78.41% branches on `domain` + `application`, against a 90% floor. The three weakest modules were fixed (`program/application` 0→100%, `library/application` 0→98.5%, `lessons/application` 0→14.1%); `lessons/application`'s four attempt use cases and all of `notifications/application`, `review/application` and `certificates/application` remain thin. CI prints the number and does not gate on it. |
+| **The four Playwright flows** | Written, never executed. They need a live Supabase project and two seeded learners. |
+| **`pnpm security:rls`** | Written, never executed. Same reason. RLS therefore has **no** end-to-end proof — every unit test in the repo runs above it. |
+| **Lighthouse on `/`** | Never run. The ≥95/100 target is unmeasured, and static rendering is separately blocked by the root layout's cookie reads (D67). |
+| **CI and deploy workflows** | YAML parses; no runner has executed either. The deploy workflow's publish step exits 1 on purpose (O4 — no host has been chosen). |
+| **p95 latency and the bundle budget** | Never measured. Both need a deployed application. |
+| **The app in a browser** | Phases 10, 11 and 12 — the entire user interface — have never been rendered. |
+| **`.env.example`** | Missing seven entries (O2: three VAPID; O3: `LOG_LEVEL` and four `E2E_LEARNER_*`). A hook in this environment refuses every command naming the file. |
+
+### Fragile
+
+- **Certificate issuance has never run.** It lives in `ExamSubmissionService` so that the cron
+  backstop issues too, and nothing in this run has passed a final exam against a real database.
+  The first real certificate is the first test of it.
+- **`IProgramDayDetail.sentences` ships `englishText`** — the construction stage's answer, in
+  word order — to the browser. The chips are shuffled deterministically, but a learner reading
+  the network tab has the sentence. The DTO excludes `acceptedAlternatives` and
+  `commonMisspellings` on exactly this reasoning and then keeps this one.
+- **The exam runtime's question rendering is generic.** `QuestionView` reads a `jsonb` payload
+  defensively and handles a prompt, a passage and options. The six question types may need
+  shapes it does not draw; nothing has rendered a real generated paper.
+- **`migrations.test.ts` was red for five phases** and nobody saw it, because the suite was not
+  being run. The assertion was a blunt substring match that 015 legitimately tripped. It is now
+  precise and self-proving — but the class of bug is "a sweep that matches its own explanation",
+  and it recurred twice more during Phase 13 alone.
+- **`NotificationBell` still hand-rolls its own popover** rather than using F10.6's `Popover`,
+  and renders as a bordered text button rather than the top bar's bell glyph.
+- **`/metrics` answers JSON, not Prometheus text.** A scraper needs a four-line adapter.
+- **The repo has never been prettier-clean.** `pnpm format` rewrites files no feature touched.
+
+### What is next, in order
+
+1. **Point it at a real Supabase project and open it.** Nothing below this is worth doing first.
+   Seed the content, run `pnpm content:seed`, sign in, and walk one day. Phases 10–12 are
+   unrendered code.
+2. **Run the four Playwright flows and `pnpm security:rls`.** They are written and waiting; the
+   RLS one is the highest-value unrun check in the repository.
+3. **Fix `englishText` in `IProgramDayDetail`** — a server-shuffled word bag, so the answer does
+   not cross the wire.
+4. **Lift coverage on the write paths.** `lessons/application`'s attempt use cases first: they
+   are the most-executed code in the product and the least covered.
+5. **Choose a deploy target** and finish O4's one missing command.
+6. **Turn the coverage gate on** once it is reachable, and delete the `continue-on-error` in CI.
+
+### The one thing to read if you read nothing else
+
+The build-mode pause traded proof for breadth, deliberately and at the user's instruction. The
+breadth is real: 13 phases, every feature built. The cost is that a suite which had been red
+since Phase 7 stayed red for five phases, and that the entire interface is unrendered. Neither
+is a reason to distrust the code; both are reasons to run it before trusting it.
+
