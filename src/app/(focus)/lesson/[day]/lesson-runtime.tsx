@@ -7,6 +7,7 @@ import { StageTracker, type TrackerStage } from '@/components/lesson/stage-track
 import { MonoValue } from '@/components/primitives/mono-value';
 import { apiFetch } from '@/lib/api/client';
 import { lessonSessionSchema, type LessonSessionView } from './lesson-contracts';
+import { DictateStage } from './dictate-stage';
 import { LearnStage, type ILearnWord } from './learn-stage';
 import { ReviewStage } from './review-stage';
 
@@ -74,6 +75,17 @@ export function LessonRuntime({
       .then(setSession)
       .catch(() => { setError('This day could not be opened. It may not be unlocked yet.'); });
   }, [dayIndex]);
+
+  /**
+   * The per-session counters, refreshed from each attempt's response.
+   *
+   * The header shows correct-of-total, and every attempt endpoint already
+   * returns both after writing them — so the number in the header is the
+   * database's, not a tally the browser kept alongside it.
+   */
+  const updateCounts = useCallback((itemsTotal: number, itemsCorrect: number) => {
+    setSession((current) => (current === null ? current : { ...current, itemsTotal, itemsCorrect }));
+  }, []);
 
   const advance = useCallback(() => {
     if (session === null || advancing) {
@@ -154,6 +166,13 @@ export function LessonRuntime({
               <ReviewStage onDone={advance} />
             ) : session.stage === 'learn' ? (
               <LearnStage onDone={advance} rules={rules} words={words} />
+            ) : session.stage === 'dictate' ? (
+              <DictateStage
+                onDone={advance}
+                onSessionCounts={updateCounts}
+                sessionId={session.sessionId}
+                words={words}
+              />
             ) : (
               <button
                 className="h-9 rounded-control bg-primary-900 px-4 text-surface disabled:bg-cold"

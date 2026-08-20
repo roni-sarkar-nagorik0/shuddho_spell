@@ -81,7 +81,7 @@ and 2. No feature starts without it. **Never read the file** — existence check
 ## NEXT
 
 > **Phase 11 · Learning screens — in progress on `feat/11-learning-screens`**
-> Current: **F11.5** — Dictate stage, the letter tiles.
+> Current: **F11.6** — Speak stage, the mic flow.
 >
 > **What Phase 10 leaves Phase 11**
 > - The shell is real: `(learn)/layout.tsx` gives every screen the rail, the top bar and a
@@ -532,7 +532,7 @@ Branch `feat/11-learning-screens` · Status: `IN PROGRESS`
   - Test: stage order enforced by the server, not just the UI
 - [x] **F11.4** (2026-08-20) Learn stage
   - Test: `PhonemeStrip` renders per word; audio plays
-- [ ] **F11.5** Dictate stage — the letter tiles
+- [x] **F11.5** (2026-08-20) Dictate stage — the letter tiles
   - Test: keyboard input · auto-advance · backspace moves back **and** clears · arrows navigate · **paste blocked** · Enter submits · fully operable with no mouse
 - [ ] **F11.6** Speak stage — the mic flow
   - Test: unsupported browser renders the self-assessment fallback, never a dead button; permission-denied is recoverable
@@ -615,6 +615,7 @@ Out of scope for this build. Do not start these, and do not leave stubs for them
 Newest first. One line per finished feature: date · id · what · test result.
 
 | Date | Feature | What landed | Tests |
+| 2026-08-20 | F11.5 | Dictate stage — `LetterTiles`: one real input per letter, auto-advance, backspace back-and-clear in one press, arrows, Home/End, paste blocked, Enter submits, no mouse needed | typecheck + lint green (tests paused) |
 | 2026-08-20 | F11.4 | Learn stage — a real `PhonemeStrip` per word from `GetPhonemeStrips` (four batched reads for the day), cancel-before-speak audio, the day's rules with their counterexamples | typecheck + lint green (tests paused) |
 | 2026-08-20 | F11.3 | `/lesson/[day]` focus mode — `(focus)` layout, idempotent session open/resume, `StageTracker`, the review stage, every transition taken from the server's response | typecheck + lint green (tests paused) |
 | 2026-08-20 | F11.2 | `/program` — 28 rows grouped by week, five exam milestones interleaved at their unlock day, expandable day rows, stats rail; `ListExamMilestones` use case | typecheck + lint green (tests paused) |
