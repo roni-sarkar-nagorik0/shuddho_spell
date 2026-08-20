@@ -6,11 +6,13 @@ import { useTranslations } from 'next-intl';
 import { type ReactElement } from 'react';
 import { Glyph } from '@/components/icons/glyph';
 import { cn } from '@/lib/cn';
-import { activeHref, NAV_ITEMS, SETTINGS_ITEM, type INavItem } from './nav-items';
+import { activeHref, ADMIN_ITEM, NAV_ITEMS, SETTINGS_ITEM, type INavItem } from './nav-items';
 
 interface ISidebarProps {
   readonly collapsed: boolean;
   readonly onToggle: () => void;
+  /** Resolved on the server by the layout. The rail never asks the client. */
+  readonly isAdmin: boolean;
 }
 
 interface IRailLinkProps {
@@ -52,11 +54,11 @@ function RailLink({ item, collapsed, active, label }: IRailLinkProps): ReactElem
   );
 }
 
-export function Sidebar({ collapsed, onToggle }: ISidebarProps): ReactElement {
+export function Sidebar({ collapsed, onToggle, isAdmin }: ISidebarProps): ReactElement {
   const t = useTranslations('nav');
   const pathname = usePathname();
-  const all = [...NAV_ITEMS, SETTINGS_ITEM];
-  const current = activeHref(pathname, all);
+  const footer = isAdmin ? [ADMIN_ITEM, SETTINGS_ITEM] : [SETTINGS_ITEM];
+  const current = activeHref(pathname, [...NAV_ITEMS, ...footer]);
 
   return (
     <nav
@@ -90,12 +92,15 @@ export function Sidebar({ collapsed, onToggle }: ISidebarProps): ReactElement {
       </ul>
 
       <ul className="flex flex-col gap-0.5 border-t border-hairline p-2">
-        <RailLink
-          active={current === SETTINGS_ITEM.href}
-          collapsed={collapsed}
-          item={SETTINGS_ITEM}
-          label={t(SETTINGS_ITEM.labelKey)}
-        />
+        {footer.map((item) => (
+          <RailLink
+            active={current === item.href}
+            collapsed={collapsed}
+            item={item}
+            key={item.href}
+            label={t(item.labelKey)}
+          />
+        ))}
       </ul>
 
       {/*

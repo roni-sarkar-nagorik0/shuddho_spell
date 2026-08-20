@@ -32,6 +32,8 @@ interface IRow {
   readonly accent_preference: string;
   readonly playback_rate: number;
   readonly onboarding_completed_at: string | null;
+  readonly role: string;
+  readonly email: string | null;
 }
 
 interface IUpsertCall {
@@ -67,6 +69,8 @@ const STORED: IRow = {
   accent_preference: 'british',
   playback_rate: 1,
   onboarding_completed_at: null,
+  role: 'user',
+  email: 'ayesha@example.com',
 };
 
 function fakeDatabase(store: IStore): IDatabase {
@@ -143,7 +147,7 @@ describe('findByUserId', () => {
     await repository.findByUserId('user-1');
 
     expect(store.selectedColumns).toBe(
-      'id, user_id, display_name, track, daily_minutes, started_at, timezone, ui_language, current_day_index, accent_preference, playback_rate, onboarding_completed_at',
+      'id, user_id, display_name, email, role, track, daily_minutes, started_at, timezone, ui_language, current_day_index, accent_preference, playback_rate, onboarding_completed_at',
     );
   });
 
@@ -168,7 +172,7 @@ describe('insertIfAbsent', () => {
   it('lets the database decide the race, rather than checking first', async () => {
     store.rows = [STORED];
 
-    await repository.insertIfAbsent({ userId: 'user-1', displayName: 'Ayesha' });
+    await repository.insertIfAbsent({ userId: 'user-1', displayName: 'Ayesha', email: 'ayesha@example.com' });
 
     expect(store.upserts).toHaveLength(1);
     expect(store.upserts[0]?.options).toStrictEqual({
@@ -177,15 +181,21 @@ describe('insertIfAbsent', () => {
     });
   });
 
-  it('writes only the two columns the trigger writes', async () => {
+  it('writes only the three columns the trigger writes', async () => {
     store.rows = [STORED];
 
-    await repository.insertIfAbsent({ userId: 'user-1', displayName: 'Ayesha' });
+    await repository.insertIfAbsent({ userId: 'user-1', displayName: 'Ayesha', email: 'ayesha@example.com' });
 
+    // Three since 020, not two: the signup trigger carries the address across
+    // as well, and the reconciler has to write the same row the trigger would.
+    // `role` is deliberately absent — `assign_first_admin` decides it on the
+    // insert, and a repository that named it could overrule the database about
+    // who the first admin is.
     expect(store.upserts[0]?.values).toStrictEqual([
       {
         user_id: 'user-1',
         display_name: 'Ayesha',
+        email: 'ayesha@example.com',
       },
     ]);
   });
@@ -193,7 +203,7 @@ describe('insertIfAbsent', () => {
   it('returns the profile the winner of the race wrote', async () => {
     store.rows = [{ ...STORED, display_name: 'Someone Else' }];
 
-    const profile = await repository.insertIfAbsent({ userId: 'user-1', displayName: 'Ayesha' });
+    const profile = await repository.insertIfAbsent({ userId: 'user-1', displayName: 'Ayesha', email: 'ayesha@example.com' });
 
     expect(profile.displayName).toBe('Someone Else');
   });
@@ -203,7 +213,7 @@ describe('insertIfAbsent', () => {
     store.upsertError = new DatabaseError('could not write learner_profiles', '23505', 'duplicate key');
 
     await expect(
-      repository.insertIfAbsent({ userId: 'user-1', displayName: 'Ayesha' }),
+      repository.insertIfAbsent({ userId: 'user-1', displayName: 'Ayesha', email: 'ayesha@example.com' }),
     ).resolves.toBeDefined();
   });
 
@@ -211,13 +221,13 @@ describe('insertIfAbsent', () => {
     store.upsertError = new DatabaseError('could not write learner_profiles', '42501', 'permission denied');
 
     await expect(
-      repository.insertIfAbsent({ userId: 'user-1', displayName: 'Ayesha' }),
+      repository.insertIfAbsent({ userId: 'user-1', displayName: 'Ayesha', email: 'ayesha@example.com' }),
     ).rejects.toThrow('could not create');
   });
 
   it('throws when the write succeeded and the row is not there', async () => {
     await expect(
-      repository.insertIfAbsent({ userId: 'user-1', displayName: 'Ayesha' }),
+      repository.insertIfAbsent({ userId: 'user-1', displayName: 'Ayesha', email: 'ayesha@example.com' }),
     ).rejects.toThrow('vanished');
   });
 });

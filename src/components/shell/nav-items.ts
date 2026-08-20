@@ -26,6 +26,20 @@ export const NAV_ITEMS: readonly INavItem[] = Object.freeze([
   { href: '/exams', labelKey: 'exams', glyph: 'exam' },
 ]);
 
+/**
+ * The rail item only an admin sees.
+ *
+ * Separate from `NAV_ITEMS` rather than filtered out of it, because it is not
+ * one of "the screens a learner meets in order" — it is a different job on the
+ * same application. Hiding it is a courtesy, not a control: `/admin` and both
+ * endpoints behind it check the caller's role against the database.
+ */
+export const ADMIN_ITEM: INavItem = Object.freeze({
+  href: '/admin',
+  labelKey: 'admin',
+  glyph: 'weak-spots',
+});
+
 export const SETTINGS_ITEM: INavItem = Object.freeze({
   href: '/settings/notifications',
   labelKey: 'settings',

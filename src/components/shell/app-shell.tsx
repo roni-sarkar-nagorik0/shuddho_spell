@@ -11,6 +11,8 @@ export interface IAppShellProps {
   readonly initialCollapsed: boolean;
   readonly displayName: string;
   readonly streakDays: number;
+  /** Decided by the layout from the session. Adds the Admin link to the rail. */
+  readonly isAdmin: boolean;
   readonly children: ReactNode;
 }
 
@@ -31,6 +33,7 @@ export function AppShell({
   initialCollapsed,
   displayName,
   streakDays,
+  isAdmin,
   children,
 }: IAppShellProps): ReactElement {
   const [collapsed, setCollapsed] = useState(initialCollapsed);
@@ -53,7 +56,7 @@ export function AppShell({
           Skip to content
         </a>
 
-        <Sidebar collapsed={collapsed} onToggle={toggle} />
+        <Sidebar collapsed={collapsed} isAdmin={isAdmin} onToggle={toggle} />
 
         <div className="flex min-w-0 flex-1 flex-col">
           <TopBar displayName={displayName} streakDays={streakDays} />

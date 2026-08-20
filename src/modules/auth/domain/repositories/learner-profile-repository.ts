@@ -1,10 +1,17 @@
 import { type LearnerProfile } from '../entities/learner-profile';
+import { type UserRole } from '../value-objects/user-role';
 
 export const LEARNER_PROFILE_REPOSITORY = Symbol('LEARNER_PROFILE_REPOSITORY');
 
 export interface INewLearnerProfile {
   readonly userId: string;
   readonly displayName: string;
+  /**
+   * The address on the session that is creating this profile. Null when there
+   * is none to be had, which Google does not do — the type says so because the
+   * column does.
+   */
+  readonly email: string | null;
 }
 
 export interface ILearnerProfileRepository {
@@ -36,6 +43,16 @@ export interface ILearnerProfileRepository {
    * answer is a Postgres function like 013's, not a bigger number.
    */
   readonly listAll: (limit: number) => Promise<readonly LearnerProfile[]>;
+
+  /**
+   * How many people hold a role.
+   *
+   * One caller and one reason: `SetUserRoleUseCase` refuses to demote the last
+   * admin, and it cannot know that from the profile in front of it. A count
+   * rather than a list because the answer is a number — reading every admin row
+   * to call `.length` on it would be the same question asked expensively.
+   */
+  readonly countByRole: (role: UserRole) => Promise<number>;
 
   /**
    * Creates the profile if this user has none, and returns the profile either

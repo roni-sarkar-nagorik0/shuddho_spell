@@ -17,9 +17,13 @@ import { BootstrapProfileUseCase } from './bootstrap-profile';
  * that differs from the first.
  */
 class FakeProfiles implements ILearnerProfileRepository {
-  readonly rows: LearnerProfile[] = [];
+  rows: LearnerProfile[] = [];
   inserts = 0;
   nextId = 1;
+
+  countByRole(): Promise<number> {
+    return Promise.reject(new Error('only the admin roster counts roles'));
+  }
 
   listAll(): Promise<readonly LearnerProfile[]> {
     return Promise.reject(new Error('only the hourly notification job walks the roster'));
@@ -33,8 +37,21 @@ class FakeProfiles implements ILearnerProfileRepository {
     return Promise.resolve(this.rows.find((row) => row.userId === userId) ?? null);
   }
 
-  save(): Promise<LearnerProfile> {
-    return Promise.reject(new Error('bootstrap must not update an existing profile'));
+  /**
+   * A real update, not a rejection.
+   *
+   * It used to reject on the claim that bootstrap never writes to a profile it
+   * found. 020 made that false in one specific way: the profile carries a copy
+   * of the address, and this is the only code that sees a verified one on every
+   * sign-in, so a changed address is written back. The store records it so a
+   * test can assert *which* writes happen rather than that none do.
+   */
+  saves = 0;
+
+  save(profile: LearnerProfile): Promise<LearnerProfile> {
+    this.saves += 1;
+    this.rows = this.rows.map((row) => (row.id === profile.id ? profile : row));
+    return Promise.resolve(profile);
   }
 
   /** Atomic, as the port demands: the store decides, not the caller. */

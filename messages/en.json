@@ -33,7 +33,8 @@
     "progress": "Progress",
     "exams": "Exams",
     "collapse": "Collapse",
-    "expand": "Expand"
+    "expand": "Expand",
+    "admin": "Admin"
   },
   "dashboard": {
     "dayOf": "Day {day} of {total}",

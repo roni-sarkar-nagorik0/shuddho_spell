@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { TRACKS } from '@/modules/shared/domain/value-objects/track';
+import { USER_ROLES } from '../../domain/value-objects/user-role';
 
 /**
  * What `GET /api/v1/me` returns, interface first.
@@ -13,6 +14,14 @@ export interface IMeResponse {
   readonly profileId: string;
   readonly email: string;
   readonly displayName: string;
+  /**
+   * What this account may do — 020.
+   *
+   * Here rather than on a separate `/api/v1/admin/me`: whether the rail shows
+   * an Admin link is a fact about the signed-in person, and a second endpoint
+   * to ask it would be a second answer able to disagree with this one.
+   */
+  readonly role: 'user' | 'admin';
   readonly program: IProgramPosition;
 }
 
@@ -29,6 +38,7 @@ export const meResponseSchema = z.object({
   profileId: z.string(),
   email: z.string(),
   displayName: z.string(),
+  role: z.enum(USER_ROLES),
   program: z.object({
     track: z.enum(TRACKS),
     currentDayIndex: z.number().int(),

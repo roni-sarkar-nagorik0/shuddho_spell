@@ -33,7 +33,8 @@
     "progress": "অগ্রগতি",
     "exams": "পরীক্ষা",
     "collapse": "সংকুচিত করুন",
-    "expand": "প্রসারিত করুন"
+    "expand": "প্রসারিত করুন",
+    "admin": "অ্যাডমিন"
   },
   "dashboard": {
     "dayOf": "{total} দিনের মধ্যে {day} দিন",

@@ -16,6 +16,8 @@ export function makeLearnerProfile(
     id: 'profile-1',
     userId: 'user-1',
     displayName: 'Ayesha',
+    email: 'ayesha@example.com',
+    role: 'user',
     track: 'standard28',
     dailyMinutes: 30,
     startedAt: new Date('2026-01-01T00:00:00.000Z'),

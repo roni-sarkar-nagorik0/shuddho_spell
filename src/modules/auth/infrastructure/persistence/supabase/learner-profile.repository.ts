@@ -4,6 +4,7 @@ import {
   PG_CODES,
 } from '@/modules/shared/infrastructure/persistence/database-error';
 import { type LearnerProfile } from '../../../domain/entities/learner-profile';
+import { type UserRole } from '../../../domain/value-objects/user-role';
 import {
   type ILearnerProfileRepository,
   type INewLearnerProfile,
@@ -46,6 +47,10 @@ export class SupabaseLearnerProfileRepository implements ILearnerProfileReposito
     ];
   }
 
+  async countByRole(role: UserRole): Promise<number> {
+    return this.db.count({ table: TABLE, columns: 'id', eq: { role } });
+  }
+
   async findByUserId(userId: string): Promise<LearnerProfile | null> {
     try {
       const row = await this.db.selectOne({
@@ -71,13 +76,17 @@ export class SupabaseLearnerProfileRepository implements ILearnerProfileReposito
    */
   async insertIfAbsent(profile: INewLearnerProfile): Promise<LearnerProfile> {
     try {
-      await this.db.upsert(TABLE, [{ user_id: profile.userId, display_name: profile.displayName }], {
-        onConflict: 'user_id',
-        // Leave the stored row alone on conflict. Without this the upsert
-        // becomes an update and the loser of the race overwrites the display
-        // name the winner just wrote.
-        ignoreDuplicates: true,
-      });
+      await this.db.upsert(
+        TABLE,
+        [{ user_id: profile.userId, display_name: profile.displayName, email: profile.email }],
+        {
+          onConflict: 'user_id',
+          // Leave the stored row alone on conflict. Without this the upsert
+          // becomes an update and the loser of the race overwrites the display
+          // name the winner just wrote.
+          ignoreDuplicates: true,
+        },
+      );
     } catch (caught: unknown) {
       // A unique violation here is the race resolving, not a failure — the
       // other request won and its row is what this one is about to read.
@@ -111,12 +120,19 @@ export class SupabaseLearnerProfileRepository implements ILearnerProfileReposito
    * `user_id`, `started_at` and `id` are absent from the update by design. A
    * repository able to overwrite them is one that will eventually reassign a
    * profile to a different account.
+   *
+   * `role` and `email` **are** here, and only reachable through this method,
+   * which runs on the service client. 020 revoked the client's table-wide
+   * update on this row and handed back the nine columns a learner may edit —
+   * neither of these is among them, so the server is the only writer of either.
    */
   async save(profile: LearnerProfile): Promise<LearnerProfile> {
     await this.db.update(
       TABLE,
       {
         display_name: profile.displayName,
+        email: profile.email,
+        role: profile.role,
         track: profile.track,
         daily_minutes: profile.dailyMinutes,
         timezone: profile.timezone,
