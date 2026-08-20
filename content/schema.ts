@@ -106,7 +106,20 @@ export type RuleFamilyEntry = z.infer<typeof ruleFamilySchema>;
 
 export const wordSchema = z
   .object({
-    text: z.string().min(1).regex(/^[a-z'-]+$/u, 'words are stored lower-case'),
+    /**
+     * Lower case, **except for an initial capital on a proper noun**.
+     *
+     * The rule was lower-case-only when this schema was written, and the month
+     * and weekday names failed it. Lowercasing them to satisfy the rule would
+     * have taught a learner that `february` is how the word is spelled, which
+     * is exactly the kind of quiet wrongness a spelling product cannot afford.
+     * Marking is unaffected either way — `normaliseAnswer` folds case before
+     * comparing — so the corpus carries the correct form.
+     */
+    text: z
+      .string()
+      .min(1)
+      .regex(/^[A-Z]?[a-z'-]+$/u, 'words are lower case, or a proper noun with one capital'),
     ipa,
     /** `syllables.join('')` must reconstruct the word — checked below. */
     syllables: z.array(z.string().min(1)).min(1),

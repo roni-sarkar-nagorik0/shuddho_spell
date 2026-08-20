@@ -1,0 +1,12 @@
+{
+  "doc": "/**\n * Week 4 — the spellings that survive to the final exam.\n *\n * -ance against -ence, -ary against -ery against -ory, the doubled consonants\n * nobody hears (accommodation, occurrence, embarrass), the Greek and French\n * borrowings that kept their own spelling (psychology, technique, colleague,\n * rhythm), and the silent letters that only survive in a handful of words.\n *\n * Three deliberate pairs run through the week because they are the ones that\n * cost marks in an exam and nowhere else: `stationary`/`stationery`,\n * `practice`/`practise`, and `breath`/`breathe`. Each is a real distinction a\n * confident speaker still gets wrong in writing, which is precisely what this\n * programme exists to fix.\n *\n * The sentences here are the hardest in the corpus: conditionals, reported\n * speech and relative clauses, because by day 28 a learner is being examined\n * on construction as well as spelling.\n */\n",
+  "days": [
+    { "title": "Ance and ence", "focus": "Two endings that sound identical, and the words that take each." },
+    { "title": "Ary, ery, ory", "focus": "Stationary against stationery, and the -ary endings that lose a syllable when spoken." },
+    { "title": "Doubles nobody hears", "focus": "Accommodation, occurrence, embarrass — where the doubling is invisible in speech." },
+    { "title": "Words English borrowed", "focus": "Greek ch and ps, French -que and -gue: technique, psychology, colleague." },
+    { "title": "The last silent letters", "focus": "Column, muscle, hymn, resign — the letters that survive in only a few words." },
+    { "title": "Long verbs and their forms", "focus": "-ate verbs, the -ceed/-cede split, and doubling on a stressed final syllable." },
+    { "title": "Everything at once", "focus": "Conditionals, reported speech and relative clauses — construction as well as spelling." }
+  ]
+}
