@@ -17,7 +17,6 @@
 import { readFileSync, readdirSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { ScorePercent } from '@/modules/shared/domain/value-objects/score-percent';
 import { ExamAnswer } from '../domain/entities/exam-answer';
 import { ExamAttempt } from '../domain/entities/exam-attempt';
 import { ExamDefinition } from '../domain/entities/exam-definition';
