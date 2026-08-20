@@ -615,9 +615,9 @@ Branch `feat/13-hardening` · Status: `IN PROGRESS`
   not claimed. See the Log row and the closing report (F13.12).
   - Test: `domain` + `application` ≥ 90%, per-module numbers reported
 - [x] **F13.2** (2026-08-20) Playwright — Google sign-in → dashboard. **Written, not executed:** needs a live Supabase and a seeded learner; the Google consent screen is deliberately never automated.
-- [ ] **F13.3** Playwright — a complete day-12 lesson
-- [ ] **F13.4** Playwright — a full `milestone2` exam **including a mid-exam refresh**
-- [ ] **F13.5** Playwright — a failed exam producing its drill prescription
+- [x] **F13.3** (2026-08-20) Playwright — a complete day-12 lesson. **Written, not executed** (no live Supabase here).
+- [x] **F13.4** (2026-08-20) Playwright — a full `milestone2` exam **including a mid-exam refresh**. **Written, not executed.**
+- [x] **F13.5** (2026-08-20) Playwright — a failed exam producing its drill prescription. **Written, not executed.**
 - [ ] **F13.6** Security pass — RLS two-user script, `correct_answer` snapshot, rate limits, headers + CSP, no secret in the bundle
 - [ ] **F13.7** Performance pass — index review, N+1 query counting, p95 ≤ 200ms reads, bundle budget
 - [ ] **F13.8** Observability — request ids, Sentry both apps, `/metrics`
@@ -643,6 +643,7 @@ Out of scope for this build. Do not start these, and do not leave stubs for them
 Newest first. One line per finished feature: date · id · what · test result.
 
 | Date | Feature | What landed | Tests |
+| 2026-08-20 | F13.3–F13.5 | Three e2e specs: the whole five-stage day-12 lesson, `milestone2` with a mid-exam refresh, and a failed exam producing its prescription | typecheck + lint green; **none executed** — no live Supabase in this environment |
 | 2026-08-20 | F13.2 | `e2e/fixtures/session.ts` (mints a session via Supabase rather than driving Google) + `sign-in-to-dashboard.spec.ts`, incl. an assertion that the dashboard makes **no** call to its own API | typecheck + lint green; **spec not executed** — no live Supabase here |
 | 2026-08-20 | F13.1 | Fixed 3 red tests (2 mine, 1 red since Phase 7); covered the weakest three modules — `program/application` 0→100%, `library/application` 0→98.5%, `lessons/application` 0→14.1% | **501→533 tests, all green.** Coverage 50.57→57.20% lines. **Floor of 90% NOT met** |
 | 2026-08-20 | F12.12 | `/onboarding` — five steps, resumable from `localStorage` **and** from the stored profile; `CompleteOnboarding` refuses to rewrite a finished profile; reminder written through the preferences endpoint that owns the field | typecheck + lint green (tests paused) |
