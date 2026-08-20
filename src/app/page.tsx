@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { type ReactElement } from 'react';
+import { DictationDemo } from './dictation-demo';
 import { MILESTONES, SYLLABUS } from './syllabus';
 
 /**
@@ -11,7 +12,7 @@ import { MILESTONES, SYLLABUS } from './syllabus';
  *
  * `13-frontend.md` asks for it to be statically rendered and score ≥95
  * Lighthouse performance and 100 accessibility. What is under this file's
- * control is done: no client JavaScript except the dictation demo (F12.11), no
+ * control is done: no client JavaScript except the dictation demo, no
  * images, no web fonts beyond the four the whole product already loads, real
  * headings in order, and every table a real table. **Static rendering itself is
  * blocked one level up** — the root layout calls `getLocale()` and mounts
@@ -135,7 +136,9 @@ export default function LandingPage(): ReactElement {
             </div>
           </div>
 
-          <div id="demo" />
+          <div id="demo">
+            <DictationDemo />
+          </div>
         </div>
       </section>
 

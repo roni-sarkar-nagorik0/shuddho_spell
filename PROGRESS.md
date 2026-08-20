@@ -81,7 +81,7 @@ and 2. No feature starts without it. **Never read the file** — existence check
 ## NEXT
 
 > **Phase 12 · Exam and marketing screens — in progress on `feat/12-exam-marketing-screens`**
-> Current: **F12.11** — the inline dictation demo.
+> Current: **F12.12** — `/onboarding`.
 >
 > **What Phase 11 leaves Phase 12**
 > - `useSaveExamAnswer` (F10.7) is the optimistic template for the exam runtime; writes never retry.
@@ -590,7 +590,7 @@ Branch `feat/12-exam-marketing-screens` · Status: `IN PROGRESS`
   - Test: verification works unauthenticated
 - [x] **F12.10** (2026-08-20) `/` marketing landing
   - Test: Server Component, statically rendered, **Lighthouse ≥95 performance / 100 accessibility** — report attached
-- [ ] **F12.11** Inline dictation demo on the hero
+- [x] **F12.11** (2026-08-20) Inline dictation demo on the hero
   - Test: it actually works, unauthenticated
 - [ ] **F12.12** `/onboarding`
   - Test: goal → minutes → track → reminder time → diagnostic; resumable if abandoned
@@ -631,6 +631,7 @@ Out of scope for this build. Do not start these, and do not leave stubs for them
 Newest first. One line per finished feature: date · id · what · test result.
 
 | Date | Feature | What landed | Tests |
+| 2026-08-20 | F12.11 | Inline dictation demo — the **real** `LetterTiles` on the hero, unauthenticated, three real corpus words each carrying a real Bengali-speaker error; the only thing in the product that grades in the browser, and it says so | typecheck + lint green (tests paused) |
 | 2026-08-20 | F12.10 | `/` — dark hero, the 8-row Bengali-speaker error table, the real 28-day syllabus with milestone rows, session-timing band, pricing, FAQ, footer. Server Component with **no data reads**. Lighthouse not run; static rendering blocked by the root layout's cookie reads — both stated in the run report | typecheck + lint green (tests paused) |
 | 2026-08-20 | F12.9 | Certificates end to end — entity, `VerificationCode`, repository, owner and public use cases, a rate-limited `auth: 'public'` verify route, `/certificate/[id]` and an unauthenticated `/verify/[code]`; issuance moved into the shared submission path so the cron backstop issues too | typecheck + lint green (tests paused) |
 | 2026-08-20 | F12.8 | `/exams/review/[id]` — master-detail with a **character** diff by longest common subsequence; unreachable before submission because `GetExamAnswerReview` refuses, not because the page guards | typecheck + lint green (tests paused) |
