@@ -14,6 +14,16 @@ export interface IExamAttemptRepository {
    */
   readonly findActive: (profileId: string, definitionId: string) => Promise<ExamAttempt | null>;
 
+  /**
+   * The learner's live attempt at **any** exam.
+   *
+   * The resume read. A learner has at most one exam open at a time in practice
+   * — 004's index enforces it per exam and the product never unlocks two at
+   * once — and the runtime asks "am I in the middle of something" without
+   * knowing which exam that would be.
+   */
+  readonly findActiveForProfile: (profileId: string) => Promise<ExamAttempt | null>;
+
   /** Every attempt at one exam, newest first — the attempt count and cooldown. */
   readonly findForExam: (
     profileId: string,

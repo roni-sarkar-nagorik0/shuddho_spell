@@ -1,6 +1,7 @@
 import 'server-only';
 import { BootstrapProfileUseCase } from '@/modules/auth/application/use-cases/bootstrap-profile';
 import { GetMeUseCase } from '@/modules/auth/application/use-cases/get-me';
+import { GetActiveExamAttemptUseCase } from '@/modules/exams/application/use-cases/get-active-exam-attempt';
 import { FlagExamQuestionUseCase } from '@/modules/exams/application/use-cases/flag-exam-question';
 import { SaveExamAnswerUseCase } from '@/modules/exams/application/use-cases/save-exam-answer';
 import { StartExamAttemptUseCase } from '@/modules/exams/application/use-cases/start-exam-attempt';
@@ -187,6 +188,7 @@ export function makeStartExamAttempt(c: IContainer): StartExamAttemptUseCase {
     c.examDefinitions,
     c.examAttempts,
     c.examQuestions,
+    c.examAnswers,
     c.words,
     c.sentenceItems,
     c.reviewItems,
@@ -220,4 +222,15 @@ export function makeFlagExamQuestion(c: IContainer): FlagExamQuestionUseCase {
 
 export function makeSubmitExamSection(c: IContainer): SubmitExamSectionUseCase {
   return new SubmitExamSectionUseCase(c.learnerProfiles, c.examDefinitions, c.examAttempts, c.clock);
+}
+
+export function makeGetActiveExamAttempt(c: IContainer): GetActiveExamAttemptUseCase {
+  return new GetActiveExamAttemptUseCase(
+    c.learnerProfiles,
+    c.examDefinitions,
+    c.examAttempts,
+    c.examQuestions,
+    c.examAnswers,
+    c.clock,
+  );
 }

@@ -12,6 +12,7 @@ import { ExamAttemptsExhaustedError } from '../../domain/errors/exam-attempts-ex
 import { ExamCooldownActiveError } from '../../domain/errors/exam-cooldown-active.error';
 import { ExamLockedError } from '../../domain/errors/exam-locked.error';
 import { ExamNotFoundError } from '../../domain/errors/exam-not-found.error';
+import { type IExamAnswerRepository } from '../../domain/repositories/exam-answer-repository';
 import { type IExamAttemptRepository } from '../../domain/repositories/exam-attempt-repository';
 import { type IExamDefinitionRepository } from '../../domain/repositories/exam-definition-repository';
 import { type IExamQuestionRepository } from '../../domain/repositories/exam-question-repository';
@@ -20,6 +21,7 @@ import { ExamCandidateBuilder } from '../../domain/services/exam-candidate-build
 import { ExamEligibilityPolicy } from '../../domain/services/exam-eligibility.policy';
 import { type ExamCode } from '../../domain/value-objects/exam-code';
 import { type IExamAttemptView } from '../dto/exam-attempt-view';
+import { buildExamAttemptView } from '../services/exam-attempt-view';
 import { type IExamWriteUnit } from '../ports/exam-write-unit';
 
 /** 560 sentence items exist in a finished course; this reads them once. */
@@ -57,6 +59,7 @@ export class StartExamAttemptUseCase {
     private readonly definitions: IExamDefinitionRepository,
     private readonly attempts: IExamAttemptRepository,
     private readonly questions: IExamQuestionRepository,
+    private readonly answers: IExamAnswerRepository,
     private readonly words: IWordRepository,
     private readonly sentences: ISentenceItemRepository,
     private readonly reviews: IReviewItemRepository,
@@ -180,27 +183,22 @@ export class StartExamAttemptUseCase {
     return this.view(definition, stored, now);
   }
 
+  /**
+   * Start and resume return the **same** shape from the same builder. A resume
+   * that reported the deadline differently from the start would cost a learner
+   * time and would not be noticed until it did.
+   */
   private async view(
     definition: ExamDefinition,
     attempt: ExamAttempt,
     now: Date,
   ): Promise<IExamAttemptView> {
-    return {
-      attemptId: attempt.id,
-      code: definition.code,
-      title: definition.title,
-      status: attempt.status,
-      attemptNumber: attempt.attemptNumber,
-      currentSectionIndex: attempt.currentSectionIndex,
-      currentSectionCode: definition.sectionAt(attempt.currentSectionIndex)?.code ?? null,
-      sectionCount: definition.sectionCount,
-      // From the server's clock and the stored deadline. Never from the client.
-      remainingSeconds: attempt.remainingSeconds(now),
-      serverDeadlineAt: (attempt.serverDeadlineAt ?? now).toISOString(),
+    const [questions, answers] = await Promise.all([
       // The read that does not select `correct_answer` — rule 3.
-      questions: await this.questions.findByAttemptForLearner(attempt.id),
-      // Answers arrive with the resume use case (F7.8); a fresh attempt has none.
-      answers: [],
-    };
+      this.questions.findByAttemptForLearner(attempt.id),
+      this.answers.findByAttempt(attempt.id),
+    ]);
+
+    return buildExamAttemptView({ definition, attempt, questions, answers, now });
   }
 }

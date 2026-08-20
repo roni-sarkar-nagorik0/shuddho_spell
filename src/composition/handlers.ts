@@ -1,5 +1,6 @@
 import 'server-only';
 import { createGetMeHandler } from '@/modules/auth/presentation/handlers/get-me';
+import { createGetActiveAttemptHandler } from '@/modules/exams/presentation/handlers/get-active-attempt';
 import { createSaveAnswerHandler } from '@/modules/exams/presentation/handlers/save-answer';
 import { createStartAttemptHandler } from '@/modules/exams/presentation/handlers/start-attempt';
 import { createSubmitSectionHandler } from '@/modules/exams/presentation/handlers/submit-section';
@@ -22,6 +23,7 @@ import {
   makeGetProgramOverview,
   makeGetProgressSummary,
   makeFlagExamQuestion,
+  makeGetActiveExamAttempt,
   makeSaveExamAnswer,
   makeStartExamAttempt,
   makeSubmitExamSection,
@@ -104,4 +106,8 @@ export const saveExamAnswerHandler = createSaveAnswerHandler(() => {
 
 export const submitExamSectionHandler = createSubmitSectionHandler(() =>
   makeSubmitExamSection(container()),
+);
+
+export const getActiveExamAttemptHandler = createGetActiveAttemptHandler(() =>
+  makeGetActiveExamAttempt(container()),
 );

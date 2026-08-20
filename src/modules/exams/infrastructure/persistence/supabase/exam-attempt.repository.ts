@@ -34,6 +34,16 @@ export class SupabaseExamAttemptRepository implements IExamAttemptRepository {
     );
   }
 
+  async findActiveForProfile(profileId: string): Promise<ExamAttempt | null> {
+    return toExamAttempt(
+      await this.db.selectOne({
+        table: TABLE,
+        columns: EXAM_ATTEMPT_COLUMNS,
+        eq: { profile_id: profileId, status: 'in_progress' },
+      }),
+    );
+  }
+
   /** Newest first, so the caller reads the cooldown off the head of the list. */
   async findForExam(profileId: string, definitionId: string): Promise<readonly ExamAttempt[]> {
     return toExamAttempts(

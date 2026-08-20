@@ -196,6 +196,15 @@ registry.registerPath({
   responses: ok(z.unknown(), 'The next section, and whether the paper is complete.'),
 });
 
+registry.registerPath({
+  method: 'get',
+  path: '/api/v1/exams/attempts/active',
+  summary: 'The attempt in progress, if there is one.',
+  description:
+    'Rule 6 — a crash loses nothing. Returns the attempt, the current section, the saved answers and the seconds remaining computed from the server clock. Null when nothing is running.',
+  responses: ok(z.unknown(), 'The live attempt, or null.'),
+});
+
 export function buildOpenApiDocument(): ReturnType<OpenApiGeneratorV3['generateDocument']> {
   return new OpenApiGeneratorV3(registry.definitions).generateDocument({
     openapi: '3.0.3',
