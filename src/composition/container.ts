@@ -44,9 +44,13 @@ import { SupabaseWordPhonemeRepository } from '@/modules/library/infrastructure/
 import { SupabaseWordRepository } from '@/modules/library/infrastructure/persistence/supabase/word.repository';
 import { type IProgramRepository } from '@/modules/program/domain/repositories/program-repository';
 import { SupabaseProgramRepository } from '@/modules/program/infrastructure/persistence/supabase/program.repository';
+import { type IDemoAttemptRepository } from '@/modules/progress/domain/repositories/demo-attempt-repository';
 import { type IMasteryRepository } from '@/modules/progress/domain/repositories/mastery-repository';
+import { type IPractiseLogRepository } from '@/modules/progress/domain/repositories/practise-log-repository';
 import { type IStreakRepository } from '@/modules/progress/domain/repositories/streak-repository';
+import { SupabaseDemoAttemptRepository } from '@/modules/progress/infrastructure/persistence/supabase/demo-attempt.repository';
 import { SupabaseMasteryRepository } from '@/modules/progress/infrastructure/persistence/supabase/mastery.repository';
+import { SupabasePractiseLogRepository } from '@/modules/progress/infrastructure/persistence/supabase/practise-log.repository';
 import { SupabaseStreakRepository } from '@/modules/progress/infrastructure/persistence/supabase/streak.repository';
 import { type IReviewItemRepository } from '@/modules/review/domain/repositories/review-item-repository';
 import { type IReviewSchedulingPolicy } from '@/modules/review/domain/services/review-scheduling-policy';
@@ -91,6 +95,10 @@ export interface IContainer {
   readonly reviewItems: IReviewItemRepository;
   readonly mastery: IMasteryRepository;
   readonly streaks: IStreakRepository;
+  /** 021 — the demo's own record, kept apart from `attempts`. */
+  readonly demoAttempts: IDemoAttemptRepository;
+  /** 022 — the grouped, paged view over both of them. */
+  readonly practiseLog: IPractiseLogRepository;
 
   readonly examDefinitions: IExamDefinitionRepository;
   readonly examAttempts: IExamAttemptRepository;
@@ -194,6 +202,8 @@ export function createContainer(requestId: string): IContainer {
     reviewItems: new SupabaseReviewItemRepository(db),
     mastery: new SupabaseMasteryRepository(db),
     streaks: new SupabaseStreakRepository(db),
+    demoAttempts: new SupabaseDemoAttemptRepository(db),
+    practiseLog: new SupabasePractiseLogRepository(db),
 
     examDefinitions: new SupabaseExamDefinitionRepository(db),
     examAttempts: new SupabaseExamAttemptRepository(db),

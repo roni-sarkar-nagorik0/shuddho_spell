@@ -2,6 +2,7 @@
 
 import { useTranslations } from 'next-intl';
 import { type ReactElement } from 'react';
+import { Glyph } from '@/components/icons/glyph';
 import { NotificationBell } from '@/components/notifications/notification-bell';
 import { Breadcrumb } from './breadcrumb';
 import { SessionTimer } from './session-timer';
@@ -50,6 +51,23 @@ export function TopBar({ displayName, streakDays }: ITopBarProps): ReactElement 
           {initials(displayName)}
         </span>
         <span className="sr-only">{t('signedInAs', { name: displayName })}</span>
+
+        {/*
+          A plain form post, for the same reason `/login`'s button is one: the
+          route it hits is a server route holding an httpOnly cookie, so there
+          is nothing for a client to call. It is a form rather than a link
+          because signing out is destructive and a link is something a prefetch
+          can follow on the learner's behalf.
+        */}
+        <form action="/auth/signout" method="post">
+          <button
+            className="flex h-8 items-center gap-1.5 rounded-control px-2 text-muted hover:bg-primary-50"
+            type="submit"
+          >
+            <Glyph name="sign-out" size={16} />
+            <span className="text-label uppercase">{t('signOut')}</span>
+          </button>
+        </form>
       </div>
     </header>
   );

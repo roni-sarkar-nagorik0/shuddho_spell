@@ -63,6 +63,7 @@ export class GetDictationDemoWordUseCase {
     }
 
     return {
+      id: chosen.id,
       text: chosen.text,
       ipa: chosen.ipa.value,
       banglaSound: chosen.banglaSound,

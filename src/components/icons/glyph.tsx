@@ -29,6 +29,8 @@ export const GLYPHS = Object.freeze([
   'download',
   'play',
   'mic',
+  'sign-out',
+  'grammar',
 ] as const);
 
 export type GlyphName = (typeof GLYPHS)[number];
@@ -52,6 +54,14 @@ const PATHS: Readonly<Record<GlyphName, string>> = {
   alert: 'M12 4.5v9M12 17.4v.6M12 21.5a9.5 9.5 0 1 0 0-19 9.5 9.5 0 0 0 0 19z',
   download: 'M12 3.5v11M7.5 10.5 12 15l4.5-4.5M4.5 19.5h15',
   play: 'M7.5 4.5 19 12 7.5 19.5z',
+  // A door with the arrow leaving through it. The arrow points away from the
+  // panel, not into it: the same drawing reversed is the sign-in glyph, and the
+  // two must not be confusable at 16px.
+  'sign-out': 'M14 4.5H5.5v15H14M11 12h9M16.5 8.5 20 12l-3.5 3.5',
+  // A line of text with a mark underneath it — the shape of a sentence being
+  // corrected. Distinct from `library` (a shelf) and `exam` (a page), which
+  // are the two it could otherwise be confused with in the rail.
+  grammar: 'M4 6h16M4 10.5h11M4 15h16M4 19.5h7M17.5 18.5l1.8 1.8 3.2-3.6',
   mic: 'M12 3.5a2.75 2.75 0 0 1 2.75 2.75v5.5a2.75 2.75 0 0 1-5.5 0v-5.5A2.75 2.75 0 0 1 12 3.5zM5.5 11.5a6.5 6.5 0 0 0 13 0M12 18v3',
 };
 

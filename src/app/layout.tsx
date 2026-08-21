@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { NextIntlClientProvider } from 'next-intl';
 import { getLocale, getMessages } from 'next-intl/server';
 import { Bricolage_Grotesque, IBM_Plex_Mono, Noto_Sans_Bengali, Public_Sans } from 'next/font/google';
@@ -13,7 +13,25 @@ const bengali = Noto_Sans_Bengali({ subsets: ['bengali'], variable: '--font-beng
 
 export const metadata: Metadata = {
   title: 'ShuddhoSpell',
-  description: 'A 30-day English precision course built for Bangla speakers.',
+  description: 'A 28-day English precision course built for Bangla speakers.',
+  applicationName: 'ShuddhoSpell',
+  /*
+   * The icons themselves are **not** declared here. `src/app/icon.png` and
+   * `src/app/apple-icon.png` are Next file conventions: it fingerprints them,
+   * writes the `<link rel>` tags itself, and a hand-written `icons` block here
+   * would be a second declaration able to disagree with the files on disk.
+   * `manifest.ts` is linked the same way.
+   */
+  appleWebApp: { capable: true, title: 'ShuddhoSpell', statusBarStyle: 'default' },
+};
+
+/**
+ * The colour a phone paints its own chrome with — `primary-900`, the same navy
+ * as the rail and the hero, so the system bar does not announce itself as a
+ * different application.
+ */
+export const viewport: Viewport = {
+  themeColor: '#16255A',
 };
 
 export default async function RootLayout({

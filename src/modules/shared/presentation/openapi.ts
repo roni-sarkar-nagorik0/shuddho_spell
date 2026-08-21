@@ -36,6 +36,10 @@ import { completeOnboardingBodySchema } from '@/modules/auth/presentation/dto/on
 import { verifyParamsSchema } from '@/modules/certificates/presentation/dto/certificate-requests';
 import { libraryQuerySchema } from '@/modules/library/presentation/dto/library-requests';
 import { demoWordSchema } from '@/modules/library/presentation/dto/demo-word.response';
+import {
+  demoAttemptResultSchema,
+  recordDemoAttemptBodySchema,
+} from '@/modules/progress/presentation/dto/demo-attempt-requests';
 
 extendZodWithOpenApi(z);
 
@@ -133,6 +137,17 @@ registry.registerPath({
   path: '/api/v1/demo/word',
   summary: 'One random word from the corpus for the landing page demo. Public; no account needed.',
   responses: ok(demoWordSchema, 'A word, or null when the corpus is not seeded.'),
+});
+
+// The write half of the demo, and unlike the read half it needs a session:
+// there is no profile to record an anonymous visitor against. The body says
+// what was typed and never whether it was right.
+registry.registerPath({
+  method: 'post',
+  path: '/api/v1/demo/attempts',
+  summary: 'Record one demo answer for the signed-in learner. The server decides if it was right.',
+  request: { body: { content: { 'application/json': { schema: recordDemoAttemptBodySchema } } } },
+  responses: ok(demoAttemptResultSchema, 'The stored attempt.'),
 });
 
 registry.registerPath({

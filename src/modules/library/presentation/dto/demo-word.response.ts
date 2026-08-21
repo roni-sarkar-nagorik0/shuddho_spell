@@ -11,6 +11,7 @@ import { type IDictationDemoWord } from '../../application/dto/dictation-demo-wo
  */
 export const demoWordSchema = z
   .object({
+    id: z.string(),
     text: z.string(),
     ipa: z.string(),
     banglaSound: z.string(),

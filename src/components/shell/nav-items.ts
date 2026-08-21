@@ -11,6 +11,16 @@ export interface INavItem {
  * The rail, in the order a learner meets these screens: today's work, the plan,
  * the drills, the weaknesses, the reference, the record, the exams.
  *
+ * `/grammar` sits after `/weak-spots` and before the two word lists: it is a
+ * course of its own — read in order, day by day — rather than a reference, and
+ * a learner looking for "what do I study next" should meet it before they meet
+ * a list of 1,240 words.
+ *
+ * `/words` sits before `/library` on purpose: they are both lists of words and
+ * the difference is whose. A learner looking for "the word I kept getting
+ * wrong" wants their own list, and finding the whole 1,240-word library first
+ * is the wrong answer arriving before the right one.
+ *
  * The hrefs point at routes Phase 11 and Phase 12 build. That is deliberate and
  * is not scaffolding ahead: a navigation rail with no destinations is not the
  * feature. Nothing here creates a stub page — an unbuilt route 404s honestly
@@ -21,6 +31,8 @@ export const NAV_ITEMS: readonly INavItem[] = Object.freeze([
   { href: '/program', labelKey: 'program', glyph: 'program' },
   { href: '/practice', labelKey: 'practice', glyph: 'practice' },
   { href: '/weak-spots', labelKey: 'weakSpots', glyph: 'weak-spots' },
+  { href: '/grammar', labelKey: 'grammar', glyph: 'grammar' },
+  { href: '/words', labelKey: 'myWords', glyph: 'check' },
   { href: '/library', labelKey: 'library', glyph: 'library' },
   { href: '/progress', labelKey: 'progress', glyph: 'progress' },
   { href: '/exams', labelKey: 'exams', glyph: 'exam' },

@@ -67,7 +67,7 @@ describe('route protection', () => {
   });
 
   it('leaves the public pages open to nobody in particular', async () => {
-    for (const path of ['/', '/login', '/pricing', '/faq', '/auth/callback', '/auth/signin']) {
+    for (const path of ['/', '/login', '/pricing', '/faq', '/auth/callback', '/auth/signin', '/auth/signout']) {
       const response = await middleware(get(path));
 
       expect(response.headers.get('location'), `${path} was not public`).toBeNull();

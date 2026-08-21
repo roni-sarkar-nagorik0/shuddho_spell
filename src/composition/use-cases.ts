@@ -39,6 +39,9 @@ import { GetProgramDayUseCase } from '@/modules/program/application/use-cases/ge
 import { GetProgramOverviewUseCase } from '@/modules/program/application/use-cases/get-program-overview';
 import { GetLearnerDashboardUseCase } from '@/modules/progress/application/use-cases/get-learner-dashboard';
 import { GetMasterySnapshotUseCase } from '@/modules/progress/application/use-cases/get-mastery-snapshot';
+import { GetPractiseLogUseCase } from '@/modules/progress/application/use-cases/get-practise-log';
+import { GetWordsPractisedUseCase } from '@/modules/progress/application/use-cases/get-words-practised';
+import { RecordDemoAttemptUseCase } from '@/modules/progress/application/use-cases/record-demo-attempt';
 import { GetWeeklyActivityUseCase } from '@/modules/progress/application/use-cases/get-weekly-activity';
 import { CompleteOnboardingUseCase } from '@/modules/auth/application/use-cases/complete-onboarding';
 import { GetCertificateUseCase } from '@/modules/certificates/application/use-cases/get-certificate';
@@ -488,4 +491,33 @@ export function makeRunHourlyNotifications(c: IContainer): RunHourlyNotification
  */
 export function makeGetDictationDemoWord(c: IContainer): GetDictationDemoWordUseCase {
   return new GetDictationDemoWordUseCase(c.words, c.random);
+}
+
+/**
+ * The demo's two halves once somebody is signed in: writing down what they
+ * tried, and counting it back to them on the dashboard.
+ */
+export function makeRecordDemoAttempt(c: IContainer): RecordDemoAttemptUseCase {
+  return new RecordDemoAttemptUseCase(
+    c.learnerProfiles,
+    c.words,
+    c.demoAttempts,
+    c.clock,
+    c.ids,
+  );
+}
+
+export function makeGetWordsPractised(c: IContainer): GetWordsPractisedUseCase {
+  return new GetWordsPractisedUseCase(
+    c.learnerProfiles,
+    c.attempts,
+    c.demoAttempts,
+    c.words,
+    c.clock,
+  );
+}
+
+/** The whole history, paged — the screen the dashboard's panel links to. */
+export function makeGetPractiseLog(c: IContainer): GetPractiseLogUseCase {
+  return new GetPractiseLogUseCase(c.learnerProfiles, c.practiseLog);
 }

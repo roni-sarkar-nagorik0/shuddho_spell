@@ -15,16 +15,18 @@ import {
   readNextExam,
   readProgressSummary,
   readActivity,
+  readWordsPractised,
 } from '@/composition/reads';
 import { requireUser } from '@/lib/auth/current-user';
 import { publicEnv } from '@/lib/env.public';
+import { PractisedWords } from './practised-words';
 import { ReviewTable } from './review-table';
 
 /**
  * The dashboard — one question, "what should I do now", answered above the
  * fold.
  *
- * **Six reads, issued together, zero N+1.** Each is one use case that returns
+ * **Seven reads, issued together, zero N+1.** Each is one use case that returns
  * its whole answer in one shape; none of them is called per row, and the six
  * run in a single `Promise.all` rather than serially. That is the acceptance
  * criterion for this feature and it is a property of the read path, not of the
@@ -63,13 +65,14 @@ function toMatrixCells(
 export default async function DashboardPage(): Promise<ReactElement> {
   const user = await requireUser();
 
-  const [dashboard, summary, mastery, activity, reviews, nextExam] = await Promise.all([
+  const [dashboard, summary, mastery, activity, reviews, nextExam, practised] = await Promise.all([
     readLearnerDashboard(user.userId),
     readProgressSummary(user.userId),
     readMasterySnapshot(user.userId),
     readActivity(user.userId, 7),
     readDueReviews(user.userId),
     readNextExam(user.userId),
+    readWordsPractised(user.userId),
   ]);
 
   const accuracyPercent = Math.round(summary.overallAccuracy);
@@ -212,6 +215,27 @@ export default async function DashboardPage(): Promise<ReactElement> {
               </Link>
             </>
           )}
+        </div>
+      </section>
+
+      {/*
+        Today's words, with their sound.
+
+        Above the weekly chart on purpose: "what did I do today" is the question
+        a learner opens this page with, and the week is context for it rather
+        than the other way round.
+      */}
+      <section className="card col-span-12">
+        <PanelHeader
+          note={`${String(practised.course.distinctWords + practised.demo.distinctWords)} words · ${String(practised.course.tries + practised.demo.tries)} tries`}
+          title="Words today"
+        />
+        <div className="p-4">
+          <PractisedWords
+            course={practised.course}
+            date={practised.date}
+            demo={practised.demo}
+          />
         </div>
       </section>
 

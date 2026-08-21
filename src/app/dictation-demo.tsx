@@ -5,6 +5,7 @@ import { z } from 'zod';
 import { Glyph } from '@/components/icons/glyph';
 import { LetterTiles } from '@/components/lesson/letter-tiles';
 import { apiFetch } from '@/lib/api/client';
+import { useSession } from '@/lib/auth/session-context';
 import { DICTATION_RATE, DICTATION_SLOW_RATE, preferredVoice } from '@/lib/audio/voices';
 
 /**
@@ -15,6 +16,7 @@ import { DICTATION_RATE, DICTATION_SLOW_RATE, preferredVoice } from '@/lib/audio
  */
 const demoWordSchema = z
   .object({
+    id: z.string(),
     text: z.string(),
     ipa: z.string(),
     banglaSound: z.string(),
@@ -24,6 +26,18 @@ const demoWordSchema = z
   .nullable();
 
 export type DemoWord = z.infer<typeof demoWordSchema>;
+
+/**
+ * What the server says about an answer once it has decided for itself.
+ *
+ * The demo already marked the tiles in the browser, and this does not change
+ * them — it is the record's answer, not the screen's. They agree; if they ever
+ * did not, the one written down is the one that counts.
+ */
+const attemptResultSchema = z.object({
+  attemptId: z.string(),
+  isCorrect: z.boolean(),
+});
 
 /**
  * British, and only British.
@@ -72,6 +86,10 @@ export interface IDictationDemoProps {
  * this did at first — took away the only useful thing left to do on the
  * question. The only state that closes it is getting it right.
  *
+ * When a **signed-in** learner answers, the attempt is posted to
+ * `/api/v1/demo/attempts` and appears on their dashboard under *Words today*,
+ * counted apart from the course. An anonymous visitor is not recorded at all.
+ *
  * **This one grades in the browser**, and it is the only thing in the product
  * that does. There is no session, no attempt row and nothing to score against —
  * the answer arrives with the word because the visitor is not being assessed,
@@ -87,6 +105,7 @@ export function DictationDemo({ initialWord }: IDictationDemoProps): ReactElemen
   const [round, setRound] = useState(0);
   const [loading, setLoading] = useState(false);
   const [supported, setSupported] = useState(true);
+  const user = useSession();
 
   useEffect(() => {
     setSupported(typeof window !== 'undefined' && 'speechSynthesis' in window);
@@ -124,6 +143,37 @@ export function DictationDemo({ initialWord }: IDictationDemoProps): ReactElemen
 
     window.speechSynthesis.speak(utterance);
   }, []);
+
+  /**
+   * Writes the attempt down — but only for somebody signed in.
+   *
+   * `useSession()` is the sanctioned way a Client Component learns who is here,
+   * and the answer is `null` for the visitor this page mostly serves. Nothing
+   * is recorded for them: there is no profile to record against, no consent to
+   * record under, and 021's `profile_id` is `not null`.
+   *
+   * It posts what was typed and **not** whether it was right. The server loads
+   * the word and asks `Word.matches`; an endpoint that believed the browser
+   * would let any dashboard report a thousand perfect words.
+   *
+   * Fire and forget, deliberately. The exercise is the point and the record is
+   * a side effect — a failed write must not interrupt somebody mid-drill, and
+   * there is nothing useful to tell them about it.
+   */
+  const record = useCallback(
+    (value: string) => {
+      if (user === null || word === null) {
+        return;
+      }
+
+      void apiFetch('/api/v1/demo/attempts', {
+        method: 'POST',
+        schema: attemptResultSchema,
+        body: { wordId: word.id, submittedValue: value },
+      }).catch(() => undefined);
+    },
+    [user, word],
+  );
 
   /** Same word, empty tiles. `round` is what resets `LetterTiles` and refocuses it. */
   const tryAgain = useCallback(() => {
@@ -236,6 +286,7 @@ export function DictationDemo({ initialWord }: IDictationDemoProps): ReactElemen
           onSubmit={(value) => {
             setAttempt(value);
             setTries((current) => current + 1);
+            record(value);
           }}
           resetKey={`${word.text}-${String(round)}`}
         />

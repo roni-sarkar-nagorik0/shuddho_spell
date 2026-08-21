@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { type ReactElement } from 'react';
 import { readDictationDemoWord } from '@/composition/reads';
 import { DictationDemo } from './dictation-demo';
+import { StartCta } from './start-cta';
 import { MILESTONES, SYLLABUS } from './syllabus';
 
 /**
@@ -128,12 +129,10 @@ export default async function LandingPage(): Promise<ReactElement> {
             </p>
 
             <div className="mt-8 flex flex-wrap gap-3">
-              <Link
-                className="h-10 rounded-control bg-secondary-500 px-5 py-2.5 font-medium text-primary-900"
-                href="/login"
-              >
-                Start free
-              </Link>
+              <StartCta
+                className="flex h-10 items-center rounded-control bg-secondary-500 px-5 font-medium text-primary-900"
+                signedOutLabel="Start free"
+              />
               <Link
                 className="h-10 rounded-control border border-primary-100 px-5 py-2.5 text-primary-100"
                 href="#syllabus"
@@ -241,29 +240,6 @@ export default async function LandingPage(): Promise<ReactElement> {
             </li>
           ))}
         </ul>
-      </Section>
-
-      <Section note="One price, everything in it. No tiers, no upsell inside a lesson." title="Pricing">
-        <div className="card max-w-md p-6">
-          <p className="label">Full programme</p>
-          <p className="num mt-2 text-4xl text-primary-900">৳ 1,200</p>
-          <p className="mt-2 text-muted">
-            One payment. All 28 days, all four examinations, the certificate, and the review
-            schedule for as long as you keep using it.
-          </p>
-          <ul className="mt-4 flex flex-col gap-1.5 text-muted">
-            <li>1,240 words with real IPA and Bangla pronunciation</li>
-            <li>560 sentences to build</li>
-            <li>28 rule families with their exceptions</li>
-            <li>Spaced repetition that follows what you actually got wrong</li>
-          </ul>
-          <Link
-            className="mt-6 inline-flex h-10 items-center rounded-control bg-primary-900 px-5 text-surface"
-            href="/login"
-          >
-            Start free
-          </Link>
-        </div>
       </Section>
 
       <Section title="Questions">

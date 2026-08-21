@@ -24,6 +24,7 @@
     "i18n:check": "tsx scripts/i18n-check.ts",
     "prebuild": "pnpm content:validate && pnpm i18n:check",
     "content:seed": "node --env-file-if-exists=.env.local --env-file-if-exists=.env --import tsx scripts/content-seed.ts",
+    "icons": "node scripts/generate-icons.mjs",
     "content:seed:dry": "tsx scripts/content-seed.ts --dry-run",
     "content:author": "tsx scripts/author-week.ts",
     "content:report": "tsx scripts/content-report.ts"

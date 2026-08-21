@@ -9,6 +9,15 @@
  * a *learner* takes still gets `IExamQuestionForLearner`, which has no `text`.
  */
 export interface IDictationDemoWord {
+  /**
+   * The `words.id` this came from.
+   *
+   * The client posts it back when a signed-in learner answers, so the server
+   * can look the word up and decide for itself whether they were right —
+   * `Word.matches`, never the browser's opinion. A word id is not a secret;
+   * the spelling is in the same payload.
+   */
+  readonly id: string;
   /** The spelling. The answer, and the demo needs it to grade itself. */
   readonly text: string;
   readonly ipa: string;

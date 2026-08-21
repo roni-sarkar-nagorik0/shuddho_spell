@@ -230,6 +230,9 @@ describe('hand-written row interfaces (F2.10)', () => {
       review_items: 'review',
       mastery_records: 'progress',
       streak_records: 'progress',
+      // 021. Not `lessons` beside `attempts`: a demo answer has no session and
+      // no score, and the only thing that reads it is the dashboard's tally.
+      demo_attempts: 'progress',
       exam_definitions: 'exams',
       exam_sections: 'exams',
       exam_attempts: 'exams',

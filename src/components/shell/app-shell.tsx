@@ -28,6 +28,24 @@ export interface IAppShellProps {
  * The skip link is first in the tab order and is the reason `#content` carries
  * `tabIndex={-1}`: without it, focus moves to the region but the next Tab
  * starts from the top of the document again in several browsers.
+ *
+ * **`fixed inset-0`, not `h-screen`.** The two look equivalent — both are one
+ * viewport tall — and they are not. `h-screen` sizes the shell correctly but
+ * leaves it *in the page*, so anything else that ends up in `<body>` gives the
+ * document height the shell has to share. When that happens the window scrolls,
+ * and the window scrolling takes the rail and the top bar with it: the learner
+ * drags the rail off the top of the screen and lands on a band of empty page
+ * background below it. `overflow-hidden` here does not help — it governs what
+ * the shell clips, not whether the page around it moves.
+ *
+ * On a short screen nobody notices, because there is nothing to scroll. It took
+ * a 2,500px grammar lesson for it to be visible, and it was never about that
+ * page: in development Next mounts its own overlay node into `<body>` beside
+ * this one, which is exactly the stray height that starts it.
+ *
+ * Out of flow, the shell is the viewport and cannot be moved by anything. The
+ * only scrolling region left is `#content`, which is the one that should have
+ * been scrolling all along.
  */
 export function AppShell({
   initialCollapsed,
@@ -48,7 +66,7 @@ export function AppShell({
 
   return (
     <ToastProvider>
-      <div className="flex h-screen overflow-hidden bg-neutral-50">
+      <div className="fixed inset-0 flex overflow-hidden bg-neutral-50">
         <a
           className="sr-only focus:not-sr-only focus:absolute focus:left-2 focus:top-2 focus:z-50 focus:rounded-control focus:bg-primary-900 focus:px-3 focus:py-2 focus:text-surface"
           href="#content"

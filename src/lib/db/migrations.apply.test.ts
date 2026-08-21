@@ -80,6 +80,10 @@ const CONTENT_TABLES: readonly string[] = [
 const LEARNER_TABLES: readonly string[] = [
   'attempts',
   'certificates',
+  // 021 — one word tried on the public demo by a signed-in learner. Carries
+  // profile_id and cascades like the rest, and is deliberately not `attempts`:
+  // a demo answer has no lesson session and no score.
+  'demo_attempts',
   'exam_answers',
   'exam_attempts',
   'lesson_sessions',

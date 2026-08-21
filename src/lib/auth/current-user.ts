@@ -1,5 +1,6 @@
 import 'server-only';
 import { redirect } from 'next/navigation';
+import { cache } from 'react';
 import { z } from 'zod';
 import { type IAuthenticatedUser } from '@/contracts';
 import { createSessionClient } from '../supabase/session-client';
@@ -16,8 +17,16 @@ const profileSchema = z.object({
  * has to render. Every other caller wants `requireUser()`; reaching for this
  * one instead is how a page ends up deciding for itself what to do about an
  * anonymous visitor, which is exactly what the three-ways rule prevents.
+ *
+ * **Memoised per request with React's `cache`.** Every protected page calls it
+ * three times over — once in `SessionBoundary`, once in the layout, once in the
+ * page — and each call was two round trips to Supabase in Seoul: `getUser()`
+ * against the auth server, then the profile row. Six trips for one answer that
+ * cannot change inside a single render. `cache` collapses them to two. It is
+ * request-scoped, so nothing leaks between learners, and it is deliberately not
+ * `unstable_cache`: a session is exactly the thing that must not be shared.
  */
-export async function readUser(): Promise<IAuthenticatedUser | null> {
+export const readUser = cache(async (): Promise<IAuthenticatedUser | null> => {
   const supabase = await createSessionClient();
 
   // getUser(), not getSession(): the second one trusts whatever cookie arrived.
@@ -51,7 +60,7 @@ export async function readUser(): Promise<IAuthenticatedUser | null> {
     email,
     displayName: profile.data.display_name,
   };
-}
+});
 
 /**
  * The Server Component way in. Returns the learner, or redirects to `/login`.

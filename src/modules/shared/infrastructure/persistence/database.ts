@@ -26,6 +26,13 @@ export interface ISelectQuery {
   /** `column <= value`, for due dates. */
   readonly lte?: { readonly column: string; readonly value: string };
   /**
+   * `column >= value`. Added for "since the start of the learner's day": the
+   * boundary is an instant, and a row written at exactly that instant belongs
+   * to the day it opens. `gt` would drop it — vanishingly unlikely and wrong
+   * for the same reason an off-by-one always is.
+   */
+  readonly gte?: { readonly column: string; readonly value: string };
+  /**
    * Strictly greater than. Added by F11.11 for **keyset pagination**: the
    * library's cursor is the last row's `text`, and `gt` is what "everything
    * after it" means. Offset paging would repeat or skip rows whenever content

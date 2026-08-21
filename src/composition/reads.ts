@@ -1,4 +1,5 @@
 import 'server-only';
+import { unstable_cache } from 'next/cache';
 import { cache } from 'react';
 import { type AccentPreference } from '@/modules/auth/domain/value-objects/accent-preference';
 import { type IUserRoster } from '@/modules/auth/application/dto/user-summary';
@@ -10,6 +11,8 @@ import {
 import { type IExamCatalogue } from '@/modules/exams/application/dto/exam-catalogue';
 import { type IExamMilestone } from '@/modules/exams/application/dto/exam-milestone';
 import { type INextExam } from '@/modules/exams/application/dto/next-exam';
+import { type IGrammarLessonView } from '@/modules/grammar/application/dto/grammar-lesson-view';
+import { type IGrammarSyllabus } from '@/modules/grammar/application/dto/grammar-syllabus';
 import { type IDictationDemoWord } from '@/modules/library/application/dto/dictation-demo-word';
 import { type ILibraryPage } from '@/modules/library/application/dto/library-page';
 import { type IWordPhonemeStrip } from '@/modules/library/application/dto/phoneme-strip';
@@ -18,6 +21,9 @@ import { type IProgramOverview } from '@/modules/program/application/dto/program
 import { type ILearnerDashboard } from '@/modules/progress/application/dto/learner-dashboard';
 import { type IMasterySnapshot } from '@/modules/progress/application/dto/mastery-snapshot';
 import { type IProgressSummary } from '@/modules/progress/application/dto/progress-summary';
+import { type IPractiseLog } from '@/modules/progress/application/dto/practise-log';
+import { type IWordsPractised } from '@/modules/progress/application/dto/words-practised';
+import { type PractiseSource } from '@/modules/progress/domain/repositories/practise-log-repository';
 import { type IWeeklyActivity } from '@/modules/progress/application/dto/weekly-activity';
 import { type IDueReviewQueue } from '@/modules/review/application/dto/due-review-item';
 import { type IPracticeQueue } from '@/modules/review/application/dto/practice-queue';
@@ -25,10 +31,13 @@ import { type IWeakSpots } from '@/modules/review/application/dto/weak-spots';
 import { DatabaseMetricsReader } from '@/modules/shared/infrastructure/adapters/database-metrics-reader';
 import { type IMetricsSnapshot } from '@/modules/shared/application/ports/metrics-reader';
 import { createContainer } from './container';
+import { grammarLesson, grammarSyllabus } from './grammar';
 import {
   makeGetDueReviewItems,
   makeGetLearnerDashboard,
   makeGetMasterySnapshot,
+  makeGetPractiseLog,
+  makeGetWordsPractised,
   makeGetNextExam,
   makeGetProgramDay,
   makeGetProgramOverview,
@@ -255,13 +264,96 @@ export async function readMetrics(): Promise<IMetricsSnapshot> {
 }
 
 /**
+ * How many distinct demo words the landing page keeps warm.
+ *
+ * The number is a trade between variety and the front door's budget. Each slot
+ * is one cached word; a visitor is handed a slot at random, so the demo still
+ * differs between visits and between reloads. Twenty-four is well past the
+ * point where a visitor could notice a repeat — they see maybe five words —
+ * and small enough that the whole set is one page of cache entries.
+ */
+const DEMO_WORD_SLOTS = 24;
+
+/**
+ * How long a slot holds its word. An hour, because the corpus is seeded content
+ * that changes when somebody runs `content:seed`, not while a visitor reads.
+ */
+const DEMO_WORD_TTL_SECONDS = 3600;
+
+/**
+ * One slot's word, held in the data cache.
+ *
+ * **This is the landing page's single most expensive line, and it used to run
+ * on every anonymous hit.** The use case draws a whole week of the corpus —
+ * ~310 rows, 124 KB over the wire from Seoul, measured at 180–300 ms — filters
+ * it, and keeps one word. Doing that per visitor is paying a fifth of a second
+ * of the front door's budget to throw 309 words away.
+ *
+ * The pick stays random; what is cached is the result of a pick, not the pick
+ * itself. `IDictationDemoWord` is a plain DTO, which is why it can live in the
+ * data cache at all — a `Word` entity could not, because the cache serialises
+ * and a class would come back without its methods.
+ */
+const readDemoWordSlot = (slot: number): Promise<IDictationDemoWord | null> =>
+  unstable_cache(
+    async () => makeGetDictationDemoWord(createContainer(crypto.randomUUID())).execute(),
+    ['dictation-demo-word', String(slot)],
+    { revalidate: DEMO_WORD_TTL_SECONDS, tags: ['dictation-demo-word'] },
+  )();
+
+/**
  * The demo's first word, resolved during the landing page's own render.
  *
- * **Not** memoised, and that is the one deliberate exception on this page: every
- * other read here is wrapped in `cache` so a layout and its page share one
- * execution, but the whole value of this one is that it differs. Memoising a
- * random pick is a way of making it stop being random.
+ * **Not** memoised per request, and that is the one deliberate exception on this
+ * page: every other read here is wrapped in `cache` so a layout and its page
+ * share one execution, but the whole value of this one is that it differs.
+ * Memoising a random pick is a way of making it stop being random.
+ *
+ * It is *cached across* requests, though, which is a different thing — see
+ * `readDemoWordSlot`. The randomness moves from "which word does the database
+ * hand back" to "which of the warm words does this visitor get", and the page
+ * stops spending a fifth of a second on a query whose answer it discards.
  */
 export async function readDictationDemoWord(): Promise<IDictationDemoWord | null> {
-  return makeGetDictationDemoWord(createContainer(crypto.randomUUID())).execute();
+  return readDemoWordSlot(Math.floor(Math.random() * DEMO_WORD_SLOTS));
 }
+
+/**
+ * Today's practice, for the dashboard panel. Memoised per request like every
+ * other read here — the panel and anything else that wants the figure share one
+ * execution.
+ */
+export const readWordsPractised = cache(
+  async (userId: string): Promise<IWordsPractised> =>
+    makeGetWordsPractised(createContainer(crypto.randomUUID())).execute({ userId }),
+);
+
+/**
+ * One page of the practice log. Memoised per request, like every read here —
+ * the page and its heading ask for the same page and pay for it once.
+ */
+export const readPractiseLog = cache(
+  async (userId: string, source: PractiseSource, page: number): Promise<IPractiseLog> =>
+    makeGetPractiseLog(createContainer(crypto.randomUUID())).execute({ userId, source, page }),
+);
+
+/**
+ * The grammar course.
+ *
+ * Wired in `grammar.ts` rather than through a container: there is no database
+ * behind this and no request scope to respect — see the note there.
+ *
+ * Memoised like every other read here, and here it is nearly free: the adapter
+ * reads a compiled-in array rather than a database, so the cache saves a map
+ * over 28 rows rather than a round trip. It is wrapped anyway, because the rule
+ * on this page is that a read is memoised — and "today's adapter happens to be
+ * cheap" is a fact about the adapter, not about the read.
+ */
+export const readGrammarSyllabus = cache(
+  async (): Promise<IGrammarSyllabus> => grammarSyllabus(),
+);
+
+/** One day of the grammar course, or null when there is no such day. */
+export const readGrammarLesson = cache(
+  async (dayIndex: number): Promise<IGrammarLessonView | null> => grammarLesson(dayIndex),
+);

@@ -74,6 +74,10 @@ export function toDatabase(): IDatabase {
       builder = builder.lte(query.lte.column, query.lte.value);
     }
 
+    if (query.gte !== undefined) {
+      builder = builder.gte(query.gte.column, query.gte.value);
+    }
+
     if (query.gt !== undefined) {
       builder = builder.gt(query.gt.column, query.gt.value);
     }
@@ -139,6 +143,10 @@ export function toDatabase(): IDatabase {
 
       if (query.lte !== undefined) {
         builder = builder.lte(query.lte.column, query.lte.value);
+      }
+
+      if (query.gte !== undefined) {
+        builder = builder.gte(query.gte.column, query.gte.value);
       }
 
       if (query.gt !== undefined) {

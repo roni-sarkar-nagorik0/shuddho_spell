@@ -37,6 +37,7 @@ import { createNotificationsCronHandler } from '@/modules/notifications/presenta
 import { createGetProgramDayHandler } from '@/modules/program/presentation/handlers/get-program-day';
 import { createGetProgramHandler } from '@/modules/program/presentation/handlers/get-program';
 import { createGetMasteryHandler } from '@/modules/progress/presentation/handlers/get-mastery';
+import { createRecordDemoAttemptHandler } from '@/modules/progress/presentation/handlers/record-demo-attempt';
 import { createGetProgressSummaryHandler } from '@/modules/progress/presentation/handlers/get-progress-summary';
 import { createGetDueHandler } from '@/modules/review/presentation/handlers/get-due';
 import { createSubmitReviewAttemptHandler } from '@/modules/review/presentation/handlers/submit-review-attempt';
@@ -62,6 +63,7 @@ import {
   makeRunHourlyNotifications,
   makeUpdateNotificationPreferences,
   makeGetMasterySnapshot,
+  makeRecordDemoAttempt,
   makeGetProgramOverview,
   makeGetProgressSummary,
   makeAutoSubmitAbandonedExams,
@@ -238,4 +240,8 @@ export const setUserRoleHandler = createSetUserRoleHandler(() => makeSetUserRole
 
 export const getDemoWordHandler = createGetDemoWordHandler(() =>
   makeGetDictationDemoWord(container()),
+);
+
+export const recordDemoAttemptHandler = createRecordDemoAttemptHandler(() =>
+  makeRecordDemoAttempt(container()),
 );
