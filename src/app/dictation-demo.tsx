@@ -39,7 +39,8 @@ const demoWordSchema = z
       .object({
         id: z.string(),
         english: z.string(),
-        bangla: z.string(),
+        bangla: z.string().nullable(),
+        note: z.string().nullable(),
       })
       .nullable(),
   })
@@ -511,9 +512,27 @@ export function DictationDemo({ initialWord }: IDictationDemoProps): ReactElemen
                 <Highlighted sentence={word.sentence.english} word={word.text} />
               </p>
 
-              <p className="font-bengali mt-1 text-primary-100" lang="bn">
-                {word.sentence.bangla}
-              </p>
+              {/*
+                Bangla when the sentence has it, the lesson's note when it does
+                not, and nothing when it has neither.
+
+                The two sources genuinely differ: a corpus sentence was authored
+                against a Bangla prompt, a grammar example was authored for a
+                reader already inside the lesson. Printing an empty Bangla line
+                for the second — or worse, translating it here — would be
+                inventing the one thing on this panel nobody reviewed.
+              */}
+              {word.sentence.bangla !== null && (
+                <p className="font-bengali mt-1 text-primary-100" lang="bn">
+                  {word.sentence.bangla}
+                </p>
+              )}
+
+              {word.sentence.bangla === null && word.sentence.note !== null && (
+                <p className="mt-1 text-[11px] text-primary-100">
+                  Notice: {word.sentence.note}
+                </p>
+              )}
             </div>
           )}
 

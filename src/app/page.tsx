@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { type ReactElement } from 'react';
 import { readDictationDemoWord } from '@/composition/reads';
+import { AlphabetFamilies } from './alphabet-families';
 import { AlphabetStrip } from './alphabet-strip';
 import { DictationDemo } from './dictation-demo';
 import { StartCta } from './start-cta';
@@ -22,13 +23,13 @@ import { MILESTONES, SYLLABUS } from './syllabus';
  * control is done: no images, no web fonts beyond the four the whole product
  * already loads, real headings in order, and every table a real table.
  *
- * **Two** client components now, not one: the dictation demo and the alphabet
- * strip. That is a deliberate revision of the budget rather than a slip. Both
- * are the same trade — a marketing page for a *pronunciation* course that can
- * only be read is describing the product instead of being it — and the strip
- * ships 26 rows of text and a click handler, not a library. The two share
- * `useSpeech`, so the second one costs almost nothing the first had not already
- * paid. **Static rendering itself is
+ * **Three** client components now, not one: the dictation demo, the alphabet
+ * strip and the letter families. That is a deliberate revision of the budget
+ * rather than a slip. All three are the same trade — a marketing page for a
+ * *pronunciation* course that can only be read is describing the product
+ * instead of being it — and the two alphabet sections ship 26 rows of text and
+ * a click handler between them, not a library. All three share `useSpeech`, so
+ * the second and third cost almost nothing the first had not already paid. **Static rendering itself is
  * blocked one level up** — the root layout calls `getLocale()` and mounts
  * `SessionBoundary`, both of which read cookies, and a cookie read opts the
  * whole tree into dynamic rendering. That is a Phase 1 and Phase 3 decision, not
@@ -168,6 +169,19 @@ export default async function LandingPage(): Promise<ReactElement> {
         title="The alphabet, out loud"
       >
         <AlphabetStrip />
+      </Section>
+
+      {/*
+        The section above answers "how is this letter said". This one answers
+        the question that costs marks: which letters am I going to confuse with
+        which. It is separate rather than folded in because they are different
+        questions and a visitor asks them at different moments.
+      */}
+      <Section
+        note="Letters do not go wrong one at a time — they go wrong in families. Eight of the twenty-six rhyme on the same vowel, and the whole difference between B and V is one consonant in front of it."
+        title="The ones that sound alike"
+      >
+        <AlphabetFamilies />
       </Section>
 
       <Section

@@ -9,23 +9,36 @@
  * a *learner* takes still gets `IExamQuestionForLearner`, which has no `text`.
  */
 /**
- * One sentence from the corpus that uses the demo's word.
+ * One sentence that uses the demo's word, from whichever source has the fullest
+ * one.
  *
  * A word on its own is the hardest thing there is to hear and the least useful
  * thing to know — the demo's own audio doc says as much. This is the word put
- * back where it lives: the same English sentence the construction stage builds
- * in week one, with the Bangla prompt it was authored against.
+ * back where it lives.
  *
- * **Drawn from `sentence_items`, never composed.** A generated example would be
- * the one thing on this page nobody reviewed, and it would be sitting under a
- * claim about how English is spoken.
+ * **Two sources, never composed.** `sentence_items` is the construction
+ * stage's material and carries the Bangla it was authored against; the grammar
+ * lessons' `examples` carry no Bangla but run nearly twice as long. The use
+ * case takes the longest, with a thumb on the scale for the one that can also
+ * be read in Bangla — see the selection rule there. A generated example would
+ * be the one thing on this page nobody reviewed, sitting under a claim about
+ * how English is spoken.
  */
 export interface IDictationDemoSentence {
   readonly id: string;
   /** The English sentence. Contains the word as a whole word — that is how it was chosen. */
   readonly english: string;
-  /** The Bangla it renders, so the meaning is not guessed from the shape. */
-  readonly bangla: string;
+  /**
+   * The Bangla it renders, so the meaning is not guessed from the shape. Null
+   * when the sentence came from a grammar lesson, which has none — and null is
+   * the honest answer there rather than a translation invented to fill the row.
+   */
+  readonly bangla: string | null;
+  /**
+   * The lesson's own "what to look at", present on some grammar examples and
+   * never on a corpus sentence. It is what stands in for the Bangla line.
+   */
+  readonly note: string | null;
 }
 
 export interface IDictationDemoWord {
@@ -53,11 +66,12 @@ export interface IDictationDemoWord {
   /**
    * The word in use, or `null` when the corpus has no sentence containing it.
    *
-   * Null is common and is not a failure: 560 sentences cannot cover 1,065
-   * demonstrable words, and roughly **47%** of them appear in one. The use case
-   * prefers a word that does — see the probe there — which lifts what a visitor
-   * actually sees to about 19 in 20. The remaining one renders the four facts
-   * and no sentence, rather than a sentence somebody made up to fill the row.
+   * Null is uncommon but real: the two sources together reach **54.5%** of the
+   * 1,065 demonstrable words, up from 46.6% when the corpus was the only one.
+   * The use case prefers a word that is covered — see the probe there — which
+   * lifts what a visitor actually sees to about 19 in 20. The remaining one
+   * renders the four facts and no sentence, rather than a sentence somebody
+   * made up to fill the row.
    */
   readonly sentence: IDictationDemoSentence | null;
   /*

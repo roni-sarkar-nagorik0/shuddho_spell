@@ -74,7 +74,12 @@ const HAND = {
   banglaSound: 'হ্যান্ড',
   banglaMeaning: 'হাত',
   commonError: 'hend',
-  sentence: { id: 's-1', english: 'The book is in my hand.', bangla: 'বইটি আমার হাতে।' },
+  sentence: {
+    id: 's-1',
+    english: 'The book is in my hand.',
+    bangla: 'বইটি আমার হাতে।',
+    note: null,
+  },
 };
 
 const FOOT = { ...HAND, id: 'w-foot', text: 'foot', commonError: 'fut', sentence: null };
@@ -104,6 +109,17 @@ function spell(answer: string): void {
     fireEvent.keyDown(last, { key: 'Enter' });
   }
 }
+
+/** A grammar-lesson example: longer, no Bangla, and a note in its place. */
+const LESSON = {
+  ...HAND,
+  sentence: {
+    id: 'day-4-1-0',
+    english: 'She held the letter in her left hand all morning.',
+    bangla: null,
+    note: 'the whole phrase is one object',
+  },
+};
 
 describe('the dictation demo', () => {
   it('says nothing on its own when the page loads', () => {
@@ -161,6 +177,20 @@ describe('the dictation demo', () => {
     // is the thing being demonstrated.
     fireEvent.click(screen.getByRole('button', { name: 'Play the word' }));
     expect(spoken.at(-1)?.rate).toBeLessThan(sentence?.rate ?? 0);
+  });
+
+  it('shows the lesson’s note when the sentence has no Bangla', async () => {
+    render(<DictationDemo initialWord={LESSON} />);
+    spell('hand');
+
+    expect(await screen.findByText('In a sentence')).toBeTruthy();
+    expect(screen.getByText(/the whole phrase is one object/u)).toBeTruthy();
+
+    // And no empty Bangla line inside that panel pretending there is a
+    // translation. Scoped to the panel: the word's own `banglaSound` is a
+    // `lang="bn"` element too, and it is a different claim.
+    const panel = screen.getByText('In a sentence').closest('div')?.parentElement;
+    expect(panel?.querySelector('[lang="bn"]')).toBeNull();
   });
 
   it('omits the sentence row rather than inventing one', async () => {

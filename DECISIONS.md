@@ -300,3 +300,91 @@ callers before it and there were about to be five; the two on the landing page n
 and `components/lesson/audio-manager.tsx` deliberately does **not** — it queues, reports
 progress and is driven by a lesson's state machine, and merging them would give the marketing
 page a state machine it has no use for.
+
+## 17. A second source for the demo's sentence, because the corpus is short by design
+
+**Context.** §15 shipped the word-in-a-sentence row and it worked, and it was **four words
+long**. That is not a shortcoming of the selection — it is what `sentence_items` *is*. Those
+sentences are the construction stage's material, built by a learner from a word bank, so they
+run to a median of 4 words and a maximum of 9 across all 560. Picking the longest match instead
+of the first moves the mean from 4.16 to **4.46**. There is no length in that table to find.
+
+Four words is enough to show the word has a job. It is not enough to show English doing
+anything — no weak forms, no words running together, no stress pattern worth hearing. Which is
+the entire reason the row exists.
+
+**Decision.** A second source: the grammar lessons' `sections[].examples[]`. Median **7** words,
+maximum 15, 313 usable entries, and the same reviewed content the course teaches from.
+
+It is a **compiled module, not a table**, so `GrammarContentExampleSource` reads it in memory —
+the same pattern `modules/grammar`'s own lesson repository already uses. Both sources are asked
+at once, and the grammar half resolves without leaving the process, so it adds **no round trip
+at all**: the endpoint measured **581 ms** against 566 ms before, inside the noise.
+
+Three kinds of entry are refused, and one of them is the reason this adapter has its own test
+against the real content:
+
+- **`mistakes[].wrong` is never read.** A lesson carries "I am agree" deliberately, to be named
+  and corrected. It is a grammatical-*looking* English sentence that would render perfectly
+  under a heading saying *In a sentence*, and nothing would fail — a visitor would simply be
+  shown broken English by a product selling English precision. The pairs are excluded whole, so
+  no future edit can promote a `wrong` into scope by renaming a field.
+- Fragments (`an MBA, an X-ray, a one-way street`) and two-sentence entries, both of which read
+  as a bug rather than an example.
+- Anything under five words, which would not be longer than what the corpus already offers.
+
+**The selection rule, and what it costs.** A grammar example has **no Bangla** — it was authored
+for a reader already inside the lesson — and inventing one to match the corpus's shape is the
+one thing this must not do. So the two sources are not equal, and "take the longest" is not
+quite right. A grammar example wins only when it is **at least three words longer**:
+
+| margin | mean words | keeps the Bangla line |
+| --- | --- | --- |
+| +0 | 6.09 | 63% |
+| **+3** | **6.00** | **68%** |
+| baseline (§15) | 4.16 | 100% |
+
+Nine hundredths of a word for five points of the line this audience actually reads. Measured
+over all 580 covered words, not guessed. Where there is no Bangla the lesson's own `note` —
+"what to look at" — takes the line instead, and where there is neither, nothing is printed.
+
+Live against the seeded database, 40 draws: **38 with a sentence**, mean **6.21** words, longest
+13, and 24 of the 38 still carrying Bangla. Coverage also rose — the two sources together reach
+**54.5%** of demonstrable words against the corpus's 46.6%.
+
+**Cost.** About 37% of the time the visitor now reads an English-only line where §15 always gave
+them Bangla. That is the trade, it was made deliberately with the numbers above, and it is the
+first thing to revisit if it turns out the Bangla mattered more than the length.
+
+`SENTENCES_PER_CANDIDATE` also went from 4 to 12: you cannot pick the longest of a set you did
+not fetch. Still one indexed read, still one round trip — bytes, not latency.
+
+## 18. The letters that sound alike, as their own section
+
+**Context.** §16's strip answers "how is this letter said". It does not answer the question that
+actually costs a learner marks, which is **which letters am I going to confuse with which**.
+Spelling a name over the phone, reading back a certificate code, taking dictation — none of
+those fail one letter at a time. They fail in families.
+
+**Decision.** A separate section, `The ones that sound alike`, grouping the twenty-six by the
+sound their **name** ends on. Seven families. The headline one is /iː/: **B C D E G P T V** —
+eight names whose entire difference is one consonant in front of the same vowel, three of which
+(**D, T, V**) are sounds Bangla has no equivalent for. Say *V* with the ভ the mouth reaches for
+and it becomes *B*. The name is now a different letter and the word being spelled is a
+different word.
+
+Each family can be heard **as a run** — one utterance with commas, so the engine puts its own
+pauses in. That is the thing a page cannot say in words, and it is how the letters arrive in
+real life.
+
+It is a **new section and the existing strip is untouched**, because they are different
+questions asked at different moments, and folding the second into the first would have made one
+control answer both badly.
+
+**Derived, never typed.** A family is defined by one IPA nucleus, and a letter joins the first
+whose nucleus appears in its `nameIpa` — the same twenty-six entries §16 already renders. The
+order of those nuclei is load-bearing: `eɪ` must be tried before `e` or *H* (/eɪtʃ/) files with
+*F* and *L*, and `uː` before `ə` or *W* (/ˈdʌbəljuː/) leaves *Q* and *U*. Getting it wrong
+renders seven tidy cards, one of which is a lie about how English is spoken — so the tests
+assert completeness (all 26 placed), disjointness (none placed twice) and the two orderings by
+name, and the wrong order was reintroduced to confirm they fail.

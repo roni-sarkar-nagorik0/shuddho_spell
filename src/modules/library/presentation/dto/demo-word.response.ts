@@ -25,7 +25,8 @@ export const demoWordSchema = z
       .object({
         id: z.string(),
         english: z.string(),
-        bangla: z.string(),
+        bangla: z.string().nullable(),
+        note: z.string().nullable(),
       })
       .nullable(),
   })

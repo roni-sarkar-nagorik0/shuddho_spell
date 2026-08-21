@@ -1,4 +1,5 @@
 import { normaliseAnswer } from '@/modules/shared/domain/text/normalise-answer';
+import { usesWord, wordsIn } from '@/modules/shared/domain/text/words-in';
 import { type Difficulty } from '../value-objects/difficulty';
 
 /** Terminal punctuation carries no grammar the construction stage is testing. */
@@ -49,28 +50,21 @@ export class SentenceItem {
    * just spelled "hand" a sentence about a *handle* would be teaching them the
    * wrong word — so the pattern narrows the rows and this decides.
    *
-   * Boundaries are the ASCII letters and the apostrophe, so "don't" is one word
-   * rather than two, and `t` does not match inside it.
+   * The boundary itself lives in `words-in.ts`, shared with the grammar
+   * examples the demo also draws on. Two entities answering this question with
+   * two regexes is how they come to disagree.
    */
   contains(word: string): boolean {
-    const target = normaliseAnswer(word);
-
-    if (target === '') {
-      return false;
-    }
-
-    return this.words().includes(target);
+    return usesWord(this.englishText, word);
   }
 
   /**
-   * The sentence as a list of whole words, lower-cased, punctuation dropped.
-   * The same split `contains` asks and the demo highlights with, so the two can
-   * never disagree about where a word begins.
+   * The sentence as a list of whole words. The same split `contains` asks and
+   * the demo highlights with, so the two can never disagree about where a word
+   * begins.
    */
   words(): readonly string[] {
-    return normaliseAnswer(this.englishText)
-      .split(/[^a-z\u0027]+/u)
-      .filter((token) => token !== '');
+    return wordsIn(this.englishText);
   }
 
   private normalise(value: string): string {

@@ -1,9 +1,13 @@
 import { type IRandomSource } from '@/modules/shared/application/ports/random';
-import { type SentenceItem } from '../../domain/entities/sentence-item';
+import { wordCount } from '@/modules/shared/domain/text/words-in';
+import { type IGrammarExampleSource } from '../../domain/repositories/grammar-example-source';
 import { type Word } from '../../domain/entities/word';
 import { type ISentenceItemRepository } from '../../domain/repositories/sentence-item-repository';
 import { type IWordRepository } from '../../domain/repositories/word-repository';
-import { type IDictationDemoWord } from '../dto/dictation-demo-word';
+import {
+  type IDictationDemoSentence,
+  type IDictationDemoWord,
+} from '../dto/dictation-demo-word';
 
 /**
  * The four weeks the corpus has. Restated rather than derived: a fifth week
@@ -44,12 +48,30 @@ const LONGEST = 9;
 const CANDIDATES = 5;
 
 /**
- * Rows the probe will look at per candidate. `ilike '%hand%'` also returns
+ * Rows the probe reads per candidate.
+ *
+ * Two jobs, and the second is why it is not four. `ilike '%hand%'` also returns
  * *handle* and *beforehand*, so a few are read and `SentenceItem.contains`
- * decides which are really the word. Four is comfortably above the corpus's
- * worst case for a whole-word hit hiding behind substring matches.
+ * decides which are really the word — four was enough for that. But the demo
+ * now wants the **longest** sentence rather than the first one, and you cannot
+ * pick the longest of a set you did not fetch. Twelve rows is still one indexed
+ * read and still one round trip; it is bytes, not latency.
  */
-const SENTENCES_PER_CANDIDATE = 4;
+const SENTENCES_PER_CANDIDATE = 12;
+
+/**
+ * How much longer a grammar example must be before it is taken over a corpus
+ * sentence that also has Bangla.
+ *
+ * The two sources are not equal. A corpus sentence comes with the Bangla it was
+ * authored against, which for the reader this page is written for is worth real
+ * words; a grammar example does not. Taking the longest with no margin at all
+ * gives a mean of **6.09** words and keeps Bangla on 63% of them. A margin of
+ * three gives **6.00** and keeps Bangla on **68%** — nine hundredths of a word
+ * for five points of the thing the audience actually reads. Measured over all
+ * 580 covered words, not guessed.
+ */
+const BANGLA_MARGIN = 3;
 
 /**
  * One word from the real corpus, at random, for a visitor with no account.
@@ -77,6 +99,7 @@ export class GetDictationDemoWordUseCase {
     private readonly words: IWordRepository,
     private readonly random: IRandomSource,
     private readonly sentences: ISentenceItemRepository,
+    private readonly grammarExamples: IGrammarExampleSource,
   ) {}
 
   async execute(): Promise<IDictationDemoWord | null> {
@@ -98,10 +121,7 @@ export class GetDictationDemoWordUseCase {
     const probed = await Promise.all(
       candidates.map(async (candidate) => ({
         word: candidate,
-        sentence: firstUsing(
-          await this.sentences.findContaining(candidate.text, SENTENCES_PER_CANDIDATE),
-          candidate.text,
-        ),
+        sentence: await this.bestExample(candidate.text),
       })),
     );
 
@@ -120,15 +140,58 @@ export class GetDictationDemoWordUseCase {
       banglaSound: chosen.word.banglaSound,
       banglaMeaning: chosen.word.banglaMeaning,
       commonError: chosen.word.commonMisspellings[0] ?? null,
-      sentence:
-        chosen.sentence === null
-          ? null
-          : {
-              id: chosen.sentence.id,
-              english: chosen.sentence.englishText,
-              bangla: chosen.sentence.banglaText,
-            },
+      sentence: chosen.sentence,
     };
+  }
+
+  /**
+   * The fullest sentence either source has for this word.
+   *
+   * Both are asked at once, which costs what the corpus alone cost: the grammar
+   * examples are a compiled module and answer without leaving the process, so
+   * the `Promise.all` resolves on the database round trip that was already
+   * being made.
+   *
+   * Then the longest of each, and the margin between them. Length is the whole
+   * point of having a second source — the corpus runs to four words at the
+   * median and nine at its longest, which is enough to show the word has a job
+   * and not enough to show English doing anything.
+   */
+  private async bestExample(word: string): Promise<IDictationDemoSentence | null> {
+    const [rows, examples] = await Promise.all([
+      this.sentences.findContaining(word, SENTENCES_PER_CANDIDATE),
+      this.grammarExamples.findUsing(word),
+    ]);
+
+    const fromCorpus = longest(
+      rows
+        // The database was asked for a substring and answered with one; this is
+        // where *handle* stops being an example of *hand*.
+        .filter((row) => row.contains(word))
+        .map((row) => ({
+          id: row.id,
+          english: row.englishText,
+          bangla: row.banglaText,
+          note: null,
+        })),
+    );
+
+    const fromLessons = longest(
+      examples.map((example) => ({
+        id: example.id,
+        english: example.english,
+        bangla: null,
+        note: example.note,
+      })),
+    );
+
+    if (fromCorpus === null || fromLessons === null) {
+      return fromCorpus ?? fromLessons;
+    }
+
+    return wordCount(fromLessons.english) >= wordCount(fromCorpus.english) + BANGLA_MARGIN
+      ? fromLessons
+      : fromCorpus;
   }
 
   /**
@@ -175,11 +238,18 @@ function isDemonstrable(word: Word): boolean {
 }
 
 /**
- * The first of these sentences that really uses the word, or null.
+ * The one with the most words, or null for an empty list.
  *
- * The database was asked for a substring and answered with one; this is where
- * *handle* stops being an example of *hand*.
+ * Ties go to the earlier entry, which is arbitrary and fine — two sentences of
+ * equal length are equally good at the job, and picking between them on any
+ * other basis would be inventing a preference.
  */
-function firstUsing(sentences: readonly SentenceItem[], word: string): SentenceItem | null {
-  return sentences.find((sentence) => sentence.contains(word)) ?? null;
+function longest(
+  candidates: readonly IDictationDemoSentence[],
+): IDictationDemoSentence | null {
+  return candidates.reduce<IDictationDemoSentence | null>(
+    (best, candidate) =>
+      best === null || wordCount(candidate.english) > wordCount(best.english) ? candidate : best,
+    null,
+  );
 }

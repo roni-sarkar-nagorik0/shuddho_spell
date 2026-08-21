@@ -20,8 +20,13 @@
  */
 import { describe, expect, it } from 'vitest';
 import { type IRandomSource } from '@/modules/shared/application/ports/random';
+import { usesWord } from '@/modules/shared/domain/text/words-in';
 import { IpaTranscription } from '@/modules/shared/domain/value-objects/ipa-transcription';
 import { SentenceItem } from '../../domain/entities/sentence-item';
+import {
+  type IGrammarExample,
+  type IGrammarExampleSource,
+} from '../../domain/repositories/grammar-example-source';
 import { type ISentenceItemRepository } from '../../domain/repositories/sentence-item-repository';
 import { Word } from '../../domain/entities/word';
 import { type IWordRepository } from '../../domain/repositories/word-repository';
@@ -72,6 +77,7 @@ function build(options: {
   readonly sentences: Readonly<Record<string, readonly SentenceItem[]>>;
   readonly random?: IRandomSource;
   readonly onProbe?: (word: string) => void;
+  readonly lessons?: Readonly<Record<string, readonly IGrammarExample[]>>;
 }): GetDictationDemoWordUseCase {
   const words: IWordRepository = {
     findById: () => Promise.resolve(null),
@@ -91,7 +97,35 @@ function build(options: {
     },
   };
 
-  return new GetDictationDemoWordUseCase(words, options.random ?? scripted([0]), sentences);
+  return new GetDictationDemoWordUseCase(
+    words,
+    options.random ?? scripted([0]),
+    sentences,
+    lessonsOf(options.lessons ?? {}),
+  );
+}
+
+/**
+ * A grammar source backed by a plain map, so a test can say what it holds.
+ *
+ * It filters, because the **port promises whole-word matching** — unlike the
+ * database, a compiled module can do it, and `GrammarContentExampleSource` does.
+ * A fake that skipped the filter would be a fake of a different port, and the
+ * use case would be tested against a contract nothing implements. The rule
+ * itself is asserted where it lives, in the adapter's own test.
+ */
+function lessonsOf(
+  entries: Readonly<Record<string, readonly IGrammarExample[]>>,
+): IGrammarExampleSource {
+  return {
+    findUsing: (word) =>
+      Promise.resolve((entries[word] ?? []).filter((entry) => usesWord(entry.english, word))),
+  };
+}
+
+/** One grammar example, with the note the real ones sometimes carry. */
+function lesson(english: string, note: string | null = null): IGrammarExample {
+  return { id: `day-1-0-0-${english}`, english, note, dayIndex: 1 };
 }
 
 describe('the landing page demo word', () => {
@@ -108,6 +142,61 @@ describe('the landing page demo word', () => {
     expect(result?.text).toBe('hand');
     expect(result?.sentence?.english).toBe('The book is in my hand.');
     expect(result?.sentence?.bangla).toBe('বাংলা বাক্য।');
+  });
+
+  it('takes the longest sentence the corpus has, not the first', async () => {
+    // The whole reason `SENTENCES_PER_CANDIDATE` reads twelve rows rather than
+    // four: four words is enough to show the word has a job and not enough to
+    // show English doing anything.
+    const result = await build({
+      pool: [word('hand')],
+      sentences: {
+        hand: [
+          sentence('Your hand is cold.'),
+          sentence('She held the letter in her left hand all morning.'),
+          sentence('Give me a hand.'),
+        ],
+      },
+    }).execute();
+
+    expect(result?.sentence?.english).toBe('She held the letter in her left hand all morning.');
+  });
+
+  it('takes a grammar example when the corpus has nothing', async () => {
+    const result = await build({
+      pool: [word('hand')],
+      sentences: {},
+      lessons: { hand: [lesson('He wrote the whole letter by hand.', 'by + noun, no article')] },
+    }).execute();
+
+    expect(result?.sentence?.english).toBe('He wrote the whole letter by hand.');
+    // No Bangla, and none invented — the note stands in its place.
+    expect(result?.sentence?.bangla).toBeNull();
+    expect(result?.sentence?.note).toBe('by + noun, no article');
+  });
+
+  it('keeps the Bangla sentence when the grammar one is barely longer', async () => {
+    // Six words against five. Two words of English are not worth the line the
+    // reader this page is written for actually reads.
+    const result = await build({
+      pool: [word('hand')],
+      sentences: { hand: [sentence('The book is in my hand.')] },
+      lessons: { hand: [lesson('She held it in her hand.')] },
+    }).execute();
+
+    expect(result?.sentence?.english).toBe('The book is in my hand.');
+    expect(result?.sentence?.bangla).toBe('বাংলা বাক্য।');
+  });
+
+  it('gives up the Bangla when the grammar one is substantially longer', async () => {
+    const result = await build({
+      pool: [word('hand')],
+      sentences: { hand: [sentence('The book is in my hand.')] },
+      lessons: { hand: [lesson('She held the letter in her left hand all morning.')] },
+    }).execute();
+
+    expect(result?.sentence?.english).toBe('She held the letter in her left hand all morning.');
+    expect(result?.sentence?.bangla).toBeNull();
   });
 
   it('refuses a sentence that only contains the word inside a longer one', async () => {
@@ -208,7 +297,12 @@ describe('the landing page demo word', () => {
       },
     };
 
-    const running = new GetDictationDemoWordUseCase(words, scripted([0]), sentences).execute();
+    const running = new GetDictationDemoWordUseCase(
+      words,
+      scripted([0]),
+      sentences,
+      lessonsOf({}),
+    ).execute();
 
     // A full turn of the event loop, so the pool read and the probes that
     // follow it have all had their chance to start. Nothing has been released:

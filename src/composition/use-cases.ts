@@ -490,7 +490,7 @@ export function makeRunHourlyNotifications(c: IContainer): RunHourlyNotification
  * nothing that knows who is asking, because nobody is.
  */
 export function makeGetDictationDemoWord(c: IContainer): GetDictationDemoWordUseCase {
-  return new GetDictationDemoWordUseCase(c.words, c.random, c.sentenceItems);
+  return new GetDictationDemoWordUseCase(c.words, c.random, c.sentenceItems, c.grammarExamples);
 }
 
 /**

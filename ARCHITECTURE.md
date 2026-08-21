@@ -1101,8 +1101,8 @@ each `<State>` is already one story.
 **D67 — the landing page cannot be statically rendered, and the reason is upstream (F12.10).**
 `13-frontend.md` asks for `/` to be a statically rendered Server Component scoring ≥95
 Lighthouse performance. The page itself does everything it can: no images, no web fonts beyond
-the four the product already loads, two client components (the dictation demo and the alphabet
-strip, which share one `useSpeech` — see D15/D16), and its syllabus and alphabet are generated
+the four the product already loads, three client components (the dictation demo, the alphabet
+strip and the letter families, all three sharing one `useSpeech` — see D15–D18), and its syllabus and alphabet are generated
 into `src/app/syllabus.ts` and `src/app/alphabet.ts` at authoring time rather than imported from
 `content/`. **Static rendering is prevented one level
 up**: `src/app/layout.tsx` calls `getLocale()` (a cookie read, from F1's `next-intl` wiring) and
