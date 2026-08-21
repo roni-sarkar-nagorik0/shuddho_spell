@@ -16,6 +16,8 @@
  * this is both halves: the server runtimes here, and the browser through
  * `onRequestError` plus the client config below.
  */
+
+
 export async function register(): Promise<void> {
   const { serverEnv } = await import('@/lib/env.server');
 
