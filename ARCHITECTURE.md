@@ -105,7 +105,7 @@ ShuddhoSpell/
   .env.local                         user-owned, never read, never committed
   package.json                       ONE package.json. No monorepo. No apps/.
   next.config.ts  tailwind.config.ts  tsconfig.json  eslint.config.js
-  vitest.config.ts  playwright.config.ts  middleware.ts
+  vitest.config.ts  playwright.config.ts  proxy.ts  vercel.json
 
   content/                           typed course content, Zod-validated at build time
     phonemes.ts                      44 entries

@@ -87,7 +87,7 @@ describe('the three ways in, and only three', () => {
     'src/lib/auth/current-user.ts',
     // And the middleware, which refreshes the session rather than reading an
     // identity out of it — the only other place allowed to ask.
-    'src/middleware.ts',
+    'src/proxy.ts',
   ];
 
   function sourceFiles(directory: string): readonly string[] {
