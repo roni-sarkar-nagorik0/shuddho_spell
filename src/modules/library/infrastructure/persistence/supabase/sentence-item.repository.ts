@@ -26,6 +26,29 @@ export class SupabaseSentenceItemRepository implements ISentenceItemRepository {
     );
   }
 
+  /**
+   * `%` and `_` are stripped rather than escaped, exactly as the word
+   * repository's search does. Both are wildcards in `like`, neither appears in
+   * a word this is ever called with, and stripping keeps the two search paths
+   * reading the same way.
+   */
+  async findContaining(word: string, limit: number): Promise<readonly SentenceItem[]> {
+    const term = word.replace(/[%_]/gu, '');
+
+    if (term === '') {
+      return [];
+    }
+
+    return toSentenceItems(
+      await this.db.select({
+        table: 'sentence_items',
+        columns: SENTENCE_ITEM_COLUMNS,
+        ilike: { column: 'english_text', pattern: `%${term}%` },
+        limit,
+      }),
+    );
+  }
+
   async listAll(limit: number): Promise<readonly SentenceItem[]> {
     return toSentenceItems(
       await this.db.select({

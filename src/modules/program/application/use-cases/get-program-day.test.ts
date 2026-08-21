@@ -94,6 +94,7 @@ function build(options: {
     findById: () => Promise.resolve(null),
     findByIds: () => Promise.resolve([SENTENCE]),
     listAll: () => Promise.resolve([]),
+    findContaining: () => Promise.reject(new Error('only the landing page demo looks a word up')),
   };
 
   const rules: IRuleFamilyRepository = {
@@ -158,7 +159,12 @@ describe('GetProgramDayUseCase', () => {
         findUpToWeek: () => Promise.resolve([]),
         search: () => Promise.resolve([]),
       },
-      { findById: () => Promise.resolve(null), findByIds: () => Promise.resolve([]), listAll: () => Promise.resolve([]) },
+      {
+        findById: () => Promise.resolve(null),
+        findByIds: () => Promise.resolve([]),
+        listAll: () => Promise.resolve([]),
+        findContaining: () => Promise.resolve([]),
+      },
       { findByIds: () => Promise.resolve([]), listAll: () => Promise.resolve([]) },
     );
 

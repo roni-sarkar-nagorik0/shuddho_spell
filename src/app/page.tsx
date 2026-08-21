@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { type ReactElement } from 'react';
 import { readDictationDemoWord } from '@/composition/reads';
+import { AlphabetStrip } from './alphabet-strip';
 import { DictationDemo } from './dictation-demo';
 import { StartCta } from './start-cta';
 import { MILESTONES, SYLLABUS } from './syllabus';
@@ -18,9 +19,16 @@ import { MILESTONES, SYLLABUS } from './syllabus';
  *
  * `13-frontend.md` asks for it to be statically rendered and score ≥95
  * Lighthouse performance and 100 accessibility. What is under this file's
- * control is done: no client JavaScript except the dictation demo, no
- * images, no web fonts beyond the four the whole product already loads, real
- * headings in order, and every table a real table. **Static rendering itself is
+ * control is done: no images, no web fonts beyond the four the whole product
+ * already loads, real headings in order, and every table a real table.
+ *
+ * **Two** client components now, not one: the dictation demo and the alphabet
+ * strip. That is a deliberate revision of the budget rather than a slip. Both
+ * are the same trade — a marketing page for a *pronunciation* course that can
+ * only be read is describing the product instead of being it — and the strip
+ * ships 26 rows of text and a click handler, not a library. The two share
+ * `useSpeech`, so the second one costs almost nothing the first had not already
+ * paid. **Static rendering itself is
  * blocked one level up** — the root layout calls `getLocale()` and mounts
  * `SessionBoundary`, both of which read cookies, and a cookie read opts the
  * whole tree into dynamic rendering. That is a Phase 1 and Phase 3 decision, not
@@ -147,6 +155,20 @@ export default async function LandingPage(): Promise<ReactElement> {
           </div>
         </div>
       </section>
+
+      {/*
+        Before the table of what goes wrong, the thing every visitor can already
+        do. It is deliberately the first section under the hero: somebody who
+        did not try the demo — because they arrived on a phone, or the tiles
+        looked like work — will press a letter, and pressing a letter is the
+        whole product in one second.
+      */}
+      <Section
+        note="Press one. Six of them spell a sound Bangla does not have, and those six are where a Bengali accent is heard first — in the letters themselves, before any word is reached."
+        title="The alphabet, out loud"
+      >
+        <AlphabetStrip />
+      </Section>
 
       <Section
         note="Eight of them, with the reason. None of these is a careless slip — each one is a sound or a rule English has and Bangla does not."

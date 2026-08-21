@@ -1,12 +1,25 @@
 'use client';
 
-import { useCallback, useEffect, useState, type ReactElement, type ReactNode } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type ReactElement,
+  type ReactNode,
+} from 'react';
 import { z } from 'zod';
 import { Glyph } from '@/components/icons/glyph';
 import { LetterTiles } from '@/components/lesson/letter-tiles';
 import { apiFetch } from '@/lib/api/client';
 import { useSession } from '@/lib/auth/session-context';
-import { DICTATION_RATE, DICTATION_SLOW_RATE, preferredVoice } from '@/lib/audio/voices';
+import {
+  DICTATION_RATE,
+  DICTATION_SLOW_RATE,
+  SENTENCE_RATE,
+  SENTENCE_SLOW_RATE,
+} from '@/lib/audio/voices';
+import { useSpeech } from '@/lib/audio/use-speech';
 
 /**
  * The client's view of `GET /api/v1/demo/word`, mirroring
@@ -22,6 +35,13 @@ const demoWordSchema = z
     banglaSound: z.string(),
     banglaMeaning: z.string(),
     commonError: z.string().nullable(),
+    sentence: z
+      .object({
+        id: z.string(),
+        english: z.string(),
+        bangla: z.string(),
+      })
+      .nullable(),
   })
   .nullable();
 
@@ -104,45 +124,25 @@ export function DictationDemo({ initialWord }: IDictationDemoProps): ReactElemen
   const [revealed, setRevealed] = useState(false);
   const [round, setRound] = useState(0);
   const [loading, setLoading] = useState(false);
-  const [supported, setSupported] = useState(true);
+  const { supported, say: speak } = useSpeech();
+  /**
+   * How many words this panel has served. It is in the tiles' `resetKey` so
+   * that drawing the *same* word twice in a row still counts as a new question:
+   * without it the key would be identical, `LetterTiles` would not re-run its
+   * reset effect, and the visitor would be looking at a fresh word with the old
+   * word's letters still in the boxes and focus nowhere.
+   */
+  const [served, setServed] = useState(0);
+  const nextButton = useRef<HTMLButtonElement | null>(null);
   const user = useSession();
 
-  useEffect(() => {
-    setSupported(typeof window !== 'undefined' && 'speechSynthesis' in window);
-
-    return () => {
-      // Navigating away must not leave a voice talking over the next page.
-      if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
-        window.speechSynthesis.cancel();
-      }
-    };
-  }, []);
-
-  const say = useCallback((text: string, rate: number) => {
-    if (typeof window === 'undefined' || !('speechSynthesis' in window)) {
-      return;
-    }
-
-    // Cancel before speak, unconditionally — the same rule the lesson's audio
-    // manager holds, and for the same reason: the check is the bug.
-    window.speechSynthesis.cancel();
-
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = DEMO_LANG;
-    utterance.rate = rate;
-
-    // The ranked voice, not the browser's default for the tag — the default is
-    // the small offline one, which is the least intelligible on the device.
-    // Read at call time: by the first click the engine has finished loading
-    // even when it had not at mount.
-    const voice = preferredVoice(window.speechSynthesis.getVoices(), DEMO_LANG);
-
-    if (voice !== null) {
-      utterance.voice = voice;
-    }
-
-    window.speechSynthesis.speak(utterance);
-  }, []);
+  /** The demo's own signature — every caller here is British English. */
+  const say = useCallback(
+    (text: string, rate: number) => {
+      speak(text, rate, DEMO_LANG);
+    },
+    [speak],
+  );
 
   /**
    * Writes the attempt down — but only for somebody signed in.
@@ -191,6 +191,25 @@ export function DictationDemo({ initialWord }: IDictationDemoProps): ReactElemen
         setRevealed(false);
         setRound(0);
         setWord(fetched);
+        setServed((current) => current + 1);
+
+        // Say it, unasked.
+        //
+        // A dictation exercise that opens in silence asks the visitor to press
+        // play before anything can happen, and that press carries no
+        // information — there is only one thing to listen to. Saying it on
+        // arrival makes the loop *hear, type, hear, type* instead of *click,
+        // hear, type, click, hear, type*.
+        //
+        // Only on a word the visitor asked for. The word already on screen when
+        // the page loads is **not** spoken: a page that talks the moment it
+        // renders is the behaviour every browser's autoplay policy exists to
+        // stop, and the visitor has not agreed to make a noise yet. Here they
+        // have — this runs off their click on *Next word*, which is the user
+        // gesture the speech engine wants.
+        if (fetched !== null) {
+          say(fetched.text, DICTATION_RATE);
+        }
       })
       // The word on screen stays. A demo that blanked itself because one fetch
       // failed would look broken; one that keeps the word the visitor is
@@ -199,7 +218,39 @@ export function DictationDemo({ initialWord }: IDictationDemoProps): ReactElemen
       .finally(() => {
         setLoading(false);
       });
-  }, []);
+  }, [say]);
+
+  /**
+   * Computed here rather than below the early return because the effect under
+   * it is a hook, and a hook cannot live after a `return`. React's rule, and
+   * the reason this reads slightly out of order.
+   */
+  const correct =
+    word !== null && attempt !== null && attempt.toLowerCase() === word.text.toLowerCase();
+
+  /**
+   * Enter, twice in a row, without touching the mouse.
+   *
+   * Enter submits from any tile — `LetterTiles` has always done that — and the
+   * moment it is right the tiles go dead, so the visitor's hands are on the
+   * keyboard and the keyboard does nothing. Moving focus to *Next word* is the
+   * whole fix, and it is worth noticing what it is **not**: no key handler, no
+   * listener on `window`, no interpretation of Enter anywhere. A focused
+   * `<button>` is activated by Enter because that is what a button is.
+   *
+   * So it is also correct for a screen reader — focus lands on the control that
+   * says "Next word", which announces the state change rather than leaving a
+   * blind visitor on a disabled input wondering what happened.
+   *
+   * Only on `correct`. A revealed word leaves the tiles live on purpose — being
+   * shown the spelling is the moment typing it is worth most — and stealing
+   * focus to a button there would take that away.
+   */
+  useEffect(() => {
+    if (correct) {
+      nextButton.current?.focus();
+    }
+  }, [correct]);
 
   if (word === null) {
     return (
@@ -212,7 +263,13 @@ export function DictationDemo({ initialWord }: IDictationDemoProps): ReactElemen
     );
   }
 
-  const correct = attempt !== null && attempt.toLowerCase() === word.text.toLowerCase();
+  /**
+   * What the sentence buttons actually speak. Empty when there is no sentence,
+   * and the buttons are not rendered in that case — but the constant is read
+   * unconditionally, so it may not be `null`.
+   */
+  const sentenceText = word.sentence?.english ?? '';
+
   const marks =
     attempt === null
       ? null
@@ -288,7 +345,7 @@ export function DictationDemo({ initialWord }: IDictationDemoProps): ReactElemen
             setTries((current) => current + 1);
             record(value);
           }}
-          resetKey={`${word.text}-${String(round)}`}
+          resetKey={`${word.text}-${String(served)}-${String(round)}`}
         />
       </div>
 
@@ -404,15 +461,84 @@ export function DictationDemo({ initialWord }: IDictationDemoProps): ReactElemen
             )}
           </dl>
 
+          {/*
+            The word put back where it lives.
+
+            A word said on its own is not how anybody will ever hear it. English
+            runs its words together, weakens the small ones and lands the stress
+            on one syllable in six, and none of that exists in a single word
+            played at 0.85. This is the same word inside a real sentence at
+            speaking speed — which is the accent the course is actually about.
+
+            It is a sentence from `sentence_items`, the ones the construction
+            stage builds, not one composed for the panel. There is no sentence
+            for every word and this row is simply absent when there is none;
+            inventing English to fill a gap on a page selling English precision
+            would be the worst possible place to do it.
+          */}
+          {word.sentence !== null && (
+            <div className="rounded-control border border-primary-700 bg-primary-900/40 p-3">
+              <div className="flex flex-wrap items-center gap-2">
+                <p className="label text-primary-100">In a sentence</p>
+
+                {supported && (
+                  <>
+                    <button
+                      aria-label="Play the sentence"
+                      className="flex h-7 w-7 items-center justify-center rounded-full border border-primary-100 text-primary-100"
+                      onClick={() => {
+                        say(sentenceText, SENTENCE_RATE);
+                      }}
+                      type="button"
+                    >
+                      <Glyph name="play" size={12} />
+                    </button>
+
+                    <button
+                      className="h-7 rounded-control border border-primary-100 px-2 text-[11px] text-primary-100"
+                      onClick={() => {
+                        say(sentenceText, SENTENCE_SLOW_RATE);
+                      }}
+                      type="button"
+                    >
+                      Slower
+                    </button>
+                  </>
+                )}
+              </div>
+
+              <p className="mt-2 text-surface">
+                <Highlighted sentence={word.sentence.english} word={word.text} />
+              </p>
+
+              <p className="font-bengali mt-1 text-primary-100" lang="bn">
+                {word.sentence.bangla}
+              </p>
+            </div>
+          )}
+
           <div>
             <button
               className="h-9 rounded-control bg-secondary-500 px-4 text-primary-900 disabled:opacity-60"
               disabled={loading}
               onClick={nextWord}
+              ref={nextButton}
               type="button"
             >
               {loading ? 'Finding one…' : 'Next word'}
             </button>
+
+            {/*
+              Said only once it is true. Before the answer is right the tiles
+              have focus and Enter submits; after it, focus is on the button
+              above and Enter draws the next word. Printing both rules at once
+              would be describing a keyboard the visitor does not have yet.
+            */}
+            {correct && (
+              <p className="mt-2 text-[11px] text-primary-100">
+                Press Enter for the next word — it plays on its own.
+              </p>
+            )}
           </div>
         </div>
       )}
@@ -456,5 +582,41 @@ function Fact({
       <dt className="label w-28 shrink-0">{label}</dt>
       <dd>{children}</dd>
     </div>
+  );
+}
+
+/**
+ * The sentence with the word the visitor just spelled picked out.
+ *
+ * Whole words, not a substring replace: a naive `split(word)` would break
+ * *shorthand* in half to highlight *hand*, and the visitor would be shown a
+ * word that is not the word. The split keeps its separators so punctuation and
+ * spacing survive exactly as authored — a sentence reassembled from tokens
+ * would quietly lose its full stop.
+ *
+ * The comparison is case-insensitive because the word may open the sentence,
+ * and `The` is still `the`.
+ */
+function Highlighted({
+  sentence,
+  word,
+}: {
+  readonly sentence: string;
+  readonly word: string;
+}): ReactElement {
+  const target = word.toLowerCase();
+
+  return (
+    <>
+      {sentence.split(/([^A-Za-z\u0027]+)/u).map((piece, index) =>
+        piece.toLowerCase() === target ? (
+          <strong className="font-semibold text-mastered" key={`${piece}-${String(index)}`}>
+            {piece}
+          </strong>
+        ) : (
+          <span key={`${piece}-${String(index)}`}>{piece}</span>
+        ),
+      )}
+    </>
   );
 }

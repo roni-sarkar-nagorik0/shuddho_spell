@@ -94,3 +94,20 @@ export const DICTATION_RATE = 0.85;
 
 /** The second press, for a listener who did not catch it. As slow as is useful. */
 export const DICTATION_SLOW_RATE = 0.6;
+
+/**
+ * How fast to say **a whole sentence**.
+ *
+ * `1.00`, which is the product's `playback_rate` default and is deliberately
+ * *not* the dictation rate. The two exist for opposite reasons: a lone word is
+ * slowed because there is no context to recover a missed consonant from, and a
+ * sentence must **not** be slowed because the context is the thing being
+ * demonstrated. English rhythm — the weak forms, the words that run together,
+ * the stress that lands on one syllable in six — only exists at speaking speed.
+ * Play a sentence at 0.85 and every syllable gets equal weight, which is
+ * precisely the accent a Bengali speaker is here to lose.
+ */
+export const SENTENCE_RATE = 1;
+
+/** The second press for a sentence. Slower, but still a sentence rather than a list of words. */
+export const SENTENCE_SLOW_RATE = 0.75;

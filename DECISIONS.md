@@ -224,3 +224,79 @@ day.
 Next 16 also builds with Turbopack by default, which is why the Edge-runtime warning D24
 describes no longer appears in the build output. D24's reasoning is unchanged; only the warning
 is gone.
+
+## 15. The demo answers back: a sentence, an auto-play, and Enter
+
+**Context.** The panel worked and stopped there. A visitor who spelled a word right was left
+with four labelled facts, dead tiles and a mouse-only *Next word* — and the word they had just
+learnt was a word they had only ever heard alone, at 0.85, with nothing around it. English
+rhythm does not exist in a single word. Neither does the accent the course is about.
+
+**Decision.** Three changes, all on the same panel.
+
+*The word in a sentence.* `IDictationDemoWord` now carries an optional
+`{ id, english, bangla }` drawn from `sentence_items` — the same sentences the construction
+stage builds, never composed for the page. It plays at **1.00**, not the dictation rate, and
+that difference is the point: a lone word is slowed because there is no context to recover a
+missed consonant from, and a sentence must not be, because the context is the thing being
+demonstrated.
+
+*It plays itself.* A word the visitor asked for speaks on arrival. The word the page **loaded
+with** does not — a page that talks the moment it renders is what every autoplay policy exists
+to stop, and the visitor has not agreed to make a noise yet. The auto-play runs off their click
+on *Next word*, which is the user gesture the speech engine wants.
+
+*Enter, twice.* Getting a word right moves focus to *Next word*. There is no key handler
+anywhere — a focused `<button>` is activated by Enter because that is what a button is — and
+the same move is what makes the state change audible to a screen reader.
+
+**How the sentence is found, and what it costs.** Postgres can be asked for
+`english_text ilike '%hand%'` and nothing more precise, so it also answers with *handle*,
+*shorthand* and *beforehand*. `SentenceItem.contains` is what throws those away; without it the
+panel keeps working and simply teaches the wrong word, which is the worst kind of regression.
+
+The corpus has 560 sentences against 1,065 demonstrable words, and **496 of those words — 46.6%
+— appear in one**. One candidate would therefore leave the row empty about half the time, so
+the use case draws **five** and probes them **together**: `0.534^5 ≈ 4%` miss, measured at
+**28 of 30** against the seeded database. Five sequential probes would have cost five round
+trips; issued at once they cost one, and a test asserts the overlap rather than trusting the
+shape of the code.
+
+**Cost.** `/api/v1/demo/word` went from a **433 ms** median to **566 ms** — one round trip,
+measured locally against the real database with the probe removed and restored. The landing
+page itself is unaffected: `readDictationDemoWord` is still behind `unstable_cache`.
+
+The other cost is honest and worth stating: **the pool is no longer uniform.** A word that
+appears in a sentence is now more likely to be shown than one that does not. For a demo whose
+whole job is to show the exercise working that is the right bias, but it is a bias, and it is
+recorded in the DTO as well as here.
+
+## 16. The alphabet on the landing page, and a second client component
+
+**Context.** Under the hero the page opened on a table of eight misspellings. That is a fair
+description of the problem and a poor invitation — there is nothing to do, and a visitor could
+learn what the course is about without ever hearing it. A visitor who arrived on a phone, or
+who read the dictation tiles as work, met a page about pronunciation that could only be read.
+
+**Decision.** Twenty-six letters they can press, as the first section under the hero. Each says
+itself in the reference accent and opens one panel: the letter's **name** in IPA, that name in
+Bangla script, and the sound it spells — kept apart deliberately, because *H* is called /eɪtʃ/
+and spells /h/, and a learner who cannot tell those apart writes *aitch*.
+
+Six of the twenty-six are marked. They are exactly the letters whose characteristic sound
+Bangla has no equivalent for — t, d, v, z, r, w — and what a Bengali speaker produces instead
+is **quoted verbatim from `content/phonemes.ts`**, the reviewed forty-four that migration
+`010_seed_reference` seeds. Nothing about phonology is written on the marketing page. The count
+in the prose is derived from the data rather than typed beside it, and a test asserts they
+still agree.
+
+**Cost.** `src/app/page.tsx` said "no client JavaScript except the dictation demo". There are
+now two, which is a deliberate revision of that budget rather than a slip: the strip ships 26
+rows of text and a click handler, not a library, and it shares `useSpeech` with the demo, so
+the second one costs almost nothing the first had not already paid.
+
+`useSpeech` itself is the other half of this. There were four hand-rolled `speechSynthesis`
+callers before it and there were about to be five; the two on the landing page now share one,
+and `components/lesson/audio-manager.tsx` deliberately does **not** — it queues, reports
+progress and is driven by a lesson's state machine, and merging them would give the marketing
+page a state machine it has no use for.
