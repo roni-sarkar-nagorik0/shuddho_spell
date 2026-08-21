@@ -23,6 +23,10 @@ const FALLBACK_DISPLAY_NAME = 'Learner';
  * reconciler on top of the trigger, and that is exactly the relationship —
  * running it a hundred times leaves one profile.
  *
+ * It is also where the profile's copy of the address is kept current: 020 added
+ * `email` to the table for the admin roster, and this use case is the only code
+ * that sees a verified session's address on every single sign-in.
+ *
  * What it owns that the repository cannot is the display name. A profile's
  * `display_name` is `not null` with a non-blank check, so "Google sent nothing
  * useful" has to resolve to *something* before the insert, and the same
@@ -33,14 +37,24 @@ export class BootstrapProfileUseCase {
   constructor(private readonly profiles: ILearnerProfileRepository) {}
 
   async execute(input: IBootstrapProfileInput): Promise<LearnerProfile> {
+    const email = input.email ?? null;
     const existing = await this.profiles.findByUserId(input.userId);
+
     if (existing !== null) {
-      return existing;
+      // The address, refreshed. 020 keeps a copy of it on the profile so the
+      // admin roster can name people it holds no session for, and a copy is
+      // only worth having if something rewrites it — this is that something,
+      // and it runs on every sign-in. `withEmail` returns the same instance
+      // when nothing changed, so the ordinary case is still a single read.
+      const refreshed = existing.withEmail(email);
+
+      return refreshed === existing ? existing : this.profiles.save(refreshed);
     }
 
     return this.profiles.insertIfAbsent({
       userId: input.userId,
       displayName: resolveDisplayName(input),
+      email,
     });
   }
 }

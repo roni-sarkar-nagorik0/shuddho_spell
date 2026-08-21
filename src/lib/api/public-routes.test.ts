@@ -40,6 +40,12 @@ const PUBLIC_ROUTES: readonly string[] = [
   // grants `select` on `certificate_verifications` to `anon` for the same
   // reason. Rate-limited, and it returns only the public view's fields.
   'src/app/api/v1/certificates/verify/[code]/route.ts',
+  // The landing page's dictation demo. "Try it — no account needed" is the
+  // promise on the panel, and an endpoint behind a session would make it a
+  // lie. It answers with **one** word per request — no cursor, no filter, no
+  // count — so it demonstrates the corpus without publishing it. Rate-limited
+  // by address, because there is no learner id to charge it to.
+  'src/app/api/v1/demo/word/route.ts',
 ];
 
 function routeFiles(directory: string): readonly string[] {

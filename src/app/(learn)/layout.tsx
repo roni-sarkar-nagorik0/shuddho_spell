@@ -2,7 +2,7 @@ import { cookies } from 'next/headers';
 import { type ReactElement, type ReactNode } from 'react';
 import { AppShell } from '@/components/shell/app-shell';
 import { isCollapsedCookie, SIDEBAR_COOKIE } from '@/components/shell/sidebar-preference';
-import { readLearnerDashboard } from '@/composition/reads';
+import { readIsAdmin, readLearnerDashboard } from '@/composition/reads';
 import { requireUser } from '@/lib/auth/current-user';
 
 /**
@@ -24,12 +24,17 @@ export default async function LearnLayout({
   readonly children: ReactNode;
 }): Promise<ReactElement> {
   const user = await requireUser();
-  const [store, dashboard] = await Promise.all([cookies(), readLearnerDashboard(user.userId)]);
+  const [store, dashboard, isAdmin] = await Promise.all([
+    cookies(),
+    readLearnerDashboard(user.userId),
+    readIsAdmin(user.userId),
+  ]);
 
   return (
     <AppShell
       displayName={dashboard.displayName}
       initialCollapsed={isCollapsedCookie(store.get(SIDEBAR_COOKIE)?.value)}
+      isAdmin={isAdmin}
       streakDays={dashboard.streakIsAlive ? dashboard.currentStreak : 0}
     >
       {children}

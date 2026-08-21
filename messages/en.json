@@ -33,7 +33,10 @@
     "progress": "Progress",
     "exams": "Exams",
     "collapse": "Collapse",
-    "expand": "Expand"
+    "expand": "Expand",
+    "admin": "Admin",
+    "myWords": "My words",
+    "grammar": "Grammar"
   },
   "dashboard": {
     "dayOf": "Day {day} of {total}",
@@ -68,6 +71,7 @@
   "shell": {
     "session": "Session",
     "streak": "Streak",
-    "signedInAs": "Signed in as {name}"
+    "signedInAs": "Signed in as {name}",
+    "signOut": "Sign out"
   }
 }

@@ -73,6 +73,15 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
 export const config = {
   matcher: [
     // Every path except Next's own internals, static assets and /api.
-    '/((?!api/|_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|woff2?)$).*)',
+    //
+    // `manifest.webmanifest` and `sw.js` are named the same way `favicon.ico`
+    // already is, and for a sharper reason than tidiness: neither ends in an
+    // extension the list below covers, so both were being treated as pages and
+    // redirected to `/login` for anyone without a session. A browser fetching
+    // a service worker and receiving an HTML login page does not follow the
+    // redirect — it refuses the registration outright, because the response is
+    // not JavaScript. The manifest fails the same way, quietly, and an install
+    // prompt that never appears is not an error anybody sees.
+    '/((?!api/|_next/static|_next/image|favicon.ico|manifest.webmanifest|sw.js|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|woff2?)$).*)',
   ],
 };

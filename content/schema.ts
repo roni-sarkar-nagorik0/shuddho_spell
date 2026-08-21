@@ -233,3 +233,74 @@ export const weekSchema = z
   });
 
 export type WeekEntry = z.infer<typeof weekSchema>;
+
+/**
+ * One weighted section of an exam — a row of `exam_sections`.
+ *
+ * The codes are 004's `exam_sections_code_check`, underscored, because the
+ * database spelling wins everywhere inside the app.
+ */
+export const examSectionSchema = z.object({
+  code: z.enum(['dictation', 'pronunciation', 'grammar_and_construction', 'reading_to_writing']),
+  weight: z.number().positive().max(100),
+  orderIndex: z.number().int().min(0),
+  questionCount: z.number().int().positive(),
+});
+
+export type ExamSectionEntry = z.infer<typeof examSectionSchema>;
+
+/**
+ * One of the five exams — a row of `exam_definitions` plus its sections.
+ *
+ * Three rules that 004 cannot express, all of them per-definition invariants
+ * across several values:
+ *
+ * - **The four weights total 100.** `ExamDefinition` throws on a graded exam
+ *   that does not, but by then the row is already in the database and every
+ *   attempt scored against it was scored low. A definition totalling 95 is a
+ *   content error, so it belongs to the build.
+ * - **The section counts total the paper.** `ExamBlueprintService` draws
+ *   `section.questionCount` questions per section and never consults
+ *   `questionCount`, so a mismatch means the lobby advertises a number of
+ *   questions the exam does not ask.
+ * - **Grading is all or nothing.** 004's `exam_definitions_grading_complete`
+ *   in schema form: a pass mark with no attempt limit is what lets an
+ *   unlimited retake through.
+ */
+export const examDefinitionSchema = z
+  .object({
+    code: z.enum(['diagnostic', 'milestone1', 'milestone2', 'milestone3', 'final']),
+    title: z.string().min(1),
+    durationSeconds: z.number().int().positive(),
+    questionCount: z.number().int().positive(),
+    passPercent: z.number().min(0).max(100).nullable(),
+    maxAttempts: z.number().int().positive().nullable(),
+    cooldownHours: z.number().int().min(0).nullable(),
+    unlockDayStandard: z.number().int().min(0).max(28),
+    unlockDaySprint: z.number().int().min(0).max(21),
+    sections: z.array(examSectionSchema).length(4),
+  })
+  .refine((exam) => exam.sections.reduce((sum, section) => sum + section.weight, 0) === 100, {
+    message: 'section weights must total exactly 100',
+    path: ['sections'],
+  })
+  .refine(
+    (exam) =>
+      exam.sections.reduce((sum, section) => sum + section.questionCount, 0) === exam.questionCount,
+    {
+      message: 'section question counts must total the exam’s questionCount',
+      path: ['sections'],
+    },
+  )
+  .refine(
+    (exam) =>
+      [exam.passPercent, exam.maxAttempts, exam.cooldownHours].every((value) => value === null) ||
+      [exam.passPercent, exam.maxAttempts, exam.cooldownHours].every((value) => value !== null),
+    {
+      message:
+        'a graded exam has a pass mark, an attempt limit and a cooldown, or it is ungraded and has none',
+      path: ['passPercent'],
+    },
+  );
+
+export type ExamDefinitionEntry = z.infer<typeof examDefinitionSchema>;

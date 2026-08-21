@@ -151,7 +151,12 @@ export function LetterTiles({
             autoCorrect="off"
             className={cn(
               'h-11 w-9 rounded-control border text-center font-mono text-lg uppercase',
-              mark === null ? 'border-hairline bg-surface' : MARK_CLASSES[mark],
+              // `text-primary-900` is not decoration. Without a colour of its
+              // own the tile inherits one, and on the landing page's dark hero
+              // that meant white letters on a white tile — a visitor typing
+              // into boxes that stayed empty. A control this small must not
+              // depend on what colour the surface around it happens to be.
+              mark === null ? 'border-hairline bg-surface text-primary-900' : MARK_CLASSES[mark],
               disabled && 'bg-neutral-100 text-muted',
             )}
             disabled={disabled}

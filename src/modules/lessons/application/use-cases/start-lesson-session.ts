@@ -2,6 +2,7 @@ import { ProfileNotFoundError } from '@/modules/auth/domain/errors/profile-not-f
 import { type ILearnerProfileRepository } from '@/modules/auth/domain/repositories/learner-profile-repository';
 import { DayLockedError } from '@/modules/program/domain/errors/day-locked.error';
 import { type IClock } from '@/modules/shared/application/ports/clock';
+import { ConflictError } from '@/modules/shared/domain/errors/conflict.error';
 import { type IIdGenerator } from '@/modules/shared/application/ports/id-generator';
 import { DayIndex } from '@/modules/shared/domain/value-objects/day-index';
 import { LessonSession } from '../../domain/entities/lesson-session';
@@ -62,22 +63,43 @@ export class StartLessonSessionUseCase {
       return this.toOutput(open, true);
     }
 
-    const created = await this.lessons.create(
-      new LessonSession({
-        id: this.ids.next(),
-        profileId: profile.id,
-        dayIndex,
-        // The ladder's first rung, read from the ladder. Writing 'review' here
-        // would be a second place the order is stated.
-        stage: LESSON_STAGES[0],
-        startedAt: this.clock.now(),
-        completedAt: null,
-        itemsTotal: 0,
-        itemsCorrect: 0,
-      }),
-    );
+    try {
+      const created = await this.lessons.create(
+        new LessonSession({
+          id: this.ids.next(),
+          profileId: profile.id,
+          dayIndex,
+          // The ladder's first rung, read from the ladder. Writing 'review' here
+          // would be a second place the order is stated.
+          stage: LESSON_STAGES[0],
+          startedAt: this.clock.now(),
+          completedAt: null,
+          itemsTotal: 0,
+          itemsCorrect: 0,
+        }),
+      );
 
-    return this.toOutput(created, false);
+      return this.toOutput(created, false);
+    } catch (caught: unknown) {
+      // Lost the race. The read above and this insert are not one statement, so
+      // two requests close together — a mount and its StrictMode double, two
+      // tabs, a double tap — both see no open session and both try to make one.
+      // 019's partial unique index is what makes the loser detectable instead of
+      // successful, and the right answer for the loser is the winner's session:
+      // that is what "or picks up the one already open" means when the one
+      // already open was opened a millisecond ago.
+      if (!(caught instanceof ConflictError)) {
+        throw caught;
+      }
+
+      const winner = await this.lessons.findOpenForDay(profile.id, dayIndex);
+
+      if (winner === null) {
+        throw caught;
+      }
+
+      return this.toOutput(winner, true);
+    }
   }
 
   private toOutput(session: LessonSession, resumed: boolean): IStartLessonSessionOutput {

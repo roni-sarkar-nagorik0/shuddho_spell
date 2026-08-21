@@ -33,7 +33,10 @@
     "progress": "অগ্রগতি",
     "exams": "পরীক্ষা",
     "collapse": "সংকুচিত করুন",
-    "expand": "প্রসারিত করুন"
+    "expand": "প্রসারিত করুন",
+    "admin": "অ্যাডমিন",
+    "myWords": "আমার শব্দ",
+    "grammar": "ব্যাকরণ"
   },
   "dashboard": {
     "dayOf": "{total} দিনের মধ্যে {day} দিন",
@@ -68,6 +71,7 @@
   "shell": {
     "session": "সেশন",
     "streak": "ধারা",
-    "signedInAs": "{name} হিসেবে সাইন ইন করা আছে"
+    "signedInAs": "{name} হিসেবে সাইন ইন করা আছে",
+    "signOut": "সাইন আউট"
   }
 }

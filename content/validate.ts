@@ -1,8 +1,10 @@
 import { type z } from 'zod';
 import {
+  examDefinitionSchema,
   phonemeSchema,
   ruleFamilySchema,
   weekSchema,
+  type ExamDefinitionEntry,
   type PhonemeEntry,
   type RuleFamilyEntry,
   type WeekEntry,
@@ -31,6 +33,7 @@ export interface IContentCounts {
   readonly phonemes: number;
   readonly ruleFamilies: number;
   readonly days: number;
+  readonly exams: number;
   readonly ipaNeedsReview: readonly string[];
   readonly phonemesNeedReview: readonly string[];
 }
@@ -56,6 +59,15 @@ const SECONDS_PER_MINUTE = 60;
 /** A day may claim within this factor of what its content actually takes. */
 const MINUTES_TOLERANCE = 1.5;
 
+/** `08-exam-engine.md`'s five, and 004's `exam_definitions_code_check`. */
+const REQUIRED_EXAM_CODES: readonly ExamDefinitionEntry['code'][] = [
+  'diagnostic',
+  'milestone1',
+  'milestone2',
+  'milestone3',
+  'final',
+];
+
 function fromZod(file: string, error: z.ZodError): readonly IValidationIssue[] {
   return error.issues.map((issue) => ({
     file,
@@ -68,12 +80,14 @@ export function validateContent(input: {
   readonly phonemes: readonly unknown[];
   readonly ruleFamilies: readonly unknown[];
   readonly weeks: readonly unknown[];
+  readonly exams: readonly unknown[];
 }): IValidationResult {
   const issues: IValidationIssue[] = [];
 
   const phonemes: PhonemeEntry[] = [];
   const ruleFamilies: RuleFamilyEntry[] = [];
   const weeks: WeekEntry[] = [];
+  const exams: ExamDefinitionEntry[] = [];
 
   input.phonemes.forEach((entry, index) => {
     const parsed = phonemeSchema.safeParse(entry);
@@ -104,6 +118,40 @@ export function validateContent(input: {
       issues.push(...fromZod(`content/week-0${String(index + 1)}.ts`, parsed.error));
     }
   });
+
+  input.exams.forEach((entry, index) => {
+    const parsed = examDefinitionSchema.safeParse(entry);
+
+    if (parsed.success) {
+      exams.push(parsed.data);
+    } else {
+      issues.push(...fromZod(`content/exams.ts[${String(index)}]`, parsed.error));
+    }
+  });
+
+  // Five codes, each once. 004's unique index would catch the duplicate at seed
+  // time, but a missing code is the failure that matters and no constraint can
+  // see it: the onboarding wizard sends every new learner to `/exams/diagnostic`
+  // and a catalogue without that row answers 404.
+  const examCodes = new Set(exams.map((exam) => exam.code));
+
+  for (const code of REQUIRED_EXAM_CODES) {
+    if (!examCodes.has(code)) {
+      issues.push({
+        file: 'content/exams.ts',
+        path: 'exams',
+        message: `no definition for "${code}" — 08-exam-engine.md names five exams and every one is reachable from the app`,
+      });
+    }
+  }
+
+  if (examCodes.size !== exams.length) {
+    issues.push({
+      file: 'content/exams.ts',
+      path: 'exams',
+      message: 'two definitions share a code',
+    });
+  }
 
   const ruleCodes = new Set(ruleFamilies.map((family) => family.code));
   const seenWords = new Map<string, number>();
@@ -248,6 +296,7 @@ export function validateContent(input: {
       phonemes: phonemes.length,
       ruleFamilies: ruleFamilies.length,
       days: dayCount,
+      exams: exams.length,
       ipaNeedsReview,
       phonemesNeedReview,
     },

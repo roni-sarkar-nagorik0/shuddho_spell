@@ -11,6 +11,7 @@ import {
   type ReactElement,
   type ReactNode,
 } from 'react';
+import { preferredVoice } from '@/lib/audio/voices';
 
 export interface IAudioPreferences {
   readonly accent: 'british' | 'american';
@@ -66,6 +67,12 @@ export function useAudio(): IAudioApi {
  * Voice selection is best-effort: `getVoices()` is asynchronous in Chrome and
  * returns an empty list on first call, so the manager sets `lang` (which always
  * works) and upgrades to a matching named voice when the list arrives.
+ *
+ * *Which* matching voice is `preferredVoice`'s job, and it is not "the first
+ * one". Taking the first `en-GB` voice meant taking the small offline voice the
+ * OS ships, which is the least intelligible one on the device — a real problem
+ * for dictation, where a single word has no context to recover a mangled vowel
+ * from.
  */
 export function AudioProvider({
   preferences,
@@ -88,11 +95,7 @@ export function AudioProvider({
     const lang = VOICE_LANG[preferences.accent];
 
     const pickVoice = (): void => {
-      const voices = window.speechSynthesis.getVoices();
-      voice.current =
-        voices.find((candidate) => candidate.lang.replace('_', '-') === lang) ??
-        voices.find((candidate) => candidate.lang.startsWith(lang.slice(0, 2))) ??
-        null;
+      voice.current = preferredVoice(window.speechSynthesis.getVoices(), lang);
     };
 
     pickVoice();

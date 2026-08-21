@@ -20,6 +20,8 @@ const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts');
  * `frame-ancestors 'none'` is the clickjacking control that matters; the
  * `X-Frame-Options` beside it is for the browsers that still only read that.
  */
+const GOOGLE_ACCOUNTS = 'https://accounts.google.com';
+
 function contentSecurityPolicy(): string {
   const supabase = process.env['NEXT_PUBLIC_SUPABASE_URL'] ?? '';
   const isDevelopment = process.env['NODE_ENV'] !== 'production';
@@ -35,7 +37,11 @@ function contentSecurityPolicy(): string {
     "worker-src 'self'",
     "object-src 'none'",
     "base-uri 'self'",
-    "form-action 'self'",
+    // Sign-in is a plain form POST to `/auth/signin`, which answers 303 to
+    // Supabase's `/authorize`, which in turn bounces to Google's consent
+    // screen. Chrome checks *every hop* of a form submission against
+    // `form-action`, so `'self'` alone silently blocks the only door in.
+    `form-action 'self' ${supabase} ${GOOGLE_ACCOUNTS}`.trim(),
     "frame-ancestors 'none'",
     'upgrade-insecure-requests',
   ].join('; ');

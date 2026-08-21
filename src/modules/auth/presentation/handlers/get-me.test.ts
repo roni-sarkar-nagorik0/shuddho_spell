@@ -41,6 +41,7 @@ const handler = createGetMeHandler(
     new GetMeUseCase({
       findById: () => Promise.reject(new Error('not used')),
       listAll: () => Promise.reject(new Error('not used')),
+      countByRole: () => Promise.reject(new Error('only the admin roster counts roles')),
       findByUserId: (userId: string) => {
         harness.askedFor = userId;
         return Promise.resolve(harness.profile);
@@ -77,6 +78,7 @@ describe('GET /api/v1/me', () => {
       profileId: 'p1',
       email: 'learner@example.com',
       displayName: 'Ayesha',
+      role: 'user',
       program: { track: 'standard28', currentDayIndex: 4, totalDays: 28, hasOnboarded: false },
     });
   });
@@ -143,6 +145,9 @@ describe('GET /api/v1/me', () => {
       'email',
       'profileId',
       'program',
+      // 020. The rail needs to know whether to draw the Admin link, and this
+      // is the one place the application says who the signed-in person is.
+      'role',
       'userId',
     ]);
   });

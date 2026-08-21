@@ -1,6 +1,8 @@
 import 'server-only';
 import { BootstrapProfileUseCase } from '@/modules/auth/application/use-cases/bootstrap-profile';
 import { GetMeUseCase } from '@/modules/auth/application/use-cases/get-me';
+import { ListUsersUseCase } from '@/modules/auth/application/use-cases/list-users';
+import { SetUserRoleUseCase } from '@/modules/auth/application/use-cases/set-user-role';
 import { GetActiveExamAttemptUseCase } from '@/modules/exams/application/use-cases/get-active-exam-attempt';
 import { GetExamAnswerReviewUseCase } from '@/modules/exams/application/use-cases/get-exam-answer-review';
 import { GetExamReadinessUseCase } from '@/modules/exams/application/use-cases/get-exam-readiness';
@@ -37,6 +39,9 @@ import { GetProgramDayUseCase } from '@/modules/program/application/use-cases/ge
 import { GetProgramOverviewUseCase } from '@/modules/program/application/use-cases/get-program-overview';
 import { GetLearnerDashboardUseCase } from '@/modules/progress/application/use-cases/get-learner-dashboard';
 import { GetMasterySnapshotUseCase } from '@/modules/progress/application/use-cases/get-mastery-snapshot';
+import { GetPractiseLogUseCase } from '@/modules/progress/application/use-cases/get-practise-log';
+import { GetWordsPractisedUseCase } from '@/modules/progress/application/use-cases/get-words-practised';
+import { RecordDemoAttemptUseCase } from '@/modules/progress/application/use-cases/record-demo-attempt';
 import { GetWeeklyActivityUseCase } from '@/modules/progress/application/use-cases/get-weekly-activity';
 import { CompleteOnboardingUseCase } from '@/modules/auth/application/use-cases/complete-onboarding';
 import { GetCertificateUseCase } from '@/modules/certificates/application/use-cases/get-certificate';
@@ -44,6 +49,7 @@ import { VerifyCertificateUseCase } from '@/modules/certificates/application/use
 import { GetExamCatalogueUseCase } from '@/modules/exams/application/use-cases/get-exam-catalogue';
 import { GetNextExamUseCase } from '@/modules/exams/application/use-cases/get-next-exam';
 import { ListExamMilestonesUseCase } from '@/modules/exams/application/use-cases/list-exam-milestones';
+import { GetDictationDemoWordUseCase } from '@/modules/library/application/use-cases/get-dictation-demo-word';
 import { GetLibraryPageUseCase } from '@/modules/library/application/use-cases/get-library-page';
 import { GetPhonemeStripsUseCase } from '@/modules/library/application/use-cases/get-phoneme-strips';
 import { GetPracticeQueueUseCase } from '@/modules/review/application/use-cases/get-practice-queue';
@@ -69,6 +75,19 @@ export function makeBootstrapProfile(c: IContainer): BootstrapProfileUseCase {
 
 export function makeGetMe(c: IContainer): GetMeUseCase {
   return new GetMeUseCase(c.learnerProfiles);
+}
+
+/**
+ * The two admin use cases. One repository each and nothing else — the whole
+ * permission model is "read the caller's own profile first", so neither of them
+ * needs a service, a clock or a second table.
+ */
+export function makeListUsers(c: IContainer): ListUsersUseCase {
+  return new ListUsersUseCase(c.learnerProfiles);
+}
+
+export function makeSetUserRole(c: IContainer): SetUserRoleUseCase {
+  return new SetUserRoleUseCase(c.learnerProfiles);
 }
 
 export function makeGetProgramOverview(c: IContainer): GetProgramOverviewUseCase {
@@ -464,4 +483,41 @@ export function makeRunHourlyNotifications(c: IContainer): RunHourlyNotification
     makeSendReviewItemsDue(c),
     makeSendStreakAtRisk(c),
   );
+}
+
+/**
+ * The marketing page's demo. One repository and a coin — no profile, no clock,
+ * nothing that knows who is asking, because nobody is.
+ */
+export function makeGetDictationDemoWord(c: IContainer): GetDictationDemoWordUseCase {
+  return new GetDictationDemoWordUseCase(c.words, c.random);
+}
+
+/**
+ * The demo's two halves once somebody is signed in: writing down what they
+ * tried, and counting it back to them on the dashboard.
+ */
+export function makeRecordDemoAttempt(c: IContainer): RecordDemoAttemptUseCase {
+  return new RecordDemoAttemptUseCase(
+    c.learnerProfiles,
+    c.words,
+    c.demoAttempts,
+    c.clock,
+    c.ids,
+  );
+}
+
+export function makeGetWordsPractised(c: IContainer): GetWordsPractisedUseCase {
+  return new GetWordsPractisedUseCase(
+    c.learnerProfiles,
+    c.attempts,
+    c.demoAttempts,
+    c.words,
+    c.clock,
+  );
+}
+
+/** The whole history, paged — the screen the dashboard's panel links to. */
+export function makeGetPractiseLog(c: IContainer): GetPractiseLogUseCase {
+  return new GetPractiseLogUseCase(c.learnerProfiles, c.practiseLog);
 }

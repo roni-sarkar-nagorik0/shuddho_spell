@@ -26,9 +26,20 @@ import {
 import { programDayParamsSchema } from '@/modules/program/presentation/dto/program-params';
 import { submitReviewBodySchema } from '@/modules/review/presentation/dto/review-requests';
 import { meResponseSchema } from '@/modules/auth/presentation/dto/me.response';
+import {
+  setUserRoleBodySchema,
+  userParamsSchema,
+  userRosterSchema,
+  userSummarySchema,
+} from '@/modules/auth/presentation/dto/admin-users.response';
 import { completeOnboardingBodySchema } from '@/modules/auth/presentation/dto/onboarding-requests';
 import { verifyParamsSchema } from '@/modules/certificates/presentation/dto/certificate-requests';
 import { libraryQuerySchema } from '@/modules/library/presentation/dto/library-requests';
+import { demoWordSchema } from '@/modules/library/presentation/dto/demo-word.response';
+import {
+  demoAttemptResultSchema,
+  recordDemoAttemptBodySchema,
+} from '@/modules/progress/presentation/dto/demo-attempt-requests';
 
 extendZodWithOpenApi(z);
 
@@ -96,6 +107,47 @@ registry.registerPath({
   path: '/api/v1/me',
   summary: 'The signed-in learner and their position in the programme.',
   responses: ok(meResponseSchema, 'The learner.'),
+});
+
+// The admin surface. Both answer 403 to a signed-in learner who is not one —
+// documented rather than hidden, because a route that exists and is refused is
+// a fact a client should be able to read from the contract.
+registry.registerPath({
+  method: 'get',
+  path: '/api/v1/admin/users',
+  summary: 'Everybody who has signed in. Admins only.',
+  responses: { ...ok(userRosterSchema, 'The roster.'), 403: PROBLEM },
+});
+
+registry.registerPath({
+  method: 'patch',
+  path: '/api/v1/admin/users/{id}/role',
+  summary: 'Make a user an admin, or take it back. Admins only; the last admin cannot be demoted.',
+  request: {
+    params: userParamsSchema,
+    body: { content: { 'application/json': { schema: setUserRoleBodySchema } } },
+  },
+  responses: { ...ok(userSummarySchema, 'The user, as they now stand.'), 403: PROBLEM, 409: PROBLEM },
+});
+
+// The one endpoint in v1 with no session behind it and a payload that carries
+// an answer. Both are deliberate — see the handler.
+registry.registerPath({
+  method: 'get',
+  path: '/api/v1/demo/word',
+  summary: 'One random word from the corpus for the landing page demo. Public; no account needed.',
+  responses: ok(demoWordSchema, 'A word, or null when the corpus is not seeded.'),
+});
+
+// The write half of the demo, and unlike the read half it needs a session:
+// there is no profile to record an anonymous visitor against. The body says
+// what was typed and never whether it was right.
+registry.registerPath({
+  method: 'post',
+  path: '/api/v1/demo/attempts',
+  summary: 'Record one demo answer for the signed-in learner. The server decides if it was right.',
+  request: { body: { content: { 'application/json': { schema: recordDemoAttemptBodySchema } } } },
+  responses: ok(demoAttemptResultSchema, 'The stored attempt.'),
 });
 
 registry.registerPath({

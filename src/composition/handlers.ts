@@ -1,6 +1,10 @@
 import 'server-only';
 import { createGetMeHandler } from '@/modules/auth/presentation/handlers/get-me';
 import {
+  createListUsersHandler,
+  createSetUserRoleHandler,
+} from '@/modules/auth/presentation/handlers/admin-users';
+import {
   createCompleteOnboardingHandler,
   createGetOnboardingHandler,
 } from '@/modules/auth/presentation/handlers/onboarding';
@@ -14,6 +18,7 @@ import { createStartAttemptHandler } from '@/modules/exams/presentation/handlers
 import { createSubmitAttemptHandler as createSubmitExamAttemptHandler } from '@/modules/exams/presentation/handlers/submit-attempt';
 import { createSubmitSectionHandler } from '@/modules/exams/presentation/handlers/submit-section';
 import { createVerifyCertificateHandler } from '@/modules/certificates/presentation/handlers/verify-certificate';
+import { createGetDemoWordHandler } from '@/modules/library/presentation/handlers/get-demo-word';
 import { createGetLibraryHandler } from '@/modules/library/presentation/handlers/get-library';
 import { createCompleteSessionHandler } from '@/modules/lessons/presentation/handlers/complete-session';
 import { createAdvanceStageHandler } from '@/modules/lessons/presentation/handlers/advance-stage';
@@ -32,6 +37,7 @@ import { createNotificationsCronHandler } from '@/modules/notifications/presenta
 import { createGetProgramDayHandler } from '@/modules/program/presentation/handlers/get-program-day';
 import { createGetProgramHandler } from '@/modules/program/presentation/handlers/get-program';
 import { createGetMasteryHandler } from '@/modules/progress/presentation/handlers/get-mastery';
+import { createRecordDemoAttemptHandler } from '@/modules/progress/presentation/handlers/record-demo-attempt';
 import { createGetProgressSummaryHandler } from '@/modules/progress/presentation/handlers/get-progress-summary';
 import { createGetDueHandler } from '@/modules/review/presentation/handlers/get-due';
 import { createSubmitReviewAttemptHandler } from '@/modules/review/presentation/handlers/submit-review-attempt';
@@ -41,9 +47,12 @@ import {
   makeCompleteOnboarding,
   makeCompleteLessonSession,
   makeGetDueReviewItems,
+  makeGetDictationDemoWord,
   makeGetLibraryPage,
   makeVerifyCertificate,
   makeGetMe,
+  makeListUsers,
+  makeSetUserRole,
   makeGetNotificationPreferences,
   makeGetProgramDay,
   makeListNotifications,
@@ -54,6 +63,7 @@ import {
   makeRunHourlyNotifications,
   makeUpdateNotificationPreferences,
   makeGetMasterySnapshot,
+  makeRecordDemoAttempt,
   makeGetProgramOverview,
   makeGetProgressSummary,
   makeAutoSubmitAbandonedExams,
@@ -218,4 +228,20 @@ export const unsubscribePushHandler = createUnsubscribePushHandler(() =>
 
 export const notificationsCronHandler = createNotificationsCronHandler(() =>
   makeRunHourlyNotifications(container()),
+);
+
+/**
+ * The admin surface. Two endpoints, because there are two things to do: see who
+ * is here, and change what one of them may do.
+ */
+export const listUsersHandler = createListUsersHandler(() => makeListUsers(container()));
+
+export const setUserRoleHandler = createSetUserRoleHandler(() => makeSetUserRole(container()));
+
+export const getDemoWordHandler = createGetDemoWordHandler(() =>
+  makeGetDictationDemoWord(container()),
+);
+
+export const recordDemoAttemptHandler = createRecordDemoAttemptHandler(() =>
+  makeRecordDemoAttempt(container()),
 );

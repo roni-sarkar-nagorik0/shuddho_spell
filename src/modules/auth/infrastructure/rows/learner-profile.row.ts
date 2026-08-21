@@ -25,4 +25,12 @@ export interface ILearnerProfileRow {
    * the row, so this, not the row's existence, is what "brand new" means.
    */
   readonly onboarding_completed_at: string | null;
+  /** `user` or `admin`, per 020's `learner_profiles_role_check`. */
+  readonly role: string;
+  /**
+   * A copy of `auth.users.email` — 020. Nullable, because the column was added
+   * to a table that already had rows and a profile is only refreshed on the
+   * owner's next sign-in.
+   */
+  readonly email: string | null;
 }

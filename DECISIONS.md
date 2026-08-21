@@ -145,3 +145,26 @@ a live database, a browser or a CI runner was written and **not** executed.
 knew, because the suite was not being run. Coverage sits at 57.20% against a 90% floor. The
 application has never been rendered in a browser. Every item is enumerated in the closing report
 at the end of [`PROGRESS.md`](PROGRESS.md), and none of it is claimed as done.
+
+## 13. Deployed in Seoul, because that is where the database is
+
+**Context.** Supabase for this project lives in `ap-northeast-2` (Seoul). Vercel's default
+region is `iad1` (Washington). Every read a page does is a round trip between the two, and the
+dashboard issues seven of them.
+
+**Decision.** [`vercel.json`](vercel.json) pins `regions: ["icn1"]` — Vercel's Seoul region,
+the same city as the database. Measured against the project from Dhaka, one Supabase round trip
+is ~80 ms for auth and ~30 ms for a query when the function is beside it; across the Pacific it
+is several times that, on every one of the seven.
+
+The same file declares the two cron jobs. They had no schedule at all before it — the routes
+existed and nothing ever called them — and both now run hourly, which is the cadence
+`run-hourly-notifications.ts` and the auto-submit backstop were written for. Vercel Cron sends
+**GET**, so both routes export the handler on GET as well as POST; the `withCron` bearer check
+is unchanged and is still the only thing standing in for a session.
+
+**Cost.** Seoul is not near the learners. This trades a little latency to the browser for a lot
+of latency to the database, which is the right way round while every page is `force-dynamic`
+and does its reads on the server — but it is a trade, and if the pages ever become mostly
+static the sums reverse. Hourly crons also need a Vercel plan that allows them: the Hobby plan
+permits one run a day, and on it both jobs will be silently downgraded.

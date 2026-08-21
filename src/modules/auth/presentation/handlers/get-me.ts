@@ -14,6 +14,7 @@ function toResponse(user: { readonly email: string }, profile: LearnerProfile): 
     // no second place for it to go stale.
     email: user.email,
     displayName: profile.displayName,
+    role: profile.role,
     program: {
       track: profile.track,
       currentDayIndex: profile.currentDayIndex.value,

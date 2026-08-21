@@ -1,6 +1,7 @@
 import { DayIndex } from '@/modules/shared/domain/value-objects/day-index';
 import { totalDaysIn, type Track } from '@/modules/shared/domain/value-objects/track';
 import { type AccentPreference } from '../value-objects/accent-preference';
+import { type UserRole } from '../value-objects/user-role';
 import { type UiLanguage } from '../value-objects/ui-language';
 
 /**
@@ -18,6 +19,17 @@ export interface ILearnerProfileProps {
   /** The `auth.users` row this profile hangs off. */
   readonly userId: string;
   readonly displayName: string;
+  /**
+   * A copy of the address on the account, rewritten on every sign-in — 020.
+   *
+   * Null only for a profile made before that column existed by a user who has
+   * not signed in since. Every learner-facing screen still reads the address
+   * from the session; this one exists so the admin roster can name people it
+   * has no session for.
+   */
+  readonly email: string | null;
+  /** `user` unless this is the first account ever created, or an admin said so. */
+  readonly role: UserRole;
   readonly track: Track;
   readonly dailyMinutes: number;
   readonly startedAt: Date;
@@ -55,6 +67,8 @@ export class LearnerProfile {
   readonly id: string;
   readonly userId: string;
   readonly displayName: string;
+  readonly email: string | null;
+  readonly role: UserRole;
   readonly track: Track;
   readonly dailyMinutes: number;
   readonly startedAt: Date;
@@ -69,6 +83,8 @@ export class LearnerProfile {
     this.id = props.id;
     this.userId = props.userId;
     this.displayName = props.displayName;
+    this.email = props.email;
+    this.role = props.role;
     this.track = props.track;
     this.dailyMinutes = props.dailyMinutes;
     this.startedAt = props.startedAt;
@@ -87,6 +103,40 @@ export class LearnerProfile {
    */
   hasOnboarded(): boolean {
     return this.onboardingCompletedAt !== null;
+  }
+
+  /**
+   * The one question every admin-only use case asks first.
+   *
+   * A behaviour rather than `profile.role === 'admin'` at seven call sites: if
+   * a third role is ever added, the places that meant "may see everybody" and
+   * the places that meant "is exactly an admin" are already distinguishable.
+   */
+  isAdmin(): boolean {
+    return this.role === 'admin';
+  }
+
+  /**
+   * Promotion or demotion, returning a new instance like every other state
+   * change here.
+   *
+   * The entity does not refuse a demotion: "this is the last admin" is a fact
+   * about the whole table, and an entity that could see the whole table would
+   * be a repository. `SetUserRoleUseCase` owns that rule.
+   */
+  withRole(role: UserRole): LearnerProfile {
+    return new LearnerProfile({ ...this.toProps(), role });
+  }
+
+  /**
+   * The address, refreshed from the session that just signed in.
+   *
+   * Returns `this` when nothing changed, so the reconciler that runs on every
+   * sign-in can call it unconditionally and only writes when there is something
+   * to write.
+   */
+  withEmail(email: string | null): LearnerProfile {
+    return email === this.email ? this : new LearnerProfile({ ...this.toProps(), email });
   }
 
   /**
@@ -148,6 +198,8 @@ export class LearnerProfile {
       id: this.id,
       userId: this.userId,
       displayName: this.displayName,
+      email: this.email,
+      role: this.role,
       track: this.track,
       dailyMinutes: this.dailyMinutes,
       startedAt: this.startedAt,

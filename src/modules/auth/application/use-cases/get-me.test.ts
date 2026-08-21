@@ -15,6 +15,10 @@ class FakeProfiles implements ILearnerProfileRepository {
     return Promise.resolve(profile);
   }
 
+  countByRole(): Promise<number> {
+    return Promise.reject(new Error('only the admin roster counts roles'));
+  }
+
   listAll(): Promise<readonly LearnerProfile[]> {
     return Promise.reject(new Error('only the hourly notification job walks the roster'));
   }

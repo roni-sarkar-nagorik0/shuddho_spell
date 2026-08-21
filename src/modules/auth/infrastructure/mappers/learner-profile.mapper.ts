@@ -2,6 +2,7 @@ import { z } from 'zod';
 import { LearnerProfile } from '../../domain/entities/learner-profile';
 import { ACCENT_PREFERENCES } from '../../domain/value-objects/accent-preference';
 import { UI_LANGUAGES } from '../../domain/value-objects/ui-language';
+import { USER_ROLES } from '../../domain/value-objects/user-role';
 import { DayIndex } from '@/modules/shared/domain/value-objects/day-index';
 import { TRACKS } from '@/modules/shared/domain/value-objects/track';
 
@@ -20,6 +21,11 @@ const rowSchema = z.object({
   id: z.string(),
   user_id: z.string(),
   display_name: z.string(),
+  email: z.string().nullable(),
+  // Checked against the union rather than taken as a string, like every other
+  // closed set here: 020 has the same check constraint, and a third role added
+  // there must not reach the domain unnoticed.
+  role: z.enum(USER_ROLES),
   track: z.enum(TRACKS),
   daily_minutes: z.number().int(),
   started_at: z.string(),
@@ -34,7 +40,7 @@ const rowSchema = z.object({
 });
 
 export const LEARNER_PROFILE_COLUMNS =
-  'id, user_id, display_name, track, daily_minutes, started_at, timezone, ui_language, current_day_index, accent_preference, playback_rate, onboarding_completed_at';
+  'id, user_id, display_name, email, role, track, daily_minutes, started_at, timezone, ui_language, current_day_index, accent_preference, playback_rate, onboarding_completed_at';
 
 /**
  * A batch, dropping rows that do not fit — the same call `parseRows` makes
@@ -63,6 +69,8 @@ export function toLearnerProfile(row: unknown): LearnerProfile | null {
     id: data.id,
     userId: data.user_id,
     displayName: data.display_name,
+    email: data.email,
+    role: data.role,
     track: data.track,
     dailyMinutes: data.daily_minutes,
     startedAt: new Date(data.started_at),

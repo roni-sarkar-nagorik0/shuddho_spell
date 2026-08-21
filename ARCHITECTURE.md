@@ -1110,6 +1110,329 @@ tree or moving locale resolution off cookies — both are changes to shipped Pha
 decisions, so this is recorded rather than worked around. Lighthouse was not run in this
 environment; no number is claimed for it.
 
+**D68 — roles live on `learner_profiles`, and the first account is made an admin by the
+database (user request, 2026-08-21).** Nothing in `.claude/docs/` mentions administration at
+all: `04-authentication.md` describes one kind of person, a learner. Asked for a user table,
+two roles and an API to grant the second one, I added `role` and `email` columns to
+`learner_profiles` in migration **020** rather than a `users` table beside it. That table is
+already defined as "one row per signed-in user, created by a trigger" — a second one would be
+a second answer to *who has signed in*, reconciled by hand.
+
+Three parts of this were decisions rather than implementation:
+
+- **The first admin is assigned by a `before insert` trigger on the table** (`assign_first_admin`),
+  not by the signup trigger and not by the application. There are two paths that create a
+  profile — 009's `on_auth_user_created` and `BootstrapProfileUseCase` reconciling one the
+  trigger missed — and a rule written into only the first is a rule the second breaks. It takes
+  a transaction-scoped advisory lock, so two signups into an empty database cannot both claim
+  it. It only ever grants, so it cannot fire again once an owner exists.
+- **008's table-wide `update` grant to `authenticated` was replaced with a column list.** The
+  policy was right — the row *is* the learner's — but with `role` on it, `update
+  learner_profiles set role = 'admin' where user_id = auth.uid()` through PostgREST would have
+  been the whole feature given away. `id`, `user_id`, `started_at`, `role` and `email` are now
+  ungrantable to the client; the server writes them through the service client.
+- **Every admin after the first is made by one who already is.** No invite, no env var of
+  addresses, no bootstrap endpoint — a back door that stands open for the life of the product.
+  `SetUserRoleUseCase` refuses to demote the last admin, because nobody left holding the role
+  means the only way back is a hand-written `update` against production.
+
+`email` is a copy and copies go stale, so `BootstrapProfileUseCase` — the one piece of code
+that sees a verified address on **every** sign-in — rewrites it. `GET /api/v1/me` still reads
+the session's address, not this column; the column exists for the roster, which is looking at
+people it holds no session for.
+
+**D69 — the landing page's demo draws from the seeded corpus over an endpoint, not from a
+list in the bundle (user request, 2026-08-21).** The demo shipped with three words hard-coded
+in `dictation-demo.tsx`, so a visitor who pressed *Next word* twice was back at the start, and
+the demo could drift from the course it advertised. Asked for "more than 2000 words, randomly
+rendered", I made it read the real corpus through a public `GET /api/v1/demo/word`.
+
+- **An endpoint, not a generated module.** `syllabus.ts` sets the precedent for copying content
+  into `src/app` at authoring time, and it is right for 28 lines of prose. It is wrong for
+  1,240 words: the landing page has a performance budget in its acceptance criteria, and
+  shipping the whole vocabulary to every anonymous visitor to show them five of it is a strange
+  way to spend it — and hands out the course's content to anyone who opens devtools.
+- **One word per response — no cursor, no filter, no count.** That is the line between
+  demonstrating the corpus and publishing it.
+- **The payload carries the answer**, which nothing else in the product does. `08-exam-engine.md`
+  rule 3 is about assessment; a visitor with no account is not being assessed, and the demo has
+  no attempt row to mark against, so it grades in the browser. Every path a *learner* takes still
+  gets `IExamQuestionForLearner`, which has no `text`.
+- **`IRandomSource`** was added beside `IClock` for the same stated reason: a use case that calls
+  `Math.random()` cannot be tested. `MathRandomSource` is explicitly *variety, not
+  unpredictability* — nothing scored goes through it.
+
+The pool is **~1,065 of the 1,240 words**, not 2,000: words with no recorded
+`commonMisspellings`, with non-letters, or outside 3–9 letters are filtered out. Producing 760
+more words would mean inventing IPA and Bangla, which `CLAUDE.md` §7.6 forbids; growing the
+corpus is a content-pipeline job (`content/week-*.ts`), and the demo picks up whatever is
+seeded without a code change.
+
+**D70 — the demo picks its voice and offers an Indian-English one; the course still does not
+(user request, 2026-08-21).** The report was that the demo's audio could not be made out. Two
+separate causes, and only one of them is about accent.
+
+- **Nobody was choosing the voice.** Both the demo and `AudioProvider` set `utterance.lang` and
+  stopped, which leaves the pick to the browser — and the browser's default for `en-GB` is the
+  small offline voice bundled with the OS, the least intelligible one on the device. Dictation is
+  the worst case for that: a lone word has no sentence around it to recover a mangled vowel from.
+  `src/lib/audio/voices.ts` now ranks candidates (network/Google/Enhanced/Natural/Siri first, then
+  exact tag, then same language) and **both** callers use it, so the course benefits too.
+- **The rate was 1.00**, the profile default, which is right for a sentence and too fast for one
+  word. The demo now speaks at 0.85 with a **Slower** control at 0.6 — the thing that makes a
+  missed consonant recoverable instead of a guess.
+- **An `en-IN` option was added and then removed the same day, at the user's request.** The
+  reasoning for offering it stands — a Bengali visitor has heard Indian English all their life and
+  British English for perhaps hours — but a control asking someone to choose an accent *before
+  they have heard a word* hands them a decision they have nothing to base on, and it sat above
+  the tiles taking the attention the exercise needs. The demo now speaks `en-GB` only, which is
+  `learner_profiles.accent_preference`'s own default, and says nothing about it. The course's
+  accents were never touched: it trains *towards* British or American, day one is /v/ and /θ/,
+  and South Asian English does not distinguish them — teaching from a voice that merges them
+  would defeat the product.
+
+Verified in-browser on the development machine: `Daniel` at 0.85, and at 0.60 on **Slower**, with
+the voice set explicitly on the utterance both times. That machine has only Apple's local voices,
+so the *ranking* changes nothing there — the rate and the replay are what a listener notices on
+it, and the ranking pays off on a device with Google or Enhanced voices installed.
+
+**D71 — a wrong answer in the demo re-opens the question instead of ending it (user request,
+2026-08-21).** The panel used to reveal the spelling on the first miss and offer only *Next word*,
+which meant a visitor got one attempt at the exercise the product is entirely made of. Now a wrong
+answer marks the letters, keeps the word hidden and leaves the tiles live — *Try again* clears
+them and refocuses, as many times as the visitor likes — with *Show me* there for anyone who would
+rather be told — and **the reveal does not close the question either**. Reading a word is not the
+same as being able to write it, and the moment straight after being told is the one moment a
+visitor can; locking the tiles there (which the first cut did) removed the only useful thing left
+to do. The single state that locks them is getting it right. A `Clear` control appears once the
+tiles are full, because `LetterTiles` has nowhere to advance to at that point and eight backspaces
+is enough friction to end the exercise. The headline distinguishes the three outcomes — worked it
+out (`Correct — 2 tries.`), worked it out after being told (`That is it —`), and told but not yet
+typed (`The word is:`) — because a single "Correct." for all three would be flattering two of
+them.
+
+The result panel was also relabelled and shortened. It printed `/rɪst/ রিস্ট — কব্জি` as one run-on
+row followed by the word's `RuleFamily.statement` — a paragraph of grammar terminology under a
+word the visitor had just got wrong — and a reader had no way to tell which part was the sound,
+which the meaning, and which a rule. It is now a `<dl>` of three labelled facts (Sound, Meaning,
+Common mistake) and **the rule statement is gone from the demo entirely**: the course is where a
+rule belongs, where a learner has met the vocabulary and has a reason to read it. That also
+removed the rule-family lookup from `GetDictationDemoWordUseCase`, so the endpoint is one query
+per request rather than two.
+
+**D72 — demo attempts get their own table, and the dashboard counts them apart (user request,
+2026-08-21).** Asked to record every word a signed-in learner tries and show the day's total on
+the dashboard, with repeats counted once.
+
+- **Not `attempts`.** That table's `session_id` is `not null references lesson_sessions`, because
+  an attempt in the course is always part of a run through a day. The demo has no session and
+  never will. Making the column nullable to fit it would weaken a constraint that is load-bearing
+  for every real attempt in order to store something that is not one. 021 adds `demo_attempts`.
+- **Counted apart on the screen, not summed.** A lesson attempt is scored, scheduled for review
+  and rolled into mastery; a demo attempt is somebody pressing *Next word* at the front door. One
+  combined figure would let forty presses report a day's learning that did not happen — and a
+  learner checking their own progress is exactly the person that number must not lie to.
+- **The server decides `is_correct`.** The client posts the word id and the letters typed;
+  `RecordDemoAttemptUseCase` loads the word and asks `Word.matches`. `CLAUDE.md` bans
+  client-trusted score, and an endpoint that accepted `isCorrect: true` would let any dashboard
+  report a thousand perfect words. The browser still marks the tiles for the visitor's benefit;
+  that display has no bearing on what is stored.
+- **No anonymous rows.** `profile_id` is `not null` and the route requires a session. There is
+  nobody to show an anonymous visitor's practice to and no consent to record it under, so the
+  demo posts nothing until somebody is signed in.
+- **"Today" is the learner's today**, from `zonedDayStart(…, profile.timezone)` — the same rule
+  the streak and the review schedule already use.
+- `IDatabase` gained `gte`. `gt` against a day boundary would drop a row written at exactly
+  midnight; unlikely, and wrong in the way an off-by-one is always wrong.
+
+The course side reads `findByProfile(profileId, 400)` and filters to today in the use case rather
+than widening `IAttemptRepository` with a date for one panel's benefit. Attempts come back
+newest-first, so the filter only ever drops rows already older than today; the cap would bite only
+past 400 submissions in one day, against a full lesson of about 40.
+
+Proved against the live database: three attempts on one word — two wrong, one right in the wrong
+case — recorded as `false, false, true` by the server, tallying to `distinctWords: 1, tries: 3,
+settled: 1` under the learner-local date. The probe rows were deleted afterwards.
+
+**D73 — the landing page's call to action reads the session (user request, 2026-08-21).**
+"Start free" pointing at `/login` is right for a stranger and a dead end for somebody already
+signed in — they follow it, `/login` bounces them to the dashboard, and the page has spent its
+main control telling an existing learner to do what they have already done. `StartCta` is a Client
+Component using `useSession()`, which is the only way a Client Component may learn this: the value
+comes from `SessionBoundary` in the root layout, which read a session the *server* verified. It is
+a rendering decision and nothing behind `/dashboard` trusts it.
+
+**Not changed: the session cookie.** The request also asked for tokens in a read-only cookie,
+nothing in `localStorage`, and invalidation on tampering. All three already held and were verified
+rather than rebuilt: `src/` contains no `localStorage` or `sessionStorage` at all;
+`toSessionCookieOptions` forces `httpOnly: true` last, so no caller can reopen it and no script
+can read the cookie; and the access token is a signed JWT read through `getUser()`, not
+`getSession()`, so an edited one fails verification and the session resolves to `null`. Email and
+the Google avatar are already claims on that token — it is minted by GoTrue and cannot be
+re-issued from here. What was *not* built, on the user's decision, is binding the token to a
+device or address: a copied cookie still works, as it does almost everywhere, and the alternative
+signs people out when they move between wifi and mobile data.
+
+**D74 — icons are generated from one definition by `next/og`, and committed (user request,
+2026-08-21).** The product had no favicon and no manifest at all. `scripts/generate-icons.mjs`
+(`pnpm icons`) emits all five PNGs from a single mark; the output is committed because this is an
+authoring step, not a build step — a deploy must never depend on rasterising anything.
+
+`next/og` does the work, so no `sharp`, no ImageMagick, nothing new in `package.json`. Bricolage
+Grotesque, the display face the product already loads, is committed beside the script rather than
+fetched at generation time; it is SIL OFL and redistributable, and a script that needs the network
+to draw a square is a script that fails on a plane. The mark is the wordmark's initial on
+`primary-900` — the same thing the collapsed sidebar already shows — and flat, because
+`CLAUDE.md` §10 rules out gradient, illustration and shadow, and an icon breaking that is the first
+thing anybody sees.
+
+The five are not one picture at five sizes, which is the usual mistake:
+
+- `src/app/icon.png` (32) keeps the brand's rounded square; browsers never mask a favicon.
+- `src/app/apple-icon.png` (180) is **square with no radius** — iOS rounds it itself, and a
+  pre-rounded icon gets rounded twice and shows navy corners inside white ones.
+- `icon-192`/`icon-512` carry the shape, for manifest entries shown as drawn.
+- `icon-maskable-512` is full bleed with the glyph at 44% inside the 80% safe zone, because a
+  launcher crops it to a circle. Marking the rounded icon as `maskable` cuts its corners off.
+
+Icons are declared by **file convention**, not in `metadata.icons`: Next fingerprints
+`icon.png`/`apple-icon.png` and writes the `<link>` tags, and a hand-written block would be a
+second declaration able to disagree with the files on disk.
+
+**Found while doing it: the middleware was redirecting `/sw.js` and `/manifest.webmanifest` to
+`/login`.** Neither ends in an extension the matcher's exclusion list covered, so both were treated
+as pages. This is not cosmetic — a browser that fetches a service worker and receives an HTML login
+page refuses the registration outright, because the response is not JavaScript, and push
+notifications would have failed for any request whose session had lapsed. Both are now named in
+the matcher beside `favicon.ico`.
+
+**D75 — the practice history is its own screen, paged in SQL (user request, 2026-08-21).** The
+dashboard panel listed every word tried today, and the demo alone produced dozens of rows in an
+afternoon. A summary that scrolls is not a summary. `/words` is now a nav item of its own; the
+dashboard keeps the two tallies and links to it.
+
+- **022 is a Postgres function, not a repository read.** The screen shows one row per *word* with
+  a try count over a history meant to grow for months. Producing that in the application means
+  fetching every attempt the learner has ever made and reducing it in memory — fine for a week.
+  `IDatabase` deliberately cannot express `group by`; widening it for one screen is how it becomes
+  the ORM `CLAUDE.md` bans. 013–015 set the precedent. The function computes nothing: counting and
+  paging rows is not a rule a domain service should own.
+- **Offset paging, not the keyset the library uses.** The library pages on `words.text`, which is
+  unique and fixed, so a cursor is stable. This orders by the most recent attempt, which *moves* —
+  practise a word again and it jumps to the front. No cursor survives that, and a learner working
+  while paging is the ordinary case. Offset repeats or skips a row when the order shifts; that is
+  the smaller wrong answer than a cursor that cannot be honoured at all.
+- **A page past the end re-asks for page one.** An empty page carries no `total_count`, so "page
+  900 of a 3-page log" would otherwise report zero words in total, which reads as *you have never
+  practised anything*. One extra round trip, in a case reached by editing the URL.
+- **The URL is the state** — filter and page are query parameters read on the server, the controls
+  are plain links, and nothing fetches client-side. The back button works, a page is shareable, and
+  a reload lands where the learner was. Only the play buttons are a Client Component.
+
+`rows.test.ts` caught the port's `IPractisedWordRow`: a `…Row` in this project means a hand-written
+mirror of a table, snake_case, confined to `infrastructure/rows/`. It was camelCase domain data
+wearing a similar word, and was renamed rather than the rule loosened.
+
+Proved against the live database: 8 distinct words (4 course, 4 demo) matching the learner's own
+dashboard; page size 3 walked offsets 0/3/6/9 returning 3, 3, 2 and 0 rows with 8 collected and 8
+distinct — no repeats, no gaps; `page=900` resolved to page 1 with the total intact, `page=-4` to
+page 1.
+
+**D76 — signing out is a form post to a server route, and it revokes locally (user request,
+2026-08-21).** There was no way out of the product. `/auth/signout` is the mirror of
+`/auth/signin`, and the symmetry is not cosmetic — both sit on the server side of an httpOnly
+cookie no client can touch (D21), so both are route handlers rather than anything callable from a
+component.
+
+- **POST, and a `<form>` rather than a link.** The sign-in route is a POST because it mints a PKCE
+  verifier; this one has a sharper reason. A link is something Next prefetches on hover and
+  something any `<img>` on any page can fire, and this route's whole effect is destructive. A form
+  post cannot be triggered cross-origin without the learner pressing the button. It also means
+  signing out works with JavaScript off, like signing in does.
+- **`scope: 'local'`, against the library's `global` default.** Global revokes every refresh token
+  the learner holds, including their phone's. Pressing Sign out on a laptop does not mean *sign me
+  out everywhere*. Local is still a server-side revocation — the session behind this cookie is dead
+  at Supabase — so a copied cookie dies with it and the deletion is not the only thing guarding the
+  account.
+- **A failed revocation still clears the cookies.** `signOut` returns *before* clearing local state
+  when the call to the auth server genuinely fails (a rejected session it treats as already signed
+  out, and clears). Left alone, that learner is redirected to `/login` still holding a working
+  session: signed out on screen, signed in in fact. The route deletes the `sb-` cookies itself in
+  that branch. It is the one place that knows the library's cookie prefix, and it is worth the
+  coupling — the alternative is showing a failure the learner cannot act on, on the one control
+  whose entire purpose is to leave.
+- **The control lives in the top bar, not the rail.** It sits beside the monogram that already
+  says who is signed in, so the identity and the way to drop it are in one place, and it is on the
+  dashboard and every other signed-in screen for the price of one component.
+
+`/auth/signout` is public by prefix, which is deliberate: an already-expired session must still
+reach the route and have its cookies cleared, rather than being bounced to `/login` still carrying
+them.
+
+
+
+
+
+
+
+**D77 — the grammar course is content, not a database table, and it is its own module (user
+request, 2026-08-21).** The request was a whole IELTS grammar syllabus — every tense, the modals,
+28 days, basics to advanced, explained as if to someone meeting the idea for the first time. It is
+now `/grammar` and `/grammar/[day]`, written in `content/grammar/`.
+
+- **It reads from a compiled-in file, not Postgres, and that is the one content type that does.**
+  The corpus is seeded into tables because learner rows point at it — `attempts.item_id`,
+  `review_items`, `mastery_records` — so a word needs a uuid that survives an edit. Nothing points
+  at a grammar day. It is prose, identical for every learner, versioned in git. So there is no
+  migration, no seed step and no RLS policy, and the screen cannot disagree with the file. The cost
+  is that editing the course is a deploy. `IGrammarLessonRepository` is what keeps that a fact
+  about today's adapter rather than about the module.
+- **No container.** Everything in `container.ts` is per-request because a Supabase client holds the
+  caller's cookies. This has no cookies, no learner and no database, so `composition/grammar.ts`
+  constructs the adapter once at module scope. A container around it would imply a scope it does
+  not have and would drag a database handle into a read that never opens one.
+- **The schema enforces teaching, not shape.** `content/grammar/schema.ts` requires an explanation
+  of at least 80 characters, a Bangla line in Bangla script, two examples per section, and a
+  *reason* on every mistake. A lesson with a heading and two lines under it still renders — the
+  learner is the one who discovers it taught nothing, and these minimums move that discovery to the
+  build. The validator beside it adds the course-level claim: 28 days, no gaps, no duplicate index,
+  no repeated title. It caught two real defects on first run — day 15's `banglaTitle` was Latin
+  script and day 28's last section had one example.
+- **Level is derived from the day, never stored.** Week 1 is basic, week 4 advanced. Writing it
+  into each entry would be a second source for something `DayIndex.weekIndex()` already decides.
+- **The self-checks reveal, they do not mark.** Marking free text against a written answer is not
+  something this course can do honestly, so it does not pretend to: each answer hides until it is
+  asked for, one at a time, and nothing is stored.
+
+`one-implementation.test.ts` shaped the wiring. Its sweep forbids anything under `src/app` from
+constructing a use case, so the screen test could not build one to stand in for `reads.ts` — which
+is `server-only` and parses the environment. The construction moved to `composition/grammar.ts`,
+where it belongs, and both `reads.ts` and the test now call the same wiring.
+
+Counts, from `pnpm content:validate`: 28 days, 129 sections, 421 examples, 114 mistakes, 112
+checks, 805 minutes of material.
+
+**D78 — the app shell is the viewport, not part of the page (user report, 2026-08-21).** The
+learner scrolled a long grammar lesson and the rail went with it: the sidebar slid off the top of
+the screen, the top bar disappeared, and below the shell sat a band of empty page background.
+
+The shell was `h-screen overflow-hidden`. That sizes it to one viewport correctly and stops there —
+it says nothing about whether the *page around it* can scroll. Anything else in `<body>` gives the
+document height the shell has to share, and in development Next mounts its own overlay node there,
+beside the shell. `overflow-hidden` governs what the shell clips, not whether the window moves.
+
+Reproduced with the real lesson markup, the real stylesheet and a 265px stub of that overlay node:
+the window scrolled 265px, the rail left the screen, and the screenshot matched the user's exactly.
+`fixed inset-0` on the same markup: `window.scrollY` stayed 0 through a `scrollTo(0, 9999)`, the
+rail stayed at `top: 0`, and `#content` scrolled internally as it always should have.
+
+It was never a grammar bug. Every screen in the shell had it and only a 2,500px page made it
+visible, which is the ordinary way a layout containment bug surfaces years after it is written.
+
+The guard is a source check rather than a rendering test, and the test says why: jsdom has no
+layout engine, so nothing in this suite can observe a scroll position. What it can hold is that the
+root is out of flow and that `#content` remains the only scrolling region.
+
 ### Open — needs the user, not me
 
 **O3 — the 24 flagged transcriptions need a human ear (F9.9).** They are listed by

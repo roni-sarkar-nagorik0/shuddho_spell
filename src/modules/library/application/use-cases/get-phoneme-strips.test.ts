@@ -57,6 +57,7 @@ function build(options: {
       Promise.resolve(options.profile === false ? null : makeLearnerProfile({ id: 'p1' })),
     findById: () => Promise.reject(new Error('not used')),
     listAll: () => Promise.reject(new Error('not used')),
+    countByRole: () => Promise.reject(new Error('only the admin roster counts roles')),
     insertIfAbsent: () => Promise.reject(new Error('not used')),
     save: () => Promise.reject(new Error('not used')),
   };

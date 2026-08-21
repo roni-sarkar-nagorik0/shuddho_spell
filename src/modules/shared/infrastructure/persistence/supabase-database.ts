@@ -32,6 +32,28 @@ const rpcEnvelopeSchema = z.object({
  * `03-database.md` is clear that policies are written as if the API did not
  * exist — which is what makes it safe for the API to hold the stronger key.
  */
+/**
+ * One equality filter, with `null` given the spelling Postgres actually means.
+ *
+ * `.eq(column, null)` serializes to `column=eq.null`, and PostgREST reads that
+ * right-hand side as the four-character *string* `null`. A `timestamptz` column
+ * rejects the cast outright — which is how `completed_at: null` surfaced — and a
+ * `text` column is worse, quietly matching nothing at all. `is.null` is the only
+ * spelling of "this column has no value", so `IDatabase` allowing `null` in `eq`
+ * is honoured here rather than at four call sites that would each have to
+ * remember.
+ */
+function applyEquality<TBuilder extends { eq: EqFilter<TBuilder>; is: IsFilter<TBuilder> }>(
+  builder: TBuilder,
+  column: string,
+  value: string | number | boolean | null,
+): TBuilder {
+  return value === null ? builder.is(column, null) : builder.eq(column, value);
+}
+
+type EqFilter<TBuilder> = (column: string, value: string | number | boolean) => TBuilder;
+type IsFilter<TBuilder> = (column: string, value: null) => TBuilder;
+
 export function toDatabase(): IDatabase {
   const client = createServiceClient();
 
@@ -41,7 +63,7 @@ export function toDatabase(): IDatabase {
     let builder = client.from(query.table).select(query.columns);
 
     for (const [column, value] of Object.entries(query.eq ?? {})) {
-      builder = builder.eq(column, value);
+      builder = applyEquality(builder, column, value);
     }
 
     if (query.whereIn !== undefined) {
@@ -50,6 +72,10 @@ export function toDatabase(): IDatabase {
 
     if (query.lte !== undefined) {
       builder = builder.lte(query.lte.column, query.lte.value);
+    }
+
+    if (query.gte !== undefined) {
+      builder = builder.gte(query.gte.column, query.gte.value);
     }
 
     if (query.gt !== undefined) {
@@ -112,11 +138,15 @@ export function toDatabase(): IDatabase {
       let builder = client.from(query.table).select('*', { count: 'exact', head: true });
 
       for (const [column, value] of Object.entries(query.eq ?? {})) {
-        builder = builder.eq(column, value);
+        builder = applyEquality(builder, column, value);
       }
 
       if (query.lte !== undefined) {
         builder = builder.lte(query.lte.column, query.lte.value);
+      }
+
+      if (query.gte !== undefined) {
+        builder = builder.gte(query.gte.column, query.gte.value);
       }
 
       if (query.gt !== undefined) {

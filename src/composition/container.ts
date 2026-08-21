@@ -44,9 +44,13 @@ import { SupabaseWordPhonemeRepository } from '@/modules/library/infrastructure/
 import { SupabaseWordRepository } from '@/modules/library/infrastructure/persistence/supabase/word.repository';
 import { type IProgramRepository } from '@/modules/program/domain/repositories/program-repository';
 import { SupabaseProgramRepository } from '@/modules/program/infrastructure/persistence/supabase/program.repository';
+import { type IDemoAttemptRepository } from '@/modules/progress/domain/repositories/demo-attempt-repository';
 import { type IMasteryRepository } from '@/modules/progress/domain/repositories/mastery-repository';
+import { type IPractiseLogRepository } from '@/modules/progress/domain/repositories/practise-log-repository';
 import { type IStreakRepository } from '@/modules/progress/domain/repositories/streak-repository';
+import { SupabaseDemoAttemptRepository } from '@/modules/progress/infrastructure/persistence/supabase/demo-attempt.repository';
 import { SupabaseMasteryRepository } from '@/modules/progress/infrastructure/persistence/supabase/mastery.repository';
+import { SupabasePractiseLogRepository } from '@/modules/progress/infrastructure/persistence/supabase/practise-log.repository';
 import { SupabaseStreakRepository } from '@/modules/progress/infrastructure/persistence/supabase/streak.repository';
 import { type IReviewItemRepository } from '@/modules/review/domain/repositories/review-item-repository';
 import { type IReviewSchedulingPolicy } from '@/modules/review/domain/services/review-scheduling-policy';
@@ -57,8 +61,10 @@ import { SupabaseLessonWriteUnit } from '@/modules/lessons/infrastructure/adapte
 import { type IClock } from '@/modules/shared/application/ports/clock';
 import { type ISpeechScorer } from '@/modules/shared/application/ports/speech-scorer';
 import { type IIdGenerator } from '@/modules/shared/application/ports/id-generator';
+import { type IRandomSource } from '@/modules/shared/application/ports/random';
 import { ConfusionMapSpeechScorer } from '@/modules/speech/infrastructure/adapters/confusion-map-speech-scorer';
 import { SystemClock } from '@/modules/shared/infrastructure/adapters/system-clock';
+import { MathRandomSource } from '@/modules/shared/infrastructure/adapters/math-random-source';
 import { UuidGenerator } from '@/modules/shared/infrastructure/adapters/uuid-generator';
 import { RetryingDatabase } from '@/modules/shared/infrastructure/persistence/retrying-database';
 import { toDatabase } from '@/modules/shared/infrastructure/persistence/supabase-database';
@@ -89,6 +95,10 @@ export interface IContainer {
   readonly reviewItems: IReviewItemRepository;
   readonly mastery: IMasteryRepository;
   readonly streaks: IStreakRepository;
+  /** 021 — the demo's own record, kept apart from `attempts`. */
+  readonly demoAttempts: IDemoAttemptRepository;
+  /** 022 — the grouped, paged view over both of them. */
+  readonly practiseLog: IPractiseLogRepository;
 
   readonly examDefinitions: IExamDefinitionRepository;
   readonly examAttempts: IExamAttemptRepository;
@@ -147,6 +157,8 @@ export interface IContainer {
 
   readonly clock: IClock;
   readonly ids: IIdGenerator;
+  /** Variety, not unpredictability — see `MathRandomSource`. One caller: the demo. */
+  readonly random: IRandomSource;
 }
 
 export function createContainer(requestId: string): IContainer {
@@ -190,6 +202,8 @@ export function createContainer(requestId: string): IContainer {
     reviewItems: new SupabaseReviewItemRepository(db),
     mastery: new SupabaseMasteryRepository(db),
     streaks: new SupabaseStreakRepository(db),
+    demoAttempts: new SupabaseDemoAttemptRepository(db),
+    practiseLog: new SupabasePractiseLogRepository(db),
 
     examDefinitions: new SupabaseExamDefinitionRepository(db),
     examAttempts: new SupabaseExamAttemptRepository(db),
@@ -230,5 +244,6 @@ export function createContainer(requestId: string): IContainer {
     db,
     clock: new SystemClock(),
     ids,
+    random: new MathRandomSource(),
   };
 }
