@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { type ReactElement } from 'react';
 import { readDictationDemoWord } from '@/composition/reads';
 import { AlphabetFamilies } from './alphabet-families';
+import { SignatureFlow } from './signature-flow';
 import { AlphabetStrip } from './alphabet-strip';
 import { DictationDemo } from './dictation-demo';
 import { StartCta } from './start-cta';
@@ -23,13 +24,15 @@ import { MILESTONES, SYLLABUS } from './syllabus';
  * control is done: no images, no web fonts beyond the four the whole product
  * already loads, real headings in order, and every table a real table.
  *
- * **Three** client components now, not one: the dictation demo, the alphabet
- * strip and the letter families. That is a deliberate revision of the budget
+ * **Four** client components now, not one: the signature flow, the dictation
+ * demo, the alphabet strip and the letter families. That is a deliberate revision of the budget
  * rather than a slip. All three are the same trade — a marketing page for a
  * *pronunciation* course that can only be read is describing the product
  * instead of being it — and the two alphabet sections ship 26 rows of text and
- * a click handler between them, not a library. All three share `useSpeech`, so
- * the second and third cost almost nothing the first had not already paid. **Static rendering itself is
+ * a click handler between them, not a library. All four share `useSpeech`, so
+ * each after the first costs almost nothing. The flow is the one real addition
+ * — it carries the microphone lifecycle — and it is the section the page is
+ * now built around, so it earns it. **Static rendering itself is
  * blocked one level up** — the root layout calls `getLocale()` and mounts
  * `SessionBoundary`, both of which read cookies, and a cookie read opts the
  * whole tree into dynamic rendering. That is a Phase 1 and Phase 3 decision, not
@@ -156,6 +159,22 @@ export default async function LandingPage(): Promise<ReactElement> {
           </div>
         </div>
       </section>
+
+      {/*
+        The section that says what the product is, placed directly under the
+        hero because everything below it is evidence for a claim this makes.
+
+        The hero's demo is one exercise; this is the loop. A spelling app marks
+        letters, and the difference being sold here is that a word fails in four
+        separate ways and each one is nameable — which is a sentence nobody
+        believes, and a thing anybody can check in ninety seconds.
+      */}
+      <Section
+        note="A word does not go wrong in one way. Hear it, spell it, say it, use it — and each of those is marked on its own, because averaging them would hide the one you actually have."
+        title="Hear → Spell → Speak → Sentence"
+      >
+        <SignatureFlow />
+      </Section>
 
       {/*
         Before the table of what goes wrong, the thing every visitor can already

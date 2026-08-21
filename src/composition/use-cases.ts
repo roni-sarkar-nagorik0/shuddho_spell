@@ -50,6 +50,7 @@ import { GetExamCatalogueUseCase } from '@/modules/exams/application/use-cases/g
 import { GetNextExamUseCase } from '@/modules/exams/application/use-cases/get-next-exam';
 import { ListExamMilestonesUseCase } from '@/modules/exams/application/use-cases/list-exam-milestones';
 import { GetDictationDemoWordUseCase } from '@/modules/library/application/use-cases/get-dictation-demo-word';
+import { ScoreDemoSpeechUseCase } from '@/modules/library/application/use-cases/score-demo-speech';
 import { GetLibraryPageUseCase } from '@/modules/library/application/use-cases/get-library-page';
 import { GetPhonemeStripsUseCase } from '@/modules/library/application/use-cases/get-phoneme-strips';
 import { GetPracticeQueueUseCase } from '@/modules/review/application/use-cases/get-practice-queue';
@@ -491,6 +492,21 @@ export function makeRunHourlyNotifications(c: IContainer): RunHourlyNotification
  */
 export function makeGetDictationDemoWord(c: IContainer): GetDictationDemoWordUseCase {
   return new GetDictationDemoWordUseCase(c.words, c.random, c.sentenceItems, c.grammarExamples);
+}
+
+/**
+ * The marketing page's spoken half.
+ *
+ * The **same** `ISpeechScorer` the lesson's speak stage takes — `c.speechScorer`
+ * — and not a demo copy of it. The claim the landing page makes is that the
+ * course marks pronunciation against the sounds Bangla lacks; a lookalike here
+ * would be advertising something the product does not do.
+ *
+ * No profile, no clock and no write unit: an anonymous visitor has nothing to
+ * record against, so this reads and returns.
+ */
+export function makeScoreDemoSpeech(c: IContainer): ScoreDemoSpeechUseCase {
+  return new ScoreDemoSpeechUseCase(c.words, c.wordPhonemes, c.phonemes, c.speechScorer);
 }
 
 /**

@@ -388,3 +388,70 @@ order of those nuclei is load-bearing: `eɪ` must be tried before `e` or *H* (/e
 renders seven tidy cards, one of which is a lie about how English is spoken — so the tests
 assert completeness (all 26 placed), disjointness (none placed twice) and the two orderings by
 name, and the wrong order was reintroduced to confirm they fail.
+
+## 19. Hear → Spell → Speak → Sentence, on the front door
+
+**Context.** The landing page could argue that this is not a spelling app; it could not
+demonstrate it. A visitor could type letters into tiles — which is what every spelling app does —
+and everything that makes the product different was prose: a table of eight misspellings, a
+five-column strip saying the day has a *Speak* stage, an FAQ line about microphones. Prose is
+where a claim goes to be disbelieved.
+
+**Decision.** The whole loop, on one word, for somebody with no account. Four stages, each marked
+separately: hear it, spell it, say it, use it in a sentence of their own.
+
+Everything in it is the shipped machinery, not a demonstration version of it:
+
+- **Spell** is the real `LetterTiles` — auto-advance, backspace that clears and steps back in one
+  press, Enter to submit, paste refused.
+- **Speak** posts the browser's transcript to `ScoreDemoSpeechUseCase`, which takes the same
+  `ISpeechScorer` the lesson's speak stage takes. `ConfusionMapSpeechScorer` is the adapter behind
+  both. A lookalike scorer here would be advertising a product that does not exist, and nothing
+  would fail: a made-up percentage renders exactly like a real one.
+- **Sentence** reuses `focusTranscript`, which exists because the Web Speech API hears the room.
+  Locating the target word inside a longer transcript is what makes a spoken sentence scorable at
+  all, and it was already there.
+
+**`POST /api/v1/demo/speech` is public and writes nothing.** That is the line the two demo
+endpoints already drew between them — reading and marking are public, writing a row against a
+person is not, which is why `demo/attempts` stays authenticated. An anonymous visitor has no
+profile to write against and 021's `profile_id` is `not null`, so this reads three tables and
+returns. It is rate-limited harder than the word endpoint, because it runs the confusion map.
+
+**A transcript, never audio.** `07-speech-scoring.md` requires the server to hold no recording of
+anybody's voice. It is enforced by the request schema having no field a blob could arrive in, and
+asserted by a test on the keys of the posted body — the only place that constraint is visible.
+
+**Three things it refuses to claim.**
+
+1. **No grammar mark on the sentence**, and a line on screen saying so. A freely spoken sentence
+   has no target to mark against; inside the course `SentenceItem.accepts` has a reviewed answer
+   and every accepted alternative, and here there is nothing. A confident number over that absence
+   would be the least defensible thing on a page selling English precision. What it reports
+   instead is what a browser can establish: the word was used, it was a sentence rather than a
+   fragment, and the word's pronunciation inside it.
+2. **A typed sentence gets no pronunciation score at all.** `sentence-written` is a mode of its
+   own, returns `scorePercent: null`, and does not even load the phoneme inventory. Running the
+   confusion map over typed text produces a number that looks exactly like a pronunciation score
+   and is not one.
+3. **The three marks are never averaged.** They measure different failures. A learner who spells
+   perfectly and cannot say the word has a specific, fixable problem that a combined 70% hides —
+   which is the same reason the mastery matrix keeps its axes apart.
+
+**Inflections.** "Put *visit* in a sentence" is answered with "I **visited** my friend", and a
+whole-word check would call that a miss and be wrong about the only thing being tested. So
+`usesWordOrForm` **generates** the regular forms rather than stripping the token — a stemmer
+matches *organ* to *organisation*, which on this page is the wrong kind of generosity. The three
+spelling adjustments are the course's own rules (`y_to_i`, `doubling_1_1_1`, the silent-e drop).
+Irregulars (*go* → *went*) are not guessed at; the honest report is that the word was not found.
+
+**Cost, and one thing deferred.** The microphone lifecycle is now a hook,
+`components/lesson/use-microphone.ts`, and the lesson's `speak-stage.tsx` has **not** been moved
+onto it. That is deliberate: it folds a network failure into the same `error` state as a
+microphone failure — arguably wrong, and not the hook's shape — and it has no test to move it
+under. It is a change worth making on its own rather than inside one for a marketing page, and
+the file now says so where the next person will read it. Anything new that opens a microphone
+uses the hook.
+
+The landing page is also up to **four** client components. The flow is the one real addition
+— it carries the recogniser — and it is the section the page is now built around.

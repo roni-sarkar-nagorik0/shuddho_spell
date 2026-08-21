@@ -35,6 +35,10 @@ import {
 import { completeOnboardingBodySchema } from '@/modules/auth/presentation/dto/onboarding-requests';
 import { verifyParamsSchema } from '@/modules/certificates/presentation/dto/certificate-requests';
 import { libraryQuerySchema } from '@/modules/library/presentation/dto/library-requests';
+import {
+  demoSpeechBodySchema,
+  demoSpeechScoreSchema,
+} from '@/modules/library/presentation/dto/demo-speech.request';
 import { demoWordSchema } from '@/modules/library/presentation/dto/demo-word.response';
 import {
   demoAttemptResultSchema,
@@ -137,6 +141,19 @@ registry.registerPath({
   path: '/api/v1/demo/word',
   summary: 'One random word from the corpus for the landing page demo. Public; no account needed.',
   responses: ok(demoWordSchema, 'A word, or null when the corpus is not seeded.'),
+});
+
+// The spoken half, and public like the read half rather than like the write
+// half — it marks an attempt and stores nothing. A **transcript**, never audio:
+// the browser transcribes, and 07-speech-scoring.md requires the server to hold
+// no recording of anybody's voice.
+registry.registerPath({
+  method: 'post',
+  path: '/api/v1/demo/speech',
+  summary:
+    'Score one spoken attempt for the landing page demo. Public; a transcript, never audio.',
+  request: { body: { content: { 'application/json': { schema: demoSpeechBodySchema } } } },
+  responses: ok(demoSpeechScoreSchema, 'The score, with what to fix.'),
 });
 
 // The write half of the demo, and unlike the read half it needs a session:

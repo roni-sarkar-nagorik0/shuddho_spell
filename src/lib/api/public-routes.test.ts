@@ -46,6 +46,14 @@ const PUBLIC_ROUTES: readonly string[] = [
   // count — so it demonstrates the corpus without publishing it. Rate-limited
   // by address, because there is no learner id to charge it to.
   'src/app/api/v1/demo/word/route.ts',
+  // The spoken half of the same demo, and public for the same reason: a
+  // pronunciation try-out behind a sign-up is not a try-out. It **writes
+  // nothing** — that is the line these two demo endpoints draw between them,
+  // and `demo/attempts` stays authenticated because it writes a row against a
+  // person. It receives a transcript and never audio, which is a property of
+  // its schema rather than of anyone's discipline. Rate-limited harder than the
+  // word endpoint, because it reads three tables and runs the confusion map.
+  'src/app/api/v1/demo/speech/route.ts',
 ];
 
 function routeFiles(directory: string): readonly string[] {
