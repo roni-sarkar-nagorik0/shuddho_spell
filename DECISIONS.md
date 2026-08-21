@@ -455,3 +455,64 @@ uses the hook.
 
 The landing page is also up to **four** client components. The flow is the one real addition
 — it carries the recogniser — and it is the section the page is now built around.
+
+---
+
+## 20. Word families — a second corpus, kept apart from the first
+
+*IELTS reference under `/library/families`. 412 roots, 2,299 words, none of them taught.*
+
+The ask was "one root, many words, and the rule that connects them — 1,800+ words, IELTS only,
+under the dashboard". Four decisions carried the weight.
+
+**Two corpora, not one.** `content/word-families/` is a separate directory from `content/week-*`
+and shares no field, no cross-reference and no seed path with it. The 28-day corpus is *taught*:
+every word in it is drilled, examined, and seeded into `words`, and it feeds the exam distractor
+pool. Folding 1,800 new words into it would have put untaught vocabulary into the daily dictation
+queue and into exam distractors — a change to the course, made by accident, while adding a
+reference screen. The only bridge is one boolean: `ICourseWordIndex.has`, which marks the 307
+words that appear in both, so a learner can see that `achieve` is on the syllabus and
+`achievement` is not.
+
+**The rule is derived, never written down.** `changeBetween(root, form)` compares two strings and
+reports what happened: `-e -ion`, `y→i -ness`, `double -ing`, `un-`, or `irregular`. The
+alternative was 1,887 hand-written labels, and the one thing that set would certainly contain is a
+label that disagrees with the word it sits under. The order of the tests inside it is
+load-bearing: doubling is checked before a plain suffix, because `stopping` starts with `stop` and
+the naive reading prints a suffix `-ping` that English does not have, under a heading that says
+*the rule*. A prefix is only accepted when the remainder still relates to the root, otherwise
+`interpret` grows an `inter-`.
+
+**It says `irregular` rather than inventing a rule.** 309 of the 1,887 derivations are stem shifts
+— `speak → spoke`, `science → scientific`, `prove → proof` — and they are labelled as such. A
+spelling product cannot afford a confident wrong rule, and "no regular rule connects these" is
+both true and useful.
+
+**No IPA.** The 1,240 programme words carry checked IPA because a lesson marks pronunciation
+against it. These 2,299 do not, and filling the column would have meant inventing 2,299 phonetic
+transcriptions for the one screen whose entire subject is being right about English. The screen
+speaks a word with the browser's voice and links to the library row when the word is one of the
+1,240 — where the IPA has been checked.
+
+**What the build enforces.** `pnpm content:validate` fails on a duplicate word across families, a
+rule code that is not one of the 24, a family of fewer than two forms, a member equal to its own
+root, and a corpus that has fallen below `WORD_FAMILY_MINIMUM_WORDS`. That last one exists because
+"1,800+ words" is a claim printed on a screen: a de-duplication that quietly took the corpus to
+1,600 would leave the claim standing and untrue, and nothing else in the build would notice. A
+test on the real content additionally holds that any family naming one of the three *mechanical*
+rules shows it — a card headed *the y becomes an i* with no word where a y became an i is a
+heading over nothing. The other twenty-one rules are about which letters are chosen and cannot be
+checked by comparing strings, so they are not: a test that guessed would fail on correct content
+and be switched off.
+
+**Two numbers, on screen at once.** The matched set and the whole corpus answer different
+questions, and the topic index is always over the whole corpus — it is navigation, and a door that
+vanishes because of the current filter is a door the learner cannot find their way back through.
+The rule filter offers only the rules this corpus demonstrates: four of the 24 are grammar, no
+family shows them, and offering them would make the screen look broken in the one place it is
+working correctly.
+
+**Content, so a module and not a table.** `IWordFamilySource` and `ICourseWordIndex` are ports over
+compiled modules, the same shape as `IGrammarExampleSource`. Both derive once at construction. The
+one query the screen makes is `rule_families.listAll()`, for the statements — so the rule printed
+above a family is the same sentence the lesson screens print, rather than a copy that drifts.

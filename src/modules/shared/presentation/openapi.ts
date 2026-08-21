@@ -35,6 +35,7 @@ import {
 import { completeOnboardingBodySchema } from '@/modules/auth/presentation/dto/onboarding-requests';
 import { verifyParamsSchema } from '@/modules/certificates/presentation/dto/certificate-requests';
 import { libraryQuerySchema } from '@/modules/library/presentation/dto/library-requests';
+import { wordFamilyQuerySchema } from '@/modules/library/presentation/dto/word-family-requests';
 import {
   demoSpeechBodySchema,
   demoSpeechScoreSchema,
@@ -241,6 +242,15 @@ registry.registerPath({
   summary: 'A keyset page of the word library, annotated with the learner’s own accuracy.',
   request: { query: libraryQuerySchema },
   responses: ok(z.unknown(), 'The page, and the cursor for the next one.'),
+});
+
+registry.registerPath({
+  method: 'get',
+  path: '/api/v1/library/families',
+  summary:
+    'A page of the IELTS word families — a root, the words built from it, and the spelling rule each form follows. Reference content, identical for every learner; authenticated because it is what a subscriber paid for, not because it is private.',
+  request: { query: wordFamilyQuerySchema },
+  responses: ok(z.unknown(), 'The page, the topic and rule indexes, and the cursor for the next one.'),
 });
 
 registry.registerPath({

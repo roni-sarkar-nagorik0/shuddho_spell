@@ -36,7 +36,8 @@
     "expand": "Expand",
     "admin": "Admin",
     "myWords": "My words",
-    "grammar": "Grammar"
+    "grammar": "Grammar",
+    "wordFamilies": "Word families"
   },
   "dashboard": {
     "dayOf": "Day {day} of {total}",

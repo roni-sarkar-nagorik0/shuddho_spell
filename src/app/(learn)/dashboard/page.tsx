@@ -289,6 +289,37 @@ export default async function DashboardPage(): Promise<ReactElement> {
         )}
       </section>
 
+      {/*
+        The word-family reference.
+        No count is printed here. The number is real and worth showing, but it
+        costs a use-case run and a `rule_families` read to compute, and this is
+        the hottest page in the app — so it is shown on the families screen
+        itself, where it is already in hand. A card that invited a click with a
+        figure hard-coded beside it would be a second source of truth for a
+        claim about the size of the product.
+      */}
+      <section className="card col-span-12 lg:col-span-5">
+        <PanelHeader
+          action={
+            <Link className="text-[11px] text-primary-900" href="/library/families">
+              Open
+            </Link>
+          }
+          note="IELTS reference"
+          title="Word families"
+        />
+        <div className="flex flex-col gap-2 p-4 text-muted">
+          <p>
+            One root, and every word English builds from it —{' '}
+            <span className="text-primary-900">happy · happier · happily · happiness</span>.
+          </p>
+          <p>
+            Four words, one rule: the y becomes an i. Learn it once here and it carries to every
+            word that ends the same way.
+          </p>
+        </div>
+      </section>
+
       {/* The phoneme matrix — the same component /progress renders for rules. */}
       <section className="card col-span-12">
         <PanelHeader

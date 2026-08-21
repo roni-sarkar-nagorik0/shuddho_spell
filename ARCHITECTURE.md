@@ -139,7 +139,8 @@ ShuddhoSpell/
     app/                             Next.js App Router — a routing table, nothing more
       (marketing)/                   /  pricing  faq
       (learn)/                       dashboard  program  lesson/[day]  practice
-                                     weak-spots  library  progress  exams  exams/[code]
+                                     weak-spots  library  library/families  progress
+                                     exams  exams/[code]
                                      exams/attempt/[id]  exams/result/[id]
                                      exams/review/[id]  certificate/[id]  onboarding
       login/
@@ -239,6 +240,8 @@ export interface IWordRepository {
 | Token | Interface | Module | Implemented in | Phase |
 | --- | --- | --- | --- | --- |
 | `WORD_REPOSITORY` | `IWordRepository` | library | `infrastructure/persistence/supabase/word.repository` | 5 |
+| `WORD_FAMILY_SOURCE` | `IWordFamilySource` | library | `infrastructure/persistence/content/word-family.source` | 13 |
+| `COURSE_WORD_INDEX` | `ICourseWordIndex` | library | `infrastructure/persistence/content/course-word.index` | 13 |
 | `PROGRAM_REPOSITORY` | `IProgramRepository` | program | `infrastructure/persistence/supabase/program.repository` | 5 |
 | `LESSON_REPOSITORY` | `ILessonRepository` | lessons | `infrastructure/persistence/supabase/lesson.repository` | 5 |
 | `ATTEMPT_REPOSITORY` | `IAttemptRepository` | lessons | `infrastructure/persistence/supabase/attempt.repository` | 5 |
