@@ -69,9 +69,20 @@ async function main() {
 
   const connectionString = process.env['DATABASE_URL'];
   if (connectionString === undefined || connectionString === '') {
+    // Where to put it depends on where you are, and telling somebody on a CI
+    // runner to edit `.env.local` sends them looking for a file that will never
+    // exist there. The value is the same in both places; the instruction is not.
+    const onCi = process.env['GITHUB_ACTIONS'] === 'true' || process.env['CI'] === 'true';
+
     console.error(
-      'DATABASE_URL is not set. Put it in .env.local — Supabase dashboard →\n' +
-        'Project Settings → Database → Connection string → URI. See README → Getting started.',
+      onCi
+        ? 'DATABASE_URL is not set. The workflow supplies it from the\n' +
+            'PRODUCTION_DATABASE_URL secret — add it under Settings → Secrets and\n' +
+            'variables → Actions, or as an environment secret on the environment\n' +
+            'this job runs in. The value is the Supabase pooler URI: Project\n' +
+            'Settings → Database → Connection string → URI.'
+        : 'DATABASE_URL is not set. Put it in .env.local — Supabase dashboard →\n' +
+            'Project Settings → Database → Connection string → URI. See README → Getting started.',
     );
     process.exit(1);
   }

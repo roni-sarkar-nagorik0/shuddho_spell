@@ -34,6 +34,21 @@ jobs:
     environment: production-database
 
     steps:
+      # First, before anything is installed. An absent credential is a
+      # configuration error, and finding it out three minutes in — from a
+      # script whose message tells you to edit `.env.local`, which is advice for
+      # a laptop and nonsense on a runner — is how a deploy wastes a reviewer's
+      # approval. The value is never echoed; only its presence is.
+      - name: Check the migration credential is configured
+        env:
+          DATABASE_URL: ${{ secrets.PRODUCTION_DATABASE_URL }}
+        run: |
+          if [ -z "$DATABASE_URL" ]; then
+            echo "::error title=PRODUCTION_DATABASE_URL is not set::Add it under Settings → Secrets and variables → Actions, or as an environment secret on 'production-database'. The value is the Supabase pooler URI: Project Settings → Database → Connection string → URI."
+            exit 1
+          fi
+          echo "PRODUCTION_DATABASE_URL is present."
+
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
@@ -61,6 +76,43 @@ jobs:
     needs: migrate
 
     steps:
+      # Every required variable at once, named, before anything is installed.
+      #
+      # `env.public.ts` and `env.server.ts` validate at boot with Zod, so a
+      # missing one already fails the build — but it fails on the *first* one it
+      # meets, which turns configuring a deploy into five pushes. The five below
+      # are exactly the ones those two schemas mark required; nothing optional
+      # is demanded here. No value is echoed.
+      - name: Check the release secrets are configured
+        env:
+          NEXT_PUBLIC_APP_URL: ${{ secrets.NEXT_PUBLIC_APP_URL }}
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          DATABASE_URL: ${{ secrets.PRODUCTION_DATABASE_URL }}
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          missing=""
+          for name in NEXT_PUBLIC_APP_URL NEXT_PUBLIC_SUPABASE_URL \
+                      NEXT_PUBLIC_SUPABASE_ANON_KEY SUPABASE_SERVICE_ROLE_KEY DATABASE_URL; do
+            if [ -z "${!name}" ]; then
+              missing="$missing $name"
+            fi
+          done
+
+          # Optional to the schema, but the two cron routes refuse every request
+          # without it — `withCron` treats an absent secret as misconfiguration
+          # rather than waving the caller through. A warning, not a failure.
+          if [ -z "$CRON_SECRET" ]; then
+            echo "::warning title=CRON_SECRET is not set::The scheduled jobs will answer 401 to Vercel Cron until it is."
+          fi
+
+          if [ -n "$missing" ]; then
+            echo "::error title=Missing release secrets::$missing — add them under Settings → Secrets and variables → Actions. DATABASE_URL comes from the secret named PRODUCTION_DATABASE_URL."
+            exit 1
+          fi
+          echo "All required release secrets are present."
+
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4

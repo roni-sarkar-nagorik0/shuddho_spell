@@ -61,6 +61,53 @@ const SECURITY_HEADERS = [
   },
 ];
 
+/**
+ * Refuse to build a production deployment that points its own front door at a
+ * laptop.
+ *
+ * `NEXT_PUBLIC_APP_URL` is not decoration. `auth/signin` builds the OAuth
+ * `redirect_to` out of it, so a deployment carrying `http://localhost:3000`
+ * asks Supabase to send every learner who signs in back to their own machine —
+ * where nothing is listening. It also decides the `secure` flag on the session
+ * cookie (`session-cookie-options.ts`), so the same mistake ships cookies that
+ * are not marked secure over HTTPS.
+ *
+ * It failed silently once, in production, and cost an afternoon: sign-in worked
+ * locally, the deploy went green, and the only symptom was a browser landing on
+ * `localhost:3000/auth/callback?code=…` with nothing there.
+ *
+ * **Gated on `VERCEL_ENV === 'production'`, deliberately.** `NODE_ENV` is
+ * `production` during any `next build`, including one run on a laptop against
+ * `.env`, and refusing those would make it impossible to test a production
+ * build locally. Preview deployments get a different url per deployment and are
+ * left alone.
+ */
+function assertProductionUrl(): void {
+  if (process.env['VERCEL_ENV'] !== 'production') {
+    return;
+  }
+
+  const url = process.env['NEXT_PUBLIC_APP_URL'] ?? '';
+  const isLocal = /^https?:\/\/(localhost|127\.0\.0\.1|\[::1\])(:|\/|$)/u.test(url);
+
+  if (url === '' || isLocal || !url.startsWith('https://')) {
+    throw new Error(
+      [
+        `NEXT_PUBLIC_APP_URL is ${url === '' ? 'not set' : `"${url}"`}, which cannot be right for a production deployment.`,
+        '',
+        'Set it to this deployment\'s own origin — Vercel → Settings → Environment',
+        'Variables, scope Production — and redeploy. A NEXT_PUBLIC_* variable is',
+        'inlined at build time, so changing it without a new build changes nothing.',
+        '',
+        'The same origin has to be in Supabase → Authentication → URL Configuration,',
+        'both as the Site URL and in the Redirect URLs allow-list as <origin>/auth/callback.',
+      ].join('\n'),
+    );
+  }
+}
+
+assertProductionUrl();
+
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
