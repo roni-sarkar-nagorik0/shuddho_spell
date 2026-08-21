@@ -22,6 +22,11 @@ export function isPublicPage(pathname: string): boolean {
 /**
  * Runs before every page. Two jobs, in this order.
  *
+ * The file used to be `middleware.ts` and the export used to be `middleware`.
+ * Next 16 renamed the convention to `proxy` and deprecates the old name — the
+ * behaviour is unchanged, and the rename is taken now rather than left to be
+ * forced by 17. Everything below is the same code under a different name.
+ *
  * First it refreshes the session. `getUser()` rather than `getSession()`: the
  * second one only decodes whatever cookie arrived, while the first verifies it
  * with the auth server and mints a new access token when the old one has
@@ -41,7 +46,7 @@ export function isPublicPage(pathname: string): boolean {
  * and
  * `/api/cron` authenticates with a bearer secret rather than a session.
  */
-export async function middleware(request: NextRequest): Promise<NextResponse> {
+export async function proxy(request: NextRequest): Promise<NextResponse> {
   const response = NextResponse.next({ request });
   const supabase = createMiddlewareClient(request, response);
 
@@ -67,8 +72,9 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
  * Edge, not Node. `next build` warns that `@supabase/supabase-js` reads
  * `process.version`, which the Edge Runtime does not provide — the check falls
  * through to the global-fetch path, which is the right one there anyway. The
- * only way to silence it is `experimental.nodeMiddleware`, and an experimental
- * flag is a worse thing to depend on than a warning that is understood. D24.
+ * only way to silence it is the Node runtime for this file, which is still an
+ * experimental flag, and an experimental flag is a worse thing to depend on
+ * than a warning that is understood. D24.
  */
 export const config = {
   matcher: [

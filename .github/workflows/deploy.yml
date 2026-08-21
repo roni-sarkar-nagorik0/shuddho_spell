@@ -12,6 +12,11 @@ on:
     branches: [main]
   workflow_dispatch:
 
+env:
+  # The same runtime CI verifies on. Two pipelines on two Node versions is a
+  # way of proving one thing and shipping another.
+  NODE_VERSION: '24'
+
 concurrency:
   group: deploy-production
   # Never cancel a deploy in flight. Cancelling between the migration and the
@@ -31,11 +36,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
-        with:
-          version: 10
       - uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: ${{ env.NODE_VERSION }}
           cache: pnpm
 
       - name: Install
@@ -60,11 +63,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
-        with:
-          version: 10
       - uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: ${{ env.NODE_VERSION }}
           cache: pnpm
 
       - name: Install

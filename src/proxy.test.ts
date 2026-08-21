@@ -26,7 +26,7 @@ vi.mock('@/lib/supabase/session-client', () => ({
   },
 }));
 
-const { config, isPublicPage, middleware } = await import('./middleware');
+const { config, isPublicPage, proxy } = await import('./proxy');
 
 function get(path: string): NextRequest {
   return new NextRequest(`https://shuddhospell.test${path}`);
@@ -45,14 +45,14 @@ describe('route protection', () => {
   });
 
   it('sends an unauthenticated request for a protected page to /login', async () => {
-    const response = await middleware(get('/dashboard'));
+    const response = await proxy(get('/dashboard'));
 
     expect(response.status).toBe(307);
     expect(response.headers.get('location')).toBe('https://shuddhospell.test/login');
   });
 
   it('protects onboarding too — the callback sends new learners there', async () => {
-    const response = await middleware(get('/onboarding'));
+    const response = await proxy(get('/onboarding'));
 
     expect(response.headers.get('location')).toBe('https://shuddhospell.test/login');
   });
@@ -60,7 +60,7 @@ describe('route protection', () => {
   it('lets a signed-in learner through to the page they asked for', async () => {
     harness.user = { id: 'user-1' };
 
-    const response = await middleware(get('/dashboard'));
+    const response = await proxy(get('/dashboard'));
 
     expect(response.headers.get('location')).toBeNull();
     expect(response.status).toBe(200);
@@ -68,7 +68,7 @@ describe('route protection', () => {
 
   it('leaves the public pages open to nobody in particular', async () => {
     for (const path of ['/', '/login', '/pricing', '/faq', '/auth/callback', '/auth/signin', '/auth/signout']) {
-      const response = await middleware(get(path));
+      const response = await proxy(get(path));
 
       expect(response.headers.get('location'), `${path} was not public`).toBeNull();
     }
@@ -94,7 +94,7 @@ describe('session refresh', () => {
   });
 
   it('refreshes on a public page too, so a valid session does not go stale on the landing page', async () => {
-    await middleware(get('/'));
+    await proxy(get('/'));
 
     expect(harness.requests).toBe(1);
   });
@@ -103,7 +103,7 @@ describe('session refresh', () => {
     harness.user = { id: 'user-1' };
     harness.refreshed = [{ name: 'sb-project-auth-token', value: 'a-newer-token' }];
 
-    const response = await middleware(get('/dashboard'));
+    const response = await proxy(get('/dashboard'));
 
     expect(response.cookies.get('sb-project-auth-token')?.value).toBe('a-newer-token');
   });
@@ -112,7 +112,7 @@ describe('session refresh', () => {
     harness.user = null;
     harness.refreshed = [{ name: 'sb-project-auth-token', value: '' }];
 
-    const response = await middleware(get('/dashboard'));
+    const response = await proxy(get('/dashboard'));
 
     expect(response.headers.get('location')).toBe('https://shuddhospell.test/login');
     expect(response.cookies.get('sb-project-auth-token')?.value).toBe('');
