@@ -49,6 +49,185 @@ const LEDGER = `
   );
 `;
 
+/**
+ * Postgres URIs with a raw `?`, `#` or `/` in the password are not valid URLs.
+ * `pg` parses them with `new URL()`, which throws `Invalid URL`. The userinfo
+ * is encoded; the rest of the URI is left alone. A URI that already parses is
+ * returned unchanged so an already-encoded password is not double-encoded.
+ *
+ * @param {string} raw
+ * @returns {string}
+ */
+function normaliseDatabaseUrl(raw) {
+  try {
+    // Throws if the password contains reserved characters.
+    new URL(raw);
+    return raw;
+  } catch {
+    const match = /^(postgres(?:ql)?:\/\/)([^@]*)(@[\s\S]+)$/u.exec(raw);
+    if (match === null) {
+      throw new Error('DATABASE_URL is not a postgres URI');
+    }
+
+    const scheme = match[1];
+    const userinfo = match[2];
+    const rest = match[3];
+    const colon = userinfo.indexOf(':');
+
+    if (colon === -1) {
+      return `${scheme}${encodeURIComponent(userinfo)}${rest}`;
+    }
+
+    const user = userinfo.slice(0, colon);
+    const password = userinfo.slice(colon + 1);
+    return `${scheme}${encodeURIComponent(user)}:${encodeURIComponent(password)}${rest}`;
+  }
+}
+
+/**
+ * Direct `db.<ref>.supabase.co` hosts are IPv6-only. Session poolers have IPv4
+ * addresses. These are the regions Supabase currently offers; the first match
+ * that accepts the project's password is the project's region.
+ */
+const POOLER_REGIONS = Object.freeze([
+  'ap-south-1',
+  'ap-southeast-1',
+  'us-east-1',
+  'eu-west-1',
+  'ap-northeast-1',
+  'eu-central-1',
+  'us-west-1',
+  'ap-southeast-2',
+  'us-east-2',
+  'ca-central-1',
+  'sa-east-1',
+  'eu-west-2',
+  'ap-northeast-2',
+  'eu-north-1',
+]);
+
+/**
+ * @param {string} connectionString
+ * @returns {pg.Client}
+ */
+function createClient(connectionString) {
+  const client = new pg.Client({
+    connectionString,
+    ssl: { rejectUnauthorized: false },
+    connectionTimeoutMillis: 5000,
+  });
+  client.on('notice', (notice) => {
+    console.log(`  notice: ${notice.message ?? ''}`);
+  });
+  return client;
+}
+
+/**
+ * @param {string} connectionString
+ * @returns {Promise<pg.Client | null>}
+ */
+async function connectOnce(connectionString) {
+  const client = createClient(connectionString);
+  try {
+    await client.connect();
+    return client;
+  } catch {
+    await client.end().catch(() => undefined);
+    return null;
+  }
+}
+
+/**
+ * Session-pooler URIs for a project ref, covering aws-0 and aws-1 host prefixes.
+ *
+ * @param {string} ref
+ * @param {string} password
+ * @param {string} database
+ * @returns {string[]}
+ */
+function poolerUrls(ref, password, database) {
+  const user = encodeURIComponent(`postgres.${ref}`);
+  const pass = encodeURIComponent(password);
+  const db = encodeURIComponent(database);
+  /** @type {string[]} */
+  const urls = [];
+  for (const region of POOLER_REGIONS) {
+    for (const prefix of ['aws-0', 'aws-1']) {
+      urls.push(
+        `postgresql://${user}:${pass}@${prefix}-${region}.pooler.supabase.com:5432/${db}`,
+      );
+    }
+  }
+  return urls;
+}
+
+/**
+ * Connect to DATABASE_URL, falling back to the Session pooler when the direct
+ * host does not resolve (IPv6-only `db.<ref>.supabase.co` on an IPv4 network).
+ *
+ * @param {string} connectionString
+ * @returns {Promise<pg.Client>}
+ */
+async function connectDatabase(connectionString) {
+  const direct = await connectOnce(connectionString);
+  if (direct !== null) {
+    return direct;
+  }
+
+  let parsed;
+  try {
+    parsed = new URL(connectionString);
+  } catch {
+    parsed = null;
+  }
+
+  const host = parsed?.hostname ?? '';
+  const isDirect = /^db\.[^.]+\.supabase\.co$/u.test(host);
+
+  if (parsed === null || !isDirect) {
+    throw new Error('could not reach DATABASE_URL');
+  }
+
+  const ref = host.slice('db.'.length, host.length - '.supabase.co'.length);
+  const password = decodeURIComponent(parsed.password);
+  const database = decodeURIComponent(parsed.pathname.replace(/^\//u, '')) || 'postgres';
+
+  console.log(
+    'Direct host did not resolve (IPv6-only). Trying the Session pooler…',
+  );
+
+  const urls = poolerUrls(ref, password, database);
+  /** @type {pg.Client[]} */
+  const opened = [];
+
+  try {
+    const winner = await Promise.any(
+      urls.map(async (url) => {
+        const client = await connectOnce(url);
+        if (client === null) {
+          throw new Error('miss');
+        }
+        opened.push(client);
+        return client;
+      }),
+    );
+
+    for (const extra of opened) {
+      if (extra !== winner) {
+        await extra.end().catch(() => undefined);
+      }
+    }
+
+    console.log('Connected via Session pooler.');
+    return winner;
+  } catch {
+    for (const extra of opened) {
+      await extra.end().catch(() => undefined);
+    }
+    throw new Error('could not reach DATABASE_URL or the Session pooler');
+  }
+}
+
 async function main() {
   const dryRun = process.argv.includes('--dry-run');
   const migrations = loadMigrations();
@@ -67,8 +246,8 @@ async function main() {
     return;
   }
 
-  const connectionString = process.env['DATABASE_URL'];
-  if (connectionString === undefined || connectionString === '') {
+  const rawConnectionString = process.env['DATABASE_URL'];
+  if (rawConnectionString === undefined || rawConnectionString === '') {
     // Where to put it depends on where you are, and telling somebody on a CI
     // runner to edit `.env.local` sends them looking for a file that will never
     // exist there. The value is the same in both places; the instruction is not.
@@ -87,27 +266,26 @@ async function main() {
     process.exit(1);
   }
 
-  const client = new pg.Client({ connectionString, ssl: { rejectUnauthorized: false } });
-  // Postgres RAISE NOTICE is how a migration reports a soft failure (pg_cron on a
-  // plan that cannot install it). Swallowing it would hide a real Phase 7 blocker.
-  client.on('notice', (notice) => {
-    console.log(`  notice: ${notice.message ?? ''}`);
-  });
+  const connectionString = normaliseDatabaseUrl(rawConnectionString);
+  if (connectionString !== rawConnectionString) {
+    console.log(
+      'Encoded reserved characters in the DATABASE_URL password so it is a valid URI.',
+    );
+  }
 
+  /** @type {pg.Client} */
+  let client;
   try {
-    await client.connect();
+    client = await connectDatabase(connectionString);
   } catch (error) {
-    const code = error instanceof Error && 'code' in error ? String(error.code) : '';
     const message = error instanceof Error ? error.message : String(error);
     console.error(`\nCould not connect to the database: ${message}`);
-    if (code === 'ENOTFOUND' || code === 'ETIMEDOUT' || code === 'ENETUNREACH') {
-      console.error(
-        '\nSupabase serves the direct host (db.<ref>.supabase.co) over IPv6 only. On an\n' +
-          'IPv4-only network it is unreachable. Use the Session pooler URI instead:\n' +
-          '  Supabase → Project Settings → Database → Connection string → Session pooler\n' +
-          '  postgresql://postgres.<ref>:<password>@aws-0-<region>.pooler.supabase.com:5432/postgres',
-      );
-    }
+    console.error(
+      '\nSupabase serves the direct host (db.<ref>.supabase.co) over IPv6 only. On an\n' +
+        'IPv4-only network it is unreachable. Use the Session pooler URI instead:\n' +
+        '  Supabase → Project Settings → Database → Connection string → Session pooler\n' +
+        '  postgresql://postgres.<ref>:<password>@aws-0-<region>.pooler.supabase.com:5432/postgres',
+    );
     process.exit(1);
   }
 
@@ -149,6 +327,12 @@ async function main() {
         console.error(`\n${migration.name} failed and was rolled back:\n  ${message}`);
         process.exit(1);
       }
+    }
+
+    try {
+      await client.query("notify pgrst, 'reload schema'");
+    } catch {
+      // Hosted PostgREST often reloads on its own; this is a nudge, not a gate.
     }
 
     console.log(
