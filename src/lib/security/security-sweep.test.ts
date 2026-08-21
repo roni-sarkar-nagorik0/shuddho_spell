@@ -163,6 +163,11 @@ describe('no secret can reach the client bundle (F13.6)', () => {
 
 describe('security headers are configured (F13.6)', () => {
   const config = readFileSync('next.config.ts', 'utf8');
+  // The policy itself moved out of the config when it grew a per-request
+  // nonce, which a build-time header cannot carry. `next.config.ts` still names
+  // every other header, and still sets a nonce-less CSP on `/api`.
+  const csp = readFileSync('src/lib/security/content-security-policy.ts', 'utf8');
+  const proxy = readFileSync('src/proxy.ts', 'utf8');
 
   it.each([
     'Content-Security-Policy',
@@ -176,14 +181,47 @@ describe('security headers are configured (F13.6)', () => {
   });
 
   it('never allows unsafe-inline scripts in production', () => {
-    // The development branch may; the production string may not. This asserts
-    // the guard exists rather than that the string is absent, because the
-    // development branch legitimately contains it.
-    expect(config).toMatch(/isDevelopment \? " 'unsafe-eval' 'unsafe-inline'" : ''/u);
+    // The development branch may; production may not. Asserted as a guard on
+    // the branch rather than the absence of the string, because the development
+    // branch legitimately contains it.
+    expect(csp).toMatch(/if \(isDevelopment\) \{\s*scriptSources\.push\("'unsafe-eval'", "'unsafe-inline'"\);/u);
   });
 
-  it("forbids framing outright", () => {
-    expect(config).toContain("frame-ancestors 'none'");
-    expect(config).toContain("object-src 'none'");
+  /**
+   * The regression this whole file failed to catch once.
+   *
+   * Production shipped `script-src 'self'` with no nonce for weeks. Next streams
+   * every Server Component's payload as an inline `<script>`, so the policy
+   * blocked the application's own bundle: React never hydrated and not one
+   * `'use client'` component on the site worked. Nothing failed — the page
+   * rendered, and was simply dead.
+   *
+   * A string assertion cannot prove hydration. What it can prove is that the
+   * production branch still grants a nonce, which is the one thing that was
+   * missing.
+   */
+  it('grants a nonce to production scripts', () => {
+    expect(csp).toContain("`'nonce-${nonce}'`");
+    expect(proxy).toContain('mintNonce()');
+  });
+
+  /**
+   * Every CSP header present is enforced, and a script must satisfy all of
+   * them. A second policy would not be a second opinion — it would silently
+   * cancel the nonce, which is exactly how this looks when it is broken.
+   */
+  it('builds the policy in one place', () => {
+    const builders = SOURCES.filter((path) => /script-src/u.test(read(path))).filter(
+      (path) => !path.endsWith('.test.ts'),
+    );
+
+    expect(builders, 'more than one file writes a script-src').toStrictEqual([
+      'src/lib/security/content-security-policy.ts',
+    ]);
+  });
+
+  it('forbids framing outright', () => {
+    expect(csp).toContain("frame-ancestors 'none'");
+    expect(csp).toContain("object-src 'none'");
   });
 });

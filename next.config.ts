@@ -1,54 +1,27 @@
 import createNextIntlPlugin from 'next-intl/plugin';
 import type { NextConfig } from 'next';
+import { contentSecurityPolicy } from './src/lib/security/content-security-policy';
 
 const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts');
 
 /**
- * Content-Security-Policy, and the four headers around it (F13.6).
+ * The five static security headers. **`Content-Security-Policy` is not among
+ * them any more**, and that is the point of this comment.
  *
- * `'unsafe-inline'` on `style-src` is not laziness: Next injects the critical
- * CSS for a Server Component as an inline `<style>`, and there is no nonce
- * plumbing for it that survives streaming. Scripts are the half that matters
- * and they are **not** given `unsafe-inline` outside development, where React
- * Refresh needs `unsafe-eval` and will not run without it.
+ * CSP now carries a per-request nonce, which a build-time header cannot have,
+ * so it is set in `proxy.ts` — see `src/lib/security/content-security-policy.ts`
+ * for what went wrong without one. Setting it here as well would not add a
+ * second opinion; it would *override* the nonce, because a browser enforces
+ * every CSP header present and a script has to satisfy all of them.
  *
- * `connect-src` lists Supabase because that is the only host the browser talks
- * to. `font-src` and `img-src` are `'self'` and `data:` only — the design
- * system forbids illustration, and the four fonts are self-hosted by
- * `next/font`, so there is no CDN to allow.
+ * `/api/*` is outside the proxy's matcher and so gets its own, nonce-less CSP
+ * below: those responses are JSON and execute nothing, but a policy on them
+ * still costs nothing and closes the gap.
  *
- * `frame-ancestors 'none'` is the clickjacking control that matters; the
- * `X-Frame-Options` beside it is for the browsers that still only read that.
+ * `frame-ancestors 'none'` moves with the CSP; the `X-Frame-Options` here is
+ * for the browsers that still only read that.
  */
-const GOOGLE_ACCOUNTS = 'https://accounts.google.com';
-
-function contentSecurityPolicy(): string {
-  const supabase = process.env['NEXT_PUBLIC_SUPABASE_URL'] ?? '';
-  const isDevelopment = process.env['NODE_ENV'] !== 'production';
-
-  return [
-    "default-src 'self'",
-    `script-src 'self'${isDevelopment ? " 'unsafe-eval' 'unsafe-inline'" : ''}`,
-    "style-src 'self' 'unsafe-inline'",
-    "img-src 'self' data: blob:",
-    "font-src 'self' data:",
-    `connect-src 'self' ${supabase} ${supabase.replace('https://', 'wss://')}`.trim(),
-    "media-src 'self' blob:",
-    "worker-src 'self'",
-    "object-src 'none'",
-    "base-uri 'self'",
-    // Sign-in is a plain form POST to `/auth/signin`, which answers 303 to
-    // Supabase's `/authorize`, which in turn bounces to Google's consent
-    // screen. Chrome checks *every hop* of a form submission against
-    // `form-action`, so `'self'` alone silently blocks the only door in.
-    `form-action 'self' ${supabase} ${GOOGLE_ACCOUNTS}`.trim(),
-    "frame-ancestors 'none'",
-    'upgrade-insecure-requests',
-  ].join('; ');
-}
-
 const SECURITY_HEADERS = [
-  { key: 'Content-Security-Policy', value: contentSecurityPolicy() },
   { key: 'X-Frame-Options', value: 'DENY' },
   { key: 'X-Content-Type-Options', value: 'nosniff' },
   { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
@@ -114,7 +87,23 @@ const nextConfig: NextConfig = {
   typedRoutes: true,
   experimental: { typedEnv: true },
   headers: () =>
-    Promise.resolve([{ source: '/:path*', headers: SECURITY_HEADERS }]),
+    Promise.resolve([
+      { source: '/:path*', headers: SECURITY_HEADERS },
+      {
+        // The proxy does not run on `/api`, so nothing else would give these a
+        // policy. No nonce: a JSON body has no scripts to grant one to.
+        source: '/api/:path*',
+        headers: [
+          {
+            key: 'Content-Security-Policy',
+            value: contentSecurityPolicy({
+              supabaseUrl: process.env['NEXT_PUBLIC_SUPABASE_URL'] ?? '',
+              isDevelopment: process.env['NODE_ENV'] !== 'production',
+            }),
+          },
+        ],
+      },
+    ]),
 };
 
 export default withNextIntl(nextConfig);

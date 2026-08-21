@@ -26,6 +26,19 @@ vi.mock('@/lib/supabase/session-client', () => ({
   },
 }));
 
+// Stubbed the way `auth/signin/route.test.ts` stubs it: the real module
+// validates at import and would throw here, and the proxy only needs the
+// Supabase origin to build `connect-src`. `isDevelopment: false` is the
+// interesting branch — it is the one that mints a nonce.
+vi.mock('@/lib/env.public', () => ({
+  publicEnv: {
+    NEXT_PUBLIC_APP_URL: 'https://shuddhospell.test',
+    NEXT_PUBLIC_SUPABASE_URL: 'https://project.supabase.co',
+    NEXT_PUBLIC_SUPABASE_ANON_KEY: 'the-anon-key',
+  },
+  isDevelopment: false,
+}));
+
 const { config, isPublicPage, proxy } = await import('./proxy');
 
 function get(path: string): NextRequest {
@@ -138,5 +151,62 @@ describe('the matcher', () => {
     expect(matches('/favicon.ico')).toBe(false);
     expect(matches('/logo.svg')).toBe(false);
     expect(matches('/fonts/body.woff2')).toBe(false);
+  });
+});
+
+/**
+ * The half of the proxy that has nothing to do with sessions, and the half that
+ * was broken in production for weeks without anything noticing.
+ *
+ * Next streams every Server Component's payload as an inline `<script>`. A
+ * policy of `script-src 'self'` with no nonce blocks it, React never hydrates,
+ * and the whole site renders correctly and does nothing. These assert the
+ * mechanism rather than the symptom: a nonce in the policy, the same nonce on
+ * the request (which is how Next learns to stamp it onto its own tags), and a
+ * different one every time.
+ */
+describe('the content security policy', () => {
+  function policyOf(response: NextResponse): string {
+    return response.headers.get('content-security-policy') ?? '';
+  }
+
+  it('grants a nonce to scripts, and never unsafe-inline', async () => {
+    const policy = policyOf(await proxy(get('/')));
+
+    expect(policy).toMatch(/script-src 'self' 'nonce-[A-Za-z0-9+/=]+'/u);
+    expect(policy).not.toContain("script-src 'self' 'unsafe-inline'");
+  });
+
+  it('puts the policy on the request too — without that, Next stamps no nonce', async () => {
+    // `NextResponse.next({ request: { headers } })` replays the headers back
+    // through `x-middleware-request-*`, which is what Next reads downstream.
+    const response = await proxy(get('/'));
+    const forwarded = response.headers.get('x-middleware-request-content-security-policy');
+
+    expect(forwarded).toBe(policyOf(response));
+  });
+
+  it('mints a fresh nonce per response — a reused one is not a nonce', async () => {
+    const [first, second] = await Promise.all([proxy(get('/')), proxy(get('/'))]);
+
+    const nonceOf = (r: NextResponse): string =>
+      /'nonce-([A-Za-z0-9+/=]+)'/u.exec(policyOf(r))?.[1] ?? '';
+
+    expect(nonceOf(first)).not.toBe('');
+    expect(nonceOf(first)).not.toBe(nonceOf(second));
+  });
+
+  it('carries the policy onto the redirect an anonymous visitor gets', async () => {
+    harness.user = null;
+
+    expect(policyOf(await proxy(get('/dashboard')))).toContain("script-src 'self' 'nonce-");
+  });
+
+  it('still lets the sign-in form reach Supabase and Google', async () => {
+    const policy = policyOf(await proxy(get('/login')));
+
+    expect(policy).toContain('form-action');
+    expect(policy).toContain('https://accounts.google.com');
+    expect(policy).toContain('https://project.supabase.co');
   });
 });

@@ -1,4 +1,6 @@
 import { NextResponse, type NextRequest } from 'next/server';
+import { isDevelopment, publicEnv } from '@/lib/env.public';
+import { contentSecurityPolicy, mintNonce } from '@/lib/security/content-security-policy';
 import { createMiddlewareClient } from '@/lib/supabase/session-client';
 
 /**
@@ -47,7 +49,26 @@ export function isPublicPage(pathname: string): boolean {
  * `/api/cron` authenticates with a bearer secret rather than a session.
  */
 export async function proxy(request: NextRequest): Promise<NextResponse> {
-  const response = NextResponse.next({ request });
+  const nonce = isDevelopment ? undefined : mintNonce();
+
+  const policy = contentSecurityPolicy({
+    supabaseUrl: publicEnv.NEXT_PUBLIC_SUPABASE_URL,
+    nonce,
+    isDevelopment,
+  });
+
+  // On the **request**, not only the response. This is the whole mechanism:
+  // Next reads the incoming `Content-Security-Policy`, finds the nonce in it,
+  // and stamps that value onto every script tag it renders. Set it on the
+  // response alone and the header is correct while the scripts carry no nonce,
+  // which is worse than not having tried — the page ships a policy that blocks
+  // its own bundle.
+  const headers = new Headers(request.headers);
+  headers.set('content-security-policy', policy);
+
+  const response = NextResponse.next({ request: { headers } });
+  response.headers.set('content-security-policy', policy);
+
   const supabase = createMiddlewareClient(request, response);
 
   const { data } = await supabase.auth.getUser();
@@ -57,6 +78,7 @@ export async function proxy(request: NextRequest): Promise<NextResponse> {
   }
 
   const redirect = NextResponse.redirect(new URL('/login', request.url));
+  redirect.headers.set('content-security-policy', policy);
 
   // Carry over whatever the refresh attempt wrote. A failed refresh clears the
   // session cookies, and dropping that clear leaves the browser re-sending a
