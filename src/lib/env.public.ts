@@ -41,3 +41,17 @@ if (!parsed.success) {
 }
 
 export const publicEnv: IPublicEnv = parsed.data;
+
+/**
+ * Whether this is a development build.
+ *
+ * It lives here because this module is the one place allowed to read
+ * `process.env` — `security-sweep.test.ts` enforces that, and the rule is worth
+ * more than the convenience of reading `NODE_ENV` wherever it happens to be
+ * wanted. Next inlines `NODE_ENV` the same way it inlines a `NEXT_PUBLIC_` one,
+ * so this is a constant by the time it ships rather than a lookup.
+ *
+ * One caller: the Content-Security-Policy, which grants React Refresh
+ * `'unsafe-eval'` in development and a per-request nonce in production.
+ */
+export const isDevelopment: boolean = process.env['NODE_ENV'] !== 'production';
