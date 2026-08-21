@@ -33,12 +33,18 @@ import { SupabaseAttemptRepository } from '@/modules/lessons/infrastructure/pers
 import { SupabaseLessonRepository } from '@/modules/lessons/infrastructure/persistence/supabase/lesson.repository';
 import { type IPhonemeRepository } from '@/modules/library/domain/repositories/phoneme-repository';
 import { type IRuleFamilyRepository } from '@/modules/library/domain/repositories/rule-family-repository';
+import { type IGrammarExampleSource } from '@/modules/library/domain/repositories/grammar-example-source';
+import { type IWordFamilySource } from '@/modules/library/domain/repositories/word-family-source';
+import { type ICourseWordIndex } from '@/modules/library/domain/repositories/course-word-index';
 import { type ISentenceItemRepository } from '@/modules/library/domain/repositories/sentence-item-repository';
 import { type IWordPhonemeRepository } from '@/modules/library/domain/repositories/word-phoneme-repository';
 import { type IWordRepository } from '@/modules/library/domain/repositories/word-repository';
 import { ErrorTagger } from '@/modules/library/domain/services/error-tagger';
 import { SupabasePhonemeRepository } from '@/modules/library/infrastructure/persistence/supabase/phoneme.repository';
 import { SupabaseRuleFamilyRepository } from '@/modules/library/infrastructure/persistence/supabase/rule-family.repository';
+import { GrammarContentExampleSource } from '@/modules/library/infrastructure/persistence/content/grammar-example.source';
+import { WordFamilyContentSource } from '@/modules/library/infrastructure/persistence/content/word-family.source';
+import { ContentCourseWordIndex } from '@/modules/library/infrastructure/persistence/content/course-word.index';
 import { SupabaseSentenceItemRepository } from '@/modules/library/infrastructure/persistence/supabase/sentence-item.repository';
 import { SupabaseWordPhonemeRepository } from '@/modules/library/infrastructure/persistence/supabase/word-phoneme.repository';
 import { SupabaseWordRepository } from '@/modules/library/infrastructure/persistence/supabase/word.repository';
@@ -87,6 +93,22 @@ export interface IContainer {
   /** The stored G2P — 002's `word_phonemes`, read at last. */
   readonly wordPhonemes: IWordPhonemeRepository;
   readonly sentenceItems: ISentenceItemRepository;
+  /**
+   * The grammar lessons' example sentences — content, not a table, so the
+   * adapter reads a compiled module and the container holds one instance.
+   */
+  readonly grammarExamples: IGrammarExampleSource;
+  /**
+   * The IELTS word families — 412 roots and the 2,299 words built from them.
+   * Content, like the grammar examples, so this is a module read once rather
+   * than a table read per request.
+   */
+  readonly wordFamilies: IWordFamilySource;
+  /**
+   * Which of those words the 28-day course also teaches. The one bridge between
+   * two corpora that are otherwise kept apart on purpose.
+   */
+  readonly courseWords: ICourseWordIndex;
   readonly ruleFamilies: IRuleFamilyRepository;
   readonly phonemes: IPhonemeRepository;
   readonly program: IProgramRepository;
@@ -174,6 +196,15 @@ export function createContainer(requestId: string): IContainer {
   // Built before the object literal because two entries below share it: the
   // judge wraps the scorer, and both are handed out.
   const phonemes = new SupabasePhonemeRepository(db);
+  // Content rather than a table, and it reads the same 313 strings on every
+  // request. Built once here for the same reason `phonemes` is: so the cost is
+  // paid at wiring rather than per call.
+  const grammarExamples = new GrammarContentExampleSource();
+  // Both read `content/` and derive once at construction: 412 families with
+  // 1,887 root-to-form derivations, and a 1,240-word set. Per request that
+  // would be the same answer computed again on every page of the library.
+  const wordFamilies = new WordFamilyContentSource();
+  const courseWords = new ContentCourseWordIndex();
   const speechScorer = new ConfusionMapSpeechScorer();
 
   const examWrites = new SupabaseExamWriteUnit(db);
@@ -194,6 +225,9 @@ export function createContainer(requestId: string): IContainer {
     words: new SupabaseWordRepository(db),
     wordPhonemes: new SupabaseWordPhonemeRepository(db),
     sentenceItems: new SupabaseSentenceItemRepository(db),
+    grammarExamples,
+    wordFamilies,
+    courseWords,
     ruleFamilies: new SupabaseRuleFamilyRepository(db),
     phonemes,
     program: new SupabaseProgramRepository(db),

@@ -139,7 +139,8 @@ ShuddhoSpell/
     app/                             Next.js App Router — a routing table, nothing more
       (marketing)/                   /  pricing  faq
       (learn)/                       dashboard  program  lesson/[day]  practice
-                                     weak-spots  library  progress  exams  exams/[code]
+                                     weak-spots  library  library/families  progress
+                                     exams  exams/[code]
                                      exams/attempt/[id]  exams/result/[id]
                                      exams/review/[id]  certificate/[id]  onboarding
       login/
@@ -239,6 +240,8 @@ export interface IWordRepository {
 | Token | Interface | Module | Implemented in | Phase |
 | --- | --- | --- | --- | --- |
 | `WORD_REPOSITORY` | `IWordRepository` | library | `infrastructure/persistence/supabase/word.repository` | 5 |
+| `WORD_FAMILY_SOURCE` | `IWordFamilySource` | library | `infrastructure/persistence/content/word-family.source` | 13 |
+| `COURSE_WORD_INDEX` | `ICourseWordIndex` | library | `infrastructure/persistence/content/course-word.index` | 13 |
 | `PROGRAM_REPOSITORY` | `IProgramRepository` | program | `infrastructure/persistence/supabase/program.repository` | 5 |
 | `LESSON_REPOSITORY` | `ILessonRepository` | lessons | `infrastructure/persistence/supabase/lesson.repository` | 5 |
 | `ATTEMPT_REPOSITORY` | `IAttemptRepository` | lessons | `infrastructure/persistence/supabase/attempt.repository` | 5 |
@@ -1100,9 +1103,11 @@ each `<State>` is already one story.
 
 **D67 — the landing page cannot be statically rendered, and the reason is upstream (F12.10).**
 `13-frontend.md` asks for `/` to be a statically rendered Server Component scoring ≥95
-Lighthouse performance. The page itself does everything it can: no data reads, no images, no
-client JavaScript except the dictation demo, and its syllabus is generated into `src/app/syllabus.ts`
-at authoring time rather than imported from `content/`. **Static rendering is prevented one level
+Lighthouse performance. The page itself does everything it can: no images, no web fonts beyond
+the four the product already loads, four client components (the signature flow, the dictation
+demo, the alphabet strip and the letter families, all sharing one `useSpeech` — see D15–D19), and its syllabus and alphabet are generated
+into `src/app/syllabus.ts` and `src/app/alphabet.ts` at authoring time rather than imported from
+`content/`. **Static rendering is prevented one level
 up**: `src/app/layout.tsx` calls `getLocale()` (a cookie read, from F1's `next-intl` wiring) and
 mounts `SessionBoundary` (a cookie read, from F3.10), and a cookie read opts the whole tree into
 dynamic rendering. Making `/` static would mean either a second root layout for the marketing

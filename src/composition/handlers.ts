@@ -19,7 +19,9 @@ import { createSubmitAttemptHandler as createSubmitExamAttemptHandler } from '@/
 import { createSubmitSectionHandler } from '@/modules/exams/presentation/handlers/submit-section';
 import { createVerifyCertificateHandler } from '@/modules/certificates/presentation/handlers/verify-certificate';
 import { createGetDemoWordHandler } from '@/modules/library/presentation/handlers/get-demo-word';
+import { createScoreDemoSpeechHandler } from '@/modules/library/presentation/handlers/score-demo-speech';
 import { createGetLibraryHandler } from '@/modules/library/presentation/handlers/get-library';
+import { createGetWordFamiliesHandler } from '@/modules/library/presentation/handlers/get-word-families';
 import { createCompleteSessionHandler } from '@/modules/lessons/presentation/handlers/complete-session';
 import { createAdvanceStageHandler } from '@/modules/lessons/presentation/handlers/advance-stage';
 import { createStartSessionHandler } from '@/modules/lessons/presentation/handlers/start-session';
@@ -48,7 +50,9 @@ import {
   makeCompleteLessonSession,
   makeGetDueReviewItems,
   makeGetDictationDemoWord,
+  makeScoreDemoSpeech,
   makeGetLibraryPage,
+  makeGetWordFamilies,
   makeVerifyCertificate,
   makeGetMe,
   makeListUsers,
@@ -242,6 +246,19 @@ export const getDemoWordHandler = createGetDemoWordHandler(() =>
   makeGetDictationDemoWord(container()),
 );
 
+export const scoreDemoSpeechHandler = createScoreDemoSpeechHandler(() =>
+  makeScoreDemoSpeech(container()),
+);
+
 export const recordDemoAttemptHandler = createRecordDemoAttemptHandler(() =>
   makeRecordDemoAttempt(container()),
+);
+
+/**
+ * The word-family reference. The page renders its first slice on the server
+ * through `reads.ts`; every filter and every page after the first comes through
+ * here. One use case, two callers.
+ */
+export const getWordFamiliesHandler = createGetWordFamiliesHandler(() =>
+  makeGetWordFamilies(container()),
 );

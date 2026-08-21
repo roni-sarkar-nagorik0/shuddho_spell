@@ -1,6 +1,9 @@
 import Link from 'next/link';
 import { type ReactElement } from 'react';
 import { readDictationDemoWord } from '@/composition/reads';
+import { AlphabetFamilies } from './alphabet-families';
+import { SignatureFlow } from './signature-flow';
+import { AlphabetStrip } from './alphabet-strip';
 import { DictationDemo } from './dictation-demo';
 import { StartCta } from './start-cta';
 import { MILESTONES, SYLLABUS } from './syllabus';
@@ -18,9 +21,18 @@ import { MILESTONES, SYLLABUS } from './syllabus';
  *
  * `13-frontend.md` asks for it to be statically rendered and score ≥95
  * Lighthouse performance and 100 accessibility. What is under this file's
- * control is done: no client JavaScript except the dictation demo, no
- * images, no web fonts beyond the four the whole product already loads, real
- * headings in order, and every table a real table. **Static rendering itself is
+ * control is done: no images, no web fonts beyond the four the whole product
+ * already loads, real headings in order, and every table a real table.
+ *
+ * **Four** client components now, not one: the signature flow, the dictation
+ * demo, the alphabet strip and the letter families. That is a deliberate revision of the budget
+ * rather than a slip. All three are the same trade — a marketing page for a
+ * *pronunciation* course that can only be read is describing the product
+ * instead of being it — and the two alphabet sections ship 26 rows of text and
+ * a click handler between them, not a library. All four share `useSpeech`, so
+ * each after the first costs almost nothing. The flow is the one real addition
+ * — it carries the microphone lifecycle — and it is the section the page is
+ * now built around, so it earns it. **Static rendering itself is
  * blocked one level up** — the root layout calls `getLocale()` and mounts
  * `SessionBoundary`, both of which read cookies, and a cookie read opts the
  * whole tree into dynamic rendering. That is a Phase 1 and Phase 3 decision, not
@@ -147,6 +159,49 @@ export default async function LandingPage(): Promise<ReactElement> {
           </div>
         </div>
       </section>
+
+      {/*
+        The section that says what the product is, placed directly under the
+        hero because everything below it is evidence for a claim this makes.
+
+        The hero's demo is one exercise; this is the loop. A spelling app marks
+        letters, and the difference being sold here is that a word fails in four
+        separate ways and each one is nameable — which is a sentence nobody
+        believes, and a thing anybody can check in ninety seconds.
+      */}
+      <Section
+        note="A word does not go wrong in one way. Hear it, spell it, say it, use it — and each of those is marked on its own, because averaging them would hide the one you actually have."
+        title="Hear → Spell → Speak → Sentence"
+      >
+        <SignatureFlow />
+      </Section>
+
+      {/*
+        Before the table of what goes wrong, the thing every visitor can already
+        do. It is deliberately the first section under the hero: somebody who
+        did not try the demo — because they arrived on a phone, or the tiles
+        looked like work — will press a letter, and pressing a letter is the
+        whole product in one second.
+      */}
+      <Section
+        note="Press one. Six of them spell a sound Bangla does not have, and those six are where a Bengali accent is heard first — in the letters themselves, before any word is reached."
+        title="The alphabet, out loud"
+      >
+        <AlphabetStrip />
+      </Section>
+
+      {/*
+        The section above answers "how is this letter said". This one answers
+        the question that costs marks: which letters am I going to confuse with
+        which. It is separate rather than folded in because they are different
+        questions and a visitor asks them at different moments.
+      */}
+      <Section
+        note="Letters do not go wrong one at a time — they go wrong in families. Eight of the twenty-six rhyme on the same vowel, and the whole difference between B and V is one consonant in front of it."
+        title="The ones that sound alike"
+      >
+        <AlphabetFamilies />
+      </Section>
 
       <Section
         note="Eight of them, with the reason. None of these is a careless slip — each one is a sound or a rule English has and Bangla does not."

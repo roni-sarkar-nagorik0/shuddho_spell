@@ -36,7 +36,8 @@
     "expand": "প্রসারিত করুন",
     "admin": "অ্যাডমিন",
     "myWords": "আমার শব্দ",
-    "grammar": "ব্যাকরণ"
+    "grammar": "ব্যাকরণ",
+    "wordFamilies": "শব্দপরিবার"
   },
   "dashboard": {
     "dayOf": "{total} দিনের মধ্যে {day} দিন",

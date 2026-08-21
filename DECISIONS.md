@@ -224,3 +224,295 @@ day.
 Next 16 also builds with Turbopack by default, which is why the Edge-runtime warning D24
 describes no longer appears in the build output. D24's reasoning is unchanged; only the warning
 is gone.
+
+## 15. The demo answers back: a sentence, an auto-play, and Enter
+
+**Context.** The panel worked and stopped there. A visitor who spelled a word right was left
+with four labelled facts, dead tiles and a mouse-only *Next word* — and the word they had just
+learnt was a word they had only ever heard alone, at 0.85, with nothing around it. English
+rhythm does not exist in a single word. Neither does the accent the course is about.
+
+**Decision.** Three changes, all on the same panel.
+
+*The word in a sentence.* `IDictationDemoWord` now carries an optional
+`{ id, english, bangla }` drawn from `sentence_items` — the same sentences the construction
+stage builds, never composed for the page. It plays at **1.00**, not the dictation rate, and
+that difference is the point: a lone word is slowed because there is no context to recover a
+missed consonant from, and a sentence must not be, because the context is the thing being
+demonstrated.
+
+*It plays itself.* A word the visitor asked for speaks on arrival. The word the page **loaded
+with** does not — a page that talks the moment it renders is what every autoplay policy exists
+to stop, and the visitor has not agreed to make a noise yet. The auto-play runs off their click
+on *Next word*, which is the user gesture the speech engine wants.
+
+*Enter, twice.* Getting a word right moves focus to *Next word*. There is no key handler
+anywhere — a focused `<button>` is activated by Enter because that is what a button is — and
+the same move is what makes the state change audible to a screen reader.
+
+**How the sentence is found, and what it costs.** Postgres can be asked for
+`english_text ilike '%hand%'` and nothing more precise, so it also answers with *handle*,
+*shorthand* and *beforehand*. `SentenceItem.contains` is what throws those away; without it the
+panel keeps working and simply teaches the wrong word, which is the worst kind of regression.
+
+The corpus has 560 sentences against 1,065 demonstrable words, and **496 of those words — 46.6%
+— appear in one**. One candidate would therefore leave the row empty about half the time, so
+the use case draws **five** and probes them **together**: `0.534^5 ≈ 4%` miss, measured at
+**28 of 30** against the seeded database. Five sequential probes would have cost five round
+trips; issued at once they cost one, and a test asserts the overlap rather than trusting the
+shape of the code.
+
+**Cost.** `/api/v1/demo/word` went from a **433 ms** median to **566 ms** — one round trip,
+measured locally against the real database with the probe removed and restored. The landing
+page itself is unaffected: `readDictationDemoWord` is still behind `unstable_cache`.
+
+The other cost is honest and worth stating: **the pool is no longer uniform.** A word that
+appears in a sentence is now more likely to be shown than one that does not. For a demo whose
+whole job is to show the exercise working that is the right bias, but it is a bias, and it is
+recorded in the DTO as well as here.
+
+## 16. The alphabet on the landing page, and a second client component
+
+**Context.** Under the hero the page opened on a table of eight misspellings. That is a fair
+description of the problem and a poor invitation — there is nothing to do, and a visitor could
+learn what the course is about without ever hearing it. A visitor who arrived on a phone, or
+who read the dictation tiles as work, met a page about pronunciation that could only be read.
+
+**Decision.** Twenty-six letters they can press, as the first section under the hero. Each says
+itself in the reference accent and opens one panel: the letter's **name** in IPA, that name in
+Bangla script, and the sound it spells — kept apart deliberately, because *H* is called /eɪtʃ/
+and spells /h/, and a learner who cannot tell those apart writes *aitch*.
+
+Six of the twenty-six are marked. They are exactly the letters whose characteristic sound
+Bangla has no equivalent for — t, d, v, z, r, w — and what a Bengali speaker produces instead
+is **quoted verbatim from `content/phonemes.ts`**, the reviewed forty-four that migration
+`010_seed_reference` seeds. Nothing about phonology is written on the marketing page. The count
+in the prose is derived from the data rather than typed beside it, and a test asserts they
+still agree.
+
+**Cost.** `src/app/page.tsx` said "no client JavaScript except the dictation demo". There are
+now two, which is a deliberate revision of that budget rather than a slip: the strip ships 26
+rows of text and a click handler, not a library, and it shares `useSpeech` with the demo, so
+the second one costs almost nothing the first had not already paid.
+
+`useSpeech` itself is the other half of this. There were four hand-rolled `speechSynthesis`
+callers before it and there were about to be five; the two on the landing page now share one,
+and `components/lesson/audio-manager.tsx` deliberately does **not** — it queues, reports
+progress and is driven by a lesson's state machine, and merging them would give the marketing
+page a state machine it has no use for.
+
+## 17. A second source for the demo's sentence, because the corpus is short by design
+
+**Context.** §15 shipped the word-in-a-sentence row and it worked, and it was **four words
+long**. That is not a shortcoming of the selection — it is what `sentence_items` *is*. Those
+sentences are the construction stage's material, built by a learner from a word bank, so they
+run to a median of 4 words and a maximum of 9 across all 560. Picking the longest match instead
+of the first moves the mean from 4.16 to **4.46**. There is no length in that table to find.
+
+Four words is enough to show the word has a job. It is not enough to show English doing
+anything — no weak forms, no words running together, no stress pattern worth hearing. Which is
+the entire reason the row exists.
+
+**Decision.** A second source: the grammar lessons' `sections[].examples[]`. Median **7** words,
+maximum 15, 313 usable entries, and the same reviewed content the course teaches from.
+
+It is a **compiled module, not a table**, so `GrammarContentExampleSource` reads it in memory —
+the same pattern `modules/grammar`'s own lesson repository already uses. Both sources are asked
+at once, and the grammar half resolves without leaving the process, so it adds **no round trip
+at all**: the endpoint measured **581 ms** against 566 ms before, inside the noise.
+
+Three kinds of entry are refused, and one of them is the reason this adapter has its own test
+against the real content:
+
+- **`mistakes[].wrong` is never read.** A lesson carries "I am agree" deliberately, to be named
+  and corrected. It is a grammatical-*looking* English sentence that would render perfectly
+  under a heading saying *In a sentence*, and nothing would fail — a visitor would simply be
+  shown broken English by a product selling English precision. The pairs are excluded whole, so
+  no future edit can promote a `wrong` into scope by renaming a field.
+- Fragments (`an MBA, an X-ray, a one-way street`) and two-sentence entries, both of which read
+  as a bug rather than an example.
+- Anything under five words, which would not be longer than what the corpus already offers.
+
+**The selection rule, and what it costs.** A grammar example has **no Bangla** — it was authored
+for a reader already inside the lesson — and inventing one to match the corpus's shape is the
+one thing this must not do. So the two sources are not equal, and "take the longest" is not
+quite right. A grammar example wins only when it is **at least three words longer**:
+
+| margin | mean words | keeps the Bangla line |
+| --- | --- | --- |
+| +0 | 6.09 | 63% |
+| **+3** | **6.00** | **68%** |
+| baseline (§15) | 4.16 | 100% |
+
+Nine hundredths of a word for five points of the line this audience actually reads. Measured
+over all 580 covered words, not guessed. Where there is no Bangla the lesson's own `note` —
+"what to look at" — takes the line instead, and where there is neither, nothing is printed.
+
+Live against the seeded database, 40 draws: **38 with a sentence**, mean **6.21** words, longest
+13, and 24 of the 38 still carrying Bangla. Coverage also rose — the two sources together reach
+**54.5%** of demonstrable words against the corpus's 46.6%.
+
+**Cost.** About 37% of the time the visitor now reads an English-only line where §15 always gave
+them Bangla. That is the trade, it was made deliberately with the numbers above, and it is the
+first thing to revisit if it turns out the Bangla mattered more than the length.
+
+`SENTENCES_PER_CANDIDATE` also went from 4 to 12: you cannot pick the longest of a set you did
+not fetch. Still one indexed read, still one round trip — bytes, not latency.
+
+## 18. The letters that sound alike, as their own section
+
+**Context.** §16's strip answers "how is this letter said". It does not answer the question that
+actually costs a learner marks, which is **which letters am I going to confuse with which**.
+Spelling a name over the phone, reading back a certificate code, taking dictation — none of
+those fail one letter at a time. They fail in families.
+
+**Decision.** A separate section, `The ones that sound alike`, grouping the twenty-six by the
+sound their **name** ends on. Seven families. The headline one is /iː/: **B C D E G P T V** —
+eight names whose entire difference is one consonant in front of the same vowel, three of which
+(**D, T, V**) are sounds Bangla has no equivalent for. Say *V* with the ভ the mouth reaches for
+and it becomes *B*. The name is now a different letter and the word being spelled is a
+different word.
+
+Each family can be heard **as a run** — one utterance with commas, so the engine puts its own
+pauses in. That is the thing a page cannot say in words, and it is how the letters arrive in
+real life.
+
+It is a **new section and the existing strip is untouched**, because they are different
+questions asked at different moments, and folding the second into the first would have made one
+control answer both badly.
+
+**Derived, never typed.** A family is defined by one IPA nucleus, and a letter joins the first
+whose nucleus appears in its `nameIpa` — the same twenty-six entries §16 already renders. The
+order of those nuclei is load-bearing: `eɪ` must be tried before `e` or *H* (/eɪtʃ/) files with
+*F* and *L*, and `uː` before `ə` or *W* (/ˈdʌbəljuː/) leaves *Q* and *U*. Getting it wrong
+renders seven tidy cards, one of which is a lie about how English is spoken — so the tests
+assert completeness (all 26 placed), disjointness (none placed twice) and the two orderings by
+name, and the wrong order was reintroduced to confirm they fail.
+
+## 19. Hear → Spell → Speak → Sentence, on the front door
+
+**Context.** The landing page could argue that this is not a spelling app; it could not
+demonstrate it. A visitor could type letters into tiles — which is what every spelling app does —
+and everything that makes the product different was prose: a table of eight misspellings, a
+five-column strip saying the day has a *Speak* stage, an FAQ line about microphones. Prose is
+where a claim goes to be disbelieved.
+
+**Decision.** The whole loop, on one word, for somebody with no account. Four stages, each marked
+separately: hear it, spell it, say it, use it in a sentence of their own.
+
+Everything in it is the shipped machinery, not a demonstration version of it:
+
+- **Spell** is the real `LetterTiles` — auto-advance, backspace that clears and steps back in one
+  press, Enter to submit, paste refused.
+- **Speak** posts the browser's transcript to `ScoreDemoSpeechUseCase`, which takes the same
+  `ISpeechScorer` the lesson's speak stage takes. `ConfusionMapSpeechScorer` is the adapter behind
+  both. A lookalike scorer here would be advertising a product that does not exist, and nothing
+  would fail: a made-up percentage renders exactly like a real one.
+- **Sentence** reuses `focusTranscript`, which exists because the Web Speech API hears the room.
+  Locating the target word inside a longer transcript is what makes a spoken sentence scorable at
+  all, and it was already there.
+
+**`POST /api/v1/demo/speech` is public and writes nothing.** That is the line the two demo
+endpoints already drew between them — reading and marking are public, writing a row against a
+person is not, which is why `demo/attempts` stays authenticated. An anonymous visitor has no
+profile to write against and 021's `profile_id` is `not null`, so this reads three tables and
+returns. It is rate-limited harder than the word endpoint, because it runs the confusion map.
+
+**A transcript, never audio.** `07-speech-scoring.md` requires the server to hold no recording of
+anybody's voice. It is enforced by the request schema having no field a blob could arrive in, and
+asserted by a test on the keys of the posted body — the only place that constraint is visible.
+
+**Three things it refuses to claim.**
+
+1. **No grammar mark on the sentence**, and a line on screen saying so. A freely spoken sentence
+   has no target to mark against; inside the course `SentenceItem.accepts` has a reviewed answer
+   and every accepted alternative, and here there is nothing. A confident number over that absence
+   would be the least defensible thing on a page selling English precision. What it reports
+   instead is what a browser can establish: the word was used, it was a sentence rather than a
+   fragment, and the word's pronunciation inside it.
+2. **A typed sentence gets no pronunciation score at all.** `sentence-written` is a mode of its
+   own, returns `scorePercent: null`, and does not even load the phoneme inventory. Running the
+   confusion map over typed text produces a number that looks exactly like a pronunciation score
+   and is not one.
+3. **The three marks are never averaged.** They measure different failures. A learner who spells
+   perfectly and cannot say the word has a specific, fixable problem that a combined 70% hides —
+   which is the same reason the mastery matrix keeps its axes apart.
+
+**Inflections.** "Put *visit* in a sentence" is answered with "I **visited** my friend", and a
+whole-word check would call that a miss and be wrong about the only thing being tested. So
+`usesWordOrForm` **generates** the regular forms rather than stripping the token — a stemmer
+matches *organ* to *organisation*, which on this page is the wrong kind of generosity. The three
+spelling adjustments are the course's own rules (`y_to_i`, `doubling_1_1_1`, the silent-e drop).
+Irregulars (*go* → *went*) are not guessed at; the honest report is that the word was not found.
+
+**Cost, and one thing deferred.** The microphone lifecycle is now a hook,
+`components/lesson/use-microphone.ts`, and the lesson's `speak-stage.tsx` has **not** been moved
+onto it. That is deliberate: it folds a network failure into the same `error` state as a
+microphone failure — arguably wrong, and not the hook's shape — and it has no test to move it
+under. It is a change worth making on its own rather than inside one for a marketing page, and
+the file now says so where the next person will read it. Anything new that opens a microphone
+uses the hook.
+
+The landing page is also up to **four** client components. The flow is the one real addition
+— it carries the recogniser — and it is the section the page is now built around.
+
+---
+
+## 20. Word families — a second corpus, kept apart from the first
+
+*IELTS reference under `/library/families`. 412 roots, 2,299 words, none of them taught.*
+
+The ask was "one root, many words, and the rule that connects them — 1,800+ words, IELTS only,
+under the dashboard". Four decisions carried the weight.
+
+**Two corpora, not one.** `content/word-families/` is a separate directory from `content/week-*`
+and shares no field, no cross-reference and no seed path with it. The 28-day corpus is *taught*:
+every word in it is drilled, examined, and seeded into `words`, and it feeds the exam distractor
+pool. Folding 1,800 new words into it would have put untaught vocabulary into the daily dictation
+queue and into exam distractors — a change to the course, made by accident, while adding a
+reference screen. The only bridge is one boolean: `ICourseWordIndex.has`, which marks the 307
+words that appear in both, so a learner can see that `achieve` is on the syllabus and
+`achievement` is not.
+
+**The rule is derived, never written down.** `changeBetween(root, form)` compares two strings and
+reports what happened: `-e -ion`, `y→i -ness`, `double -ing`, `un-`, or `irregular`. The
+alternative was 1,887 hand-written labels, and the one thing that set would certainly contain is a
+label that disagrees with the word it sits under. The order of the tests inside it is
+load-bearing: doubling is checked before a plain suffix, because `stopping` starts with `stop` and
+the naive reading prints a suffix `-ping` that English does not have, under a heading that says
+*the rule*. A prefix is only accepted when the remainder still relates to the root, otherwise
+`interpret` grows an `inter-`.
+
+**It says `irregular` rather than inventing a rule.** 309 of the 1,887 derivations are stem shifts
+— `speak → spoke`, `science → scientific`, `prove → proof` — and they are labelled as such. A
+spelling product cannot afford a confident wrong rule, and "no regular rule connects these" is
+both true and useful.
+
+**No IPA.** The 1,240 programme words carry checked IPA because a lesson marks pronunciation
+against it. These 2,299 do not, and filling the column would have meant inventing 2,299 phonetic
+transcriptions for the one screen whose entire subject is being right about English. The screen
+speaks a word with the browser's voice and links to the library row when the word is one of the
+1,240 — where the IPA has been checked.
+
+**What the build enforces.** `pnpm content:validate` fails on a duplicate word across families, a
+rule code that is not one of the 24, a family of fewer than two forms, a member equal to its own
+root, and a corpus that has fallen below `WORD_FAMILY_MINIMUM_WORDS`. That last one exists because
+"1,800+ words" is a claim printed on a screen: a de-duplication that quietly took the corpus to
+1,600 would leave the claim standing and untrue, and nothing else in the build would notice. A
+test on the real content additionally holds that any family naming one of the three *mechanical*
+rules shows it — a card headed *the y becomes an i* with no word where a y became an i is a
+heading over nothing. The other twenty-one rules are about which letters are chosen and cannot be
+checked by comparing strings, so they are not: a test that guessed would fail on correct content
+and be switched off.
+
+**Two numbers, on screen at once.** The matched set and the whole corpus answer different
+questions, and the topic index is always over the whole corpus — it is navigation, and a door that
+vanishes because of the current filter is a door the learner cannot find their way back through.
+The rule filter offers only the rules this corpus demonstrates: four of the 24 are grammar, no
+family shows them, and offering them would make the screen look broken in the one place it is
+working correctly.
+
+**Content, so a module and not a table.** `IWordFamilySource` and `ICourseWordIndex` are ports over
+compiled modules, the same shape as `IGrammarExampleSource`. Both derive once at construction. The
+one query the screen makes is `rule_families.listAll()`, for the statements — so the rule printed
+above a family is the same sentence the lesson screens print, rather than a copy that drifts.

@@ -50,6 +50,8 @@ import { GetExamCatalogueUseCase } from '@/modules/exams/application/use-cases/g
 import { GetNextExamUseCase } from '@/modules/exams/application/use-cases/get-next-exam';
 import { ListExamMilestonesUseCase } from '@/modules/exams/application/use-cases/list-exam-milestones';
 import { GetDictationDemoWordUseCase } from '@/modules/library/application/use-cases/get-dictation-demo-word';
+import { GetWordFamiliesUseCase } from '@/modules/library/application/use-cases/get-word-families';
+import { ScoreDemoSpeechUseCase } from '@/modules/library/application/use-cases/score-demo-speech';
 import { GetLibraryPageUseCase } from '@/modules/library/application/use-cases/get-library-page';
 import { GetPhonemeStripsUseCase } from '@/modules/library/application/use-cases/get-phoneme-strips';
 import { GetPracticeQueueUseCase } from '@/modules/review/application/use-cases/get-practice-queue';
@@ -490,7 +492,22 @@ export function makeRunHourlyNotifications(c: IContainer): RunHourlyNotification
  * nothing that knows who is asking, because nobody is.
  */
 export function makeGetDictationDemoWord(c: IContainer): GetDictationDemoWordUseCase {
-  return new GetDictationDemoWordUseCase(c.words, c.random);
+  return new GetDictationDemoWordUseCase(c.words, c.random, c.sentenceItems, c.grammarExamples);
+}
+
+/**
+ * The marketing page's spoken half.
+ *
+ * The **same** `ISpeechScorer` the lesson's speak stage takes — `c.speechScorer`
+ * — and not a demo copy of it. The claim the landing page makes is that the
+ * course marks pronunciation against the sounds Bangla lacks; a lookalike here
+ * would be advertising something the product does not do.
+ *
+ * No profile, no clock and no write unit: an anonymous visitor has nothing to
+ * record against, so this reads and returns.
+ */
+export function makeScoreDemoSpeech(c: IContainer): ScoreDemoSpeechUseCase {
+  return new ScoreDemoSpeechUseCase(c.words, c.wordPhonemes, c.phonemes, c.speechScorer);
 }
 
 /**
@@ -520,4 +537,17 @@ export function makeGetWordsPractised(c: IContainer): GetWordsPractisedUseCase {
 /** The whole history, paged — the screen the dashboard's panel links to. */
 export function makeGetPractiseLog(c: IContainer): GetPractiseLogUseCase {
   return new GetPractiseLogUseCase(c.learnerProfiles, c.practiseLog);
+}
+
+/**
+ * The IELTS word families.
+ *
+ * Two of the three dependencies are compiled content and the third is the one
+ * query: `rule_families`, read for the statements, so the rule printed above a
+ * family is the same sentence `/progress` and the lesson screens print. A copy
+ * of the 24 statements in this module would be a second source of truth for
+ * text a learner is asked to trust.
+ */
+export function makeGetWordFamilies(c: IContainer): GetWordFamiliesUseCase {
+  return new GetWordFamiliesUseCase(c.wordFamilies, c.ruleFamilies, c.courseWords);
 }

@@ -15,6 +15,7 @@ import { type IGrammarLessonView } from '@/modules/grammar/application/dto/gramm
 import { type IGrammarSyllabus } from '@/modules/grammar/application/dto/grammar-syllabus';
 import { type IDictationDemoWord } from '@/modules/library/application/dto/dictation-demo-word';
 import { type ILibraryPage } from '@/modules/library/application/dto/library-page';
+import { type IWordFamilyPage } from '@/modules/library/application/dto/word-family-view';
 import { type IWordPhonemeStrip } from '@/modules/library/application/dto/phoneme-strip';
 import { type IProgramDayDetail } from '@/modules/program/application/dto/program-day-detail';
 import { type IProgramOverview } from '@/modules/program/application/dto/program-overview';
@@ -50,6 +51,7 @@ import {
   makeGetExamResult,
   makeGetDictationDemoWord,
   makeGetLibraryPage,
+  makeGetWordFamilies,
   makeGetPhonemeStrips,
   makeGetPracticeQueue,
   makeGetWeakSpots,
@@ -189,6 +191,20 @@ export const readRuleFamilies = cache(
 export const readLibraryPage = cache(
   async (userId: string, pageSize: number): Promise<ILibraryPage> =>
     makeGetLibraryPage(createContainer(crypto.randomUUID())).execute({ userId, pageSize }),
+);
+
+/**
+ * The first page of the word families.
+ *
+ * `cache`, not `unstable_cache`: the families are a compiled module and the one
+ * query behind this — the 24 rule statements — is already trivial. What is
+ * worth avoiding is running it twice in one render, which is exactly what
+ * React's per-request memo does. A cross-request cache would be storing content
+ * that ships in the bundle.
+ */
+export const readWordFamilies = cache(
+  async (pageSize: number): Promise<IWordFamilyPage> =>
+    makeGetWordFamilies(createContainer(crypto.randomUUID())).execute({ pageSize }),
 );
 
 export const readPhonemeStrips = cache(

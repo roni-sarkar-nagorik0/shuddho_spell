@@ -277,6 +277,7 @@ function wire(world: IWorld): {
     findById: () => Promise.resolve(null),
     findByIds: () => Promise.resolve([] as readonly SentenceItem[]),
     listAll: () => Promise.resolve([] as readonly SentenceItem[]),
+    findContaining: () => Promise.reject(new Error('only the landing page demo looks a word up')),
   };
 
   const writes: IExamWriteUnit = {

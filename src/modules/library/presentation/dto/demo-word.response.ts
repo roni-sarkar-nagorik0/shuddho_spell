@@ -17,6 +17,18 @@ export const demoWordSchema = z
     banglaSound: z.string(),
     banglaMeaning: z.string(),
     commonError: z.string().nullable(),
+    /**
+     * The word in use. Null is ordinary — see `IDictationDemoWord.sentence` —
+     * and the panel simply omits the row rather than treating it as an error.
+     */
+    sentence: z
+      .object({
+        id: z.string(),
+        english: z.string(),
+        bangla: z.string().nullable(),
+        note: z.string().nullable(),
+      })
+      .nullable(),
   })
   .nullable();
 

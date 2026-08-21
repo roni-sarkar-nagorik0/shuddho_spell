@@ -21,6 +21,11 @@ export interface INavItem {
  * wrong" wants their own list, and finding the whole 1,240-word library first
  * is the wrong answer arriving before the right one.
  *
+ * `/library/families` sits directly under `/library` because it is the same
+ * shelf: both are reference rather than course. `activeHref` matches the
+ * longest prefix, so standing on the families screen lights the families item
+ * and not its parent — which is what makes two nested items safe to list.
+ *
  * The hrefs point at routes Phase 11 and Phase 12 build. That is deliberate and
  * is not scaffolding ahead: a navigation rail with no destinations is not the
  * feature. Nothing here creates a stub page — an unbuilt route 404s honestly
@@ -34,6 +39,7 @@ export const NAV_ITEMS: readonly INavItem[] = Object.freeze([
   { href: '/grammar', labelKey: 'grammar', glyph: 'grammar' },
   { href: '/words', labelKey: 'myWords', glyph: 'check' },
   { href: '/library', labelKey: 'library', glyph: 'library' },
+  { href: '/library/families', labelKey: 'wordFamilies', glyph: 'grammar' },
   { href: '/progress', labelKey: 'progress', glyph: 'progress' },
   { href: '/exams', labelKey: 'exams', glyph: 'exam' },
 ]);

@@ -141,6 +141,7 @@ describe('GetProgramDay batches its three content reads (F13.7)', () => {
       findById: () => Promise.reject(new Error('a per-item read is the N+1 this forbids')),
       findByIds: () => { meter.count('sentences.findByIds'); return Promise.resolve([]); },
       listAll: () => Promise.resolve([]),
+      findContaining: () => Promise.reject(new Error('only the landing page demo looks a word up')),
     };
 
     const rules: IRuleFamilyRepository = {

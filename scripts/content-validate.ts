@@ -7,6 +7,7 @@
  */
 import { validateGrammar } from '../content/grammar/index';
 import { readContent } from '../content/index';
+import { validateWordFamilies } from '../content/word-families/index';
 
 const { issues, counts } = readContent();
 
@@ -20,7 +21,16 @@ const { issues, counts } = readContent();
  */
 const grammar = validateGrammar();
 
-for (const issue of [...issues, ...grammar.issues]) {
+/**
+ * The IELTS word families, validated here for the same reason the grammar
+ * course is: it is content and it fails the build like everything else, but it
+ * shares no field, no cross-reference and no seed path with the 28-day corpus.
+ * The one number worth printing beside the others is the word count, because
+ * the product states it on a screen.
+ */
+const families = validateWordFamilies();
+
+for (const issue of [...issues, ...grammar.issues, ...families.issues]) {
   process.stdout.write(`${issue.file}  ${issue.path}\n    ${issue.message}\n`);
 }
 
@@ -36,6 +46,8 @@ process.stdout.write(
     `  exams           ${String(counts.exams)}`,
     `  grammar days    ${String(grammar.counts.days)}`,
     `  grammar checks  ${String(grammar.counts.checks)}`,
+    `  word families   ${String(families.counts.families)}`,
+    `  family words    ${String(families.counts.words)}`,
     '',
   ].join('\n'),
 );
@@ -56,7 +68,7 @@ if (counts.phonemesNeedReview.length > 0) {
   process.stdout.write(`phonemes flagged for review: ${counts.phonemesNeedReview.join(', ')}\n\n`);
 }
 
-const total = issues.length + grammar.issues.length;
+const total = issues.length + grammar.issues.length + families.issues.length;
 
 if (total > 0) {
   process.stdout.write(`${String(total)} issue(s). Content is not valid.\n`);

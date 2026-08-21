@@ -35,6 +35,11 @@ import {
 import { completeOnboardingBodySchema } from '@/modules/auth/presentation/dto/onboarding-requests';
 import { verifyParamsSchema } from '@/modules/certificates/presentation/dto/certificate-requests';
 import { libraryQuerySchema } from '@/modules/library/presentation/dto/library-requests';
+import { wordFamilyQuerySchema } from '@/modules/library/presentation/dto/word-family-requests';
+import {
+  demoSpeechBodySchema,
+  demoSpeechScoreSchema,
+} from '@/modules/library/presentation/dto/demo-speech.request';
 import { demoWordSchema } from '@/modules/library/presentation/dto/demo-word.response';
 import {
   demoAttemptResultSchema,
@@ -139,6 +144,19 @@ registry.registerPath({
   responses: ok(demoWordSchema, 'A word, or null when the corpus is not seeded.'),
 });
 
+// The spoken half, and public like the read half rather than like the write
+// half — it marks an attempt and stores nothing. A **transcript**, never audio:
+// the browser transcribes, and 07-speech-scoring.md requires the server to hold
+// no recording of anybody's voice.
+registry.registerPath({
+  method: 'post',
+  path: '/api/v1/demo/speech',
+  summary:
+    'Score one spoken attempt for the landing page demo. Public; a transcript, never audio.',
+  request: { body: { content: { 'application/json': { schema: demoSpeechBodySchema } } } },
+  responses: ok(demoSpeechScoreSchema, 'The score, with what to fix.'),
+});
+
 // The write half of the demo, and unlike the read half it needs a session:
 // there is no profile to record an anonymous visitor against. The body says
 // what was typed and never whether it was right.
@@ -224,6 +242,15 @@ registry.registerPath({
   summary: 'A keyset page of the word library, annotated with the learner’s own accuracy.',
   request: { query: libraryQuerySchema },
   responses: ok(z.unknown(), 'The page, and the cursor for the next one.'),
+});
+
+registry.registerPath({
+  method: 'get',
+  path: '/api/v1/library/families',
+  summary:
+    'A page of the IELTS word families — a root, the words built from it, and the spelling rule each form follows. Reference content, identical for every learner; authenticated because it is what a subscriber paid for, not because it is private.',
+  request: { query: wordFamilyQuerySchema },
+  responses: ok(z.unknown(), 'The page, the topic and rule indexes, and the cursor for the next one.'),
 });
 
 registry.registerPath({

@@ -47,6 +47,18 @@ type MicState = 'idle' | 'listening' | 'denied' | 'error';
  * The server never receives audio (`07-speech-scoring.md`). The browser
  * transcribes; only the transcript is posted; the score is still computed
  * server-side, because a client-computed score is a client-editable score.
+ *
+ * **The recogniser lifecycle below now exists as a hook**, in
+ * `components/lesson/use-microphone.ts`, written when the landing page needed
+ * the same three rules. This stage has not been moved onto it and that is a
+ * deliberate deferral rather than an oversight: it folds a *network* failure
+ * into the same `error` state as a microphone failure — arguably wrong, and
+ * certainly not the hook's shape — and it has no test to move it under. It is
+ * a change worth making on its own, not inside one for a marketing page.
+ *
+ * Anything **new** that opens a microphone uses the hook. Two copies of this
+ * lifecycle is already one more than there should be; three is how the next fix
+ * lands in one of them.
  */
 export function SpeakStage({
   sessionId,

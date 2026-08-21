@@ -15,4 +15,17 @@ export interface ISentenceItemRepository {
    * from the whole set and lets the blueprint's weakness ranking choose.
    */
   readonly listAll: (limit: number) => Promise<readonly SentenceItem[]>;
+
+  /**
+   * Sentences whose English text contains `word` somewhere inside it, capped.
+   *
+   * **Substring, not whole word** — that is all a `like` can express, and the
+   * caller is expected to finish the job with `SentenceItem.contains`. Saying
+   * so here rather than naming the method `findUsing` keeps the lie out of the
+   * interface: a repository that promised whole-word matching would be
+   * promising something the database is not being asked for.
+   *
+   * The cap is what stops a two-letter word returning the whole table.
+   */
+  readonly findContaining: (word: string, limit: number) => Promise<readonly SentenceItem[]>;
 }
