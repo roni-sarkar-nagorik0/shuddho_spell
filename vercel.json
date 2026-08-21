@@ -1,0 +1,9 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": "nextjs",
+  "regions": ["icn1"],
+  "crons": [
+    { "path": "/api/cron/notifications", "schedule": "0 * * * *" },
+    { "path": "/api/cron/exam-autosubmit", "schedule": "0 * * * *" }
+  ]
+}
