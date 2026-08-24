@@ -65,13 +65,16 @@ function normaliseDatabaseUrl(raw) {
     return raw;
   } catch {
     const match = /^(postgres(?:ql)?:\/\/)([^@]*)(@[\s\S]+)$/u.exec(raw);
-    if (match === null) {
+
+    // All three groups are mandatory, so a match has all three — but the type
+    // of a capture is `string | undefined`, and the one honest way to say that
+    // is to check it. The no-match case throws the same error it always did.
+    const [, scheme, userinfo, rest] = match ?? [];
+
+    if (scheme === undefined || userinfo === undefined || rest === undefined) {
       throw new Error('DATABASE_URL is not a postgres URI');
     }
 
-    const scheme = match[1];
-    const userinfo = match[2];
-    const rest = match[3];
     const colon = userinfo.indexOf(':');
 
     if (colon === -1) {
