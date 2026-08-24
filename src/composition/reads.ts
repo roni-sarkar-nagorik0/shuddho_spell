@@ -331,7 +331,29 @@ const readDemoWordSlot = (slot: number): Promise<IDictationDemoWord | null> =>
  * stops spending a fifth of a second on a query whose answer it discards.
  */
 export async function readDictationDemoWord(): Promise<IDictationDemoWord | null> {
-  return readDemoWordSlot(Math.floor(Math.random() * DEMO_WORD_SLOTS));
+  const cached = await readDemoWordSlot(Math.floor(Math.random() * DEMO_WORD_SLOTS));
+
+  if (cached !== null) {
+    return cached;
+  }
+
+  /*
+   * A null is not a fact worth keeping for an hour.
+   *
+   * The use case answers null for one reason — the corpus is not seeded — and
+   * `unstable_cache` cannot tell that apart from a word. So the first visitor
+   * to arrive before `content:seed` has run pins "the demo is unavailable" into
+   * the slot, and it stays pinned for the rest of the hour: the corpus lands,
+   * every other page starts showing words, and the front door still says the
+   * demo is down. That is the one state on this page a visitor is guaranteed to
+   * read as broken, and it was outliving its own cause.
+   *
+   * So a null is re-asked, uncached. It costs a query per visit — but only
+   * while there is no word to be had, which is exactly the state where the
+   * front door is worth a query, and the page heals on the next request after
+   * the seed rather than on the next hour.
+   */
+  return makeGetDictationDemoWord(createContainer(crypto.randomUUID())).execute();
 }
 
 /**
