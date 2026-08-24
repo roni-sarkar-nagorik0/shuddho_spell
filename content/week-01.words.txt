@@ -308,3 +308,445 @@ useful|ˈjuːsfl|use-ful|ইউজফুল|উপযোগী|adjective|suffix_
 helpful|ˈhelpfl|help-ful|হেল্পফুল|সহায়ক|adjective|suffix_ful_one_l|308|helpfull,helful
 beautiful|ˈbjuːtɪfl|beau-ti-ful|বিউটিফুল|সুন্দর|adjective|suffix_ful_one_l|309|beautifull,beutiful
 wonderful|ˈwʌndəfl|won-der-ful|ওয়ান্ডারফুল|চমৎকার|adjective|suffix_ful_one_l|310|wonderfull,wondorful
+
+# --- Added: everyday foundations, ranks 1241+ ---
+elbow|ˈelbəʊ|el-bow|এলবো|কনুই|noun||1241|elbo,albow
+ankle|ˈæŋkl|an-kle|অ্যাংকল|গোড়ালি|noun||1242|ankel,ancle
+palm|pɑːm|palm|পাম|হাতের তালু|noun|silent_letters|1243|paam,pam
+throat|θrəʊt|throat|থ্রোট|গলা|noun||1244|troat,throte
+chest|tʃest|chest|চেস্ট|বুক|noun||1245|chast,ches
+chin|tʃɪn|chin|চিন|থুতনি|noun||1246|cheen,chinn
+cheek|tʃiːk|cheek|চিক|গাল|noun||1247|cheak,chik
+jaw|dʒɔː|jaw|জ|চোয়াল|noun||1248|jow,jau
+shoulder|ˈʃəʊldə|shoul-der|শোল্ডার|কাঁধ|noun||1249|sholder,shoulde
+kidney|ˈkɪdni|kid-ney|কিডনি|বৃক্ক|noun||1250|kidny,kidnee
+forehead|ˈfɒrɪd|fore-head|ফরিড|কপাল|noun||1251|forhead,forehed
+eyebrow|ˈaɪbraʊ|eye-brow|আইব্রাউ|ভুরু|noun||1252|eyebrau,aibrow
+heel|hiːl|heel|হিল|পায়ের গোড়ালি|noun||1253|hil,heal
+waist|weɪst|waist|ওয়েস্ট|কোমর|noun||1254|wiast,waste
+spine|spaɪn|spine|স্পাইন|মেরুদণ্ড|noun|drop_silent_e|1255|spain,spyne
+skull|skʌl|skull|স্কাল|মাথার খুলি|noun|floss_doubling|1256|skul,scull
+nephew|ˈnefjuː|ne-phew|নেফিউ|ভাইপো|noun||1257|nephue,nefew
+niece|niːs|niece|নিস|ভাইঝি|noun|i_before_e|1258|neice,nees
+grandson|ˈɡrænsʌn|grand-son|গ্র্যান্ডসন|নাতি|noun||1259|granson,grandsun
+sibling|ˈsɪblɪŋ|sib-ling|সিবলিং|সহোদর|noun||1260|sibbling,siblin
+twin|twɪn|twin|টুইন|যমজ|noun||1261|twine,tuin
+widow|ˈwɪdəʊ|wi-dow|উইডো|বিধবা|noun||1262|widdow,vidow
+orphan|ˈɔːfn|or-phan|অরফ্যান|অনাথ|noun||1263|orphen,orfan
+guardian|ˈɡɑːdiən|guar-di-an|গার্ডিয়ান|অভিভাবক|noun||1264|gardian,guardien
+toddler|ˈtɒdlə|tod-dler|টডলার|হাঁটি-হাঁটি শিশু|noun||1265|todler,toddlar
+landlord|ˈlændlɔːd|land-lord|ল্যান্ডলর্ড|বাড়িওয়ালা|noun||1266|landlard,lanlord
+tenant|ˈtenənt|ten-ant|টেনান্ট|ভাড়াটিয়া|noun||1267|tenent,tennant
+host|həʊst|host|হোস্ট|আয়োজক|noun||1268|hoast,hosst
+bedroom|ˈbedruːm|bed-room|বেডরুম|শোবার ঘর|noun||1269|bedrom,badroom
+bathroom|ˈbɑːθruːm|bath-room|বাথরুম|স্নানঘর|noun||1270|bathrom,batroom
+balcony|ˈbælkəni|bal-co-ny|ব্যালকনি|বারান্দা|noun|y_to_i|1271|balcany,balconi
+carpet|ˈkɑːpɪt|car-pet|কার্পেট|গালিচা|noun||1272|carpat,karpet
+wardrobe|ˈwɔːdrəʊb|ward-robe|ওয়ার্ডরোব|পোশাকের আলমারি|noun||1273|wardrob,wordrobe
+cupboard|ˈkʌbəd|cup-board|কাপবোর্ড|আলমারি|noun|silent_letters|1274|cubboard,cupbord
+drawer|drɔː|dra-wer|ড্রয়ার|দেরাজ|noun||1275|drawar,drower
+basket|ˈbɑːskɪt|bas-ket|বাস্কেট|ঝুড়ি|noun||1276|baskit,basquet
+mattress|ˈmætrəs|mat-tress|ম্যাট্রেস|তোশক|noun||1277|matress,mattres
+pillow|ˈpɪləʊ|pil-low|পিলো|বালিশ|noun||1278|pilow,pillo
+blanket|ˈblæŋkɪt|blan-ket|ব্ল্যাঙ্কেট|কম্বল|noun||1279|blankit,blanquet
+towel|ˈtaʊəl|to-wel|টাওয়েল|তোয়ালে|noun||1280|towal,tovel
+mirror|ˈmɪrə|mir-ror|মিরর|আয়না|noun||1281|miror,mirrer
+bucket|ˈbʌkɪt|buc-ket|বাকেট|বালতি|noun||1282|buckit,bucet
+broom|bruːm|broom|ব্রুম|ঝাড়ু|noun||1283|brom,bhroom
+ladder|ˈlædə|lad-der|ল্যাডার|সিঁড়ি|noun||1284|lader,laddar
+hammer|ˈhæmə|ham-mer|হ্যামার|হাতুড়ি|noun||1285|hamer,hammar
+needle|ˈniːdl|nee-dle|নিডল|সুচ|noun||1286|needel,nidle
+thread|θred|thread|থ্রেড|সুতো|noun||1287|tread,thred
+button|ˈbʌtn|but-ton|বাটন|বোতাম|noun||1288|buton,buttun
+pocket|ˈpɒkɪt|poc-ket|পকেট|পকেট|noun||1289|pockit,poket
+sleeve|sliːv|sleeve|স্লিভ|হাতা|noun|no_final_v|1290|sleave,sleve
+collar|ˈkɒlə|col-lar|কলার|জামার কলার|noun||1291|coller,colar
+blouse|blaʊz|blouse|ব্লাউজ|ব্লাউজ|noun||1292|blowse,blouze
+trousers|ˈtraʊzəz|trou-sers|ট্রাউজার্স|ট্রাউজার|noun||1293|trowsers,trousars
+sandal|ˈsændl|san-dal|স্যান্ডাল|স্যান্ডেল|noun||1294|sandel,sandle
+slipper|ˈslɪpə|slip-per|স্লিপার|চটি|noun|doubling_1_1_1|1295|sliper,slippar
+umbrella|ʌmˈbrelə|um-brel-la|আমব্রেলা|ছাতা|noun||1296|umbrela,ambrella
+wallet|ˈwɒlɪt|wal-let|ওয়ালেট|মানিব্যাগ|noun||1297|walet,wallat
+razor|ˈreɪzə|ra-zor|রেজার|ক্ষুর|noun||1298|razer,rasor
+soap|səʊp|soap|সোপ|সাবান|noun||1299|sope,soep
+shampoo|ʃæmˈpuː|sham-poo|শ্যাম্পু|শ্যাম্পু|noun||1300|shampu,shampoe
+lentil|ˈlentl|len-til|লেন্টিল|ডাল|noun||1301|lentle,lentill
+flour|ˈflaʊə|flour|ফ্লাওয়ার|আটা|noun||1302|flower,flor
+pepper|ˈpepə|pep-per|পেপার|গোলমরিচ|noun||1303|peper,peppar
+onion|ˈʌnjən|on-ion|আনিয়ন|পেঁয়াজ|noun||1304|onian,unian
+garlic|ˈɡɑːlɪk|gar-lic|গার্লিক|রসুন|noun||1305|garlik,garlick
+ginger|ˈdʒɪndʒə|gin-ger|জিনজার|আদা|noun|soft_g|1306|jinger,ginjer
+potato|pəˈteɪtəʊ|po-ta-to|পটেটো|আলু|noun|plural_es|1307|potatoe,patato
+tomato|təˈmɑːtəʊ|to-ma-to|টম্যাটো|টমেটো|noun|plural_es|1308|tomatoe,tometo
+radish|ˈrædɪʃ|rad-ish|র্যাডিশ|মুলো|noun||1309|redish,raddish
+cauliflower|ˈkɒliflaʊə|cau-li-flow-er|কলিফ্লাওয়ার|ফুলকপি|noun||1310|caulliflower,coliflower
+spinach|ˈspɪnɪdʒ|spi-nach|স্পিনিচ|পালং শাক|noun||1311|spinatch,spinech
+pumpkin|ˈpʌmpkɪn|pump-kin|পাম্পকিন|কুমড়ো|noun||1312|pumkin,pumpkim
+cucumber|ˈkjuːkʌmbə|cu-cum-ber|কিউকাম্বার|শশা|noun||1313|cucumbar,kucumber
+carrot|ˈkærət|car-rot|ক্যারট|গাজর|noun||1314|carot,carrat
+lemon|ˈlemən|le-mon|লেমন|লেবু|noun||1315|lemmon,leman
+mango|ˈmæŋɡəʊ|man-go|ম্যাংগো|আম|noun||1316|mengo,mangoe
+banana|bəˈnɑːnə|ba-na-na|বানানা|কলা|noun||1317|bannana,banena
+guava|ˈɡwɑːvə|gua-va|গোয়াভা|পেয়ারা|noun||1318|gauva,guawa
+papaya|pəˈpaɪə|pa-pa-ya|পাপায়া|পেঁপে|noun||1319|papya,pappaya
+coconut|ˈkəʊkənʌt|co-co-nut|কোকোনাট|নারকেল|noun||1320|coconout,cocanut
+peanut|ˈpiːnʌt|pea-nut|পিনাট|চীনাবাদাম|noun||1321|peenut,pinut
+almond|ˈɑːmənd|al-mond|আমন্ড|কাঠবাদাম|noun|silent_letters|1322|almound,amond
+raisin|ˈreɪzn|rai-sin|রেজিন|কিশমিশ|noun||1323|raisen,rasin
+honey|ˈhʌni|ho-ney|হানি|মধু|noun||1324|honney,hunny
+butter|ˈbʌtə|but-ter|বাটার|মাখন|noun||1325|buter,buttar
+cheese|tʃiːz|cheese|চিজ|পনির|noun||1326|chees,cheeze
+yoghurt|ˈjɒɡət|yo-ghurt|ইয়োগার্ট|দই|noun||1327|yogart,yoghart
+biscuit|ˈbɪskɪt|bis-cuit|বিস্কিট|বিস্কুট|noun||1328|bisquit,biscut
+noodle|ˈnuːdl|noo-dle|নুডল|নুডলস|noun||1329|noodel,nudle
+omelette|ˈɒmlət|om-e-lette|অমলেট|অমলেট|noun||1330|omlet,omelett
+kettle|ˈketl|ket-tle|কেটল|কেটলি|noun||1331|ketle,kettel
+saucer|ˈsɔːsə|sau-cer|সসার|পিরিচ|noun|soft_c|1332|sauser,saucar
+spoon|spuːn|spoon|স্পুন|চামচ|noun||1333|spun,spoone
+saucepan|ˈsɔːspən|sauce-pan|সসপ্যান|সসপ্যান|noun||1334|saucpan,sospan
+fork|fɔːk|fork|ফর্ক|কাঁটাচামচ|noun||1335|foark,fok
+plate|pleɪt|plate|প্লেট|থালা|noun|drop_silent_e|1336|plait,plete
+bowl|bəʊl|bowl|বোল|বাটি|noun||1337|bole,boul
+jug|dʒʌɡ|jug|জাগ|জগ|noun||1338|jugg,jag
+tray|treɪ|tray|ট্রে|ট্রে|noun||1339|trey,tra
+stove|stəʊv|stove|স্টোভ|চুলা|noun|no_final_v|1340|stov,stoave
+oven|ˈʌvn|o-ven|আভন|উনুন|noun||1341|owen,ovan
+fridge|frɪdʒ|fridge|ফ্রিজ|ফ্রিজ|noun|dge_after_short_vowel|1342|frige,fridg
+sink|sɪŋk|sink|সিংক|বাসন ধোয়ার জায়গা|noun||1343|sinc,synk
+tap|tæp|tap|ট্যাপ|কল|noun|doubling_1_1_1|1344|tape,taap
+bin|bɪn|bin|বিন|আবর্জনার ঝুড়ি|noun||1345|binn,been
+rubbish|ˈrʌbɪʃ|rub-bish|রাবিশ|আবর্জনা|noun||1346|rubish,rubbis
+laundry|ˈlɔːndri|laun-dry|লন্ড্রি|কাচাকাচি|noun||1347|laundary,londry
+iron|ˈaɪən|i-ron|আয়রন|ইস্তিরি|noun||1348|irun,ayron
+switch|swɪtʃ|switch|সুইচ|সুইচ|noun|tch_after_short_vowel|1349|swich,switsh
+socket|ˈsɒkɪt|soc-ket|সকেট|সকেট|noun||1350|sockit,socet
+pencil|ˈpensl|pen-cil|পেনসিল|পেনসিল|noun|soft_c|1351|pencle,pensil
+rubber|ˈrʌbə|rub-ber|রাবার|রাবার|noun||1352|ruber,rubbar
+ruler|ˈruːlə|ru-ler|রুলার|মাপার স্কেল|noun||1353|ruller,rular
+sharpener|ˈʃɑːpnə|shar-pe-ner|শার্পনার|পেনসিল কাটার যন্ত্র|noun||1354|sharpner,sharpaner
+notebook|ˈnəʊtbʊk|note-book|নোটবুক|খাতা|noun||1355|notbook,notebok
+chalk|tʃɔːk|chalk|চক|চক|noun|silent_letters|1356|chak,chock
+blackboard|ˈblækbɔːd|black-board|ব্ল্যাকবোর্ড|ব্ল্যাকবোর্ড|noun||1357|blakboard,blackbord
+desk|desk|desk|ডেস্ক|ডেস্ক|noun||1358|dask,desck
+satchel|ˈsætʃəl|sat-chel|স্যাচেল|স্কুলব্যাগ|noun|tch_after_short_vowel|1360|satchell,sachel
+homework|ˈhəʊmwɜːk|home-work|হোমওয়ার্ক|বাড়ির কাজ|noun||1361|homwork,homeework
+alphabet|ˈælfəbet|al-pha-bet|অ্যালফাবেট|বর্ণমালা|noun||1365|alphabate,alfabet
+syllable|ˈsɪləbl|syl-la-ble|সিলেবল|শব্দাংশ|noun|able_ible|1366|sylable,syllabel
+essay|ˈeseɪ|es-say|এসে|রচনা|noun||1368|esay,essai
+riddle|ˈrɪdl|rid-dle|রিডল|ধাঁধা|noun||1371|ridle,riddel
+puzzle|ˈpʌzl|puz-zle|পাজল|হেঁয়ালি|noun||1372|puzle,puzzel
+pupil|ˈpjuːpl|pu-pil|পিউপিল|ছাত্র|noun||1373|pupel,peupil
+headmaster|ˌhedˈmɑːstə|head-mas-ter|হেডমাস্টার|প্রধান শিক্ষক|noun||1374|headmastar,hedmaster
+principal|ˈprɪnsəpl|prin-ci-pal|প্রিন্সিপাল|অধ্যক্ষ|noun|soft_c|1375|principle,principel
+uniform|ˈjuːnɪfɔːm|u-ni-form|ইউনিফর্ম|ইউনিফর্ম|noun||1376|unifrom,uniforom
+register|ˈredʒɪstə|re-gis-ter|রেজিস্টার|হাজিরা খাতা|noun|soft_g|1377|rejister,registar
+recess|rɪˈses|re-cess|রিসেস|বিরতি|noun|floss_doubling|1381|reces,recesss
+timetable|ˈtaɪmteɪbl|time-ta-ble|টাইমটেবল|সময়সূচি|noun|able_ible|1382|timtable,timetabel
+revision|rɪˈvɪʒn|re-vi-sion|রিভিশন|পুনরালোচনা|noun|tion_sion|1384|revission,revistion
+playground|ˈpleɪɡraʊnd|play-ground|প্লেগ্রাউন্ড|খেলার মাঠ|noun||1387|playgroud,plaground
+assembly|əˈsembli|as-sem-bly|অ্যাসেম্বলি|সমাবেশ|noun|y_to_i|1388|asembly,assembley
+lecture|ˈlektʃə|lec-ture|লেকচার|বক্তৃতা|noun||1389|lechure,lectur
+syllabus|ˈsɪləbəs|syl-la-bus|সিলেবাস|পাঠ্যসূচি|noun||1390|silabus,syllabas
+diagram|ˈdaɪəɡræm|di-a-gram|ডায়াগ্রাম|চিত্র|noun||1392|diagraam,diagrem
+calculator|ˈkælkjuleɪtə|cal-cu-la-tor|ক্যালকুলেটর|ক্যালকুলেটর|noun||1393|calculater,calcultor
+geometry|dʒiˈɒmətri|ge-o-me-try|জিওমেট্রি|জ্যামিতি|noun|soft_g|1394|jeometry,geometery
+algebra|ˈældʒɪbrə|al-ge-bra|অ্যালজেব্রা|বীজগণিত|noun|soft_g|1395|aljebra,algibra
+arithmetic|əˈrɪθmətɪk|a-rith-me-tic|অ্যারিথমেটিক|পাটিগণিত|noun||1396|arithmatic,arithmetik
+fraction|ˈfrækʃn|frac-tion|ফ্র্যাকশন|ভগ্নাংশ|noun|tion_sion|1397|fracsion,fractoin
+multiply|ˈmʌltɪplaɪ|mul-ti-ply|মাল্টিপ্লাই|গুণ করা|verb|y_to_i|1398|multipy,multiplai
+divide|dɪˈvaɪd|di-vide|ডিভাইড|ভাগ করা|verb|drop_silent_e|1399|devide,divid
+subtract|səbˈtrækt|sub-tract|সাবট্র্যাক্ট|বিয়োগ করা|verb||1400|substract,subtrack
+triangle|ˈtraɪæŋɡl|tri-an-gle|ট্রায়াঙ্গল|ত্রিভুজ|noun||1402|triangel,triangal
+circle|ˈsɜːkl|cir-cle|সার্কল|বৃত্ত|noun|soft_c|1404|cirle,circel
+rectangle|ˈrektæŋɡl|rec-tan-gle|রেক্ট্যাঙ্গল|আয়তক্ষেত্র|noun||1405|rectangel,rectengle
+dozen|ˈdʌzn|do-zen|ডজন|ডজন|noun||1410|dozan,dosen
+double|ˈdʌbl|dou-ble|ডাবল|দ্বিগুণ|adjective|able_ible|1412|dubble,doubel
+single|ˈsɪŋɡl|sin-gle|সিঙ্গল|একক|adjective||1413|singel,singl
+sunrise|ˈsʌnraɪz|sun-rise|সানরাইজ|সূর্যোদয়|noun||1417|sunrice,sunrize
+sunset|ˈsʌnset|sun-set|সানসেট|সূর্যাস্ত|noun||1418|sunsat,sunnset
+noon|nuːn|noon|নুন|দুপুর|noun||1419|noone,nun
+midnight|ˈmɪdnaɪt|mid-night|মিডনাইট|মধ্যরাত|noun|silent_letters|1420|midnite,midnigt
+dawn|dɔːn|dawn|ডন|ভোর|noun||1421|daun,down
+dusk|dʌsk|dusk|ডাস্ক|সন্ধ্যা|noun||1422|dask,dusck
+fortnight|ˈfɔːtnaɪt|fort-night|ফোর্টনাইট|পক্ষকাল|noun|silent_letters|1423|fortnite,fourtnight
+decade|ˈdekeɪd|de-cade|ডিকেড|দশক|noun||1424|dacade,decad
+monsoon|mɒnˈsuːn|mon-soon|মনসুন|বর্ষা|noun||1427|monsun,mansoon
+humid|ˈhjuːmɪd|hu-mid|হিউমিড|আর্দ্র|adjective||1431|humed,humidd
+flood|flʌd|flood|ফ্লাড|বন্যা|noun||1433|flud,flode
+storm|stɔːm|storm|স্টর্ম|ঝড়|noun||1434|stroms,storme
+thunder|ˈθʌndə|thun-der|থান্ডার|বজ্র|noun||1435|tunder,thundar
+lightning|ˈlaɪtnɪŋ|light-ning|লাইটনিং|বিদ্যুৎচমক|noun|silent_letters|1436|lightening,litning
+breeze|briːz|breeze|ব্রিজ|মৃদু বাতাস|noun||1437|breez,breaze
+fog|fɒɡ|fog|ফগ|কুয়াশা|noun||1438|fogg,phog
+dew|djuː|dew|ডিউ|শিশির|noun||1439|due,dhew
+frost|frɒst|frost|ফ্রস্ট|তুষার|noun||1440|forst,frozt
+hail|heɪl|hail|হেইল|শিলাবৃষ্টি|noun||1441|hale,hial
+rainbow|ˈreɪnbəʊ|rain-bow|রেইনবো|রংধনু|noun||1442|ranbow,rainbo
+shadow|ˈʃædəʊ|sha-dow|শ্যাডো|ছায়া|noun||1443|shadaw,shado
+forecast|ˈfɔːkɑːst|fore-cast|ফোরকাস্ট|পূর্বাভাস|noun||1445|forcast,forecust
+jungle|ˈdʒʌŋɡl|jun-gle|জাঙ্গল|জঙ্গল|noun||1450|jungel,jangle
+meadow|ˈmedəʊ|mea-dow|মেডো|তৃণভূমি|noun||1451|medow,meadaw
+canal|kəˈnæl|ca-nal|ক্যানাল|খাল|noun||1452|cannal,canel
+pond|pɒnd|pond|পন্ড|পুকুর|noun||1453|pand,ponnd
+stream|striːm|stream|স্ট্রিম|ঝরনা|noun||1454|streem,strem
+waterfall|ˈwɔːtəfɔːl|wa-ter-fall|ওয়াটারফল|জলপ্রপাত|noun|floss_doubling|1455|waterfal,watarfall
+shore|ʃɔː|shore|শোর|তীর|noun||1456|shor,shour
+harbour|ˈhɑːbə|har-bour|হার্বার|বন্দর|noun||1457|harbor,harbur
+cliff|klɪf|cliff|ক্লিফ|খাড়া পাহাড়|noun|floss_doubling|1458|clif,cliffe
+cave|keɪv|cave|কেভ|গুহা|noun|no_final_v|1459|cav,kave
+volcano|vɒlˈkeɪnəʊ|vol-ca-no|ভলকানো|অগ্নিগিরি|noun|plural_es|1460|volcono,bolcano
+camel|ˈkæml|ca-mel|ক্যামেল|উট|noun||1461|camal,cammel
+donkey|ˈdɒŋki|don-key|ডঙ্কি|গাধা|noun||1462|donky,donkee
+squirrel|ˈskwɪrəl|squir-rel|স্কুইরেল|কাঠবিড়ালি|noun|q_takes_u|1463|squirel,skwirrel
+buffalo|ˈbʌfələʊ|buf-fa-lo|বাফেলো|মহিষ|noun|plural_es|1464|bufalo,buffelo
+goat|ɡəʊt|goat|গোট|ছাগল|noun||1465|gote,goot
+parrot|ˈpærət|par-rot|প্যারট|টিয়া|noun||1466|parot,parrat
+pigeon|ˈpɪdʒɪn|pi-geon|পিজন|পায়রা|noun|soft_g|1467|pigion,pijeon
+sparrow|ˈspærəʊ|spar-row|স্প্যারো|চড়ুই|noun||1468|sparow,sparro
+crow|krəʊ|crow|ক্রো|কাক|noun||1469|krow,crowe
+eagle|ˈiːɡl|ea-gle|ইগল|ঈগল|noun||1470|eagel,egle
+owl|aʊl|owl|আউল|পেঁচা|noun||1471|oul,owle
+hen|hen|hen|হেন|মুরগি|noun||1472|henn,han
+rooster|ˈruːstə|roos-ter|রুস্টার|মোরগ|noun||1473|rooter,roostar
+peacock|ˈpiːkɒk|pea-cock|পিকক|ময়ূর|noun|ck_after_short_vowel|1474|peacok,pecock
+swan|swɒn|swan|সোয়ান|রাজহাঁস|noun||1475|swann,suan
+crane|kreɪn|crane|ক্রেন|সারস|noun|drop_silent_e|1476|crain,krane
+frog|frɒɡ|frog|ফ্রগ|ব্যাঙ|noun|doubling_1_1_1|1477|frogg,phrog
+snake|sneɪk|snake|স্নেক|সাপ|noun|drop_silent_e|1478|snak,snayke
+lizard|ˈlɪzəd|li-zard|লিজার্ড|টিকটিকি|noun||1479|lizzard,lisard
+turtle|ˈtɜːtl|tur-tle|টার্টল|কচ্ছপ|noun||1480|turtel,tortle
+crocodile|ˈkrɒkədaɪl|cro-co-dile|ক্রোকোডাইল|কুমির|noun||1481|crocodial,crocodil
+deer|dɪə|deer|ডিয়ার|হরিণ|noun||1482|dear,deere
+wolf|wʊlf|wolf|উল্ফ|নেকড়ে|noun|f_to_ves|1483|wulf,wolve
+bear|beə|bear|বেয়ার|ভালুক|noun||1484|beer,baer
+lion|ˈlaɪən|li-on|লায়ন|সিংহ|noun||1485|lyon,laion
+zebra|ˈzebrə|ze-bra|জেব্রা|জেব্রা|noun||1486|zabra,zebrra
+giraffe|dʒəˈrɑːf|gi-raffe|জিরাফ|জিরাফ|noun|soft_g|1487|jiraffe,giraf
+rhino|ˈraɪnəʊ|rhi-no|রাইনো|গন্ডার|noun||1488|rino,rhyno
+whale|weɪl|whale|হোয়েল|তিমি|noun||1489|wale,whael
+dolphin|ˈdɒlfɪn|dol-phin|ডলফিন|শুশুক|noun||1490|dolfin,dolphen
+shark|ʃɑːk|shark|শার্ক|হাঙর|noun||1491|shurk,sark
+crab|kræb|crab|ক্র্যাব|কাঁকড়া|noun|doubling_1_1_1|1492|krab,crabb
+prawn|prɔːn|prawn|প্রন|চিংড়ি|noun||1493|praun,prown
+oyster|ˈɔɪstə|oys-ter|অয়স্টার|ঝিনুক|noun||1494|oystar,oistar
+snail|sneɪl|snail|স্নেইল|শামুক|noun||1495|snale,snial
+spider|ˈspaɪdə|spi-der|স্পাইডার|মাকড়সা|noun||1496|spidar,spyder
+ant|ænt|ant|অ্যান্ট|পিঁপড়া|noun||1497|antt,aunt
+bee|biː|bee|বি|মৌমাছি|noun||1498|bea,bii
+butterfly|ˈbʌtəflaɪ|but-ter-fly|বাটারফ্লাই|প্রজাপতি|noun|y_to_i|1499|buterfly,butterflie
+mosquito|məˈskiːtəʊ|mos-qui-to|মসকিটো|মশা|noun|q_takes_u|1500|mosquto,maskito
+housefly|ˈhaʊsflaɪ|house-fly|হাউসফ্লাই|মাছি|noun|y_to_i|1501|housefli,housfly
+cockroach|ˈkɒkrəʊtʃ|cock-roach|কক্রোচ|আরশোলা|noun|ck_after_short_vowel|1502|cokroach,cockroch
+termite|ˈtɜːmaɪt|ter-mite|টার্মাইট|উইপোকা|noun||1503|termight,termit
+locust|ˈləʊkəst|lo-cust|লোকাস্ট|পঙ্গপাল|noun||1504|locast,lokust
+worm|wɜːm|worm|ওয়ার্ম|কেঁচো|noun||1505|warm,worrm
+bicycle|ˈbaɪsɪkl|bi-cy-cle|বাইসাইকল|সাইকেল|noun|soft_c|1506|bicyle,bysicle
+rickshaw|ˈrɪkʃɔː|rick-shaw|রিকশ|রিকশা|noun|ck_after_short_vowel|1507|riksha,rickshow
+scooter|ˈskuːtə|scoo-ter|স্কুটার|স্কুটার|noun||1508|scootar,skooter
+motorcycle|ˈməʊtəsaɪkl|mo-tor-cy-cle|মোটরসাইকল|মোটরসাইকেল|noun|soft_c|1509|motercycle,motorcyle
+lorry|ˈlɒri|lor-ry|লরি|লরি|noun|y_to_i|1510|lory,lorrie
+tractor|ˈtræktə|trac-tor|ট্র্যাক্টর|ট্রাক্টর|noun||1511|tracter,tracktor
+trolley|ˈtrɒli|trol-ley|ট্রলি|ট্রলি|noun||1512|troley,trolly
+ferry|ˈferi|fer-ry|ফেরি|খেয়া|noun|y_to_i|1513|fery,ferrie
+launch|lɔːntʃ|launch|লঞ্চ|লঞ্চ|noun||1514|lanch,launche
+steamer|ˈstiːmə|stea-mer|স্টিমার|স্টিমার|noun||1515|steemer,stemar
+helicopter|ˈhelɪkɒptə|he-li-cop-ter|হেলিকপ্টার|হেলিকপ্টার|noun||1516|helicoptor,helecopter
+rocket|ˈrɒkɪt|roc-ket|রকেট|রকেট|noun||1517|rockit,roket
+submarine|ˈsʌbməriːn|sub-ma-rine|সাবমেরিন|ডুবোজাহাজ|noun||1518|submarin,sabmarine
+wagon|ˈwæɡən|wa-gon|ওয়াগন|মালগাড়ি|noun||1519|waggon,wagan
+carriage|ˈkærɪdʒ|car-riage|ক্যারিজ|কোচ|noun||1520|carrage,cariage
+wheel|wiːl|wheel|হুইল|চাকা|noun||1521|wheal,weel
+tyre|ˈtaɪə|tyre|টায়ার|টায়ার|noun||1522|tire,tyer
+horn|hɔːn|horn|হর্ন|হর্ন|noun||1523|horne,hornn
+pedal|ˈpedl|pe-dal|পেডাল|প্যাডেল|noun||1524|pedel,peddal
+saddle|ˈsædl|sad-dle|স্যাডল|জিন|noun||1525|sadle,saddel
+sail|seɪl|sail|সেইল|পাল|noun||1526|sale,sial
+oar|ɔː|oar|অর|দাঁড়|noun||1527|ore,oear
+mast|mɑːst|mast|মাস্ট|মাস্তুল|noun||1528|masst,mest
+deck|dek|deck|ডেক|ডেক|noun|ck_after_short_vowel|1529|dek,decke
+cabin|ˈkæbɪn|ca-bin|ক্যাবিন|কেবিন|noun||1530|cabbin,caban
+platform|ˈplætfɔːm|plat-form|প্ল্যাটফর্ম|প্লাটফর্ম|noun||1531|platfrom,platfarm
+junction|ˈdʒʌŋkʃn|junc-tion|জাংশন|সংযোগস্থল|noun|tion_sion|1532|junktion,juncsion
+tunnel|ˈtʌnl|tun-nel|টানেল|সুড়ঙ্গ|noun||1533|tunel,tunnal
+crossing|ˈkrɒsɪŋ|cros-sing|ক্রসিং|ক্রসিং|noun|floss_doubling|1534|crosing,crossin
+footpath|ˈfʊtpɑːθ|foot-path|ফুটপাথ|ফুটপাথ|noun||1535|footpat,futpath
+pavement|ˈpeɪvmənt|pave-ment|পেভমেন্ট|ফুটপাত|noun||1536|pavment,payvement
+lane|leɪn|lane|লেন|গলি|noun|drop_silent_e|1537|lain,laen
+highway|ˈhaɪweɪ|high-way|হাইওয়ে|মহাসড়ক|noun|silent_letters|1538|hiway,highwey
+roundabout|ˈraʊndəbaʊt|round-a-bout|রাউন্ডঅ্যাবাউট|গোলচত্বর|noun||1539|rondabout,roundebout
+parking|ˈpɑːkɪŋ|par-king|পার্কিং|পার্কিং|noun||1540|parkin,parcking
+garage|ˈɡærɑːʒ|ga-rage|গ্যারাজ|গ্যারেজ|noun||1541|garrage,garaj
+petrol|ˈpetrəl|pe-trol|পেট্রল|পেট্রল|noun||1542|petrole,pertol
+diesel|ˈdiːzl|die-sel|ডিজেল|ডিজেল|noun||1543|desel,diesal
+driver|ˈdraɪvə|dri-ver|ড্রাইভার|চালক|noun||1544|drivar,driever
+conductor|kənˈdʌktə|con-duc-tor|কনডাক্টর|কন্ডাক্টর|noun||1545|conducter,konductor
+porter|ˈpɔːtə|por-ter|পোর্টার|কুলি|noun||1546|portar,poter
+suitcase|ˈsuːtkeɪs|suit-case|সুটকেস|সুটকেস|noun||1547|suitcas,sutcase
+trunk|trʌŋk|trunk|ট্রাঙ্ক|ট্রাঙ্ক|noun||1548|trank,trunck
+parcel|ˈpɑːsl|par-cel|পার্সেল|পার্সেল|noun|soft_c|1549|parcle,parsel
+envelope|ˈenvələʊp|en-ve-lope|এনভেলোপ|খাম|noun||1550|envelop,enevlope
+stamp|stæmp|stamp|স্ট্যাম্প|ডাকটিকিট|noun||1551|stemp,stampp
+postcard|ˈpəʊstkɑːd|post-card|পোস্টকার্ড|পোস্টকার্ড|noun||1552|postcart,poscard
+telegram|ˈtelɪɡræm|te-le-gram|টেলিগ্রাম|টেলিগ্রাম|noun||1553|telegramme,teligram
+courier|ˈkʊriə|cou-ri-er|কুরিয়ার|কুরিয়ার|noun||1554|curier,couriar
+signature|ˈsɪɡnətʃə|sig-na-ture|সিগনেচার|সই|noun|silent_letters|1555|signatur,signeture
+landmark|ˈlændmɑːk|land-mark|ল্যান্ডমার্ক|নিদর্শন|noun||1556|lanmark,landmarck
+shortcut|ˈʃɔːtkʌt|short-cut|শর্টকাট|সংক্ষিপ্ত পথ|noun||1557|shortcurt,shotcut
+tour|tʊə|tour|টুর|ভ্রমণ|noun||1558|tor,toure
+picnic|ˈpɪknɪk|pic-nic|পিকনিক|চড়ুইভাতি|noun|ck_after_short_vowel|1559|piknic,picknic
+camp|kæmp|camp|ক্যাম্প|শিবির|noun||1560|kamp,campp
+tent|tent|tent|টেন্ট|তাঁবু|noun||1561|tant,tentt
+torch|tɔːtʃ|torch|টর্চ|টর্চ|noun||1562|torche,tortch
+rope|rəʊp|rope|রোপ|দড়ি|noun|drop_silent_e|1563|roap,ropp
+chain|tʃeɪn|chain|চেইন|শিকল|noun||1564|chane,chian
+hinge|hɪndʒ|hinge|হিঞ্জ|কবজা|noun|dge_after_short_vowel|1565|hindge,hinj
+nail|neɪl|nail|নেইল|পেরেক|noun||1566|nale,nial
+screw|skruː|screw|স্ক্রু|স্ক্রু|noun||1567|scru,skrew
+drill|drɪl|drill|ড্রিল|ড্রিল যন্ত্র|noun|floss_doubling|1568|dril,drille
+saw|sɔː|saw|স|করাত|noun||1569|sow,saww
+axe|æks|axe|অ্যাক্স|কুড়াল|noun||1570|ax,acks
+spade|speɪd|spade|স্পেড|কোদাল|noun|drop_silent_e|1571|spaid,spadde
+shovel|ˈʃʌvl|sho-vel|শাভল|বেলচা|noun|no_final_v|1572|shovle,shovell
+plough|plaʊ|plough|প্লাউ|লাঙল|noun|silent_letters|1573|plow,plought
+sickle|ˈsɪkl|sic-kle|সিকল|কাঁচি-কাটারি|noun||1574|sickel,sicle
+sack|sæk|sack|স্যাক|বস্তা|noun|ck_after_short_vowel|1575|sak,sacke
+bamboo|bæmˈbuː|bam-boo|ব্যাম্বু|বাঁশ|noun||1576|bambu,bamboe
+timber|ˈtɪmbə|tim-ber|টিম্বার|কাঠ|noun||1577|timbar,timmber
+brick|brɪk|brick|ব্রিক|ইট|noun|ck_after_short_vowel|1578|brik,bricke
+cement|sɪˈment|ce-ment|সিমেন্ট|সিমেন্ট|noun|soft_c|1579|semant,cemant
+sand|sænd|sand|স্যান্ড|বালি|noun||1580|sannd,send
+gravel|ˈɡrævl|gra-vel|গ্র্যাভল|খোয়া|noun|no_final_v|1581|gravle,gravell
+plaster|ˈplɑːstə|plas-ter|প্লাস্টার|প্লাস্টার|noun||1582|plastar,palster
+paint|peɪnt|paint|পেইন্ট|রং|noun||1583|pint,painnt
+varnish|ˈvɑːnɪʃ|var-nish|ভার্নিশ|বার্নিশ|noun||1584|barnish,varnesh
+glue|ɡluː|glue|গ্লু|আঠা|noun||1585|gule,glu
+tape|teɪp|tape|টেপ|টেপ|noun|drop_silent_e|1586|taip,tepe
+blade|bleɪd|blade|ব্লেড|ফলা|noun|drop_silent_e|1587|blad,blaid
+ribbon|ˈrɪbən|rib-bon|রিবন|ফিতা|noun||1588|ribon,ribbun
+lace|leɪs|lace|লেস|ফিতা-জাল|noun|soft_c|1589|lase,laice
+loom|luːm|loom|লুম|তাঁত|noun||1590|lom,loome
+cotton|ˈkɒtn|cot-ton|কটন|সুতি|noun||1591|coton,cottun
+silk|sɪlk|silk|সিল্ক|রেশম|noun||1592|silck,sik
+wool|wʊl|wool|উল|পশম|noun||1593|wol,woole
+linen|ˈlɪnɪn|li-nen|লিনেন|লিনেন|noun||1594|linnen,linan
+leather|ˈleðə|lea-ther|লেদার|চামড়া|noun||1595|lether,leathar
+plastic|ˈplæstɪk|plas-tic|প্লাস্টিক|প্লাস্টিক|noun||1596|plastik,palstic
+copper|ˈkɒpə|cop-per|কপার|তামা|noun||1597|coper,coppar
+brass|brɑːs|brass|ব্রাস|পিতল|noun|floss_doubling|1598|bras,brasse
+steel|stiːl|steel|স্টিল|ইস্পাত|noun||1599|steal,stel
+silver|ˈsɪlvə|sil-ver|সিলভার|রুপা|noun|no_final_v|1600|silvar,silber
+gold|ɡəʊld|gold|গোল্ড|সোনা|noun||1601|golde,goald
+bronze|brɒnz|bronze|ব্রোঞ্জ|ব্রোঞ্জ|noun||1602|bronz,brounze
+lead|led|lead|লেড|সীসা|noun||1603|leed,ledd
+zinc|zɪŋk|zinc|জিংক|দস্তা|noun||1604|zink,zinck
+coal|kəʊl|coal|কোল|কয়লা|noun||1605|cole,coual
+charcoal|ˈtʃɑːkəʊl|char-coal|চারকোল|কাঠকয়লা|noun||1606|charcole,charcol
+firewood|ˈfaɪəwʊd|fire-wood|ফায়ারউড|জ্বালানি কাঠ|noun||1607|firwood,firewod
+ashes|ˈæʃɪz|ash-es|অ্যাশেজ|ছাই|noun|plural_es|1608|ashs,asshes
+smoke|sməʊk|smoke|স্মোক|ধোঁয়া|noun|drop_silent_e|1609|smok,smoak
+flame|fleɪm|flame|ফ্লেম|শিখা|noun|drop_silent_e|1610|flaim,flamme
+spark|spɑːk|spark|স্পার্ক|স্ফুলিঙ্গ|noun||1611|sparck,spak
+furnace|ˈfɜːnɪs|fur-nace|ফার্নেস|চুল্লি|noun|soft_c|1612|furnice,furnase
+kiln|kɪln|kiln|কিলন|ভাটা|noun||1613|kilne,kill
+candle|ˈkændl|can-dle|ক্যান্ডল|মোমবাতি|noun||1614|candel,candal
+lantern|ˈlæntən|lan-tern|ল্যানটার্ন|লণ্ঠন|noun||1615|lantarn,lanturn
+lamp|læmp|lamp|ল্যাম্প|বাতি|noun||1616|lampp,lemp
+bulb|bʌlb|bulb|বাল্ব|বাল্ব|noun||1617|bult,bulbb
+wire|ˈwaɪə|wire|ওয়্যার|তার|noun||1618|wier,wyre
+switchboard|ˈswɪtʃbɔːd|switch-board|সুইচবোর্ড|সুইচবোর্ড|noun|tch_after_short_vowel|1619|swichboard,switchbord
+battery|ˈbætri|bat-te-ry|ব্যাটারি|ব্যাটারি|noun|y_to_i|1620|batery,batterie
+charger|ˈtʃɑːdʒə|char-ger|চার্জার|চার্জার|noun|soft_g|1621|charjer,chargar
+cooler|ˈkuːlə|coo-ler|কুলার|কুলার|noun||1622|coolar,culer
+heater|ˈhiːtə|hea-ter|হিটার|হিটার|noun||1623|heatar,heeter
+borrow|ˈbɒrəʊ|bor-row|বরো|ধার নেওয়া|verb||1624|borow,barrow
+lend|lend|lend|লেন্ড|ধার দেওয়া|verb||1625|land,lennd
+repay|rɪˈpeɪ|re-pay|রিপে|শোধ করা|verb|prefix_keeps_root|1626|repai,repey
+spend|spend|spend|স্পেন্ড|খরচ করা|verb||1627|spand,spennd
+earn|ɜːn|earn|আর্ন|উপার্জন করা|verb||1628|urn,earnn
+waste|weɪst|waste|ওয়েস্ট|নষ্ট করা|verb|drop_silent_e|1629|wast,waist
+count|kaʊnt|count|কাউন্ট|গণনা করা|verb||1630|cont,kount
+fold|fəʊld|fold|ফোল্ড|ভাঁজ করা|verb||1631|folde,fould
+unfold|ʌnˈfəʊld|un-fold|আনফোল্ড|খুলে দেওয়া|verb|prefix_keeps_root|1632|unfolde,unnfold
+tear|teə|tear|টেয়ার|ছেঁড়া|verb||1633|tare,tier
+stitch|stɪtʃ|stitch|স্টিচ|সেলাই করা|verb|tch_after_short_vowel|1634|stich,stitsh
+sew|səʊ|sew|সো|সেলাই করা|verb||1635|sow,seww
+wash|wɒʃ|wash|ওয়াশ|ধোয়া|verb|plural_es|1636|vash,wosh
+rinse|rɪns|rinse|রিন্স|ধুয়ে ফেলা|verb|drop_silent_e|1637|rince,rinnse
+dry|draɪ|dry|ড্রাই|শুকানো|verb|y_to_i|1638|drie,drai
+sweep|swiːp|sweep|সুইপ|ঝাড়ু দেওয়া|verb||1639|swep,sweap
+mop|mɒp|mop|মপ|মোছা|verb|doubling_1_1_1|1640|mopp,map
+scrub|skrʌb|scrub|স্ক্রাব|ঘষা|verb|doubling_1_1_1|1641|scrubb,skrub
+polish|ˈpɒlɪʃ|po-lish|পলিশ|পালিশ করা|verb|plural_es|1642|polis,pollish
+wipe|waɪp|wipe|ওয়াইপ|মুছে ফেলা|verb|drop_silent_e|1643|wype,wipp
+dust|dʌst|dust|ডাস্ট|ধুলো ঝাড়া|verb||1644|dast,dustt
+tidy|ˈtaɪdi|ti-dy|টাইডি|গোছানো|verb|y_to_i|1645|tidey,tiddy
+stack|stæk|stack|স্ট্যাক|থাক করা|verb|ck_after_short_vowel|1646|stak,stacke
+pile|paɪl|pile|পাইল|স্তূপ করা|verb|drop_silent_e|1647|pyle,pille
+hang|hæŋ|hang|হ্যাং|ঝোলানো|verb||1648|heng,hangg
+fix|fɪks|fix|ফিক্স|ঠিক করা|verb|plural_es|1649|fics,fixx
+mend|mend|mend|মেন্ড|মেরামত করা|verb||1650|mand,mennd
+repair|rɪˈpeə|re-pair|রিপেয়ার|সারানো|verb||1651|repare,repiar
+bend|bend|bend|বেন্ড|বাঁকানো|verb||1652|band,bennd
+twist|twɪst|twist|টুইস্ট|মোচড়ানো|verb||1653|twis,tuist
+stretch|stretʃ|stretch|স্ট্রেচ|প্রসারিত করা|verb|tch_after_short_vowel|1654|strech,stretsh
+shake|ʃeɪk|shake|শেক|ঝাঁকানো|verb|drop_silent_e|1655|shak,shayke
+pour|pɔː|pour|পোর|ঢালা|verb||1656|pore,poor
+fill|fɪl|fill|ফিল|ভরা|verb|floss_doubling|1657|fil,fille
+empty|ˈempti|emp-ty|এম্পটি|খালি করা|verb|y_to_i|1658|emty,emptey
+spill|spɪl|spill|স্পিল|ছিটকে ফেলা|verb|floss_doubling|1659|spil,spille
+drip|drɪp|drip|ড্রিপ|টুপটুপ পড়া|verb|doubling_1_1_1|1660|dripp,dhrip
+soak|səʊk|soak|সোক|ভেজানো|verb||1661|soke,souk
+boil|bɔɪl|boil|বয়ল|সেদ্ধ করা|verb||1662|boyl,boile
+fry|fraɪ|fry|ফ্রাই|ভাজা|verb|y_to_i|1663|frie,frai
+bake|beɪk|bake|বেক|সেঁকা|verb|drop_silent_e|1664|bak,bayke
+roast|rəʊst|roast|রোস্ট|ঝলসানো|verb||1665|rost,roust
+grill|ɡrɪl|grill|গ্রিল|গ্রিল করা|verb|floss_doubling|1666|gril,grille
+peel|piːl|peel|পিল|খোসা ছাড়ানো|verb||1667|pel,peal
+chop|tʃɒp|chop|চপ|কুটে নেওয়া|verb|doubling_1_1_1|1668|chopp,chap
+slice|slaɪs|slice|স্লাইস|ফালি করা|verb|soft_c|1669|slise,slize
+grate|ɡreɪt|grate|গ্রেট|কুরে নেওয়া|verb|drop_silent_e|1670|grat,greate
+stir|stɜː|stir|স্টার|নাড়া|verb|doubling_1_1_1|1671|stier,sturr
+taste|teɪst|taste|টেস্ট|স্বাদ নেওয়া|verb|drop_silent_e|1672|tast,teste
+chew|tʃuː|chew|চিউ|চিবানো|verb||1673|chue,chewe
+swallow|ˈswɒləʊ|swal-low|সোয়ালো|গিলে ফেলা|verb||1674|swalow,swallo
+sip|sɪp|sip|সিপ|চুমুক দেওয়া|verb|doubling_1_1_1|1675|sipp,seep
+lick|lɪk|lick|লিক|চাটা|verb|ck_after_short_vowel|1676|lik,licke
+bite|baɪt|bite|বাইট|কামড়ানো|verb|drop_silent_e|1677|bight,bitte
+spit|spɪt|spit|স্পিট|থুতু ফেলা|verb|doubling_1_1_1|1678|spitt,speet
+sneeze|sniːz|sneeze|স্নিজ|হাঁচি দেওয়া|verb|drop_silent_e|1679|sneez,sneaze
+yawn|jɔːn|yawn|ইয়ন|হাঁই তোলা|verb||1680|yaun,yown
+blink|blɪŋk|blink|ব্লিংক|চোখ পিটপিট করা|verb||1681|blinck,blenk
+stare|steə|stare|স্টেয়ার|একদৃষ্টে তাকানো|verb|drop_silent_e|1682|stair,starre
+glance|ɡlɑːns|glance|গ্লান্স|আড়চোখে দেখা|verb|drop_silent_e|1683|glanse,glannce
+nod|nɒd|nod|নড|মাথা নাড়া|verb|doubling_1_1_1|1684|nodd,nad
+wave|weɪv|wave|ওয়েভ|হাত নাড়া|verb|no_final_v|1685|wav,waive
+clap|klæp|clap|ক্ল্যাপ|হাততালি দেওয়া|verb|doubling_1_1_1|1686|clapp,klap
+point|pɔɪnt|point|পয়েন্ট|আঙুল দিয়ে দেখানো|verb||1687|poynt,pointt
+push|pʊʃ|push|পুশ|ধাক্কা দেওয়া|verb|plural_es|1688|puss,poosh
+pull|pʊl|pull|পুল|টানা|verb|floss_doubling|1689|pul,pulle
+lift|lɪft|lift|লিফ্ট|তোলা|verb||1690|lif,liftt
+drag|dræɡ|drag|ড্র্যাগ|টেনে নেওয়া|verb|doubling_1_1_1|1691|dragg,drug
+drop|drɒp|drop|ড্রপ|ফেলে দেওয়া|verb|doubling_1_1_1|1692|dropp,drap
+hop|hɒp|hop|হপ|এক পায়ে লাফানো|verb|doubling_1_1_1|1693|hopp,hap
+skip|skɪp|skip|স্কিপ|এড়িয়ে যাওয়া|verb|doubling_1_1_1|1694|skipp,skeep
+crawl|krɔːl|crawl|ক্রল|হামাগুড়ি দেওয়া|verb||1695|craul,crowl
+slide|slaɪd|slide|স্লাইড|পিছলে যাওয়া|verb|drop_silent_e|1696|slyde,slid
+swing|swɪŋ|swing|সুইং|দোলা|verb||1697|swinng,sving
+dive|daɪv|dive|ডাইভ|ঝাঁপ দেওয়া|verb|no_final_v|1698|div,dyve
+float|fləʊt|float|ফ্লোট|ভেসে থাকা|verb||1699|flote,floate
+row|rəʊ|row|রো|বৈঠা বাওয়া|verb||1700|roe,roww
+ride|raɪd|ride|রাইড|চড়া|verb|drop_silent_e|1701|ryde,ridde
+steer|stɪə|steer|স্টিয়ার|চালনা করা|verb||1702|stear,steere
+park|pɑːk|park|পার্ক|গাড়ি রাখা|verb||1703|parck,pak
+unlock|ʌnˈlɒk|un-lock|আনলক|তালা খোলা|verb|prefix_keeps_root|1704|unlok,unnlock
+ring|rɪŋ|ring|রিং|বাজানো|verb||1705|rinng,reeng
+shout|ʃaʊt|shout|শাউট|চিৎকার করা|verb||1706|shoute,shaut
+whisper|ˈwɪspə|whis-per|হুইসপার|ফিসফিস করা|verb||1707|wisper,whispar
+mumble|ˈmʌmbl|mum-ble|মামবল|বিড়বিড় করা|verb||1708|mumbel,mumbal
+giggle|ˈɡɪɡl|gig-gle|গিগল|খিলখিল করে হাসা|verb||1709|gigle,giggel
+weep|wiːp|weep|উইপ|কাঁদা|verb||1710|wep,weap
+sigh|saɪ|sigh|সাই|দীর্ঘশ্বাস ফেলা|verb|silent_letters|1711|sie,sight
+snore|snɔː|snore|স্নোর|নাক ডাকা|verb|drop_silent_e|1712|snor,snoare
+dream|driːm|dream|ড্রিম|স্বপ্ন দেখা|verb||1713|dreem,drem
+wake|weɪk|wake|ওয়েক|জেগে ওঠা|verb|drop_silent_e|1714|wak,wayke
+rest|rest|rest|রেস্ট|বিশ্রাম নেওয়া|verb||1715|rast,restt

@@ -310,3 +310,445 @@ damage|ˈdæmɪdʒ|da-mage|ড্যামেজ|ক্ষতি|noun|soft_g|617
 marriage|ˈmærɪdʒ|mar-riage|ম্যারেজ|বিয়ে|noun|soft_g|618|marrage,mariage
 cabbage|ˈkæbɪdʒ|cab-bage|ক্যাবেজ|বাঁধাকপি|noun|soft_g|619|cabage,cabbaje
 storage|ˈstɔːrɪdʒ|sto-rage|স্টোরেজ|সংরক্ষণ|noun|soft_g|620|storege,storaje
+
+# --- Added: -tion/-sion and -able/-ible, ranks 1716+ ---
+reaction|riˈækʃn|re-ac-tion|রিঅ্যাকশন|প্রতিক্রিয়া|noun|tion_sion|1716|reacsion,reactoin
+selection|sɪˈlekʃn|se-lec-tion|সিলেকশন|নির্বাচন|noun|tion_sion|1717|selecsion,selction
+connection|kəˈnekʃn|con-nec-tion|কানেকশন|সংযোগ|noun|tion_sion|1718|conection,connexion
+impression|ɪmˈpreʃn|im-pres-sion|ইমপ্রেশন|ধারণা|noun|tion_sion|1719|impresion,impretion
+progression|prəˈɡreʃn|pro-gres-sion|প্রোগ্রেশন|অগ্রগতি|noun|tion_sion|1720|progresion,progretion
+confusion|kənˈfjuːʒn|con-fu-sion|কনফিউশন|বিভ্রান্তি|noun|tion_sion|1721|confussion,confution
+invasion|ɪnˈveɪʒn|in-va-sion|ইনভেশন|আক্রমণ|noun|tion_sion|1722|invasition,invation
+explosion|ɪkˈspləʊʒn|ex-plo-sion|এক্সপ্লোশন|বিস্ফোরণ|noun|tion_sion|1723|explotion,explossion
+erosion|ɪˈrəʊʒn|e-ro-sion|ইরোশন|ক্ষয়|noun|tion_sion|1724|erotion,erossion
+provision|prəˈvɪʒn|pro-vi-sion|প্রভিশন|ব্যবস্থা|noun|tion_sion|1725|provission,provition
+invitation|ˌɪnvɪˈteɪʃn|in-vi-ta-tion|ইনভিটেশন|আমন্ত্রণ|noun|tion_sion|1726|invitasion,invatation
+operation|ˌɒpəˈreɪʃn|o-pe-ra-tion|অপারেশন|অপারেশন|noun|tion_sion|1727|operasion,oparation
+creation|kriˈeɪʃn|cre-a-tion|ক্রিয়েশন|সৃষ্টি|noun|tion_sion|1728|creasion,craetion
+donation|dəʊˈneɪʃn|do-na-tion|ডোনেশন|দান|noun|tion_sion|1729|donasion,donetion
+location|ləʊˈkeɪʃn|lo-ca-tion|লোকেশন|স্থান|noun|tion_sion|1730|locasion,lokation
+situation|ˌsɪtʃuˈeɪʃn|si-tu-a-tion|সিচুয়েশন|পরিস্থিতি|noun|tion_sion|1731|situasion,sitution
+vacation|vəˈkeɪʃn|va-ca-tion|ভ্যাকেশন|ছুটি|noun|tion_sion|1732|vacasion,bacation
+vocation|vəʊˈkeɪʃn|vo-ca-tion|ভোকেশন|পেশা|noun|tion_sion|1733|vocasion,bocation
+duration|djʊˈreɪʃn|du-ra-tion|ডিউরেশন|সময়কাল|noun|tion_sion|1734|durasion,duretion
+migration|maɪˈɡreɪʃn|mi-gra-tion|মাইগ্রেশন|পরিযান|noun|tion_sion|1735|migrasion,migretion
+narration|nəˈreɪʃn|nar-ra-tion|ন্যারেশন|বর্ণনা|noun|tion_sion|1736|naration,narrasion
+inflation|ɪnˈfleɪʃn|in-fla-tion|ইনফ্লেশন|মুদ্রাস্ফীতি|noun|tion_sion|1737|inflasion,inflatoin
+isolation|ˌaɪsəˈleɪʃn|i-so-la-tion|আইসোলেশন|বিচ্ছিন্নতা|noun|tion_sion|1738|isolasion,islotion
+vibration|vaɪˈbreɪʃn|vi-bra-tion|ভাইব্রেশন|কম্পন|noun|tion_sion|1739|vibrasion,bibration
+rotation|rəʊˈteɪʃn|ro-ta-tion|রোটেশন|আবর্তন|noun|tion_sion|1740|rotasion,rotetion
+dictation|dɪkˈteɪʃn|dic-ta-tion|ডিকটেশন|শ্রুতিলিখন|noun|tion_sion|1741|dictasion,dictetion
+dedication|ˌdedɪˈkeɪʃn|de-di-ca-tion|ডেডিকেশন|নিষ্ঠা|noun|tion_sion|1742|dedicasion,dedecation
+complication|ˌkɒmplɪˈkeɪʃn|com-pli-ca-tion|কমপ্লিকেশন|জটিলতা|noun|tion_sion|1743|complicasion,complecation
+publication|ˌpʌblɪˈkeɪʃn|pub-li-ca-tion|পাবলিকেশন|প্রকাশনা|noun|tion_sion|1744|publicasion,publecation
+reputation|ˌrepjuˈteɪʃn|re-pu-ta-tion|রেপুটেশন|সুনাম|noun|tion_sion|1745|reputasion,reputetion
+salvation|sælˈveɪʃn|sal-va-tion|স্যালভেশন|পরিত্রাণ|noun|tion_sion|1746|salvasion,salbation
+temptation|tempˈteɪʃn|temp-ta-tion|টেমপ্টেশন|প্রলোভন|noun|tion_sion|1747|temptasion,temtation
+limitation|ˌlɪmɪˈteɪʃn|li-mi-ta-tion|লিমিটেশন|সীমাবদ্ধতা|noun|tion_sion|1748|limitasion,limatation
+invention|ɪnˈvenʃn|in-ven-tion|ইনভেনশন|উদ্ভাবন|noun|tion_sion|1749|invension,invantion
+prevention|prɪˈvenʃn|pre-ven-tion|প্রিভেনশন|প্রতিরোধ|noun|tion_sion|1750|prevension,prebention
+intention|ɪnˈtenʃn|in-ten-tion|ইনটেনশন|উদ্দেশ্য|noun|tion_sion|1751|intension,intantion
+convention|kənˈvenʃn|con-ven-tion|কনভেনশন|সম্মেলন|noun|tion_sion|1752|convension,conbention
+detention|dɪˈtenʃn|de-ten-tion|ডিটেনশন|আটক|noun|tion_sion|1753|detension,detantion
+retention|rɪˈtenʃn|re-ten-tion|রিটেনশন|ধারণক্ষমতা|noun|tion_sion|1754|retension,retantion
+extension|ɪkˈstenʃn|ex-ten-sion|এক্সটেনশন|বিস্তার|noun|tion_sion|1755|extention,extansion
+tension|ˈtenʃn|ten-sion|টেনশন|টানাপোড়েন|noun|tion_sion|1756|tention,tenshion
+pension|ˈpenʃn|pen-sion|পেনশন|পেনশন|noun|tion_sion|1757|pention,penshion
+mansion|ˈmænʃn|man-sion|ম্যানশন|প্রাসাদ|noun|tion_sion|1758|mantion,manshion
+session|ˈseʃn|ses-sion|সেশন|অধিবেশন|noun|tion_sion|1759|sesion,seshion
+fashion|ˈfæʃn|fa-shion|ফ্যাশন|ফ্যাশন|noun|tion_sion|1760|fasion,fashon
+cushion|ˈkʊʃn|cu-shion|কুশন|কুশন|noun|tion_sion|1761|cusion,cushon
+portion|ˈpɔːʃn|por-tion|পোরশন|অংশ|noun|tion_sion|1762|porsion,porshon
+caution|ˈkɔːʃn|cau-tion|কশন|সতর্কতা|noun|tion_sion|1763|causion,cation
+auction|ˈɔːkʃn|auc-tion|অকশন|নিলাম|noun|tion_sion|1764|aucsion,auktion
+traction|ˈtrækʃn|trac-tion|ট্র্যাকশন|কর্ষণ|noun|tion_sion|1765|tracsion,traktion
+friction|ˈfrɪkʃn|fric-tion|ফ্রিকশন|ঘর্ষণ|noun|tion_sion|1766|fricsion,friktion
+fiction|ˈfɪkʃn|fic-tion|ফিকশন|কল্পকাহিনি|noun|tion_sion|1767|ficsion,fixion
+diction|ˈdɪkʃn|dic-tion|ডিকশন|উচ্চারণভঙ্গি|noun|tion_sion|1768|dicsion,diktion
+addiction|əˈdɪkʃn|ad-dic-tion|অ্যাডিকশন|আসক্তি|noun|tion_sion|1769|adiction,addicsion
+affection|əˈfekʃn|af-fec-tion|অ্যাফেকশন|স্নেহ|noun|tion_sion|1770|afection,affecsion
+infection|ɪnˈfekʃn|in-fec-tion|ইনফেকশন|সংক্রমণ|noun|tion_sion|1771|infecsion,infextion
+injection|ɪnˈdʒekʃn|in-jec-tion|ইনজেকশন|ইনজেকশন|noun|tion_sion|1772|injecsion,injaction
+objection|əbˈdʒekʃn|ob-jec-tion|অবজেকশন|আপত্তি|noun|tion_sion|1773|objecsion,objaction
+projection|prəˈdʒekʃn|pro-jec-tion|প্রোজেকশন|প্রক্ষেপণ|noun|tion_sion|1774|projecsion,projaction
+rejection|rɪˈdʒekʃn|re-jec-tion|রিজেকশন|প্রত্যাখ্যান|noun|tion_sion|1775|rejecsion,rejaction
+perfection|pəˈfekʃn|per-fec-tion|পারফেকশন|নিখুঁততা|noun|tion_sion|1776|perfecsion,parfection
+reflection|rɪˈflekʃn|re-flec-tion|রিফ্লেকশন|প্রতিফলন|noun|tion_sion|1777|reflecsion,refelction
+protection|prəˈtekʃn|pro-tec-tion|প্রোটেকশন|সুরক্ষা|noun|tion_sion|1778|protecsion,protaction
+subtraction|səbˈtrækʃn|sub-trac-tion|সাবট্র্যাকশন|বিয়োগ|noun|tion_sion|1779|substraction,subtracsion
+distraction|dɪˈstrækʃn|dis-trac-tion|ডিসট্র্যাকশন|মনোযোগভঙ্গ|noun|tion_sion|1780|distracsion,distriction
+attraction|əˈtrækʃn|at-trac-tion|অ্যাট্র্যাকশন|আকর্ষণ|noun|tion_sion|1781|atraction,attracsion
+extraction|ɪkˈstrækʃn|ex-trac-tion|এক্সট্র্যাকশন|নিষ্কাশন|noun|tion_sion|1782|extracsion,extraktion
+instruction|ɪnˈstrʌkʃn|in-struc-tion|ইনস্ট্রাকশন|নির্দেশ|noun|tion_sion|1783|instrucsion,instraction
+destruction|dɪˈstrʌkʃn|de-struc-tion|ডিসট্রাকশন|ধ্বংস|noun|tion_sion|1784|destrucsion,distruction
+construction|kənˈstrʌkʃn|con-struc-tion|কনস্ট্রাকশন|নির্মাণ|noun|tion_sion|1785|constracsion,contruction
+production|prəˈdʌkʃn|pro-duc-tion|প্রোডাকশন|উৎপাদন|noun|tion_sion|1786|producsion,prodaction
+reduction|rɪˈdʌkʃn|re-duc-tion|রিডাকশন|হ্রাস|noun|tion_sion|1787|reducsion,redaction
+conduction|kənˈdʌkʃn|con-duc-tion|কনডাকশন|পরিবহণ|noun|tion_sion|1788|conducsion,condaction
+eruption|ɪˈrʌpʃn|e-rup-tion|ইরাপশন|অগ্ন্যুৎপাত|noun|tion_sion|1789|erupsion,eraption
+corruption|kəˈrʌpʃn|cor-rup-tion|করাপশন|দুর্নীতি|noun|tion_sion|1790|coruption,corrupsion
+adoption|əˈdɒpʃn|a-dop-tion|অ্যাডপশন|দত্তক নেওয়া|noun|tion_sion|1791|adopsion,adaption
+option|ˈɒpʃn|op-tion|অপশন|বিকল্প|noun|tion_sion|1792|opsion,optoin
+adaptation|ˌædæpˈteɪʃn|a-dap-ta-tion|অ্যাডাপটেশন|অনুবর্তন|noun|tion_sion|1793|adaptasion,adoptation
+notation|nəʊˈteɪʃn|no-ta-tion|নোটেশন|প্রতীকলিপি|noun|tion_sion|1794|notasion,notetion
+citation|saɪˈteɪʃn|ci-ta-tion|সাইটেশন|উদ্ধৃতি|noun|soft_c|1795|sitation,citasion
+acceptable|əkˈseptəbl|ac-cep-ta-ble|অ্যাকসেপ্টেবল|গ্রহণযোগ্য|adjective|able_ible|1796|acceptible,aceptable
+probable|ˈprɒbəbl|pro-ba-ble|প্রোবাবল|সম্ভাব্য|adjective|able_ible|1797|probible,probabel
+portable|ˈpɔːtəbl|por-ta-ble|পোর্টেবল|বহনযোগ্য|adjective|able_ible|1798|portible,portabel
+movable|ˈmuːvəbl|mo-va-ble|মুভেবল|সরানো যায় এমন|adjective|able_ible|1799|moveable,movible
+washable|ˈwɒʃəbl|wa-sha-ble|ওয়াশেবল|ধোয়া যায় এমন|adjective|able_ible|1800|washible,washabel
+breakable|ˈbreɪkəbl|brea-ka-ble|ব্রেকেবল|ভাঙা যায় এমন|adjective|able_ible|1801|breakible,brakeable
+drinkable|ˈdrɪŋkəbl|drin-ka-ble|ড্রিংকেবল|পানযোগ্য|adjective|able_ible|1802|drinkible,drinkabel
+eatable|ˈiːtəbl|ea-ta-ble|ইটেবল|খাওয়ার যোগ্য|adjective|able_ible|1803|eatible,eatabel
+teachable|ˈtiːtʃəbl|tea-cha-ble|টিচেবল|শেখানো যায় এমন|adjective|able_ible|1804|teachible,techable
+reachable|ˈriːtʃəbl|rea-cha-ble|রিচেবল|নাগালের মধ্যে|adjective|able_ible|1805|reachible,reachabel
+payable|ˈpeɪəbl|pa-ya-ble|পেয়েবল|প্রদেয়|adjective|able_ible|1806|payible,paiable
+memorable|ˈmemərəbl|me-mo-ra-ble|মেমোরেবল|স্মরণীয়|adjective|able_ible|1807|memorible,memoreble
+honourable|ˈɒnərəbl|ho-nou-ra-ble|অনারেবল|সম্মানিত|adjective|silent_letters|1808|honorable,honourible
+favourable|ˈfeɪvərəbl|fa-vou-ra-ble|ফেভারেবল|অনুকূল|adjective|able_ible|1809|favorable,favourible
+miserable|ˈmɪzrəbl|mi-se-ra-ble|মিজারেবল|দুঃখজনক|adjective|able_ible|1810|miserible,miserabel
+divisible|dɪˈvɪzəbl|di-vi-si-ble|ডিভিজিবল|বিভাজ্য|adjective|able_ible|1811|divisable,divizible
+reversible|rɪˈvɜːsəbl|re-ver-si-ble|রিভার্সিবল|উল্টানো যায় এমন|adjective|able_ible|1812|reversable,reversibel
+convertible|kənˈvɜːtəbl|con-ver-ti-ble|কনভার্টিবল|রূপান্তরযোগ্য|adjective|able_ible|1813|convertable,convertibel
+knuckle|ˈnʌkl|knuc-kle|নাকল|আঙুলের গাঁট|noun|silent_letters|1814|nuckle,knukle
+knit|nɪt|knit|নিট|বোনা|verb|silent_letters|1815|nit,knitt
+kneel|niːl|kneel|নিল|নতজানু হওয়া|verb|silent_letters|1816|neel,knel
+knight|naɪt|knight|নাইট|নাইট|noun|silent_letters|1817|nite,knite
+wrestle|ˈresl|wres-tle|রেসল|কুস্তি করা|verb|silent_letters|1818|restle,wrestel
+wreck|rek|wreck|রেক|ধ্বংস করা|verb|silent_letters|1819|rek,wrek
+wrench|rentʃ|wrench|রেঞ্চ|রেঞ্চ|noun|silent_letters|1820|rench,wrensh
+wrinkle|ˈrɪŋkl|wrin-kle|রিংকল|ভাঁজ|noun|silent_letters|1821|rinkle,wrinkel
+wrote|rəʊt|wrote|রোট|লিখেছিল|verb|silent_letters|1822|rote,wrot
+written|ˈrɪtn|writ-ten|রিটন|লিখিত|adjective|silent_letters|1823|writen,ritten
+wharf|wɔːf|wharf|ওয়ার্ফ|জেটি|noun|f_to_ves|1824|warf,wharve
+fasten|ˈfɑːsn|fas-ten|ফাসন|আটকানো|verb|silent_letters|1825|fasen,fastan
+glisten|ˈɡlɪsn|glis-ten|গ্লিসন|চকচক করা|verb|silent_letters|1826|glisen,glistan
+hasten|ˈheɪsn|has-ten|হেসন|ত্বরান্বিত করা|verb|silent_letters|1827|hasen,hastan
+moisten|ˈmɔɪsn|mois-ten|ময়সন|ভেজানো|verb|silent_letters|1828|moisen,moistan
+Christmas|ˈkrɪsməs|Christ-mas|ক্রিসমাস|ক্রিসমাস|noun|silent_letters|1829|Crismas,Christmus
+crescent|ˈkresnt|cres-cent|ক্রেসেন্ট|অর্ধচন্দ্র|noun|soft_c|1830|cresent,kressent
+subtle|ˈsʌtl|sub-tle|সাটল|সূক্ষ্ম|adjective|silent_letters|1831|suttle,subtel
+tomb|tuːm|tomb|টুম|সমাধি|noun|silent_letters|1832|toom,tombe
+womb|wuːm|womb|উম্ব|গর্ভ|noun|silent_letters|1833|woom,wombe
+limb|lɪm|limb|লিম|অঙ্গ|noun|silent_letters|1834|lim,limbe
+numb|nʌm|numb|নাম|অবশ|adjective|silent_letters|1835|num,numbe
+bomb|bɒm|bomb|বম|বোমা|noun|silent_letters|1836|bom,bombe
+crumb|krʌm|crumb|ক্রাম|গুঁড়ো|noun|silent_letters|1837|crum,crumbe
+plumber|ˈplʌmə|plum-ber|প্লামার|নলমিস্ত্রি|noun|silent_letters|1838|plumer,plummer
+assign|əˈsaɪn|as-sign|অ্যাসাইন|নির্দিষ্ট করে দেওয়া|verb|silent_letters|1839|asign,assine
+gnaw|nɔː|gnaw|ন|কুরে খাওয়া|verb|silent_letters|1840|naw,gnow
+gnome|nəʊm|gnome|নোম|বামন|noun|silent_letters|1841|nome,gnoam
+campaign|kæmˈpeɪn|cam-paign|ক্যামপেইন|অভিযান|noun|silent_letters|1842|campain,campaing
+champagne|ʃæmˈpeɪn|cham-pagne|শ্যামপেইন|শ্যাম্পেন|noun|silent_letters|1843|champane,champaign
+guard|ɡɑːd|guard|গার্ড|পাহারা|noun||1844|gaurd,gard
+guilt|ɡɪlt|guilt|গিল্ট|অপরাধবোধ|noun|silent_letters|1845|gilt,guilte
+guitar|ɡɪˈtɑː|gui-tar|গিটার|গিটার|noun||1846|gitar,guiter
+heir|eə|heir|এয়ার|উত্তরাধিকারী|noun|silent_letters|1847|hier,air
+exhaust|ɪɡˈzɔːst|ex-haust|এগজস্ট|নিঃশেষ করা|verb|silent_letters|1848|exaust,exhust
+psalm|sɑːm|psalm|সাম|স্তোত্র|noun|silent_letters|1849|salm,pslam
+pneumonia|njuːˈməʊniə|pneu-mo-nia|নিউমোনিয়া|নিউমোনিয়া|noun|silent_letters|1850|neumonia,pnemonia
+salmon|ˈsæmən|sal-mon|স্যামন|স্যামন মাছ|noun|silent_letters|1851|samon,salman
+folk|fəʊk|folk|ফোক|লোকজন|noun|silent_letters|1852|foke,folke
+yolk|jəʊk|yolk|ইয়োক|ডিমের কুসুম|noun|silent_letters|1853|yoke,yolke
+calm|kɑːm|calm|কাম|শান্ত|adjective|silent_letters|1854|cam,kalm
+calf|kɑːf|calf|কাফ|বাছুর|noun|f_to_ves|1855|caf,calve
+talk|tɔːk|talk|টক|কথা বলা|verb|silent_letters|1856|tak,talke
+stalk|stɔːk|stalk|স্টক|ডাঁটা|noun|silent_letters|1857|stak,stalke
+tough|tʌf|tough|টাফ|শক্ত|adjective|silent_letters|1858|tuff,toug
+laughter|ˈlɑːftə|laugh-ter|লাফটার|হাসি|noun|silent_letters|1859|laugter,lafter
+draught|drɑːft|draught|ড্রাফ্ট|দমকা হাওয়া|noun|silent_letters|1860|draft,draugt
+sleigh|sleɪ|sleigh|স্লে|বরফগাড়ি|noun|silent_letters|1861|slay,sligh
+naughty|ˈnɔːti|naugh-ty|নটি|দুষ্টু|adjective|silent_letters|1862|nauty,noughty
+haughty|ˈhɔːti|haugh-ty|হটি|দর্পী|adjective|y_to_i|1863|hauty,houghty
+busy|ˈbɪzi|bu-sy|বিজি|ব্যস্ত|adjective|y_to_i|1864|bussy,bisy
+pretty|ˈprɪti|pret-ty|প্রিটি|সুন্দর|adjective|y_to_i|1865|prety,prettie
+closure|ˈkləʊʒə|clo-sure|ক্লোজার|বন্ধ হওয়া|noun||1866|closer,closhure
+exposure|ɪkˈspəʊʒə|ex-po-sure|এক্সপোজার|প্রকাশ|noun||1867|exposer,exposhure
+enclosure|ɪnˈkləʊʒə|en-clo-sure|এনক্লোজার|ঘেরা জায়গা|noun||1868|encloser,enclosher
+procedure|prəˈsiːdʒə|pro-ce-dure|প্রসিডিউর|পদ্ধতি|noun|soft_c|1869|proceedure,procedur
+furniture|ˈfɜːnɪtʃə|fur-ni-ture|ফার্নিচার|আসবাব|noun||1870|furnitur,furneture
+agriculture|ˈæɡrɪkʌltʃə|ag-ri-cul-ture|অ্যাগ্রিকালচার|কৃষি|noun||1871|agricuture,agriculcher
+architecture|ˈɑːkɪtektʃə|ar-chi-tec-ture|আর্কিটেকচার|স্থাপত্য|noun||1872|architechture,arkitecture
+adventure|ədˈventʃə|ad-ven-ture|অ্যাডভেনচার|দুঃসাহসিক অভিযান|noun||1873|advanture,adventur
+pressure|ˈpreʃə|pres-sure|প্রেশার|চাপ|noun||1874|presure,pressur
+structure|ˈstrʌktʃə|struc-ture|স্ট্রাকচার|গঠন|noun||1875|structur,strukture
+mixture|ˈmɪkstʃə|mix-ture|মিক্সচার|মিশ্রণ|noun||1876|mixtur,mixure
+capture|ˈkæptʃə|cap-ture|ক্যাপচার|ধরা|verb||1877|captur,capcher
+texture|ˈtekstʃə|tex-ture|টেক্সচার|বুনন|noun||1878|textur,texure
+posture|ˈpɒstʃə|pos-ture|পোসচার|ভঙ্গি|noun||1879|postur,poscher
+gesture|ˈdʒestʃə|ges-ture|জেসচার|অঙ্গভঙ্গি|noun|soft_g|1880|gestur,jesture
+moisture|ˈmɔɪstʃə|mois-ture|ময়শচার|আর্দ্রতা|noun||1881|moistur,moischer
+creature|ˈkriːtʃə|crea-ture|ক্রিচার|প্রাণী|noun||1882|creatur,creacher
+feature|ˈfiːtʃə|fea-ture|ফিচার|বৈশিষ্ট্য|noun||1883|featur,feacher
+apartment|əˈpɑːtmənt|a-part-ment|অ্যাপার্টমেন্ট|ফ্ল্যাট|noun||1884|appartment,apartmant
+arrangement|əˈreɪndʒmənt|ar-range-ment|অ্যারেঞ্জমেন্ট|ব্যবস্থা|noun|soft_g|1885|arrangment,arangement
+payment|ˈpeɪmənt|pay-ment|পেমেন্ট|পরিশোধ|noun||1886|paymant,payement
+shipment|ˈʃɪpmənt|ship-ment|শিপমেন্ট|চালান|noun||1887|shipmant,shippment
+measurement|ˈmeʒəmənt|mea-sure-ment|মেজারমেন্ট|মাপ|noun||1888|measurment,mesurement
+enjoyment|ɪnˈdʒɔɪmənt|en-joy-ment|এনজয়মেন্ট|উপভোগ|noun||1889|enjoymant,enjoiment
+employment|ɪmˈplɔɪmənt|em-ploy-ment|এমপ্লয়মেন্ট|চাকরি|noun||1890|employmant,emploiment
+amazement|əˈmeɪzmənt|a-maze-ment|অ্যামেজমেন্ট|বিস্ময়|noun||1891|amazment,amazemant
+sickness|ˈsɪknəs|sick-ness|সিকনেস|অসুস্থতা|noun|ck_after_short_vowel|1892|sicknes,sikness
+fitness|ˈfɪtnəs|fit-ness|ফিটনেস|সুস্থতা|noun||1893|fitnes,fittness
+madness|ˈmædnəs|mad-ness|ম্যাডনেস|পাগলামি|noun||1894|madnes,maddness
+gladness|ˈɡlædnəs|glad-ness|গ্ল্যাডনেস|আনন্দ|noun||1895|gladnes,gladdness
+laziness|ˈleɪzinəs|la-zi-ness|লেজিনেস|আলসেমি|noun|y_to_i|1896|lazyness,lazines
+loneliness|ˈləʊnlinəs|lone-li-ness|লোনলিনেস|একাকিত্ব|noun|y_to_i|1897|lonelyness,loneliess
+politeness|pəˈlaɪtnəs|po-lite-ness|পোলাইটনেস|ভদ্রতা|noun||1898|politnes,politness
+rudeness|ˈruːdnəs|rude-ness|রুডনেস|অভদ্রতা|noun||1899|rudnes,rudness
+quietness|ˈkwaɪətnəs|qui-et-ness|কোয়ায়েটনেস|নিস্তব্ধতা|noun|q_takes_u|1900|quietnes,quitness
+eagerness|ˈiːɡənəs|ea-ger-ness|ইগারনেস|ঐকান্তিকতা|noun||1901|eagernes,egerness
+fairness|ˈfeənəs|fair-ness|ফেয়ারনেস|ন্যায্যতা|noun||1902|fairnes,farness
+freshness|ˈfreʃnəs|fresh-ness|ফ্রেশনেস|সতেজতা|noun||1903|freshnes,freshnass
+richness|ˈrɪtʃnəs|rich-ness|রিচনেস|সমৃদ্ধি|noun||1904|richnes,richnass
+sharpness|ˈʃɑːpnəs|sharp-ness|শার্পনেস|তীক্ষ্ণতা|noun||1905|sharpnes,sharpnass
+smoothness|ˈsmuːðnəs|smooth-ness|স্মুদনেস|মসৃণতা|noun||1906|smoothnes,smootness
+softness|ˈsɒftnəs|soft-ness|সফটনেস|কোমলতা|noun||1907|softnes,softnass
+stillness|ˈstɪlnəs|still-ness|স্টিলনেস|স্থিরতা|noun|floss_doubling|1908|stilness,stillnes
+thickness|ˈθɪknəs|thick-ness|থিকনেস|পুরুত্ব|noun|ck_after_short_vowel|1909|thicknes,tickness
+weariness|ˈwɪərinəs|wea-ri-ness|উইয়ারিনেস|ক্লান্তি|noun|y_to_i|1910|wearyness,weariess
+willingness|ˈwɪlɪŋnəs|wil-ling-ness|উইলিংনেস|সম্মতি|noun||1911|willingnes,wilingness
+cheerful|ˈtʃɪəfl|cheer-ful|চিয়ারফুল|প্রফুল্ল|adjective|suffix_ful_one_l|1912|cheerfull,cheerfl
+colourful|ˈkʌləfl|co-lour-ful|কালারফুল|রঙিন|adjective|suffix_ful_one_l|1913|colourfull,colorful
+doubtful|ˈdaʊtfl|doubt-ful|ডাউটফুল|সন্দেহজনক|adjective|silent_letters|1914|doutful,doubtfull
+faithful|ˈfeɪθfl|faith-ful|ফেইথফুল|বিশ্বস্ত|adjective|suffix_ful_one_l|1915|faithfull,fathful
+fearful|ˈfɪəfl|fear-ful|ফিয়ারফুল|ভীত|adjective|suffix_ful_one_l|1916|fearfull,ferful
+forceful|ˈfɔːsfl|force-ful|ফোর্সফুল|জোরালো|adjective|soft_c|1917|forcefull,forsful
+graceful|ˈɡreɪsfl|grace-ful|গ্রেসফুল|লাবণ্যময়|adjective|soft_c|1918|gracefull,graseful
+grateful|ˈɡreɪtfl|grate-ful|গ্রেটফুল|কৃতজ্ঞ|adjective|suffix_ful_one_l|1919|gratefull,greatful
+harmful|ˈhɑːmfl|harm-ful|হার্মফুল|ক্ষতিকর|adjective|suffix_ful_one_l|1920|harmfull,harmfl
+hopeful|ˈhəʊpfl|hope-ful|হোপফুল|আশাবাদী|adjective|suffix_ful_one_l|1921|hopefull,hopfull
+joyful|ˈdʒɔɪfl|joy-ful|জয়ফুল|আনন্দিত|adjective|suffix_ful_one_l|1922|joyfull,joifull
+painful|ˈpeɪnfl|pain-ful|পেইনফুল|বেদনাদায়ক|adjective|suffix_ful_one_l|1923|painfull,painfl
+peaceful|ˈpiːsfl|peace-ful|পিসফুল|শান্তিপূর্ণ|adjective|soft_c|1924|peacefull,peasful
+playful|ˈpleɪfl|play-ful|প্লেফুল|খেলুড়ে|adjective|suffix_ful_one_l|1925|playfull,plaiful
+powerful|ˈpaʊəfl|po-wer-ful|পাওয়ারফুল|শক্তিশালী|adjective|suffix_ful_one_l|1926|powerfull,poweful
+respectful|rɪˈspektfl|res-pect-ful|রেসপেক্টফুল|শ্রদ্ধাশীল|adjective|suffix_ful_one_l|1927|respectfull,respetful
+shameful|ˈʃeɪmfl|shame-ful|শেমফুল|লজ্জাজনক|adjective|suffix_ful_one_l|1928|shamefull,shamfull
+skilful|ˈskɪlfl|skil-ful|স্কিলফুল|দক্ষ|adjective|suffix_ful_one_l|1929|skillful,skilfull
+successful|səkˈsesfl|suc-cess-ful|সাকসেসফুল|সফল|adjective|suffix_ful_one_l|1930|successfull,succesful
+thankful|ˈθæŋkfl|thank-ful|থ্যাংকফুল|কৃতজ্ঞ|adjective|suffix_ful_one_l|1931|thankfull,tankful
+thoughtful|ˈθɔːtfl|thought-ful|থটফুল|বিবেচনাশীল|adjective|silent_letters|1932|thoughtfull,thotful
+truthful|ˈtruːθfl|truth-ful|ট্রুথফুল|সত্যবাদী|adjective|suffix_ful_one_l|1933|truthfull,truthfl
+careless|ˈkeələs|care-less|কেয়ারলেস|অসাবধান|adjective||1934|carless,carelless
+endless|ˈendləs|end-less|এন্ডলেস|অন্তহীন|adjective||1935|endles,endlless
+fearless|ˈfɪələs|fear-less|ফিয়ারলেস|নির্ভীক|adjective||1936|fearles,ferless
+helpless|ˈhelpləs|help-less|হেলপলেস|অসহায়|adjective||1937|helples,helplless
+homeless|ˈhəʊmləs|home-less|হোমলেস|গৃহহীন|adjective||1938|homeles,homless
+hopeless|ˈhəʊpləs|hope-less|হোপলেস|আশাহীন|adjective||1939|hopeles,hopless
+useless|ˈjuːsləs|use-less|ইউজলেস|অকেজো|adjective||1940|useles,usless
+restless|ˈrestləs|rest-less|রেস্টলেস|অস্থির|adjective||1941|restles,restlless
+spotless|ˈspɒtləs|spot-less|স্পটলেস|নিষ্কলঙ্ক|adjective||1942|spotles,spottless
+thoughtless|ˈθɔːtləs|thought-less|থটলেস|অবিবেচক|adjective|silent_letters|1943|thoughtles,thotless
+worthless|ˈwɜːθləs|worth-less|ওয়ার্থলেস|মূল্যহীন|adjective||1944|worthles,worthlless
+headache|ˈhedeɪk|head-ache|হেডেক|মাথাব্যথা|noun||1945|headake,headech
+stomachache|ˈstʌməkeɪk|sto-mach-ache|স্টমাকেক|পেটব্যথা|noun||1946|stomachake,stomacache
+toothache|ˈtuːθeɪk|tooth-ache|টুথেক|দাঁতব্যথা|noun||1947|toothake,tootache
+fever|ˈfiːvə|fe-ver|ফিভার|জ্বর|noun|no_final_v|1948|fevar,feaver
+flu|fluː|flu|ফ্লু|ফ্লু|noun||1949|flue,phlu
+injury|ˈɪndʒəri|in-ju-ry|ইনজুরি|আঘাত|noun|y_to_i|1950|injery,injurie
+wound|wuːnd|wound|উন্ড|ক্ষত|noun||1951|woond,wond
+bruise|bruːz|bruise|ব্রুজ|কালশিটে|noun||1952|bruze,brouise
+scar|skɑː|scar|স্কার|ক্ষতচিহ্ন|noun|doubling_1_1_1|1953|scarr,skar
+burn|bɜːn|burn|বার্ন|পোড়া|noun||1954|barn,burnn
+rash|ræʃ|rash|র্যাশ|ফুসকুড়ি|noun|plural_es|1955|rashh,resh
+itch|ɪtʃ|itch|ইচ|চুলকানি|noun|tch_after_short_vowel|1956|ich,itsh
+swelling|ˈswelɪŋ|swel-ling|সোয়েলিং|ফোলা|noun||1957|sweling,swellling
+allergy|ˈælədʒi|al-ler-gy|অ্যালার্জি|অ্যালার্জি|noun|soft_g|1958|alergy,allerjy
+asthma|ˈæsmə|asth-ma|অ্যাজমা|হাঁপানি|noun|silent_letters|1959|astma,asthama
+diabetes|ˌdaɪəˈbiːtiːz|di-a-be-tes|ডায়াবেটিস|ডায়াবেটিস|noun||1960|diabetis,diabetese
+pulse|pʌls|pulse|পালস|নাড়ি|noun|drop_silent_e|1961|puls,pulce
+cure|kjʊə|cure|কিউর|নিরাময়|noun|drop_silent_e|1962|cur,quire
+remedy|ˈremədi|re-me-dy|রেমেডি|প্রতিকার|noun|y_to_i|1963|remady,remedi
+tablet|ˈtæblət|tab-let|ট্যাবলেট|বড়ি|noun||1964|tablat,tablett
+capsule|ˈkæpsjuːl|cap-sule|ক্যাপসুল|ক্যাপসুল|noun||1965|capsul,kapsule
+syrup|ˈsɪrəp|sy-rup|সিরাপ|সিরাপ|noun||1966|sirup,syrap
+bandage|ˈbændɪdʒ|ban-dage|ব্যান্ডেজ|ব্যান্ডেজ|noun||1967|bandege,bandaj
+ointment|ˈɔɪntmənt|oint-ment|অয়েন্টমেন্ট|মলম|noun||1968|ointmant,oinment
+thermometer|θəˈmɒmɪtə|ther-mo-me-ter|থার্মোমিটার|থার্মোমিটার|noun||1969|thermometar,thermomiter
+stethoscope|ˈsteθəskəʊp|ste-tho-scope|স্টেথোস্কোপ|স্টেথোস্কোপ|noun||1970|stethescope,stetoscope
+clinic|ˈklɪnɪk|cli-nic|ক্লিনিক|ক্লিনিক|noun||1971|clinik,klinic
+ward|wɔːd|ward|ওয়ার্ড|হাসপাতালের ওয়ার্ড|noun||1972|wardd,word
+dentist|ˈdentɪst|den-tist|ডেন্টিস্ট|দন্তচিকিৎসক|noun||1973|dentiste,dantist
+surgeon|ˈsɜːdʒən|sur-geon|সার্জন|শল্যচিকিৎসক|noun|soft_g|1974|surgon,surjeon
+chemist|ˈkemɪst|che-mist|কেমিস্ট|ওষুধবিক্রেতা|noun||1975|chemest,kemist
+pharmacy|ˈfɑːməsi|phar-ma-cy|ফার্মাসি|ওষুধের দোকান|noun|soft_c|1976|farmacy,pharmasy
+diagnosis|ˌdaɪəɡˈnəʊsɪs|di-ag-no-sis|ডায়াগনোসিস|রোগনির্ণয়|noun||1977|diagnosys,diagnoses
+grocery|ˈɡrəʊsəri|gro-ce-ry|গ্রোসারি|মুদিখানা|noun|y_to_i|1978|grocary,grosery
+butcher|ˈbʊtʃə|but-cher|বুচার|কসাই|noun||1979|bucher,butchar
+tailor|ˈteɪlə|tai-lor|টেইলর|দর্জি|noun||1980|tailer,taylor
+barber|ˈbɑːbə|bar-ber|বার্বার|নাপিত|noun||1981|barbar,berber
+cobbler|ˈkɒblə|cob-bler|কবলার|মুচি|noun||1982|cobler,cobblar
+carpenter|ˈkɑːpəntə|car-pen-ter|কার্পেন্টার|ছুতোর|noun||1983|carpentar,carpainter
+blacksmith|ˈblæksmɪθ|black-smith|ব্ল্যাকস্মিথ|কর্মকার|noun||1984|blaksmith,blacksmit
+goldsmith|ˈɡəʊldsmɪθ|gold-smith|গোল্ডস্মিথ|স্বর্ণকার|noun||1985|goldsmit,golsmith
+potter|ˈpɒtə|pot-ter|পটার|কুমোর|noun||1986|poter,pottar
+weaver|ˈwiːvə|wea-ver|উইভার|তাঁতি|noun|no_final_v|1987|weavar,weever
+fisherman|ˈfɪʃəmən|fi-sher-man|ফিশারম্যান|জেলে|noun||1988|fishermen,fisharman
+shopkeeper|ˈʃɒpkiːpə|shop-kee-per|শপকিপার|দোকানদার|noun||1989|shopkeepar,shopkiper
+vendor|ˈvendə|ven-dor|ভেন্ডর|বিক্রেতা|noun||1990|vender,bendor
+hawker|ˈhɔːkə|haw-ker|হকার|ফেরিওয়ালা|noun||1991|hawkar,houker
+client|ˈklaɪənt|cli-ent|ক্লায়েন্ট|মক্কেল|noun||1992|cliant,klient
+buyer|ˈbaɪə|bu-yer|বায়ার|ক্রেতা|noun||1993|buyar,byer
+seller|ˈselə|sel-ler|সেলার|বিক্রেতা|noun||1994|seler,sellar
+trader|ˈtreɪdə|tra-der|ট্রেডার|ব্যবসায়ী|noun||1995|tradar,treder
+merchant|ˈmɜːtʃənt|mer-chant|মার্চেন্ট|বণিক|noun||1996|merchent,marchant
+wholesale|ˈhəʊlseɪl|whole-sale|হোলসেল|পাইকারি|adjective|silent_letters|1997|holesale,wholesell
+retail|ˈriːteɪl|re-tail|রিটেইল|খুচরা|adjective||1998|retale,retial
+discount|ˈdɪskaʊnt|dis-count|ডিসকাউন্ট|ছাড়|noun||1999|discont,diskount
+refund|ˈriːfʌnd|re-fund|রিফান্ড|ফেরত|noun|prefix_keeps_root|2000|refand,refundd
+invoice|ˈɪnvɔɪs|in-voice|ইনভয়েস|চালানপত্র|noun|soft_c|2001|invoise,invioce
+loss|lɒs|loss|লস|ক্ষতি|noun|floss_doubling|2002|los,losse
+saving|ˈseɪvɪŋ|sa-ving|সেভিং|সঞ্চয়|noun|drop_silent_e|2003|savving,saveing
+loan|ləʊn|loan|লোন|ঋণ|noun||2004|lone,loane
+interest|ˈɪntrəst|in-te-rest|ইন্টারেস্ট|সুদ|noun||2005|intrest,interast
+instalment|ɪnˈstɔːlmənt|in-stal-ment|ইনস্টলমেন্ট|কিস্তি|noun||2006|installment,instalmant
+deposit|dɪˈpɒzɪt|de-po-sit|ডিপোজিট|জমা|noun||2007|deposite,depozit
+withdrawal|wɪðˈdrɔːəl|with-draw-al|উইথড্রয়াল|উত্তোলন|noun||2008|withdrawl,withdrawel
+currency|ˈkʌrənsi|cur-ren-cy|কারেন্সি|মুদ্রা|noun|soft_c|2009|curency,currancy
+coin|kɔɪn|coin|কয়েন|ধাতব মুদ্রা|noun||2010|coyn,coine
+cashier|kæˈʃɪə|ca-shier|ক্যাশিয়ার|কোষাধ্যক্ষ|noun||2011|casheir,cashiar
+counter|ˈkaʊntə|coun-ter|কাউন্টার|কাউন্টার|noun||2012|countar,conter
+crowd|kraʊd|crowd|ক্রাউড|ভিড়|noun||2013|croud,crowdd
+packet|ˈpækɪt|pac-ket|প্যাকেট|প্যাকেট|noun|ck_after_short_vowel|2014|packit,paket
+bottle|ˈbɒtl|bot-tle|বটল|বোতল|noun||2015|botle,bottel
+carton|ˈkɑːtn|car-ton|কার্টন|কার্টন|noun||2016|cartoon,cartan
+tin|tɪn|tin|টিন|টিনের পাত্র|noun||2017|tinn,teen
+jar|dʒɑː|jar|জার|জার|noun|soft_g|2018|jarr,zar
+sachet|ˈsæʃeɪ|sa-chet|স্যাশে|ছোট প্যাকেট|noun||2019|sachette,sashet
+wrapper|ˈræpə|wrap-per|র্যাপার|মোড়ক|noun|silent_letters|2020|raper,wraper
+container|kənˈteɪnə|con-tai-ner|কনটেইনার|পাত্র|noun||2021|containar,contener
+lid|lɪd|lid|লিড|ঢাকনা|noun||2022|lidd,leed
+cork|kɔːk|cork|কর্ক|ছিপি|noun||2023|corck,kork
+straw|strɔː|straw|স্ট্র|খড়|noun||2024|straww,strow
+napkin|ˈnæpkɪn|nap-kin|ন্যাপকিন|ন্যাপকিন|noun||2025|napkine,nepkin
+tissue|ˈtɪʃuː|tis-sue|টিস্যু|টিস্যু|noun||2026|tisue,tissu
+detergent|dɪˈtɜːdʒənt|de-ter-gent|ডিটারজেন্ট|ডিটারজেন্ট|noun|soft_g|2027|detergant,deterjent
+powder|ˈpaʊdə|pow-der|পাউডার|গুঁড়ো|noun||2028|powdar,pouder
+duster|ˈdʌstə|dus-ter|ডাস্টার|ঝাড়ন|noun||2029|dustar,daster
+hanger|ˈhæŋə|han-ger|হ্যাঙ্গার|হ্যাঙ্গার|noun||2030|hangar,hangger
+peg|peɡ|peg|পেগ|খুঁটি|noun|doubling_1_1_1|2031|pegg,pag
+zip|zɪp|zip|জিপ|চেন|noun|doubling_1_1_1|2032|zipp,jip
+stud|stʌd|stud|স্টাড|স্টাড|noun|doubling_1_1_1|2033|studd,stad
+brooch|brəʊtʃ|brooch|ব্রোচ|ব্রোচ|noun||2034|broach,brotch
+bracelet|ˈbreɪslət|brace-let|ব্রেসলেট|বালা|noun|soft_c|2035|braclet,braselet
+necklace|ˈnekləs|neck-lace|নেকলেস|হার|noun|soft_c|2036|neclace,necklass
+earring|ˈɪərɪŋ|ear-ring|ইয়াররিং|কানের দুল|noun||2037|earing,earrring
+bangle|ˈbæŋɡl|ban-gle|ব্যাঙ্গল|চুড়ি|noun||2038|bangel,bangal
+anklet|ˈæŋklət|ank-let|অ্যাংক্লেট|নূপুর|noun||2039|ancklet,anklett
+ornament|ˈɔːnəmənt|or-na-ment|অর্নামেন্ট|অলঙ্কার|noun||2040|ornamant,ornement
+cosmetic|kɒzˈmetɪk|cos-me-tic|কসমেটিক|প্রসাধনী|noun||2041|cosmatic,kosmetic
+perfume|ˈpɜːfjuːm|per-fume|পারফিউম|সুগন্ধি|noun||2042|perfum,parfume
+cream|kriːm|cream|ক্রিম|ক্রিম|noun||2043|creem,crem
+lotion|ˈləʊʃn|lo-tion|লোশন|লোশন|noun|tion_sion|2044|losion,lotoin
+lipstick|ˈlɪpstɪk|lip-stick|লিপস্টিক|লিপস্টিক|noun|ck_after_short_vowel|2045|lipstik,lipstic
+hairpin|ˈheəpɪn|hair-pin|হেয়ারপিন|চুলের কাঁটা|noun||2046|harpin,hairpen
+clip|klɪp|clip|ক্লিপ|ক্লিপ|noun|doubling_1_1_1|2047|clipp,klip
+handbag|ˈhændbæɡ|hand-bag|হ্যান্ডব্যাগ|হাতব্যাগ|noun||2048|handbeg,hanbag
+purse|pɜːs|purse|পার্স|মানিব্যাগ|noun|drop_silent_e|2049|purce,pures
+belt|belt|belt|বেল্ট|বেল্ট|noun||2050|balt,beltt
+scarf|skɑːf|scarf|স্কার্ফ|স্কার্ফ|noun|f_to_ves|2051|scarves,skarf
+shawl|ʃɔːl|shawl|শাল|শাল|noun||2052|shaul,shawll
+sweater|ˈswetə|swea-ter|সোয়েটার|সোয়েটার|noun||2053|sweatar,sweter
+jacket|ˈdʒækɪt|jac-ket|জ্যাকেট|জ্যাকেট|noun|soft_g|2054|jackit,jaket
+blazer|ˈbleɪzə|bla-zer|ব্লেজার|ব্লেজার|noun||2055|blazar,blezer
+waistcoat|ˈweɪskəʊt|waist-coat|ওয়েসকোট|ওয়েস্টকোট|noun|silent_letters|2056|wastecoat,waistcote
+raincoat|ˈreɪnkəʊt|rain-coat|রেইনকোট|বর্ষাতি|noun||2057|raincote,rancoat
+overcoat|ˈəʊvəkəʊt|o-ver-coat|ওভারকোট|ওভারকোট|noun||2058|overcote,ovarcoat
+apron|ˈeɪprən|a-pron|এপ্রন|এপ্রন|noun||2059|aprone,apran
+pyjamas|pəˈdʒɑːməz|py-ja-mas|পাজামা|পায়জামা|noun||2060|pajamas,pyjamaz
+nightdress|ˈnaɪtdres|night-dress|নাইটড্রেস|রাতের পোশাক|noun|silent_letters|2061|nitedress,nightdres
+vest|vest|vest|ভেস্ট|গেঞ্জি|noun||2062|vast,best
+underwear|ˈʌndəweə|un-der-wear|আন্ডারওয়্যার|অন্তর্বাস|noun||2063|underware,undarwear
+socks|sɒks|socks|সক্স|মোজা|noun|ck_after_short_vowel|2064|soks,sockes
+stockings|ˈstɒkɪŋz|stock-ings|স্টকিংস|স্টকিংস|noun|ck_after_short_vowel|2065|stokings,stockins
+gloves|ɡlʌvz|gloves|গ্লাভস|দস্তানা|noun|no_final_v|2066|glovs,gloues
+cap|kæp|cap|ক্যাপ|টুপি|noun|doubling_1_1_1|2067|capp,kap
+hat|hæt|hat|হ্যাট|হ্যাট|noun|doubling_1_1_1|2068|hatt,het
+helmet|ˈhelmɪt|hel-met|হেলমেট|হেলমেট|noun||2069|helmat,helmett
+turban|ˈtɜːbən|tur-ban|টার্বান|পাগড়ি|noun||2070|turben,turbun
+veil|veɪl|veil|ভেইল|ঘোমটা|noun|i_before_e|2071|vail,viel
+sole|səʊl|sole|সোল|জুতোর তলা|noun|drop_silent_e|2072|soal,soll
+buckle|ˈbʌkl|buc-kle|বাকল|বকলস|noun||2073|buckel,bukle
+cricket|ˈkrɪkɪt|cric-ket|ক্রিকেট|ক্রিকেট|noun|ck_after_short_vowel|2074|crickit,criket
+football|ˈfʊtbɔːl|foot-ball|ফুটবল|ফুটবল|noun|floss_doubling|2075|futball,footbal
+hockey|ˈhɒki|hoc-key|হকি|হকি|noun||2076|hocky,hokey
+badminton|ˈbædmɪntən|bad-min-ton|ব্যাডমিন্টন|ব্যাডমিন্টন|noun||2077|badminten,badmintan
+tennis|ˈtenɪs|ten-nis|টেনিস|টেনিস|noun||2078|tenis,tennnis
+volleyball|ˈvɒlibɔːl|vol-ley-ball|ভলিবল|ভলিবল|noun|floss_doubling|2079|volleybal,vollyball
+basketball|ˈbɑːskɪtbɔːl|bas-ket-ball|বাস্কেটবল|বাস্কেটবল|noun|floss_doubling|2080|basketbal,basktball
+athletics|æθˈletɪks|ath-le-tics|অ্যাথলেটিকস|ক্রীড়া|noun||2081|atletics,athletiks
+wrestling|ˈreslɪŋ|wrest-ling|রেসলিং|কুস্তি|noun|silent_letters|2082|restling,wrestlling
+boxing|ˈbɒksɪŋ|box-ing|বক্সিং|মুষ্টিযুদ্ধ|noun||2083|boxxing,boksing
+cycling|ˈsaɪklɪŋ|cyc-ling|সাইক্লিং|সাইকেল চালানো|noun|soft_c|2084|cycleing,sycling
+jumping|ˈdʒʌmpɪŋ|jum-ping|জামপিং|লম্ফন|noun|soft_g|2085|jummping,jamping
+racing|ˈreɪsɪŋ|ra-cing|রেসিং|দৌড় প্রতিযোগিতা|noun|drop_silent_e|2086|raceing,rasing
+rowing|ˈrəʊɪŋ|row-ing|রোয়িং|নৌকা বাওয়া|noun||2087|roweing,rowwing
+sailing|ˈseɪlɪŋ|sai-ling|সেইলিং|পাল তোলা|noun||2088|saling,sailling
+skating|ˈskeɪtɪŋ|ska-ting|স্কেটিং|স্কেটিং|noun|drop_silent_e|2089|skateing,scating
+skiing|ˈskiːɪŋ|ski-ing|স্কিইং|স্কিইং|noun||2090|sking,skieing
+gymnastics|dʒɪmˈnæstɪks|gym-nas-tics|জিমনাস্টিকস|জিমন্যাস্টিকস|noun|soft_g|2091|gymnestics,jimnastics
+referee|ˌrefəˈriː|re-fe-ree|রেফারি|রেফারি|noun||2092|refree,referi
+umpire|ˈʌmpaɪə|um-pire|আমপায়ার|আম্পায়ার|noun||2093|umpier,umpaire
+coach|kəʊtʃ|coach|কোচ|প্রশিক্ষক|noun|plural_es|2094|coch,coache
+player|ˈpleɪə|pla-yer|প্লেয়ার|খেলোয়াড়|noun||2095|playar,plaier
+striker|ˈstraɪkə|stri-ker|স্ট্রাইকার|স্ট্রাইকার|noun|drop_silent_e|2096|strikar,stricker
+goalkeeper|ˈɡəʊlkiːpə|goal-kee-per|গোলকিপার|গোলরক্ষক|noun||2097|golkeeper,goalkiper
+defender|dɪˈfendə|de-fen-der|ডিফেন্ডার|রক্ষণভাগের খেলোয়াড়|noun||2098|defendar,defander
+bowler|ˈbəʊlə|bow-ler|বোলার|বোলার|noun||2099|bowlar,boular
+batsman|ˈbætsmən|bats-man|ব্যাটসম্যান|ব্যাটসম্যান|noun||2100|batsmen,batsmun
+fielder|ˈfiːldə|fiel-der|ফিল্ডার|ফিল্ডার|noun|i_before_e|2101|feilder,fieldar
+wicket|ˈwɪkɪt|wic-ket|উইকেট|উইকেট|noun|ck_after_short_vowel|2102|wickit,wiket
+stump|stʌmp|stump|স্টাম্প|স্টাম্প|noun||2103|stumpp,stamp
+crease|kriːs|crease|ক্রিজ|ক্রিজ|noun||2104|creese,crese
+innings|ˈɪnɪŋz|in-nings|ইনিংস|ইনিংস|noun||2105|inings,innnings
+stadium|ˈsteɪdiəm|sta-di-um|স্টেডিয়াম|স্টেডিয়াম|noun||2106|stadiam,steadium
+pavilion|pəˈvɪliən|pa-vi-lion|প্যাভিলিয়ন|প্যাভিলিয়ন|noun||2107|pavillion,pavilian
+gallery|ˈɡæləri|gal-le-ry|গ্যালারি|গ্যালারি|noun|y_to_i|2108|galery,gallary
+spectator|spekˈteɪtə|spec-ta-tor|স্পেকটেটর|দর্শক|noun||2109|spectater,spektator
+tournament|ˈtʊənəmənt|tour-na-ment|টুর্নামেন্ট|প্রতিযোগিতা|noun||2110|tournamant,tornament
+championship|ˈtʃæmpiənʃɪp|cham-pi-on-ship|চ্যামপিয়নশিপ|চ্যাম্পিয়নশিপ|noun||2111|champianship,championsip
+medal|ˈmedl|me-dal|মেডাল|পদক|noun||2112|medel,meddal
+trophy|ˈtrəʊfi|tro-phy|ট্রফি|ট্রফি|noun|y_to_i|2113|trophee,trofy
+prize|praɪz|prize|প্রাইজ|পুরস্কার|noun|drop_silent_e|2114|prise,prizze
+trainer|ˈtreɪnə|trai-ner|ট্রেইনার|প্রশিক্ষক|noun||2115|trainar,trener
+scoreboard|ˈskɔːbɔːd|score-board|স্কোরবোর্ড|স্কোরবোর্ড|noun||2116|scorboard,scoreboad
+penalty|ˈpenlti|pe-nal-ty|পেনাল্টি|পেনাল্টি|noun|y_to_i|2117|penalti,penelty
+foul|faʊl|foul|ফাউল|ফাউল|noun||2118|fowl,foull
+offside|ˈɒfsaɪd|off-side|অফসাইড|অফসাইড|noun|floss_doubling|2119|ofside,offsyde
+tackle|ˈtækl|tac-kle|ট্যাকল|ট্যাকল|verb||2120|tackel,takle
+dribble|ˈdrɪbl|drib-ble|ড্রিবল|ড্রিবল|verb||2121|drible,dribbel
+pitch|pɪtʃ|pitch|পিচ|খেলার মাঠ|noun|tch_after_short_vowel|2122|pich,pitsh
+track|træk|track|ট্র্যাক|দৌড়ের পথ|noun|ck_after_short_vowel|2123|trak,tracke
+pool|puːl|pool|পুল|সাঁতারের পুল|noun||2124|pol,poole
+gym|dʒɪm|gym|জিম|ব্যায়ামাগার|noun|soft_g|2125|jim,gymm
+marathon|ˈmærəθən|ma-ra-thon|ম্যারাথন|ম্যারাথন|noun||2126|marathone,maraton
+relay|ˈriːleɪ|re-lay|রিলে|রিলে দৌড়|noun||2127|relai,rilay
+sprint|sprɪnt|sprint|স্প্রিন্ট|স্প্রিন্ট|noun||2128|sprintt,spreent
+hurdle|ˈhɜːdl|hur-dle|হার্ডল|বাধা|noun||2129|hurdel,hurdal
+javelin|ˈdʒævlɪn|ja-ve-lin|জ্যাভেলিন|বর্শা নিক্ষেপ|noun|soft_g|2130|javeline,javalin
+discus|ˈdɪskəs|dis-cus|ডিসকাস|চাকতি নিক্ষেপ|noun||2131|discuss,diskus
+archery|ˈɑːtʃəri|ar-che-ry|আর্চারি|তিরন্দাজি|noun|y_to_i|2132|archary,archerie
+chess|tʃes|chess|চেস|দাবা|noun|floss_doubling|2133|ches,chesse
+carrom|ˈkærəm|car-rom|ক্যারম|ক্যারম|noun||2134|carom,carrum|review
+ludo|ˈluːdəʊ|lu-do|লুডো|লুডো|noun||2135|ludu,loodo|review
+kite|kaɪt|kite|কাইট|ঘুড়ি|noun|drop_silent_e|2136|kight,kyte
+marble|ˈmɑːbl|mar-ble|মার্বল|মার্বেল|noun||2137|marbel,marbal
+seesaw|ˈsiːsɔː|see-saw|সিস|ঢেঁকিকল|noun||2138|seasaw,seesow
+toy|tɔɪ|toy|টয়|খেলনা|noun||2139|toi,toyy
+doll|dɒl|doll|ডল|পুতুল|noun|floss_doubling|2140|dol,dolle
+puppet|ˈpʌpɪt|pup-pet|পাপেট|পুতুলনাচের পুতুল|noun||2141|pupet,puppit
+balloon|bəˈluːn|bal-loon|বেলুন|বেলুন|noun||2142|baloon,ballon
+drum|drʌm|drum|ড্রাম|ঢোল|noun|doubling_1_1_1|2143|drumm,dram
+flute|fluːt|flute|ফ্লুট|বাঁশি|noun|drop_silent_e|2144|flut,floote
+violin|ˌvaɪəˈlɪn|vi-o-lin|ভায়োলিন|বেহালা|noun||2145|violine,bioline
+piano|piˈænəʊ|pi-a-no|পিয়ানো|পিয়ানো|noun||2146|pianno,peano
+harmonium|hɑːˈməʊniəm|har-mo-ni-um|হারমোনিয়াম|হারমোনিয়াম|noun||2147|harmoneum,harmoniam|review
+tabla|ˈtʌblɑː|tab-la|তবলা|তবলা|noun||2148|tablaa,tabbla|review
+sitar|sɪˈtɑː|si-tar|সিতার|সেতার|noun||2149|siter,sittar|review
+singer|ˈsɪŋə|sin-ger|সিঙ্গার|গায়ক|noun||2150|singar,sinnger
+dancer|ˈdɑːnsə|dan-cer|ড্যান্সার|নৃত্যশিল্পী|noun|soft_c|2151|dancar,danser
+actor|ˈæktə|ac-tor|অ্যাক্টর|অভিনেতা|noun||2152|acter,aktor
+artist|ˈɑːtɪst|ar-tist|আর্টিস্ট|শিল্পী|noun||2153|artiste,artest
+painter|ˈpeɪntə|pain-ter|পেইন্টার|চিত্রকর|noun||2154|paintar,penter
+sculptor|ˈskʌlptə|sculp-tor|স্কালপটর|ভাস্কর|noun||2155|sculpter,skulptor
