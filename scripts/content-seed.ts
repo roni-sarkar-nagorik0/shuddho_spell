@@ -22,7 +22,12 @@
  * printed.
  */
 import process from 'node:process';
-import pg from 'pg';
+import type pg from 'pg';
+import {
+  UNREACHABLE_HELP,
+  connectDatabase,
+  normaliseDatabaseUrl,
+} from './lib/database-url.mjs';
 import { EXAMS, PHONEMES, RULE_FAMILIES, WEEKS, readContent } from '../content/index';
 import { type DayPlanEntry, type SentenceItemEntry, type WordEntry } from '../content/schema';
 
@@ -224,9 +229,28 @@ async function seed(): Promise<void> {
     process.exit(1);
   }
 
-  const client = new pg.Client({ connectionString, ssl: { rejectUnauthorized: false } });
+  /*
+   * The same way in as `pnpm db:migrate`, and for the same two reasons.
+   *
+   * This used to hand the raw value straight to `pg`, which parses it with
+   * `new URL()` — so a Supabase password containing a `?` failed here with
+   * `Invalid URL` after the content had validated and before a row was read,
+   * and the corpus stayed empty while the landing page said its demo was
+   * unavailable. Normalising the userinfo is the whole of that fix; the pooler
+   * fallback below it is the second one, because the direct
+   * `db.<ref>.supabase.co` host Supabase hands out is IPv6-only and does not
+   * resolve on an ordinary network.
+   */
+  let client: pg.Client;
 
-  await client.connect();
+  try {
+    client = await connectDatabase(normaliseDatabaseUrl(connectionString));
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : String(error);
+    out(`\nCould not connect to the database: ${message}`);
+    out(`\n${UNREACHABLE_HELP}`);
+    process.exit(1);
+  }
 
   try {
     const plans: IPlan[] = [];
