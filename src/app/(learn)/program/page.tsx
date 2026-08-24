@@ -30,7 +30,7 @@ export default async function ProgramPage(): Promise<ReactElement> {
 
   return (
     <>
-      <header className="col-span-12 flex items-baseline gap-3">
+      <header className="col-span-12 flex flex-wrap items-baseline gap-x-3 gap-y-1">
         <h1 className="font-display text-xl tracking-tight text-primary-900">Programme</h1>
         <span className="num text-muted">
           {overview.track === 'sprint21' ? 'Sprint · 21 days' : 'Standard · 28 days'}

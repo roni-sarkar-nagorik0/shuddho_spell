@@ -266,16 +266,22 @@ export function ExamRuntime({ attemptId }: { readonly attemptId: string }): Reac
 
   return (
     <div className="flex min-h-screen flex-col">
-      <header className="flex h-topbar shrink-0 items-center gap-4 border-b border-primary-700 px-4">
-        <span className="font-medium">{attempt.title}</span>
-        <span className="num text-primary-100">
+      {/*
+        The clock is the one thing in this row that must never be pushed off the
+        screen, so it is the only item that does not shrink. The title truncates
+        and the section counter drops below `sm` — it is restated as "Question n
+        of m" directly under this bar, which is where a learner reads it anyway.
+      */}
+      <header className="flex h-topbar shrink-0 items-center gap-2 border-b border-primary-700 px-3 sm:gap-4 sm:px-4">
+        <span className="min-w-0 flex-1 truncate font-medium">{attempt.title}</span>
+        <span className="num shrink-0 text-primary-100 max-sm:hidden">
           section {attempt.currentSectionIndex + 1} of {attempt.sectionCount}
         </span>
-        <span className="num text-primary-100">
+        <span className="num shrink-0 text-primary-100 max-sm:hidden">
           {answered}/{sectionQuestions.length} answered
         </span>
 
-        <span className="ml-auto">
+        <span className="shrink-0">
           <ExamCountdown
             onExpired={onExpired}
             serverRemainingSeconds={attempt.remainingSeconds}
@@ -284,7 +290,7 @@ export function ExamRuntime({ attemptId }: { readonly attemptId: string }): Reac
         </span>
       </header>
 
-      <main className="flex-1 px-6 py-8">
+      <main className="flex-1 px-4 py-6 sm:px-6 sm:py-8">
         <div className="mx-auto flex max-w-content flex-col gap-6">
           {error !== null && <p className="text-tertiary-100">{error}</p>}
 
