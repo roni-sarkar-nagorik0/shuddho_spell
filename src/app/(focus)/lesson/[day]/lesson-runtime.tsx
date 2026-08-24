@@ -163,7 +163,7 @@ export function LessonRuntime({
 
   if (error !== null && session === null) {
     return (
-      <div className="mx-auto max-w-content px-6 py-16">
+      <div className="mx-auto max-w-content px-4 py-10 sm:px-6 sm:py-16">
         <p className="text-tertiary-500">{error}</p>
         <Link className="mt-4 inline-block text-primary-900 underline" href="/program">
           Back to the programme
@@ -173,12 +173,12 @@ export function LessonRuntime({
   }
 
   if (session === null) {
-    return <p className="mx-auto max-w-content px-6 py-16 text-muted">Opening day {dayIndex}…</p>;
+    return <p className="mx-auto max-w-content px-4 py-10 text-muted sm:px-6 sm:py-16">Opening day {dayIndex}…</p>;
   }
 
   if (completion !== null) {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center gap-4 px-6 text-center">
+      <div className="flex min-h-screen flex-col items-center justify-center gap-4 px-5 text-center sm:px-6">
         <h1 className="font-display text-2xl tracking-tight text-primary-900">Day {dayIndex} done</h1>
         <p className="num text-muted">
           {completion.itemsCorrect} of {completion.itemsTotal} correct · streak{' '}
@@ -197,22 +197,31 @@ export function LessonRuntime({
 
   return (
     <div className="flex min-h-screen flex-col">
-      <header className="flex h-topbar shrink-0 items-center gap-4 border-b border-hairline bg-surface px-4">
+      {/*
+        Five things in a 48px row, and on a phone they do not fit. Rather than
+        wrapping — which would double the height of the one bar that must not
+        move while a learner is typing — each item is ranked and the lowest go
+        first: the word "Exit" (the ✕ says it), the day number (the title says
+        it), and the "Correct" label (the fraction beside it is unambiguous).
+        The stage tracker and the score stay, because they are the two things a
+        learner mid-lesson actually looks up at.
+      */}
+      <header className="flex h-topbar shrink-0 items-center gap-2 border-b border-hairline bg-surface px-3 sm:gap-4 sm:px-4">
         <Link
           aria-label="Leave the lesson"
-          className="flex h-8 items-center gap-1.5 rounded-control px-2 text-muted hover:bg-primary-50"
+          className="flex h-8 shrink-0 items-center gap-1.5 rounded-control px-2 text-muted hover:bg-primary-50"
           href="/program"
         >
           <Glyph name="close" size={16} />
-          <span className="text-label uppercase">Exit</span>
+          <span className="text-label uppercase max-sm:sr-only">Exit</span>
         </Link>
 
-        <span className="num text-muted">Day {session.dayIndex}</span>
-        <span className="min-w-0 truncate font-medium text-primary-900">{title}</span>
+        <span className="num shrink-0 text-muted max-sm:hidden">Day {session.dayIndex}</span>
+        <span className="min-w-0 flex-1 truncate font-medium text-primary-900">{title}</span>
 
-        <span className="ml-auto flex items-center gap-4">
+        <span className="flex shrink-0 items-center gap-2 sm:gap-4">
           <span className="flex items-baseline gap-1.5">
-            <span className="label">Correct</span>
+            <span className="label max-sm:sr-only">Correct</span>
             <MonoValue size="sm" value={`${String(session.itemsCorrect)}/${String(session.itemsTotal)}`} />
           </span>
           <StageTracker current={session.stage} />
@@ -220,7 +229,7 @@ export function LessonRuntime({
       </header>
 
       <main className="paper flex-1">
-        <div className="mx-auto max-w-content px-6 py-8">
+        <div className="mx-auto max-w-content px-4 py-6 sm:px-6 sm:py-8">
           <h1 className="font-display text-lg tracking-tight text-primary-900">
             {STAGE_HEADINGS[session.stage]}
           </h1>

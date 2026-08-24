@@ -111,7 +111,8 @@ export default async function ExamLobbyPage({
 
       <section className="card col-span-12 lg:col-span-5">
         <PanelHeader note="weights are fixed" title="Sections" />
-        <table className="w-full border-collapse text-left">
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[22rem] border-collapse text-left">
           <thead>
             <tr>
               <th className="label h-8 border-b border-hairline px-3">Section</th>
@@ -129,6 +130,7 @@ export default async function ExamLobbyPage({
             ))}
           </tbody>
         </table>
+        </div>
       </section>
 
       <section className="card col-span-12 lg:col-span-7">

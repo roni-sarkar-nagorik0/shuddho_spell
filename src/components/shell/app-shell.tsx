@@ -80,7 +80,16 @@ export function AppShell({
           <TopBar displayName={displayName} streakDays={streakDays} />
 
           <main className="paper flex-1 overflow-y-auto" id="content" tabIndex={-1}>
-            <div className="mx-auto grid max-w-content grid-cols-12 gap-4 px-6 py-6">
+            {/*
+              `shell-grid` is the twelve columns, and below `md` it is one — see
+              `globals.css`. The class is there rather than a `md:grid-cols-12`
+              here because every page asks for `col-span-7`, `col-span-5` and so
+              on: switching the container to a single column would leave those
+              spans creating implicit columns and pushing the page sideways. The
+              rule collapses the children as well as the container, in one place,
+              so no page has to restate its layout for a phone.
+            */}
+            <div className="shell-grid mx-auto grid max-w-content grid-cols-12 gap-4 px-4 py-4 sm:px-6 sm:py-6">
               {children}
             </div>
           </main>

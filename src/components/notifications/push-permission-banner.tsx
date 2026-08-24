@@ -61,7 +61,7 @@ export function PushPermissionBanner({ vapidPublicKey }: IPushPermissionBannerPr
     return (
       <aside
         role="status"
-        className="flex items-start justify-between gap-4 border border-neutral-300 px-4 py-3 text-sm"
+        className="flex flex-col items-start gap-2 border border-neutral-300 px-4 py-3 text-sm sm:flex-row sm:items-center sm:justify-between sm:gap-4"
       >
         <p>
           Notifications are blocked for this site. To turn them on, allow notifications for
@@ -77,11 +77,11 @@ export function PushPermissionBanner({ vapidPublicKey }: IPushPermissionBannerPr
   return (
     <aside
       role="status"
-      className="flex items-start justify-between gap-4 border border-neutral-300 px-4 py-3 text-sm"
+      className="flex flex-col items-start gap-2 border border-neutral-300 px-4 py-3 text-sm sm:flex-row sm:items-center sm:justify-between sm:gap-4"
     >
       <p>Get a reminder when your lesson is ready and when your streak is about to end.</p>
 
-      <span className="flex shrink-0 gap-3">
+      <span className="flex shrink-0 flex-wrap gap-3">
         <button
           type="button"
           className="underline"

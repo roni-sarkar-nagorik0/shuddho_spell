@@ -105,8 +105,8 @@ function Section({
   readonly note?: string;
 }): ReactElement {
   return (
-    <section className="border-t border-hairline py-16">
-      <div className="mx-auto max-w-content px-6">
+    <section className="border-t border-hairline py-10 sm:py-16">
+      <div className="mx-auto max-w-content px-5 sm:px-6">
         <h2 className="font-display text-2xl tracking-tight text-primary-900">{title}</h2>
         {note !== undefined && <p className="mt-2 max-w-2xl text-muted">{note}</p>}
         <div className="mt-8">{children}</div>
@@ -122,10 +122,10 @@ export default async function LandingPage(): Promise<ReactElement> {
     <main className="bg-neutral-50">
       {/* The hero. Dark, per 13-frontend.md, with the demo mounted inside it. */}
       <section className="bg-primary-900 text-surface">
-        <div className="mx-auto grid max-w-content gap-10 px-6 py-24 lg:grid-cols-2">
+        <div className="mx-auto grid max-w-content gap-8 px-5 py-12 sm:gap-10 sm:px-6 sm:py-24 lg:grid-cols-2">
           <div>
             <p className="label text-primary-100">ShuddhoSpell</p>
-            <h1 className="mt-4 font-display text-5xl leading-[1.05] tracking-tight">
+            <h1 className="mt-4 font-display text-4xl leading-[1.05] tracking-tight text-surface sm:text-5xl">
               Spell it.
               <br />
               Say it.
@@ -309,7 +309,7 @@ export default async function LandingPage(): Promise<ReactElement> {
       </Section>
 
       <footer className="border-t border-hairline py-10">
-        <div className="mx-auto flex max-w-content flex-wrap items-center gap-x-6 gap-y-2 px-6 text-muted">
+        <div className="mx-auto flex max-w-content flex-wrap items-center gap-x-6 gap-y-2 px-5 text-muted sm:px-6">
           <span className="font-display text-primary-900">ShuddhoSpell</span>
           <Link className="hover:text-primary-900" href="/login">
             Sign in

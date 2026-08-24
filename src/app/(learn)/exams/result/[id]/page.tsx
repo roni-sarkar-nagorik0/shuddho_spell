@@ -87,7 +87,8 @@ export default async function ExamResultPage({
 
       <section className="card col-span-12 lg:col-span-7">
         <PanelHeader note="weighted into the final mark" title="By section" />
-        <table className="w-full border-collapse text-left">
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[28rem] border-collapse text-left">
           <thead>
             <tr>
               <th className="label h-8 border-b border-hairline px-3">Section</th>
@@ -119,6 +120,7 @@ export default async function ExamResultPage({
             ))}
           </tbody>
         </table>
+        </div>
       </section>
 
       <section className="card col-span-12 lg:col-span-5">

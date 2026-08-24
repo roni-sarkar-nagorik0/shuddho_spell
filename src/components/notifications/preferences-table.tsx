@@ -59,7 +59,8 @@ export function PreferencesTable() {
   };
 
   return (
-    <table className="w-full text-sm">
+    <div className="overflow-x-auto">
+      <table className="w-full min-w-[20rem] text-sm">
       <caption className="sr-only">
         Which notifications you receive, in the app and as a push
       </caption>
@@ -106,6 +107,7 @@ export function PreferencesTable() {
           </tr>
         ))}
       </tbody>
-    </table>
+      </table>
+    </div>
   );
 }

@@ -64,6 +64,35 @@
 }
 
 @layer components {
+  /*
+    The signed-in content grid, and what it does on a phone.
+
+    Every page inside the shell lays itself out on twelve columns —
+    `col-span-7` beside `col-span-5`, a `col-span-4` rail — which is right on a
+    desktop and unusable at 375px, where a fifth of the width is a column of
+    two words per line. The obvious fix, dropping the container to
+    `grid-cols-1`, is worse than doing nothing: a child still asking for four
+    columns would create them, implicitly, and the page would scroll sideways.
+
+    So the container *and* its children are collapsed together, once, here.
+    Every direct child spans the single column whatever it asked for, and no
+    page has to carry a `md:` prefix on every span it owns. `!important` is
+    load-bearing rather than lazy: `grid-column` comes from a utility class on
+    the child, which this rule would otherwise lose to.
+
+    Scoped to direct children — a nested grid inside a panel is that panel's
+    own business and keeps its columns.
+  */
+  @media (max-width: 767px) {
+    .shell-grid {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .shell-grid > * {
+      grid-column: 1 / -1 !important;
+    }
+  }
+
   /* The ruled-paper surface: 32px rules plus one tertiary margin rule. */
   .paper {
     background-image:

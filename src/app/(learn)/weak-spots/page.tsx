@@ -32,7 +32,7 @@ export default async function WeakSpotsPage(): Promise<ReactElement> {
         <span className="num text-muted">{weakSpots.totalTracked} tracked</span>
       </header>
 
-      <section className="card col-span-12 grid grid-cols-3 gap-6 p-4">
+      <section className="card col-span-12 grid grid-cols-1 gap-4 p-4 sm:grid-cols-3 sm:gap-6">
         <StatCell label="Tracked" note="items you have got wrong" value={weakSpots.totalTracked} />
         <StatCell
           label="Mastered"

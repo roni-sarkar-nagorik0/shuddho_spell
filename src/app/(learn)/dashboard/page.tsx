@@ -89,7 +89,7 @@ export default async function DashboardPage(): Promise<ReactElement> {
         <PushPermissionBanner vapidPublicKey={publicEnv.NEXT_PUBLIC_VAPID_PUBLIC_KEY} />
       </div>
 
-      <header className="col-span-12 flex items-baseline gap-3">
+      <header className="col-span-12 flex flex-wrap items-baseline gap-x-3 gap-y-1">
         <h1 className="font-display text-xl tracking-tight text-primary-900">
           {dashboard.displayName}
         </h1>

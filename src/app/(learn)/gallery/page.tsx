@@ -84,7 +84,7 @@ export default function GalleryPage(): ReactElement {
 
       <section className="flex flex-col gap-3">
         <h2 className="font-display text-base tracking-tight">PhonemeStrip</h2>
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4">
           <State name="Mixed mastery" note="One weak sound, the rest solid.">
             <PhonemeStrip bangla="সাট্‌ল্" cells={SUBTLE} syllables={['sub', 'tle']} />
           </State>
@@ -137,7 +137,7 @@ export default function GalleryPage(): ReactElement {
 
       <section className="flex flex-col gap-3">
         <h2 className="font-display text-base tracking-tight">Primitives</h2>
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4">
           <State name="StatCell — rising" note="Arrow, sign and colour. Never colour alone.">
             <StatCell delta={4} label="Accuracy" note="up 4 since Monday" unit="%" value={92} />
           </State>
@@ -204,7 +204,7 @@ export default function GalleryPage(): ReactElement {
           All four: Escape closes, focus goes in on open and returns to the trigger on close. The
           three modal ones trap Tab; the popover deliberately does not.
         </p>
-        <div className="grid grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4">
           <State name="Popover" note="Non-modal. Tab-out and outside-click both dismiss.">
             <PopoverDemo />
           </State>
@@ -222,7 +222,7 @@ export default function GalleryPage(): ReactElement {
 
       <section className="flex flex-col gap-3">
         <h2 className="font-display text-base tracking-tight">Accessibility baseline</h2>
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4">
           <State name="Focus ring" note="Tab through these. 2px secondary-500, 2px offset.">
             <span className="flex flex-wrap items-center gap-2">
               <button className="h-8 rounded-control bg-primary-900 px-3 text-surface" type="button">

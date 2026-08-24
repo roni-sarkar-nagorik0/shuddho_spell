@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { Glyph } from '@/components/icons/glyph';
 import { apiFetch } from '@/lib/api/client';
 import {
   notificationFeedSchema,
@@ -103,15 +104,23 @@ export function NotificationBell() {
             ? 'Notifications'
             : `Notifications, ${String(feed.unreadCount)} unread`
         }
-        className="relative border border-neutral-300 px-3 py-1 text-sm"
+        className="relative flex h-8 items-center gap-2 border border-neutral-300 px-2 text-sm sm:px-3"
         onClick={() => {
           setOpen((current) => !current);
           load();
         }}
       >
-        Notifications
+        {/*
+          A bell below `sm`, the word above it. The word is 96px of a 375px top
+          bar, which is the difference between the row fitting and the breadcrumb
+          being drawn under the timer. The accessible name is on the button and
+          already carries the count, so nothing is lost by dropping the visible
+          text — see `aria-label` above.
+        */}
+        <Glyph className="sm:hidden" name="bell" size={16} />
+        <span className="max-sm:sr-only">Notifications</span>
         {feed.unreadCount > 0 && (
-          <span className="ml-2 tabular-nums" aria-hidden="true">
+          <span className="tabular-nums" aria-hidden="true">
             {feed.unreadCount}
           </span>
         )}
@@ -122,7 +131,7 @@ export function NotificationBell() {
           ref={popover}
           role="dialog"
           aria-label="Notifications"
-          className="absolute right-0 z-10 mt-2 w-96 border border-neutral-300 bg-white text-sm"
+          className="absolute right-0 z-10 mt-2 w-[min(24rem,calc(100vw-1.5rem))] border border-neutral-300 bg-white text-sm"
         >
           <div className="flex items-center justify-between border-b border-neutral-300 px-4 py-2">
             <span className="font-medium">Notifications</span>

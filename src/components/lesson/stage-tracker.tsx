@@ -53,7 +53,7 @@ export function StageTracker({ current, className }: IStageTrackerProps): ReactE
 
         return (
           <li className="flex items-center gap-1" key={stage}>
-            {index > 0 && <span aria-hidden="true" className="h-px w-4 bg-hairline" />}
+            {index > 0 && <span aria-hidden="true" className="h-px w-2 bg-hairline sm:w-4" />}
 
             <span
               aria-current={active ? 'step' : undefined}

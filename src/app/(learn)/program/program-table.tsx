@@ -75,8 +75,15 @@ export function ProgramTable({
     milestones.filter((milestone) => milestone.unlockDayIndex === dayIndex);
 
   return (
-    <div className="overflow-hidden rounded-card border border-hairline bg-surface">
-      <table className="w-full border-collapse text-left">
+    /*
+      `overflow-x-auto`, not `overflow-hidden`. The five columns have real
+      minimum widths, so on a phone the choice is between a table the learner
+      can scroll and one whose State and Open columns are painted outside the
+      card and lost. The `min-w` is what makes the scroll happen instead of the
+      cells collapsing to a word each.
+    */
+    <div className="overflow-x-auto rounded-card border border-hairline bg-surface">
+      <table className="w-full min-w-[34rem] border-collapse text-left">
         <thead>
           <tr>
             <th className="label h-8 w-16 border-b border-hairline px-3">Day</th>

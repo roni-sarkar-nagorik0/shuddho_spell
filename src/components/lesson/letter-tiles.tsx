@@ -52,6 +52,18 @@ const MARK_CLASSES: Readonly<Record<'correct' | 'wrong' | 'missing', string>> = 
  * - **no mouse is needed at any point**, which is why focus lands on the first
  *   tile on mount and after every reset
  *
+ * **Enter is not enough on a phone, and that is not a detail.** A soft keyboard
+ * decides for itself what its action key does: with `maxLength={1}` and no form
+ * around these inputs, several Android keyboards send no `Enter` keydown at all
+ * — they insert a newline, or nothing — so a learner who filled every tile had
+ * no way to answer. Three things fix it and all three are needed: `enterKeyHint`
+ * asks the keyboard for a *Done* key rather than a carriage return, a newline
+ * arriving through `onChange` is read as the submit it was meant to be, and once
+ * the last tile is full a real **Check** button appears. The button is the one
+ * that cannot fail, because it does not depend on what the keyboard chose to
+ * send; it is shown on every screen size rather than hidden behind a media
+ * query, since a visible way to submit is not something a desktop is harmed by.
+ *
  * `inputMode="text"` with `autoCapitalize="off"`, `autoCorrect="off"` and
  * `spellCheck={false}`: a phone that autocorrects the learner's spelling has
  * answered the question for them.
@@ -81,6 +93,18 @@ export function LetterTiles({
   const setLetter = useCallback((index: number, value: string) => {
     setLetters((current) => current.map((letter, position) => (position === index ? value : letter)));
   }, []);
+
+  const submit = useCallback(() => {
+    onSubmit(letters.join(''));
+  }, [letters, onSubmit]);
+
+  /**
+   * Whether there is anything to submit. Every tile holding a letter is the
+   * only state in which the Check button appears — offering it over a
+   * half-filled word would invite an answer the learner has not finished
+   * typing, and the tiles already tell them what is missing.
+   */
+  const isComplete = letters.every((letter) => letter !== '');
 
   const onKeyDown = useCallback(
     (event: KeyboardEvent<HTMLInputElement>, index: number) => {
@@ -121,13 +145,13 @@ export function LetterTiles({
           break;
         case 'Enter':
           event.preventDefault();
-          onSubmit(letters.join(''));
+          submit();
           break;
         default:
           break;
       }
     },
-    [letters, setLetter, focusTile, length, onSubmit],
+    [letters, setLetter, focusTile, length, submit],
   );
 
   /**
@@ -139,7 +163,8 @@ export function LetterTiles({
   }, []);
 
   return (
-    <div aria-label={label} className="flex flex-wrap gap-1.5" role="group">
+    <div className="flex flex-col gap-3">
+      <div aria-label={label} className="flex flex-wrap gap-1.5" role="group">
       {letters.map((letter, index) => {
         const mark = marks?.[index] ?? null;
 
@@ -150,7 +175,7 @@ export function LetterTiles({
             autoComplete="off"
             autoCorrect="off"
             className={cn(
-              'h-11 w-9 rounded-control border text-center font-mono text-lg uppercase',
+              'h-11 w-8 rounded-control border text-center font-mono text-lg uppercase sm:w-9',
               // `text-primary-900` is not decoration. Without a colour of its
               // own the tile inherits one, and on the landing page's dark hero
               // that meant white letters on a white tile — a visitor typing
@@ -160,10 +185,18 @@ export function LetterTiles({
               disabled && 'bg-neutral-100 text-muted',
             )}
             disabled={disabled}
+            enterKeyHint="done"
             inputMode="text"
             key={`${resetKey}-${String(index)}`}
             maxLength={1}
             onChange={(event) => {
+              // A soft keyboard's action key may arrive here as a newline
+              // instead of as a keydown. It is an answer, not a letter.
+              if (event.target.value.includes('\n')) {
+                submit();
+                return;
+              }
+
               const next = event.target.value.slice(-1);
               setLetter(index, next);
 
@@ -181,6 +214,19 @@ export function LetterTiles({
           />
         );
       })}
+      </div>
+
+      {isComplete && !disabled && (
+        <div>
+          <button
+            className="h-9 rounded-control bg-secondary-500 px-4 font-medium text-primary-900"
+            onClick={submit}
+            type="button"
+          >
+            Check
+          </button>
+        </div>
+      )}
     </div>
   );
 }

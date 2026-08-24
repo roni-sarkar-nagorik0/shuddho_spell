@@ -57,7 +57,7 @@ export default async function CertificatePage({
             programme in English precision for Bangla speakers, passing the final examination.
           </p>
 
-          <dl className="mt-8 grid grid-cols-3 gap-6 border-t border-hairline pt-6">
+          <dl className="mt-8 grid grid-cols-1 gap-4 border-t border-hairline pt-6 sm:grid-cols-3 sm:gap-6">
             <div>
               <dt className="label">Final score</dt>
               <dd>

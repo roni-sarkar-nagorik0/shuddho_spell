@@ -42,13 +42,13 @@ function RailLink({ item, collapsed, active, label }: IRailLinkProps): ReactElem
           'flex h-9 items-center gap-3 rounded-control px-2 text-neutral-700',
           'hover:bg-primary-50',
           active && 'bg-primary-100 font-medium text-primary-900',
-          collapsed && 'justify-center px-0',
+          collapsed ? 'justify-center px-0' : 'max-md:justify-center max-md:px-0',
         )}
         href={item.href}
         title={collapsed ? label : undefined}
       >
-        <Glyph name={item.glyph} size={18} />
-        <span className={cn(collapsed && 'sr-only')}>{label}</span>
+        <Glyph className="shrink-0" name={item.glyph} size={18} />
+        <span className={cn(collapsed ? 'sr-only' : 'max-md:sr-only')}>{label}</span>
       </Link>
     </li>
   );
@@ -65,17 +65,25 @@ export function Sidebar({ collapsed, onToggle, isAdmin }: ISidebarProps): ReactE
       aria-label={t('primary')}
       className={cn(
         'flex shrink-0 flex-col border-r border-hairline bg-surface',
-        collapsed ? 'w-rail' : 'w-sidebar',
+        // Below `md` the rail is always the 56px icon rail: 232px of a 375px
+        // screen is not a navigation column, it is most of the screen. The
+        // cookie still decides on a desktop — `max-md:` overrides it only
+        // where the width makes the expanded rail unusable.
+        collapsed ? 'w-rail' : 'w-sidebar max-md:w-rail',
       )}
     >
       <div
         className={cn(
           'flex h-topbar shrink-0 items-center border-b border-hairline',
-          collapsed ? 'justify-center px-0' : 'px-3',
+          collapsed ? 'justify-center px-0' : 'px-3 max-md:justify-center max-md:px-0',
         )}
       >
         <Link className="font-display text-sm font-semibold text-primary-900" href="/dashboard">
-          {collapsed ? 'S' : 'ShuddhoSpell'}
+          <span aria-hidden={!collapsed} className={cn(collapsed ? '' : 'md:hidden')}>
+            S
+          </span>
+          {!collapsed && <span className="max-md:hidden">ShuddhoSpell</span>}
+          <span className="sr-only">ShuddhoSpell</span>
         </Link>
       </div>
 
@@ -110,18 +118,23 @@ export function Sidebar({ collapsed, onToggle, isAdmin }: ISidebarProps): ReactE
         staying a static "toggle sidebar", which tells the learner nothing about
         what pressing it will do.
       */}
-      <div className={cn('border-t border-hairline p-2', collapsed && 'flex justify-center')}>
+      <div
+        className={cn(
+          'border-t border-hairline p-2',
+          collapsed ? 'flex justify-center' : 'max-md:flex max-md:justify-center',
+        )}
+      >
         <button
           aria-expanded={!collapsed}
           className={cn(
             'flex h-8 items-center gap-2 rounded-control px-2 text-muted hover:bg-primary-50',
-            collapsed ? 'w-8 justify-center px-0' : 'w-full',
+            collapsed ? 'w-8 justify-center px-0' : 'w-full max-md:w-8 max-md:justify-center max-md:px-0',
           )}
           onClick={onToggle}
           type="button"
         >
           <Glyph name={collapsed ? 'chevron-right' : 'chevron-left'} size={16} />
-          <span className={cn('text-label uppercase', collapsed && 'sr-only')}>
+          <span className={cn('text-label uppercase', collapsed ? 'sr-only' : 'max-md:sr-only')}>
             {collapsed ? t('expand') : t('collapse')}
           </span>
         </button>

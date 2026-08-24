@@ -31,13 +31,28 @@ export function TopBar({ displayName, streakDays }: ITopBarProps): ReactElement 
   const t = useTranslations('shell');
 
   return (
-    <header className="flex h-topbar shrink-0 items-center gap-4 border-b border-hairline bg-surface px-4">
-      <Breadcrumb />
+    <header className="flex h-topbar shrink-0 items-center gap-2 border-b border-hairline bg-surface px-3 sm:gap-4 sm:px-4">
+      {/*
+        `min-w-0` and a truncate, because a breadcrumb is the one item here that
+        has no length limit. Without it the trail keeps its intrinsic width, the
+        row overflows, and on a 375px screen the timer and the streak are drawn
+        on top of the page name — which is exactly what happened.
+      */}
+      <div className="min-w-0 flex-1 truncate">
+        <Breadcrumb />
+      </div>
 
-      <div className="ml-auto flex items-center gap-4">
-        <SessionTimer label={t('session')} />
+      <div className="flex shrink-0 items-center gap-2 sm:gap-4">
+        {/*
+          Time on task and the streak are context, not controls: they are the
+          first things to go when the row cannot hold everything. The streak is
+          still on the dashboard, where it has a whole panel.
+        */}
+        <span className="hidden sm:block">
+          <SessionTimer label={t('session')} />
+        </span>
 
-        <span className="flex items-center gap-1.5">
+        <span className="hidden items-center gap-1.5 sm:flex">
           <span className="label">{t('streak')}</span>
           <span className="num text-neutral-700">{streakDays}</span>
         </span>
@@ -65,7 +80,7 @@ export function TopBar({ displayName, streakDays }: ITopBarProps): ReactElement 
             type="submit"
           >
             <Glyph name="sign-out" size={16} />
-            <span className="text-label uppercase">{t('signOut')}</span>
+            <span className="text-label uppercase max-sm:sr-only">{t('signOut')}</span>
           </button>
         </form>
       </div>
