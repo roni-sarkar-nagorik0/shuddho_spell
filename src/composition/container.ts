@@ -201,7 +201,7 @@ export function createContainer(requestId: string): IContainer {
   // paid at wiring rather than per call.
   const grammarExamples = new GrammarContentExampleSource();
   // Both read `content/` and derive once at construction: 412 families with
-  // 1,887 root-to-form derivations, and a 1,240-word set. Per request that
+  // 1,887 root-to-form derivations, and a 3,000-word set. Per request that
   // would be the same answer computed again on every page of the library.
   const wordFamilies = new WordFamilyContentSource();
   const courseWords = new ContentCourseWordIndex();

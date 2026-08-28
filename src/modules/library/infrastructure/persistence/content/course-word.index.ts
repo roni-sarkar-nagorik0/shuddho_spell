@@ -2,7 +2,7 @@ import { WEEKS } from '../../../../../../content/index';
 import { type ICourseWordIndex } from '../../../domain/repositories/course-word-index';
 
 /**
- * The 1,240 programme words, as a set, built once at construction.
+ * The 3,000 programme words, as a set, built once at construction.
  *
  * Lower-cased on the way in. The corpus carries `February` and `Monday` with
  * their capitals — `content/schema.ts` explains why it must — and a family

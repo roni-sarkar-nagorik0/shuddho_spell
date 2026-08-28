@@ -110,6 +110,29 @@ Icon buttons are **32px** circles. Destructive icon buttons take `tertiary-500`.
 - Table rows **32px**. Sticky header. Pinned first column where the table scrolls
   horizontally.
 
+## Small screens
+
+The layout above is the desktop one. Below `md` the shell is a different shape, and it is
+defined **once** rather than restated per page:
+
+- `.shell-grid` in `globals.css` collapses the twelve-column container **and its direct
+  children** to one column below `md`. Every signed-in page inherits it; none restates its
+  spans, and nothing creates the implicit columns a bare `grid-cols-1` would.
+- The sidebar is always the **56px icon rail** below `md`. 232px of a 375px screen is not a
+  navigation column. The collapse cookie still decides on desktop.
+- The top bar truncates the breadcrumb, and context items — time on task, the streak, the
+  words "Notifications" and "Exit" — give up their space before controls do. Overlays cap to
+  the viewport rather than keeping a desktop width.
+- Wide tables scroll **inside their card**, with a `min-w` so cells do not collapse to a word
+  each. An `overflow-hidden` card around fixed-width columns paints the last ones outside
+  itself and loses them.
+- The hero's padding drops from 96px to 48px below `sm`.
+- `globals.css` colours every `h1`/`h2`/`h3` `text-primary-900`. **A heading on a dark surface
+  must state its own colour** — the landing hero sits on `primary-900`, and its headline was
+  painted in the colour behind it.
+
+375px is the width this is checked at. See `13-frontend.md` for the interaction side.
+
 ## The two signature components
 
 Built **once**, properly, in Phase 10. They appear on nine screens.
@@ -143,7 +166,8 @@ One component, two dimensions. Two components would drift within a month.
 
 ## Internationalisation
 
-`next-intl` with **complete** `en` and `bn` catalogues. CI fails on any key present in `en`
-and missing in `bn`.
+`next-intl` with **complete** `en` and `bn` catalogues in `messages/`, configured from
+`src/i18n/`. `pnpm i18n:check` fails on any key present in `en` and missing in `bn`, and it
+runs in `prebuild` — so the gate holds without anyone remembering it.
 
 Bangla is **real Bangla script**. Never transliteration. `শুদ্ধ`, not `shuddho`.

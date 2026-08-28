@@ -13,7 +13,7 @@ import { type GetDictationDemoWordUseCase } from '../../application/use-cases/ge
  *
  * It does **not** publish the corpus. One word per request, chosen server-side,
  * with no cursor, no filter and no count: an endpoint that let a caller page
- * through 1,240 words would be the course's vocabulary handed out to anybody
+ * through 3,000 words would be the course's vocabulary handed out to anybody
  * who found the URL, which is a different thing from a demo.
  *
  * Rate-limited by address, because it is anonymous and it costs a query.

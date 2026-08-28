@@ -37,7 +37,7 @@ in the browser — a client-computed score is a client-editable score.
 
 ## Grapheme-to-phoneme
 
-The G2P mapping for the program's 1,240 words is **stored in the `words` table**, not
+The G2P mapping for the programme's 3,000 words is **stored in the `words` table**, not
 computed at runtime. Runtime G2P for English is a research project; a curated lookup for a
 closed vocabulary is correct and fast.
 

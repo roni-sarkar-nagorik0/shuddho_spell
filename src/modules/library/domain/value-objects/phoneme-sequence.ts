@@ -22,7 +22,7 @@ export interface IPhonemeSlot {
  * A word's sounds, in order — the G2P result.
  *
  * `07-speech-scoring.md` is explicit that runtime grapheme-to-phoneme for
- * English is a research project and that the mapping for the programme's 1,240
+ * English is a research project and that the mapping for the programme's 3,000
  * words is **stored**, not computed. This is the shape that stored mapping
  * takes once it is read back: an ordered sequence, resolvable for every seeded
  * word, which is what per-phoneme scoring and per-phoneme mastery both consume.

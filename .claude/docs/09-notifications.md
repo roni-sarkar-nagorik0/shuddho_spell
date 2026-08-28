@@ -57,7 +57,7 @@ weight that drifts out of date.
 
 `RegisterPushSubscription` · `RevokePushSubscription` · `GetNotificationPreferences` ·
 `UpdateNotificationPreferences` · `ListNotifications` · `MarkNotificationRead` ·
-`MarkAllRead`
+`MarkAllNotificationsRead` · `RunHourlyNotifications` (the cron tick)
 
 Plus one dispatch use case per type: `SendDailyReminder` · `SendStreakAtRisk` ·
 `SendReviewItemsDue` · `SendExamUnlocked` · `SendExamResult` · `SendWeeklyReport`.
@@ -68,15 +68,25 @@ sends a push — it does **not** send a weekly email.
 ## Scheduling — the part that is usually wrong
 
 There is no long-running server process, so there is no in-process scheduler.
-Dispatch runs as a **cron route handler**: `/api/cron/notifications`, called hourly by Vercel
-Cron (or any scheduler), authenticated with `Bearer ${CRON_SECRET}`, `runtime = 'nodejs'`.
+Dispatch runs as a **cron route handler**: `/api/cron/notifications`, authenticated with
+`Bearer ${CRON_SECRET}`, `runtime = 'nodejs'`, `maxDuration = 60`.
 
-The job **runs hourly** and selects the learners whose **local** time matches their stored
-`reminderTime`.
-
-It does **not** run once at a server-local hour. A learner in UTC+6 with a 20:00 reminder
-gets it at 20:00 *their* time. Write the query as "select learners where
+The job is written as an **hourly tick**: it selects the learners whose **local** time matches
+their stored `reminderTime`. It does **not** run once at a server-local hour. A learner in
+UTC+6 with a 20:00 reminder gets it at 20:00 *their* time. The query is "select learners where
 `reminder_time` hour = current hour in `learner.timezone`".
+
+**What actually schedules it is daily, not hourly.** Vercel's Hobby plan refuses any cron
+finer than once a day, so `vercel.json` fires `/api/cron/notifications` at `0 14 * * *` and
+`/api/cron/exam-autosubmit` at `0 19 * * *`. The consequence is honest and worth stating: on
+Hobby a learner only receives a reminder when their local reminder hour lands in the one UTC
+hour the job runs. The handler is unchanged and correct — moving to a plan that allows
+`0 * * * *`, or pointing any external scheduler at the same URL, restores the behaviour with
+no code change. Do not "fix" this by making the job send to everyone on every tick; that
+trades a missed reminder for a 3 a.m. one.
+
+`SendWeeklyReportUseCase` is built and tested but **nothing schedules it yet** — there is no
+weekly cron entry and the hourly tick does not call it.
 
 ## Idempotency
 

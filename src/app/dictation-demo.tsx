@@ -92,7 +92,7 @@ export interface IDictationDemoProps {
  *
  * The words are the **real corpus**, drawn one at a time from
  * `/api/v1/demo/word`. Nothing about the pool is in this bundle: the landing
- * page has a performance budget, and shipping 1,240 words to every visitor to
+ * page has a performance budget, and shipping 3,000 words to every visitor to
  * show them five would be a strange way to spend it.
  *
  * **A wrong answer is not the end of the question, and neither is being told.**

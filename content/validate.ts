@@ -47,11 +47,13 @@ export interface IValidationResult {
  * Roughly how long one item takes.
  *
  * Corrected from a first guess of 45 and 75, which made an honest day — the
- * 1,240 words and 560 sentences of the spec, divided by 28 — claim 58 minutes.
- * `learner_profiles.daily_minutes` defaults to 30 and `00-overview.md` sells a
- * fifteen-to-thirty-minute habit, so either the numbers or the promise had to
- * give. These are the interaction times: hear a word, type it, read the
- * feedback; read a Bangla prompt, build a sentence, read the feedback.
+ * 1,240 words and 560 sentences of the *original* spec, divided by 28 — claim
+ * 58 minutes, against a `learner_profiles.daily_minutes` default of 30.
+ * The corpus has since grown to 3,000 and a day now claims 60 minutes, which
+ * these constants and `MINUTES_TOLERANCE` still have to agree with.
+ *
+ * These are the interaction times: hear a word, type it, read the feedback;
+ * read a Bangla prompt, build a sentence, read the feedback.
  */
 const SECONDS_PER_WORD = 25;
 const SECONDS_PER_SENTENCE = 45;

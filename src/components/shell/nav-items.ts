@@ -14,11 +14,11 @@ export interface INavItem {
  * `/grammar` sits after `/weak-spots` and before the two word lists: it is a
  * course of its own — read in order, day by day — rather than a reference, and
  * a learner looking for "what do I study next" should meet it before they meet
- * a list of 1,240 words.
+ * a list of 3,000 words.
  *
  * `/words` sits before `/library` on purpose: they are both lists of words and
  * the difference is whose. A learner looking for "the word I kept getting
- * wrong" wants their own list, and finding the whole 1,240-word library first
+ * wrong" wants their own list, and finding the whole 3,000-word library first
  * is the wrong answer arriving before the right one.
  *
  * `/library/families` sits directly under `/library` because it is the same

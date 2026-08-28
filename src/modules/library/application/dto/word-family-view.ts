@@ -11,7 +11,7 @@ export interface IWordFamilyMemberView {
   readonly partOfSpeech: string;
   readonly change: IFormChangeView;
   /**
-   * Whether this exact word is one of the 1,240 the course teaches.
+   * Whether this exact word is one of the 3,000 the course teaches.
    *
    * The two corpora are separate on purpose, and this flag is the one bridge
    * between them: a learner who meets `achievement` here can be told that

@@ -96,7 +96,7 @@ UI *and* the API. One `package.json`, one build, one deploy.
 
 | Concern | Choice |
 | --- | --- |
-| App | Next.js 15 App Router, React 19, TypeScript strict — UI **and** API in one project |
+| App | Next.js 16 App Router, React 19, TypeScript strict — UI **and** API in one project |
 | API | Route handlers under `src/app/api/v1/*`, built by the `withApi` wrapper |
 | Client state | TanStack Query |
 | Styling | Tailwind, tokens from `12-design-system.md` |

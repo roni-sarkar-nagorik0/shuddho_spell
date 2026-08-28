@@ -18,7 +18,7 @@ export interface IWordFamilyMember {
  * or asserted in a test.
  *
  * There is no learner state on a family and no accuracy figure. A family is a
- * fact about English, not about a person — `review_items` is keyed on the 1,240
+ * fact about English, not about a person — `review_items` is keyed on the 3,000
  * programme words, and pretending a learner has a record on 2,299 words they
  * have never been asked would put an invented number on the screen.
  */

@@ -65,18 +65,41 @@ the feature touches sign-in, a lesson or an exam) are green on real output, and 
 exit gate is fully checked. Work happens on a feature branch off `dev`; `main` is never
 touched. Full rules: `15-git-workflow.md`.
 
+## Content and i18n gates
+
+Two gates the original list did not have, both wired into `prebuild` so they run before every
+build rather than when somebody remembers:
+
+- `pnpm content:validate` — the whole corpus through Zod, naming the file and the entry. See
+  `10-content-pipeline.md`.
+- `pnpm i18n:check` — fails on any key present in `en` and missing in `bn`.
+
 ## Hooks and CI
 
-- Husky + lint-staged on commit.
-- GitHub Actions: `typecheck` → `lint` → `unit` → `integration` (Supabase service container)
-  → `e2e` → `build`. One app, one build job.
-- Migrations run as a **gated** deployment step, never automatically on push.
+**There is no Husky and no lint-staged.** The pre-push gate is the discipline in
+`15-git-workflow.md` plus CI, and a commit hook that runs a subset of it mostly teaches people
+to pass `--no-verify`. If hooks are added, they run the same commands, not weaker ones.
+
+`.github/workflows/ci.yml` — two jobs, not a six-step chain:
+
+| Job | Steps | When |
+| --- | --- | --- |
+| `verify` | install → typecheck → lint → content and i18n gates → unit and integration tests → coverage → build | every push and PR |
+| `e2e` | install → browsers → the four Playwright flows → the two-user RLS check | pushes to `dev` only |
+
+One app, one build job. `e2e` is branch-gated because it needs credentials a fork's PR does
+not have, and a job that cannot run is worse than one that does not.
+
+`.github/workflows/deploy.yml` — `migrate` then `release`, both checking that their secrets
+are configured **before** spending three minutes discovering it. Migrations run as a **gated**
+step, never automatically on push, and `migrate` shows what it would apply before applying it.
 
 ## Secrets and env
 
 - No secret in code. Ever.
-- Env vars validated at boot with Zod (`src/lib/env.ts`). The app **refuses to start** on a
-  missing or malformed var and prints exactly which one. See `16-environment.md`.
+- Env vars validated at boot with Zod (`src/lib/env.public.ts`, `src/lib/env.server.ts`). The
+  app **refuses to start** on a missing or malformed var and prints exactly which one. See
+  `16-environment.md`.
 - `.env.example` is complete and committed; `.env.local` never is.
 - The server env module is `server-only`, so importing a secret into a Client Component is a
   build failure rather than a runtime leak.
@@ -100,7 +123,9 @@ touched. Full rules: `15-git-workflow.md`.
 
 ## Observability
 
-Structured logs with request ids (pino), Sentry on both apps, and a `/metrics` endpoint.
+Structured logs with request ids (pino), Sentry wired through `src/instrumentation.ts`, and
+`/api/metrics` — behind `withCron`'s bearer secret, because request counts and timings are
+operational data, not a public page.
 
 ## The honest closing report
 

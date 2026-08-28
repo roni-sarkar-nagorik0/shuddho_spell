@@ -21,12 +21,12 @@ import { z } from 'zod';
  * validated here, at load, so the terseness costs nothing downstream — by the
  * time anything outside this directory sees a family it is a typed object.
  *
- * **Why there is no IPA.** The 1,240 programme words carry checked IPA because
+ * **Why there is no IPA.** The 3,000 programme words carry checked IPA because
  * a lesson marks pronunciation against it. These 1,800 do not, and inventing
  * 1,800 phonetic transcriptions to fill a column would put unverified claims on
  * the one screen whose entire subject is being right about English. The screen
  * speaks a word with the browser's own voice and links to the library row when
- * the word is one of the 1,240 — where the IPA *has* been checked.
+ * the word is one of the 3,000 — where the IPA *has* been checked.
  */
 
 /** At least one Bangla codepoint — the Bengali block is U+0980..U+09FF. */
