@@ -38,7 +38,8 @@
     "myWords": "My words",
     "grammar": "Grammar",
     "wordFamilies": "Word families",
-    "vocabulary": "Vocabulary"
+    "vocabulary": "Vocabulary",
+    "verbs": "Verb forms"
   },
   "dashboard": {
     "dayOf": "Day {day} of {total}",

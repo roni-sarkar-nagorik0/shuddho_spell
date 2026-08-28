@@ -15,6 +15,8 @@ import { type IGrammarLessonView } from '@/modules/grammar/application/dto/gramm
 import { type IGrammarSyllabus } from '@/modules/grammar/application/dto/grammar-syllabus';
 import { type IDictationDemoWord } from '@/modules/library/application/dto/dictation-demo-word';
 import { type ILibraryPage } from '@/modules/library/application/dto/library-page';
+import { type IVerbDrill } from '@/modules/library/application/dto/verb-drill';
+import { type IVerbPage } from '@/modules/library/application/dto/verb-view';
 import { type IVocabularyDrill } from '@/modules/library/application/dto/vocabulary-drill';
 import { type IVocabularyPage } from '@/modules/library/application/dto/vocabulary-view';
 import { type IWordFamilyPage } from '@/modules/library/application/dto/word-family-view';
@@ -53,6 +55,8 @@ import {
   makeGetExamResult,
   makeGetDictationDemoWord,
   makeGetLibraryPage,
+  makeGetVerbs,
+  makeGetVerbDrill,
   makeGetVocabulary,
   makeGetVocabularyDrill,
   makeGetWordFamilies,
@@ -235,6 +239,27 @@ export const readVocabulary = cache(
  */
 export async function readVocabularyDrill(count: number): Promise<IVocabularyDrill> {
   return makeGetVocabularyDrill(createContainer(crypto.randomUUID())).execute({ count });
+}
+
+/**
+ * The verb reference's first page. `cache` for the reason `readVocabulary`
+ * gives: no query to save, but no reason to derive the same page twice in one
+ * render either.
+ */
+export const readVerbs = cache(
+  async (pageSize: number): Promise<IVerbPage> =>
+    makeGetVerbs(createContainer(crypto.randomUUID())).execute({ pageSize }),
+);
+
+/**
+ * A verb drill, for the dashboard card and the landing demo.
+ *
+ * Not memoised, for the same reason `readVocabularyDrill` is not: the value of
+ * this read is that it differs between renders, and `cache` around a random
+ * pick is a way of making it stop being random.
+ */
+export async function readVerbDrill(count: number, coreOnly: boolean): Promise<IVerbDrill> {
+  return makeGetVerbDrill(createContainer(crypto.randomUUID())).execute({ count, coreOnly });
 }
 
 export const readPhonemeStrips = cache(

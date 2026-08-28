@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { type ReactElement } from 'react';
 import { MasteryMatrix, type IMasteryMatrixCell } from '@/components/data/mastery-matrix';
+import { VerbDrill } from '@/components/learning/verb-drill';
 import { VocabularyDrill } from '@/components/learning/vocabulary-drill';
 import { PushPermissionBanner } from '@/components/notifications/push-permission-banner';
 import { HeatCell } from '@/components/primitives/heat-cell';
@@ -18,6 +19,7 @@ import {
   readActivity,
   readWordsPractised,
   readVocabularyDrill,
+  readVerbDrill,
 } from '@/composition/reads';
 import { requireUser } from '@/lib/auth/current-user';
 import { publicEnv } from '@/lib/env.public';
@@ -28,15 +30,15 @@ import { ReviewTable } from './review-table';
  * The dashboard — one question, "what should I do now", answered above the
  * fold.
  *
- * **Eight reads, issued together, zero N+1.** Each is one use case that returns
+ * **Nine reads, issued together, zero N+1.** Each is one use case that returns
  * its whole answer in one shape; none of them is called per row, and the six
  * run in a single `Promise.all` rather than serially. That is the acceptance
  * criterion for this feature and it is a property of the read path, not of the
  * markup: `readLearnerDashboard` and `readProgressSummary` both need the
  * profile, and React's `cache` in `reads.ts` means the second one does not
- * fetch it again. The eighth — the vocabulary drill — makes no query at all:
- * it is a compiled corpus and a random pick, and it joins the `Promise.all`
- * only so it cannot become a serial await later.
+ * fetch it again. The eighth and ninth — the vocabulary and verb drills — make
+ * no query at all: they are compiled corpora and a random pick, and they join
+ * the `Promise.all` only so they cannot become serial awaits later.
  *
  * The page never calls this application's own HTTP API. It goes through the
  * composition root to the same use cases the handlers use — the sweep in
@@ -59,6 +61,16 @@ export const dynamic = 'force-dynamic';
  */
 const VOCABULARY_QUESTIONS = 6;
 
+/**
+ * Four verb questions, not six.
+ *
+ * The verb card sits beside the vocabulary card rather than under it, and a
+ * dashboard with two six-question drills on it is a dashboard asking for twelve
+ * answers before the day's lesson has started. Four is a warm-up; the full
+ * round is one click away on the verb screen.
+ */
+const VERB_QUESTIONS = 4;
+
 function toMatrixCells(
   cells: readonly {
     readonly dimensionId: string;
@@ -78,7 +90,7 @@ function toMatrixCells(
 export default async function DashboardPage(): Promise<ReactElement> {
   const user = await requireUser();
 
-  const [dashboard, summary, mastery, activity, reviews, nextExam, practised, vocabulary] =
+  const [dashboard, summary, mastery, activity, reviews, nextExam, practised, vocabulary, verbs] =
     await Promise.all([
       readLearnerDashboard(user.userId),
       readProgressSummary(user.userId),
@@ -88,6 +100,7 @@ export default async function DashboardPage(): Promise<ReactElement> {
       readNextExam(user.userId),
       readWordsPractised(user.userId),
       readVocabularyDrill(VOCABULARY_QUESTIONS),
+      readVerbDrill(VERB_QUESTIONS, true),
     ]);
 
   const accuracyPercent = Math.round(summary.overallAccuracy);
@@ -325,6 +338,30 @@ export default async function DashboardPage(): Promise<ReactElement> {
         />
         <div className="p-4">
           <VocabularyDrill initial={vocabulary} roundSize={VOCABULARY_QUESTIONS} tone="light" />
+        </div>
+      </section>
+
+      {/*
+        Verb forms, as four questions.
+
+        Beside the vocabulary card because they are the two halves of the same
+        thirty seconds: one asks whether a better word is known, this asks
+        whether the right *form* of a known word is. It draws from the hundred
+        commonest verbs — a dashboard warm-up that opened with the past
+        participle of `abash` would be a warm-up nobody finishes.
+      */}
+      <section className="card col-span-12 lg:col-span-5">
+        <PanelHeader
+          action={
+            <Link className="text-[11px] text-primary-900" href="/library/verbs">
+              All {verbs.totalVerbs}
+            </Link>
+          }
+          note="V1 → V5"
+          title="Verb forms"
+        />
+        <div className="p-4">
+          <VerbDrill coreOnly initial={verbs} roundSize={VERB_QUESTIONS} tone="light" />
         </div>
       </section>
 

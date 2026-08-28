@@ -21,6 +21,8 @@ import { createVerifyCertificateHandler } from '@/modules/certificates/presentat
 import { createGetDemoWordHandler } from '@/modules/library/presentation/handlers/get-demo-word';
 import { createScoreDemoSpeechHandler } from '@/modules/library/presentation/handlers/score-demo-speech';
 import { createGetLibraryHandler } from '@/modules/library/presentation/handlers/get-library';
+import { createGetVerbsHandler } from '@/modules/library/presentation/handlers/get-verbs';
+import { createGetVerbDrillHandler } from '@/modules/library/presentation/handlers/get-verb-drill';
 import { createGetVocabularyHandler } from '@/modules/library/presentation/handlers/get-vocabulary';
 import { createGetVocabularyDrillHandler } from '@/modules/library/presentation/handlers/get-vocabulary-drill';
 import { createGetWordFamiliesHandler } from '@/modules/library/presentation/handlers/get-word-families';
@@ -54,6 +56,8 @@ import {
   makeGetDictationDemoWord,
   makeScoreDemoSpeech,
   makeGetLibraryPage,
+  makeGetVerbs,
+  makeGetVerbDrill,
   makeGetVocabulary,
   makeGetVocabularyDrill,
   makeGetWordFamilies,
@@ -282,4 +286,12 @@ export const getVocabularyHandler = createGetVocabularyHandler(() =>
  */
 export const getVocabularyDrillHandler = createGetVocabularyDrillHandler(() =>
   makeGetVocabularyDrill(container()),
+);
+
+/** The verb reference — the third of the three library screens. */
+export const getVerbsHandler = createGetVerbsHandler(() => makeGetVerbs(container()));
+
+/** The public verb drill. Six questions, never a page. */
+export const getVerbDrillHandler = createGetVerbDrillHandler(() =>
+  makeGetVerbDrill(container()),
 );

@@ -64,6 +64,13 @@ const PUBLIC_ROUTES: readonly string[] = [
   // DTO rather than left to be discovered. Rate-limited by address, because
   // there is no learner id to charge it to.
   'src/app/api/v1/demo/vocabulary/route.ts',
+  // The landing page's verb drill, public on the same terms as the two demo
+  // endpoints above and **writing nothing**. Six questions per request, drawn
+  // from the hundred commonest verbs when the page asks for `core=true`, with
+  // no cursor and no filter — so it demonstrates the 998-verb corpus without
+  // publishing it. The pageable version is `/api/v1/library/verbs`, which
+  // requires a session. Rate-limited by address.
+  'src/app/api/v1/demo/verbs/route.ts',
 ];
 
 function routeFiles(directory: string): readonly string[] {

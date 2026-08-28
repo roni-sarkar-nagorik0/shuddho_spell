@@ -1,7 +1,9 @@
 import Link from 'next/link';
 import { type ReactElement } from 'react';
+import { VerbDrill } from '@/components/learning/verb-drill';
+import { FormKey, TenseChart } from '@/components/learning/verb-guide';
 import { VocabularyDrill } from '@/components/learning/vocabulary-drill';
-import { readDictationDemoWord, readVocabularyDrill } from '@/composition/reads';
+import { readDictationDemoWord, readVerbDrill, readVocabularyDrill } from '@/composition/reads';
 import { AlphabetFamilies } from './alphabet-families';
 import { SignatureFlow } from './signature-flow';
 import { AlphabetStrip } from './alphabet-strip';
@@ -154,16 +156,28 @@ function Section({
  */
 const VOCABULARY_QUESTIONS = 6;
 
+/**
+ * Six verb questions, drawn from the hundred commonest verbs only.
+ *
+ * The front door is not the place to ask for the past participle of `abash`. A
+ * visitor's first question is "can I do this", and a corpus-wide draw would
+ * answer it with "no" for a reason that has nothing to do with them. The full
+ * 998 are behind the sign-in, where somebody has already decided they want
+ * them.
+ */
+const VERB_QUESTIONS = 6;
+
 export default async function LandingPage(): Promise<ReactElement> {
   /*
-   * Two reads, together rather than in turn. The dictation word costs a corpus
-   * query; the vocabulary drill costs nothing but a random pick over a compiled
-   * module — which is the reason it can sit on the front door at all, and the
-   * reason a visitor gets a second exercise for no extra latency.
+   * Three reads, together rather than in turn. Only the first costs a query:
+   * the two drills are a random pick over a compiled module, which is the
+   * reason they can sit on the front door at all, and the reason a visitor gets
+   * three exercises for the latency of one.
    */
-  const [demoWord, vocabulary] = await Promise.all([
+  const [demoWord, vocabulary, verbs] = await Promise.all([
     readDictationDemoWord(),
     readVocabularyDrill(VOCABULARY_QUESTIONS),
+    readVerbDrill(VERB_QUESTIONS, true),
   ]);
 
   return (
@@ -256,6 +270,43 @@ export default async function LandingPage(): Promise<ReactElement> {
               ))}
             </ul>
           </div>
+        </div>
+      </Section>
+
+      {/*
+        Verb forms — the third and last demo, and the most teachable one.
+
+        It comes after the vocabulary swap because it is a bigger idea: a swap
+        is one word for another, and this is a system with five parts. So the
+        section is ordered the way it has to be learnt rather than the way it
+        would look best — what the five forms are, then a drill, then which
+        tense takes which. A visitor who reads only the five cards at the top
+        has still been taught the thing most learners are missing.
+
+        The drill draws from the hundred commonest verbs; the other 898 are
+        behind the sign-in.
+      */}
+      <Section
+        note="Every English verb has five forms, and almost every verb mistake is one of them standing where another belongs. Six questions, no account, and the rule behind each answer — the p in stopping doubles for a reason you can use on every verb shaped like it."
+        title="Five forms, one verb"
+      >
+        <div className="flex flex-col gap-6">
+          <FormKey />
+
+          <div className="grid gap-6 lg:grid-cols-2">
+            <div id="verbs">
+              <VerbDrill coreOnly initial={verbs} roundSize={VERB_QUESTIONS} tone="light" />
+            </div>
+            <div className="flex flex-col gap-2">
+              <p className="label">Which tense takes which form</p>
+              <TenseChart />
+            </div>
+          </div>
+
+          <p className="text-muted">
+            The full reference — <span className="num">{verbs.totalVerbs}</span> verbs in all five
+            forms, the spelling rules, and the eight mistakes that cost the most marks — is inside.
+          </p>
         </div>
       </Section>
 

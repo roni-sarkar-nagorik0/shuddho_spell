@@ -50,6 +50,8 @@ import { GetExamCatalogueUseCase } from '@/modules/exams/application/use-cases/g
 import { GetNextExamUseCase } from '@/modules/exams/application/use-cases/get-next-exam';
 import { ListExamMilestonesUseCase } from '@/modules/exams/application/use-cases/list-exam-milestones';
 import { GetDictationDemoWordUseCase } from '@/modules/library/application/use-cases/get-dictation-demo-word';
+import { GetVerbsUseCase } from '@/modules/library/application/use-cases/get-verbs';
+import { GetVerbDrillUseCase } from '@/modules/library/application/use-cases/get-verb-drill';
 import { GetVocabularyUseCase } from '@/modules/library/application/use-cases/get-vocabulary';
 import { GetVocabularyDrillUseCase } from '@/modules/library/application/use-cases/get-vocabulary-drill';
 import { GetWordFamiliesUseCase } from '@/modules/library/application/use-cases/get-word-families';
@@ -573,4 +575,22 @@ export function makeGetVocabulary(c: IContainer): GetVocabularyUseCase {
  */
 export function makeGetVocabularyDrill(c: IContainer): GetVocabularyDrillUseCase {
   return new GetVocabularyDrillUseCase(c.vocabulary, c.random, c.courseWords);
+}
+
+/**
+ * The verb reference. Two content dependencies and no query — the course index
+ * is here for the same `course` badge the other two references carry.
+ */
+export function makeGetVerbs(c: IContainer): GetVerbsUseCase {
+  return new GetVerbsUseCase(c.verbs, c.courseWords);
+}
+
+/**
+ * The verb drill behind the landing demo and the dashboard card.
+ *
+ * No course index: a drill question is a verb and its own four other forms, so
+ * there is nothing on it for the badge to mark.
+ */
+export function makeGetVerbDrill(c: IContainer): GetVerbDrillUseCase {
+  return new GetVerbDrillUseCase(c.verbs, c.random);
 }

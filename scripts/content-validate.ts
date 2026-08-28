@@ -8,6 +8,11 @@
 import { validateGrammar } from '../content/grammar/index';
 import { readContent } from '../content/index';
 import { validateVocabulary } from '../content/ielts-vocabulary/index';
+import { validateVerbs } from '../content/verb-forms/index';
+import {
+  presentParticiple,
+  thirdPerson,
+} from '../src/modules/library/domain/services/verb-conjugator';
 import { validateWordFamilies } from '../content/word-families/index';
 
 const { issues, counts } = readContent();
@@ -38,7 +43,25 @@ const families = validateWordFamilies();
  */
 const vocabulary = validateVocabulary();
 
-for (const issue of [...issues, ...grammar.issues, ...families.issues, ...vocabulary.issues]) {
+/**
+ * The verb corpus, checked against the rules that generate four of its five
+ * columns.
+ *
+ * The conjugator is passed in rather than imported by `content/`, which keeps
+ * the corpus free of application code and still lets this run assert the thing
+ * that matters: **every recorded exception must really be an exception**. An
+ * `ing=` an existing rule would have produced is dead content, and dead content
+ * is how a derived corpus stops being derived without anybody noticing.
+ */
+const verbs = validateVerbs({ presentParticiple, thirdPerson });
+
+for (const issue of [
+  ...issues,
+  ...grammar.issues,
+  ...families.issues,
+  ...vocabulary.issues,
+  ...verbs.issues,
+]) {
   process.stdout.write(`${issue.file}  ${issue.path}\n    ${issue.message}\n`);
 }
 
@@ -58,6 +81,9 @@ process.stdout.write(
     `  family words    ${String(families.counts.words)}`,
     `  vocabulary      ${String(vocabulary.counts.entries)}`,
     `  synonyms        ${String(vocabulary.counts.synonyms)}`,
+    `  verbs           ${String(verbs.counts.verbs)}`,
+    `  irregular verbs ${String(verbs.counts.irregular)}`,
+    `  verb overrides  ${String(verbs.counts.overrides)}`,
     '',
   ].join('\n'),
 );
@@ -79,7 +105,11 @@ if (counts.phonemesNeedReview.length > 0) {
 }
 
 const total =
-  issues.length + grammar.issues.length + families.issues.length + vocabulary.issues.length;
+  issues.length +
+  grammar.issues.length +
+  families.issues.length +
+  vocabulary.issues.length +
+  verbs.issues.length;
 
 if (total > 0) {
   process.stdout.write(`${String(total)} issue(s). Content is not valid.\n`);

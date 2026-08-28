@@ -36,6 +36,7 @@ import { type IRuleFamilyRepository } from '@/modules/library/domain/repositorie
 import { type IGrammarExampleSource } from '@/modules/library/domain/repositories/grammar-example-source';
 import { type IWordFamilySource } from '@/modules/library/domain/repositories/word-family-source';
 import { type IVocabularySource } from '@/modules/library/domain/repositories/vocabulary-source';
+import { type IVerbSource } from '@/modules/library/domain/repositories/verb-source';
 import { type ICourseWordIndex } from '@/modules/library/domain/repositories/course-word-index';
 import { type ISentenceItemRepository } from '@/modules/library/domain/repositories/sentence-item-repository';
 import { type IWordPhonemeRepository } from '@/modules/library/domain/repositories/word-phoneme-repository';
@@ -46,6 +47,7 @@ import { SupabaseRuleFamilyRepository } from '@/modules/library/infrastructure/p
 import { GrammarContentExampleSource } from '@/modules/library/infrastructure/persistence/content/grammar-example.source';
 import { WordFamilyContentSource } from '@/modules/library/infrastructure/persistence/content/word-family.source';
 import { VocabularyContentSource } from '@/modules/library/infrastructure/persistence/content/vocabulary.source';
+import { VerbContentSource } from '@/modules/library/infrastructure/persistence/content/verb.source';
 import { ContentCourseWordIndex } from '@/modules/library/infrastructure/persistence/content/course-word.index';
 import { SupabaseSentenceItemRepository } from '@/modules/library/infrastructure/persistence/supabase/sentence-item.repository';
 import { SupabaseWordPhonemeRepository } from '@/modules/library/infrastructure/persistence/supabase/word-phoneme.repository';
@@ -113,6 +115,13 @@ export interface IContainer {
    * why it is kept apart from both the families and the 3,000.
    */
   readonly vocabulary: IVocabularySource;
+  /**
+   * The thousand verbs in all five forms. Content again, and the fourth corpus
+   * — the only one whose forms are mostly *derived* rather than stored, which
+   * is why the source builds its entities once at construction rather than
+   * running three thousand rule applications per request.
+   */
+  readonly verbs: IVerbSource;
   /**
    * Which of those words the 28-day course also teaches. The one bridge between
    * two corpora that are otherwise kept apart on purpose.
@@ -214,6 +223,7 @@ export function createContainer(requestId: string): IContainer {
   // would be the same answer computed again on every page of the library.
   const wordFamilies = new WordFamilyContentSource();
   const vocabulary = new VocabularyContentSource();
+  const verbs = new VerbContentSource();
   const courseWords = new ContentCourseWordIndex();
   const speechScorer = new ConfusionMapSpeechScorer();
 
@@ -238,6 +248,7 @@ export function createContainer(requestId: string): IContainer {
     grammarExamples,
     wordFamilies,
     vocabulary,
+    verbs,
     courseWords,
     ruleFamilies: new SupabaseRuleFamilyRepository(db),
     phonemes,

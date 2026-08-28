@@ -23,9 +23,9 @@ export interface INavItem {
  *
  * `/library/families` and `/library/vocabulary` sit directly under `/library`
  * because they are the same shelf: all three are reference rather than course.
- * The vocabulary list comes last of the three because it is the one a learner
- * reaches for by name — they arrive knowing they want a better word — while the
- * other two are browsed. `activeHref` matches the
+ * The vocabulary list and the verb tables come last of the four because they
+ * are the two a learner reaches for by name — they arrive knowing they want a
+ * better word, or the past participle of one — while the other two are browsed. `activeHref` matches the
  * longest prefix, so standing on the families screen lights the families item
  * and not its parent — which is what makes two nested items safe to list.
  *
@@ -44,6 +44,7 @@ export const NAV_ITEMS: readonly INavItem[] = Object.freeze([
   { href: '/library', labelKey: 'library', glyph: 'library' },
   { href: '/library/families', labelKey: 'wordFamilies', glyph: 'grammar' },
   { href: '/library/vocabulary', labelKey: 'vocabulary', glyph: 'library' },
+  { href: '/library/verbs', labelKey: 'verbs', glyph: 'grammar' },
   { href: '/progress', labelKey: 'progress', glyph: 'progress' },
   { href: '/exams', labelKey: 'exams', glyph: 'exam' },
 ]);
