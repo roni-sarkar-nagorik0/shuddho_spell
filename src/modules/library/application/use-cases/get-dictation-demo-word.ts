@@ -83,7 +83,7 @@ const BANGLA_MARGIN = 3;
  * drift from.
  *
  * It draws one week at a time rather than the whole corpus. A random word out
- * of 1,240 would be one query returning every word the product owns, on a page
+ * of 3,000 would be one query returning every word the product owns, on a page
  * anonymous visitors hit — this reads a quarter of that.
  *
  * **The pick is not perfectly uniform, and that is a knowing trade.** The four

@@ -4,7 +4,7 @@ import { type IpaTranscription } from '@/modules/shared/domain/value-objects/ipa
 import { type PartOfSpeech } from '../value-objects/part-of-speech';
 
 /**
- * One of the 1,240 words, with everything a Bengali speaker needs to spell it,
+ * One of the 3,000 words, with everything a Bengali speaker needs to spell it,
  * say it and know what it means.
  *
  * `commonMisspellings` is the field that makes a wrong answer diagnostic rather

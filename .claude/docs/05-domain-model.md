@@ -72,17 +72,44 @@ Each with its `Symbol` token, in `domain/repositories/`:
 
 ## Application ports
 
-`IClock` · `IIdGenerator` · `ISpeechScorer` · `IUnitOfWork` · `IRateLimiter` ·
-`IPushSender` · `IInAppNotifier`
+Shared: `IClock` · `IIdGenerator` · `IRandom` · `ISpeechScorer` · `IMetricsReader`
+Per module: `IPushSender` · `IInAppNotifier` · `ILessonWriteUnit` · `IExamWriteUnit`
 
 (No `IMailer` — the app sends no email. See `09-notifications.md`.)
+
+**`IUnitOfWork` could not be built, and `ILessonWriteUnit` / `IExamWriteUnit` replace it.** A
+callback unit of work assumes the caller can open a transaction and run arbitrary statements
+inside it. Supabase speaks PostgREST: every call is its own HTTP request and therefore its own
+transaction, and no amount of TypeScript arranges four of them into one. `run(work)` would
+have compiled, run, and provided no atomicity at all — a lie in a type, which is worse than
+the missing feature. Each method on these ports is instead **one Postgres function call**: the
+domain decides every value, the function writes them together or not at all.
+`IRateLimiter` is real and lives in `src/contracts`, Postgres-backed (migration `012`).
+`IRandom` exists for the same reason `IClock` does: the blueprint service seeds an attempt's
+question selection, and a use case that reached for `Math.random()` would not be reproducible.
+
+## What was built after this doc was written
+
+| Area | What is real now |
+| --- | --- |
+| Roles | `LearnerProfile.role` (`user` \| `admin`), migration `020`. The database makes the first admin; only an admin makes an admin; the last admin cannot be demoted. See `04-authentication.md` |
+| Onboarding | `onboarding_completed_at` (migration `011`) is what `/auth/callback` reads — not "does a profile row exist", which the signup trigger makes true immediately |
+| Grammar | a `grammar` module: `GrammarLesson`, `GetGrammarSyllabus`, `GetGrammarLesson`. 28 days, 112 checks, ungated |
+| Word families | `WordFamily` in `library` — the 412-family reference corpus. Read-only, never drilled, never seeded into `words` |
+| Demo | `DemoAttempt` in `progress` (migration `021`). The landing drill has no `lesson_session` and never will, so it does not borrow `attempts` — that would mean making `attempts.session_id` nullable, weakening a constraint every real attempt depends on |
+| Practised words | `GetWordsPractised` / `GetPractiseLog` over migration `022`'s paged function. The grouping is SQL because the alternative is reducing months of attempts in memory |
+| Certificates | `Certificate`, `GetCertificate`, `VerifyCertificate` — the last reading the public `certificate_verifications` view |
 
 ## Use cases (Phase 4)
 
 `GetProgramOverview` · `GetProgramDay` · `StartLessonSession` · `AdvanceLessonStage` ·
-`SubmitDictationAttempt` · `SubmitConstructionAttempt` · `CompleteLessonSession` ·
-`GetDueReviewItems` · `SubmitReviewAttempt` · `GetMasterySnapshot` · `GetProgressSummary` ·
+`SubmitDictationAttempt` · `SubmitPronunciationAttempt` · `SubmitConstructionAttempt` ·
+`CompleteLessonSession` · `GetDueReviewItems` · `SubmitReviewAttempt` · `GetWeakSpots` ·
+`GetPracticeQueue` · `GetMasterySnapshot` · `GetProgressSummary` · `GetWeeklyActivity` ·
 `GetLearnerDashboard`
+
+Several of these have **no route handler**, and that is correct: a use case earns one when
+something on the client calls it. `11-api-surface.md` lists which.
 
 Each ships with a unit test using in-memory fakes and a `FakeClock`. The awkward cases are
 mandatory, not optional:

@@ -3,7 +3,7 @@
 A 28-day English precision-training program for Bengali (Bangla) speakers — spelling,
 pronunciation and sentence construction, diagnosed per phoneme and per rule family.
 
-**One Next.js 15 app** — UI and API in the same project. TypeScript (interface-first) ·
+**One Next.js 16 app** — UI and API in the same project. TypeScript (interface-first) ·
 Supabase · Clean Architecture · Google-only auth.
 
 > **Phases 0–13 are built.** Every feature in [`PROGRESS.md`](PROGRESS.md) is `[x]`, and that

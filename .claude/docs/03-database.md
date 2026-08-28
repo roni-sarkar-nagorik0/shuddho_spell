@@ -18,8 +18,23 @@ Numbered, idempotent, forward-only, in `supabase/migrations/`:
 | `008_rls_policies.sql` | see below |
 | `009_functions_triggers.sql` | `updated_at` triggers, profile-on-signup trigger, transactional session-completion function, exam auto-submit function |
 | `010_seed_reference.sql` | the 44 phonemes and 24 rule families — real data, not placeholders |
+| `011_onboarding_state.sql` | `onboarding_completed_at` — what `/auth/callback` reads to choose `/onboarding` over `/dashboard`. The profile row cannot say it: the signup trigger creates that the instant `auth.users` appears |
+| `012_rate_limits.sql` | the `rate_limits` table and its fixed-window function, behind `IRateLimiter` |
+| `013_record_lesson_attempt.sql` | one answer, one transaction: the `attempts` row, the session counters, the `review_items` upsert and the `mastery_records` upsert |
+| `014_complete_lesson_day.sql` | closing the day **and** advancing `current_day_index`, together |
+| `015_start_exam_attempt.sql` | the attempt row and its up-to-150 `exam_questions`, together — a half-started attempt is unanswerable *and* blocks the retake |
+| `016_submit_exam_attempt.sql` | marks, outcome, learner position and the drill queue in one transaction |
+| `017_submit_exam_attempt_v2.sql` | lets the engine grade an attempt `pg_cron` already moved to `submitted` — 016's `in_progress` guard was too narrow |
+| `018_indexes_phase_11_12.sql` | the indexes the Phase 11–12 screens need, found by the performance pass |
+| `019_one_open_lesson_session.sql` | a partial unique index: one unfinished session per learner per day, enforced by the database rather than by a read-then-insert |
+| `020_user_roles.sql` | `role` (`user` \| `admin`) on `learner_profiles`, and the rule that the first person through the door is the admin. No second users table — `learner_profiles` already is one |
+| `021_demo_attempts.sql` | `demo_attempts` — the landing-page drill has no `lesson_session`, and making `attempts.session_id` nullable to fit it would weaken a load-bearing constraint |
+| `022_practised_words.sql` | the paged "every word this learner has practised" function — the grouping belongs in SQL, not in a use case reducing months of attempts in memory |
 
 Forward-only means: never edit a shipped migration. Add a new numbered one.
+
+Where a table above is missing from the list, it arrived in one of `011`–`022`; read the
+header comment at the top of each file, which states the failure it exists to prevent.
 
 ## Table conventions
 
@@ -72,7 +87,8 @@ This script runs again in Phase 13. It is not optional and it is not replaceable
 - **On `auth.users` insert** → create the matching `learner_profiles` row. The API's
   `BootstrapProfileUseCase` is idempotent on top of this, not a substitute for it.
 - **Session completion** → one Postgres function writing `attempts`, `review_items`,
-  `mastery_records` and `streak_records` in a single transaction, invoked through `IUnitOfWork`.
+  `mastery_records` and `streak_records` in a single transaction, invoked through
+`ILessonWriteUnit` — see `05-domain-model.md` for why it is not a generic `IUnitOfWork`.
 - **Exam auto-submit** → a `pg_cron` job that submits attempts abandoned past
   `server_deadline_at`, so a stale attempt never blocks a retake. Because the app is
   serverless and has no long-running process, this job lives **in the database** and must work

@@ -7,7 +7,7 @@ import { FamilyExplorer } from './family-explorer';
  * Word families — one root, the words English builds from it, and the rule.
  *
  * A **reference**, not a lesson. Nothing here is drilled, marked or seeded into
- * `words`: the 28-day course teaches 1,240 words and this holds 2,299 more,
+ * `words`: the 28-day course teaches 3,000 words and this holds 2,299 more,
  * chosen for the four IELTS papers. The two corpora are kept apart on purpose
  * — `content/word-families/schema.ts` sets out why — and the only bridge is the
  * `course` mark beside a word that appears in both.

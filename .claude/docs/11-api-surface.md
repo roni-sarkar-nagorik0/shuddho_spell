@@ -32,25 +32,44 @@ alone. Codes are declared in `src/contracts` as a frozen const union.
 
 | Module | Routes |
 | --- | --- |
-| `auth` | `GET /me` · `POST /me/bootstrap` |
+| `auth` | `GET /me` · `GET /onboarding` · `POST /onboarding` |
+| `admin` | `GET /admin/users` · `PATCH /admin/users/:id/role` — both 403 for a non-admin |
 | `program` | `GET /program` · `GET /program/days/:dayIndex` |
-| `lessons` | `POST /lessons/sessions` · `PATCH /lessons/sessions/:id/stage` · `POST /lessons/sessions/:id/attempts` |
+| `lessons` | `POST /lessons/sessions` · `PATCH /lessons/sessions/:id/stage` · `POST /lessons/sessions/:id/attempts` · `POST /lessons/sessions/:id/complete` |
 | `review` | `GET /review/due` · `POST /review/attempts` |
-| `exams` | `GET /exams` · `GET /exams/:code` · `POST /exams/:code/attempts` · `GET /exams/attempts/active` · `PATCH /exams/attempts/:id/answers` · `POST /exams/attempts/:id/sections/:code/submit` · `POST /exams/attempts/:id/submit` · `GET /exams/attempts/:id/review` |
-| `progress` | `GET /progress/summary` · `GET /progress/mastery` · `GET /progress/timeline` |
-| `library` | `GET /library/words` (paginated, filtered, sorted) |
-| `notifications` | `GET /notifications` · `PATCH /notifications/:id/read` · `GET/PUT /notifications/preferences` · `POST /notifications/push/subscribe` |
-| `certificates` | `GET /certificates/:id` · `GET /certificates/:id/verify` |
+| `exams` | `POST /exams/:code/attempts` · `GET /exams/:code/readiness` · `GET /exams/attempts/active` · `PATCH /exams/attempts/:id/answers` · `POST /exams/attempts/:id/sections/:code/submit` · `POST /exams/attempts/:id/submit` · `GET /exams/attempts/:id/result` · `GET /exams/attempts/:id/review` |
+| `progress` | `GET /progress/summary` · `GET /progress/mastery` |
+| `library` | `GET /library` (paginated, filtered, sorted) · `GET /library/families` |
+| `demo` | `GET /demo/word` · `POST /demo/speech` · `POST /demo/attempts` — the landing-page drill |
+| `notifications` | `GET /notifications` · `PATCH /notifications/:id/read` · `POST /notifications/read-all` · `GET/PUT /notifications/preferences` · `POST /notifications/push/subscribe` · `POST /notifications/push/unsubscribe` |
+| `certificates` | `GET /certificates/verify/:code` |
+
+**There is no `GET /exams` and no `GET /exams/:code`.** The catalogue and the lobby are read
+screens: the Server Component calls `GetExamCatalogue` through the composition root, and no
+client polls either of them. The same is true of the exam milestones, the weak-spot list, the
+practice queue, the grammar syllabus and a grammar day — use cases with a screen and no route.
+A handler exists when something on the client calls it, not for symmetry.
+
+Likewise `GET /progress/timeline` does not exist; the timeline is part of
+`GetProgressSummary`.
 
 Plus internal, non-public:
 
 | Path | Purpose |
 | --- | --- |
-| `/api/cron/exam-autosubmit` | backstop for `pg_cron`; auto-submits abandoned attempts |
-| `/api/cron/notifications` | hourly, timezone-aware dispatch |
-| `/api/cron/weekly-reports` | weekly report send |
+| `/api/cron/exam-autosubmit` | backstop for `pg_cron`; auto-submits abandoned attempts. `GET` and `POST`, `maxDuration = 60` |
+| `/api/cron/notifications` | timezone-aware dispatch. `GET` and `POST`, `maxDuration = 60` |
 | `/api/health` · `/api/ready` | liveness and readiness, both public |
+| `/api/metrics` | counters and timings, behind `withCron`'s bearer secret — not public |
 | `/api/v1/openapi.json` | generated from the Zod schemas |
+
+Vercel Cron calls both jobs **daily** (`vercel.json`), not hourly — see `09-notifications.md`
+for what that costs and why. There is no `/api/cron/weekly-reports`: `SendWeeklyReportUseCase`
+exists and is tested, but nothing schedules it yet.
+
+Cron routes are built by **`withCron`**, not `withApi`: they have no session, they
+authenticate with `Bearer ${CRON_SECRET}` compared in constant time, and they return a plain
+job summary rather than the learner envelope.
 
 ## `withApi` — the one wrapper
 
@@ -73,12 +92,14 @@ Nothing reaches a handler unvalidated, and no handler resolves its own session.
 ## Cross-cutting rules
 
 - **Cursor-based pagination everywhere.** No offset pagination, not even on
-  `/library/words` — it breaks under concurrent writes and degrades with depth.
+  `/library` — it breaks under concurrent writes and degrades with depth.
 - **Rate limits on every write route**, through `IRateLimiter`. Default implementation is
   Postgres-backed so it needs no extra infrastructure; Upstash Redis swaps in behind the same
   port. Exam answer saving gets a higher ceiling — a learner typing fast is not an attacker.
-- **`GET /certificates/:id/verify` is the only public business route.** A certificate is
-  worthless if an employer needs an account to check it.
+- **`GET /certificates/verify/:code` is the only public business route.** A certificate is
+  worthless if an employer needs an account to check it. It answers from the
+  `certificate_verifications` view — name, track, score, issue date, revocation, and nothing
+  else — and a revoked certificate verifies **as revoked**, not as missing.
 - **`export const runtime = 'nodejs'`** on every handler touching the database.
   **`export const dynamic = 'force-dynamic'`** on every exam and lesson handler — a cached
   exam response is a correctness bug.
@@ -99,7 +120,9 @@ future non-web client. Both paths run the same use case. Never two implementatio
 ## Response shape discipline
 
 `GET /exams/attempts/:id/review` returns correct answers. **Every other exam route must not**,
-before submission. See `08-exam-engine.md` rule 3 and its snapshot test.
+before submission — including `GET /exams/attempts/:id/result`, which carries the score and
+the by-section breakdown but not the paper. See `08-exam-engine.md` rule 3 and its snapshot
+test.
 
 ## Health
 

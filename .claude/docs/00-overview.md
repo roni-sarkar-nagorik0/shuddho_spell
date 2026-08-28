@@ -19,7 +19,7 @@ per phoneme, per rule family.
 ## The product
 
 A **28-day program** (with a compressed 21-day sprint track). Each day is one session of
-roughly 25–45 minutes moving through five stages:
+roughly 60 minutes — `estimatedMinutes` on every `ProgramDay` — moving through five stages:
 
 | Stage | What happens |
 | --- | --- |
@@ -57,13 +57,30 @@ Everything else in the codebase is plumbing around these. Get them right.
 
 ## Content scale
 
-- 1,240 words across 28 days
-- 560 sentence items
-- 44 phonemes
-- 24 rule families
+Two bodies of content, kept apart on purpose.
+
+**The taught corpus** — everything the 28 days drill, mark and examine:
+
+| Item | Count |
+| --- | --- |
+| Words | **3,000** across 28 days |
+| Sentence items | 560 |
+| Phonemes | 44 |
+| Rule families | 24 |
+| Programme days | 28, at 60 estimated minutes each |
+| Exam definitions | 5 |
+| Grammar days | 28, with 112 checks |
+
+**The reference corpus** — `content/word-families/`, **412 families / 2,299 IELTS words**.
+Nothing here is drilled, marked or seeded into `words`; it is the `/library/families`
+browsing screen. Folding it into the taught corpus would put 2,299 untaught words into the
+exam distractor pool and the daily dictation queue, so the two are separated at the directory
+level and no import mixes them.
 
 This is real linguistic content. It is generated one week at a time, validated after each
-week, and anything uncertain is flagged rather than invented. See `10-content-pipeline.md`.
+week, and anything uncertain is flagged rather than invented — 29 of the 3,000 words carry
+`ipaNeedsReview`, and `pnpm content:validate` prints them every run. See
+`10-content-pipeline.md`.
 
 ## Shape of the build
 

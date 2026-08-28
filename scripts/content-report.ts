@@ -5,7 +5,14 @@
  * `ipaNeedsReview` list to be reported so a human can check it. This prints
  * both, plus the per-week breakdown and the distribution across the 28 days,
  * and it **exits non-zero when a target count is missed** — a report that only
- * described what was there would let 900 words pass as 1,240.
+ * described what was there would let 900 words pass as 3,000.
+ *
+ * The targets are **floors**, not exact counts, and they were not always: the
+ * corpus grew from 1,240 to 3,000 words and an equality check turned that into
+ * `MISS words 3000 / 1240` and a non-zero exit — a complete corpus reported as
+ * incomplete. Nothing caught it because this script is not in `prebuild`. A
+ * floor is what the claim actually is ("the course teaches at least this
+ * much"), and it is the same shape as `WORD_FAMILY_MINIMUM_WORDS`.
  */
 import process from 'node:process';
 import { PHONEMES, RULE_FAMILIES, WEEKS, readContent } from '../content/index';
@@ -13,6 +20,7 @@ import { PHONEMES, RULE_FAMILIES, WEEKS, readContent } from '../content/index';
 interface ITarget {
   readonly label: string;
   readonly actual: number;
+  /** The floor. `actual` below this is a miss; above it is fine. */
   readonly expected: number;
 }
 
@@ -23,7 +31,7 @@ function out(line: string): void {
 }
 
 const targets: readonly ITarget[] = [
-  { label: 'words', actual: counts.words, expected: 1240 },
+  { label: 'words', actual: counts.words, expected: 3000 },
   { label: 'sentence items', actual: counts.sentenceItems, expected: 560 },
   { label: 'phonemes', actual: counts.phonemes, expected: 44 },
   { label: 'rule families', actual: counts.ruleFamilies, expected: 24 },
@@ -34,7 +42,7 @@ out('');
 out('content totals');
 
 for (const target of targets) {
-  const mark = target.actual === target.expected ? 'ok  ' : 'MISS';
+  const mark = target.actual >= target.expected ? 'ok  ' : 'MISS';
 
   out(
     `  ${mark} ${target.label.padEnd(15)} ${String(target.actual).padStart(5)} / ${String(target.expected)}`,
@@ -104,7 +112,7 @@ if (counts.ipaNeedsReview.length === 0) {
 
 out('');
 
-if (issues.length > 0 || targets.some((target) => target.actual !== target.expected)) {
+if (issues.length > 0 || targets.some((target) => target.actual < target.expected)) {
   out('content is NOT complete.');
   process.exit(1);
 }

@@ -43,13 +43,23 @@ Enforced by `eslint-plugin-boundaries`. A violation is a **lint error**.
 
 ```
 src/
+  proxy.ts                           runs before every page: session refresh, CSP, route
+                                     protection. Next 16's name for middleware.ts (D24)
+  instrumentation.ts                 Sentry
+  i18n/                              next-intl locales and request config
   app/                               Next.js App Router
-    (marketing)/                     public pages — /, pricing, faq
-    (learn)/                         authenticated app — dashboard, lesson, exams …
-    auth/callback/route.ts           OAuth code exchange
+    page.tsx  manifest.ts            the marketing landing page and the PWA manifest,
+                                     with the demo components beside them
+    (learn)/                         the signed-in shell — dashboard, program, library,
+                                     grammar, progress, words, settings, admin, gallery
+    (focus)/lesson/[day]             focus mode: the shell stripped to the session
+    (exam)/exams/attempt/[id]        the exam runtime, flat primary-900, no shell
+    verify/[code]/                   public certificate verification — outside every group
+    login/  auth/callback/route.ts   sign-in and the OAuth code exchange
     api/
       v1/<feature>/route.ts          3-line re-export of the module's handler
       cron/<job>/route.ts            scheduled jobs, guarded by CRON_SECRET
+      health · ready · metrics       liveness, readiness, counters
     layout.tsx  globals.css
   modules/<feature>/
     domain/
@@ -61,8 +71,8 @@ src/
       errors/                        typed domain errors, never generic Error
     application/
       use-cases/                     ONE class, ONE public execute()
-      ports/                         IClock, ISpeechScorer, IPushSender,
-                                     IIdGenerator, IUnitOfWork, IRateLimiter
+      ports/                         IClock, IIdGenerator, IRandom, ISpeechScorer,
+                                     IPushSender, ILessonWriteUnit, IExamWriteUnit
       dto/                           input/output interfaces
       mappers/                       domain <-> dto
     infrastructure/
@@ -77,7 +87,8 @@ src/
   components/                        design system + feature components
   lib/                               env, supabase clients, logger, api wrapper, i18n
 supabase/migrations/                 plain SQL, numbered, forward-only
-content/                             typed course content, one file per week
+content/                             typed course content — one file per week, plus
+                                     grammar/ and word-families/ (see 10-content-pipeline.md)
 ```
 
 `src/app/api/v1/lessons/sessions/route.ts` is genuinely three lines:
@@ -194,8 +205,10 @@ is a missing use case.
 
 - **Server Components** may call a use case directly through the composition root for reads.
   They must not duplicate handler logic — the same use case serves both paths.
-- **Server Actions** are allowed for simple form mutations (onboarding, preferences).
-  They go through `withAction`, the same wrapper contract as `withApi`.
+- **Server Actions are allowed** for simple form mutations, through `withAction` — the same
+  wrapper contract as `withApi`. **None are used today.** Onboarding and preferences went to
+  route handlers instead, so `withAction` has not been written; write it with the first
+  action, not before, and do not add a second wrapper contract beside it.
 - **Anything a client polls, retries, or calls optimistically is a route handler**, not an
   action — exam answer saving, attempt submission, review submission. Actions have no useful
   status codes and no cache semantics.
@@ -206,8 +219,9 @@ is a missing use case.
 | --- | --- | --- |
 | `CLOCK` | `IClock` | `infrastructure/adapters/system-clock` |
 | `ID_GENERATOR` | `IIdGenerator` | `infrastructure/adapters/uuid-generator` |
-| `UNIT_OF_WORK` | `IUnitOfWork` | Postgres function wrapper |
-| `RATE_LIMITER` | `IRateLimiter` | Postgres-backed; Upstash Redis optional swap |
+| `LESSON_WRITE_UNIT` · `EXAM_WRITE_UNIT` | `ILessonWriteUnit` · `IExamWriteUnit` | one Postgres function per method. **`IUnitOfWork` could not be built** — see `05-domain-model.md` |
+| `RANDOM` | `IRandom` | seeded, so a blueprint is reproducible |
+| `RATE_LIMITER` | `IRateLimiter` (in `src/contracts`) | Postgres-backed, migration `012`; Upstash Redis optional swap |
 | `SPEECH_SCORER` | `ISpeechScorer` | phase 6 blend scorer |
 | `PUSH_SENDER` | `IPushSender` | web-push / VAPID |
 | `IN_APP_NOTIFIER` | `IInAppNotifier` | notification row writer |
@@ -229,12 +243,14 @@ There is no long-running server process, so there is no in-process scheduler.
 
 | Job | Mechanism |
 | --- | --- |
-| exam auto-submit for abandoned attempts | `pg_cron` calling a Postgres function — the safety net that must work even if the app is down |
-| hourly notification dispatch | `/api/cron/notifications`, called by Vercel Cron |
-| weekly reports | `/api/cron/weekly-reports`, called by Vercel Cron |
+| exam auto-submit for abandoned attempts | `pg_cron` calling a Postgres function — the safety net that must work even if the app is down. `/api/cron/exam-autosubmit` is the backstop |
+| notification dispatch | `/api/cron/notifications`, called by Vercel Cron. Written as an hourly tick; **scheduled daily**, because Hobby refuses a finer schedule. See `09-notifications.md` |
+| weekly reports | **not scheduled.** `SendWeeklyReportUseCase` exists and is tested; nothing calls it yet |
 
-Every `/api/cron/*` handler rejects any request whose `Authorization` header is not
-`Bearer ${CRON_SECRET}`, and is idempotent — a double-fire must not double-send.
+Every `/api/cron/*` handler is built by **`withCron`**, not `withApi`: no session, an
+`Authorization` header compared in constant time against `Bearer ${CRON_SECRET}`, and
+idempotent — a double-fire must not double-send. `/api/metrics` uses the same wrapper, which
+is why it is not public.
 
 ## Errors
 
@@ -249,7 +265,7 @@ Every `/api/cron/*` handler rejects any request whose `Authorization` header is 
 
 Where a use case must write several tables atomically — completing a session writes attempts,
 review items, mastery records and the streak — push the multi-write into a Postgres function
-and call it through `IUnitOfWork`. **Do not fake atomicity in TypeScript.** This matters more
+and call it through the module's write-unit port (`ILessonWriteUnit`, `IExamWriteUnit`). **Do not fake atomicity in TypeScript.** This matters more
 on serverless than it did with a persistent server: a function invocation can die mid-way at
 any point.
 

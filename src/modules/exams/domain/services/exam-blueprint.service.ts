@@ -68,7 +68,7 @@ const EQUAL_WEIGHT = 1;
  * **deterministic**: the same seed and the same pool produce the same paper,
  * every time, on any machine, so an attempt can be rebuilt from the `seed`
  * column for support or for a test. And it **prefers what the learner is weak
- * at**, because an exam drawn uniformly from 1,240 words measures luck.
+ * at**, because an exam drawn uniformly from 3,000 words measures luck.
  *
  * The reconciliation is a jittered sort rather than a shuffle: each candidate's
  * position is its weakness plus a keyed pseudo-random third. Weakness stays in
