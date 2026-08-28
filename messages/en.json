@@ -37,7 +37,9 @@
     "admin": "Admin",
     "myWords": "My words",
     "grammar": "Grammar",
-    "wordFamilies": "Word families"
+    "wordFamilies": "Word families",
+    "vocabulary": "Vocabulary",
+    "verbs": "Verb forms"
   },
   "dashboard": {
     "dayOf": "Day {day} of {total}",

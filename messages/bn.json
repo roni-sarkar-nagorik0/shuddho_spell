@@ -37,7 +37,9 @@
     "admin": "অ্যাডমিন",
     "myWords": "আমার শব্দ",
     "grammar": "ব্যাকরণ",
-    "wordFamilies": "শব্দপরিবার"
+    "wordFamilies": "শব্দপরিবার",
+    "vocabulary": "শব্দভাণ্ডার তালিকা",
+    "verbs": "ক্রিয়ার রূপ"
   },
   "dashboard": {
     "dayOf": "{total} দিনের মধ্যে {day} দিন",
