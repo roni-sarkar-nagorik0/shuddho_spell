@@ -54,6 +54,16 @@ const PUBLIC_ROUTES: readonly string[] = [
   // its schema rather than of anyone's discipline. Rate-limited harder than the
   // word endpoint, because it reads three tables and runs the confusion map.
   'src/app/api/v1/demo/speech/route.ts',
+  // The landing page's vocabulary drill, public on exactly the terms the two
+  // endpoints above are: the panel promises "no account needed", and it
+  // **writes nothing**. It answers with six questions per request — no cursor,
+  // no filter, no topic — so it demonstrates the 777-pair corpus without
+  // publishing it; the pageable version of the same data is
+  // `/api/v1/library/vocabulary`, which requires a session. The answer travels
+  // with the question because nothing here is marked, which is stated on the
+  // DTO rather than left to be discovered. Rate-limited by address, because
+  // there is no learner id to charge it to.
+  'src/app/api/v1/demo/vocabulary/route.ts',
 ];
 
 function routeFiles(directory: string): readonly string[] {

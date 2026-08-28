@@ -7,6 +7,7 @@
  */
 import { validateGrammar } from '../content/grammar/index';
 import { readContent } from '../content/index';
+import { validateVocabulary } from '../content/ielts-vocabulary/index';
 import { validateWordFamilies } from '../content/word-families/index';
 
 const { issues, counts } = readContent();
@@ -30,7 +31,14 @@ const grammar = validateGrammar();
  */
 const families = validateWordFamilies();
 
-for (const issue of [...issues, ...grammar.issues, ...families.issues]) {
+/**
+ * The IELTS vocabulary pairs, validated on the same terms as the families:
+ * content that fails the build, sharing no field and no seed path with the
+ * 28-day corpus. Its entry count is printed because the screen prints it too.
+ */
+const vocabulary = validateVocabulary();
+
+for (const issue of [...issues, ...grammar.issues, ...families.issues, ...vocabulary.issues]) {
   process.stdout.write(`${issue.file}  ${issue.path}\n    ${issue.message}\n`);
 }
 
@@ -48,6 +56,8 @@ process.stdout.write(
     `  grammar checks  ${String(grammar.counts.checks)}`,
     `  word families   ${String(families.counts.families)}`,
     `  family words    ${String(families.counts.words)}`,
+    `  vocabulary      ${String(vocabulary.counts.entries)}`,
+    `  synonyms        ${String(vocabulary.counts.synonyms)}`,
     '',
   ].join('\n'),
 );
@@ -68,7 +78,8 @@ if (counts.phonemesNeedReview.length > 0) {
   process.stdout.write(`phonemes flagged for review: ${counts.phonemesNeedReview.join(', ')}\n\n`);
 }
 
-const total = issues.length + grammar.issues.length + families.issues.length;
+const total =
+  issues.length + grammar.issues.length + families.issues.length + vocabulary.issues.length;
 
 if (total > 0) {
   process.stdout.write(`${String(total)} issue(s). Content is not valid.\n`);

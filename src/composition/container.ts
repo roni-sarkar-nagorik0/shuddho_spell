@@ -35,6 +35,7 @@ import { type IPhonemeRepository } from '@/modules/library/domain/repositories/p
 import { type IRuleFamilyRepository } from '@/modules/library/domain/repositories/rule-family-repository';
 import { type IGrammarExampleSource } from '@/modules/library/domain/repositories/grammar-example-source';
 import { type IWordFamilySource } from '@/modules/library/domain/repositories/word-family-source';
+import { type IVocabularySource } from '@/modules/library/domain/repositories/vocabulary-source';
 import { type ICourseWordIndex } from '@/modules/library/domain/repositories/course-word-index';
 import { type ISentenceItemRepository } from '@/modules/library/domain/repositories/sentence-item-repository';
 import { type IWordPhonemeRepository } from '@/modules/library/domain/repositories/word-phoneme-repository';
@@ -44,6 +45,7 @@ import { SupabasePhonemeRepository } from '@/modules/library/infrastructure/pers
 import { SupabaseRuleFamilyRepository } from '@/modules/library/infrastructure/persistence/supabase/rule-family.repository';
 import { GrammarContentExampleSource } from '@/modules/library/infrastructure/persistence/content/grammar-example.source';
 import { WordFamilyContentSource } from '@/modules/library/infrastructure/persistence/content/word-family.source';
+import { VocabularyContentSource } from '@/modules/library/infrastructure/persistence/content/vocabulary.source';
 import { ContentCourseWordIndex } from '@/modules/library/infrastructure/persistence/content/course-word.index';
 import { SupabaseSentenceItemRepository } from '@/modules/library/infrastructure/persistence/supabase/sentence-item.repository';
 import { SupabaseWordPhonemeRepository } from '@/modules/library/infrastructure/persistence/supabase/word-phoneme.repository';
@@ -104,6 +106,13 @@ export interface IContainer {
    * than a table read per request.
    */
   readonly wordFamilies: IWordFamilySource;
+  /**
+   * The IELTS vocabulary pairs — 777 words and the 1,411 synonyms that earn the
+   * band. Content again, and a third corpus rather than a fourth week: it is
+   * reference, not course, and `content/ielts-vocabulary/schema.ts` sets out
+   * why it is kept apart from both the families and the 3,000.
+   */
+  readonly vocabulary: IVocabularySource;
   /**
    * Which of those words the 28-day course also teaches. The one bridge between
    * two corpora that are otherwise kept apart on purpose.
@@ -204,6 +213,7 @@ export function createContainer(requestId: string): IContainer {
   // 1,887 root-to-form derivations, and a 3,000-word set. Per request that
   // would be the same answer computed again on every page of the library.
   const wordFamilies = new WordFamilyContentSource();
+  const vocabulary = new VocabularyContentSource();
   const courseWords = new ContentCourseWordIndex();
   const speechScorer = new ConfusionMapSpeechScorer();
 
@@ -227,6 +237,7 @@ export function createContainer(requestId: string): IContainer {
     sentenceItems: new SupabaseSentenceItemRepository(db),
     grammarExamples,
     wordFamilies,
+    vocabulary,
     courseWords,
     ruleFamilies: new SupabaseRuleFamilyRepository(db),
     phonemes,

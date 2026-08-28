@@ -35,6 +35,10 @@ import {
 import { completeOnboardingBodySchema } from '@/modules/auth/presentation/dto/onboarding-requests';
 import { verifyParamsSchema } from '@/modules/certificates/presentation/dto/certificate-requests';
 import { libraryQuerySchema } from '@/modules/library/presentation/dto/library-requests';
+import {
+  vocabularyDrillQuerySchema,
+  vocabularyQuerySchema,
+} from '@/modules/library/presentation/dto/vocabulary-requests';
 import { wordFamilyQuerySchema } from '@/modules/library/presentation/dto/word-family-requests';
 import {
   demoSpeechBodySchema,
@@ -144,6 +148,19 @@ registry.registerPath({
   responses: ok(demoWordSchema, 'A word, or null when the corpus is not seeded.'),
 });
 
+// The second public demo endpoint, and the payload carries its answers for the
+// same reason `/demo/word` carries its word: nothing is marked, so there is
+// nothing for a server to be authoritative about. Six questions per call, never
+// a page — the corpus itself is behind the authenticated endpoint above.
+registry.registerPath({
+  method: 'get',
+  path: '/api/v1/demo/vocabulary',
+  summary:
+    'A short multiple-choice vocabulary drill for the landing page. Public; no account needed. Questions only — never the corpus.',
+  request: { query: vocabularyDrillQuerySchema },
+  responses: ok(z.unknown(), 'The questions, shuffled, with the corpus size they came from.'),
+});
+
 // The spoken half, and public like the read half rather than like the write
 // half — it marks an attempt and stores nothing. A **transcript**, never audio:
 // the browser transcribes, and 07-speech-scoring.md requires the server to hold
@@ -251,6 +268,15 @@ registry.registerPath({
     'A page of the IELTS word families — a root, the words built from it, and the spelling rule each form follows. Reference content, identical for every learner; authenticated because it is what a subscriber paid for, not because it is private.',
   request: { query: wordFamilyQuerySchema },
   responses: ok(z.unknown(), 'The page, the topic and rule indexes, and the cursor for the next one.'),
+});
+
+registry.registerPath({
+  method: 'get',
+  path: '/api/v1/library/vocabulary',
+  summary:
+    'A page of the IELTS vocabulary pairs — a word and what it can be swapped for. Reference content, identical for every learner; authenticated on the same terms as the families, because it is what a subscriber paid for rather than because it is private.',
+  request: { query: vocabularyQuerySchema },
+  responses: ok(z.unknown(), 'The page, the topic and part-of-speech indexes, and the cursor for the next one.'),
 });
 
 registry.registerPath({

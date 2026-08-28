@@ -15,6 +15,8 @@ import { type IGrammarLessonView } from '@/modules/grammar/application/dto/gramm
 import { type IGrammarSyllabus } from '@/modules/grammar/application/dto/grammar-syllabus';
 import { type IDictationDemoWord } from '@/modules/library/application/dto/dictation-demo-word';
 import { type ILibraryPage } from '@/modules/library/application/dto/library-page';
+import { type IVocabularyDrill } from '@/modules/library/application/dto/vocabulary-drill';
+import { type IVocabularyPage } from '@/modules/library/application/dto/vocabulary-view';
 import { type IWordFamilyPage } from '@/modules/library/application/dto/word-family-view';
 import { type IWordPhonemeStrip } from '@/modules/library/application/dto/phoneme-strip';
 import { type IProgramDayDetail } from '@/modules/program/application/dto/program-day-detail';
@@ -51,6 +53,8 @@ import {
   makeGetExamResult,
   makeGetDictationDemoWord,
   makeGetLibraryPage,
+  makeGetVocabulary,
+  makeGetVocabularyDrill,
   makeGetWordFamilies,
   makeGetPhonemeStrips,
   makeGetPracticeQueue,
@@ -206,6 +210,32 @@ export const readWordFamilies = cache(
   async (pageSize: number): Promise<IWordFamilyPage> =>
     makeGetWordFamilies(createContainer(crypto.randomUUID())).execute({ pageSize }),
 );
+
+/**
+ * The vocabulary reference's first page.
+ *
+ * `cache` and not `unstable_cache`, for the reason `readWordFamilies` gives one
+ * function above — and more strongly here, because this use case makes no query
+ * at all. There is nothing to cache across requests that is not already a
+ * compiled module; what is worth avoiding is running it twice in one render.
+ */
+export const readVocabulary = cache(
+  async (pageSize: number): Promise<IVocabularyPage> =>
+    makeGetVocabulary(createContainer(crypto.randomUUID())).execute({ pageSize }),
+);
+
+/**
+ * A drill, for the dashboard card and the landing demo.
+ *
+ * **Not** memoised, and that is the same deliberate exception `readDictationDemoWord`
+ * makes: the whole value of this read is that it differs between renders, and
+ * `cache` around a random pick is a way of making it stop being random. It is
+ * cheap enough to leave uncached — no query, no round trip, a few dozen array
+ * reads over a module that is already in memory.
+ */
+export async function readVocabularyDrill(count: number): Promise<IVocabularyDrill> {
+  return makeGetVocabularyDrill(createContainer(crypto.randomUUID())).execute({ count });
+}
 
 export const readPhonemeStrips = cache(
   async (userId: string, wordIds: readonly string[]): Promise<readonly IWordPhonemeStrip[]> =>

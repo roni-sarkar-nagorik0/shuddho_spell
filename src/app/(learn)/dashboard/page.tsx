@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { type ReactElement } from 'react';
 import { MasteryMatrix, type IMasteryMatrixCell } from '@/components/data/mastery-matrix';
+import { VocabularyDrill } from '@/components/learning/vocabulary-drill';
 import { PushPermissionBanner } from '@/components/notifications/push-permission-banner';
 import { HeatCell } from '@/components/primitives/heat-cell';
 import { MonoValue } from '@/components/primitives/mono-value';
@@ -16,6 +17,7 @@ import {
   readProgressSummary,
   readActivity,
   readWordsPractised,
+  readVocabularyDrill,
 } from '@/composition/reads';
 import { requireUser } from '@/lib/auth/current-user';
 import { publicEnv } from '@/lib/env.public';
@@ -26,13 +28,15 @@ import { ReviewTable } from './review-table';
  * The dashboard — one question, "what should I do now", answered above the
  * fold.
  *
- * **Seven reads, issued together, zero N+1.** Each is one use case that returns
+ * **Eight reads, issued together, zero N+1.** Each is one use case that returns
  * its whole answer in one shape; none of them is called per row, and the six
  * run in a single `Promise.all` rather than serially. That is the acceptance
  * criterion for this feature and it is a property of the read path, not of the
  * markup: `readLearnerDashboard` and `readProgressSummary` both need the
  * profile, and React's `cache` in `reads.ts` means the second one does not
- * fetch it again.
+ * fetch it again. The eighth — the vocabulary drill — makes no query at all:
+ * it is a compiled corpus and a random pick, and it joins the `Promise.all`
+ * only so it cannot become a serial await later.
  *
  * The page never calls this application's own HTTP API. It goes through the
  * composition root to the same use cases the handlers use — the sweep in
@@ -45,6 +49,15 @@ import { ReviewTable } from './review-table';
  */
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
+
+/**
+ * Six questions in the dashboard card.
+ *
+ * Short enough to finish before the day's lesson rather than instead of it —
+ * this panel is a warm-up, and a twenty-question drill on the page whose whole
+ * job is "start today's lesson" would be competing with it.
+ */
+const VOCABULARY_QUESTIONS = 6;
 
 function toMatrixCells(
   cells: readonly {
@@ -65,15 +78,17 @@ function toMatrixCells(
 export default async function DashboardPage(): Promise<ReactElement> {
   const user = await requireUser();
 
-  const [dashboard, summary, mastery, activity, reviews, nextExam, practised] = await Promise.all([
-    readLearnerDashboard(user.userId),
-    readProgressSummary(user.userId),
-    readMasterySnapshot(user.userId),
-    readActivity(user.userId, 7),
-    readDueReviews(user.userId),
-    readNextExam(user.userId),
-    readWordsPractised(user.userId),
-  ]);
+  const [dashboard, summary, mastery, activity, reviews, nextExam, practised, vocabulary] =
+    await Promise.all([
+      readLearnerDashboard(user.userId),
+      readProgressSummary(user.userId),
+      readMasterySnapshot(user.userId),
+      readActivity(user.userId, 7),
+      readDueReviews(user.userId),
+      readNextExam(user.userId),
+      readWordsPractised(user.userId),
+      readVocabularyDrill(VOCABULARY_QUESTIONS),
+    ]);
 
   const accuracyPercent = Math.round(summary.overallAccuracy);
   const hasAttempts = summary.itemsReviewed > 0;
@@ -287,6 +302,30 @@ export default async function DashboardPage(): Promise<ReactElement> {
             Showing {reviews.items.length} of {reviews.totalDue} due. The rest surface tomorrow.
           </p>
         )}
+      </section>
+
+      {/*
+        IELTS vocabulary, as a drill rather than a list.
+
+        Beside the word-family card because they are the same shelf — both are
+        reference rather than course — and above it because this one can be
+        *done* in thirty seconds while that one can only be opened. A learner
+        who has three minutes gets a real exercise out of this panel; the list
+        of 777 is one click away for the learner who wants to read.
+      */}
+      <section className="card col-span-12 lg:col-span-7">
+        <PanelHeader
+          action={
+            <Link className="text-[11px] text-primary-900" href="/library/vocabulary">
+              All {vocabulary.totalEntries}
+            </Link>
+          }
+          note="IELTS vocabulary"
+          title="The better word"
+        />
+        <div className="p-4">
+          <VocabularyDrill initial={vocabulary} roundSize={VOCABULARY_QUESTIONS} tone="light" />
+        </div>
       </section>
 
       {/*
