@@ -1,6 +1,9 @@
 import Link from 'next/link';
 import { type ReactElement } from 'react';
-import { readDictationDemoWord } from '@/composition/reads';
+import { VerbDrill } from '@/components/learning/verb-drill';
+import { FormKey, TenseChart } from '@/components/learning/verb-guide';
+import { VocabularyDrill } from '@/components/learning/vocabulary-drill';
+import { readDictationDemoWord, readVerbDrill, readVocabularyDrill } from '@/composition/reads';
 import { AlphabetFamilies } from './alphabet-families';
 import { SignatureFlow } from './signature-flow';
 import { AlphabetStrip } from './alphabet-strip';
@@ -62,6 +65,35 @@ const BENGALI_ERRORS: readonly IErrorExample[] = [
   { written: 'schoolo', meant: 'school', why: 'Bangla syllables do not end in a bare consonant cluster, so a vowel gets added to close them.' },
 ];
 
+/**
+ * Six pairs shown flat beside the drill.
+ *
+ * A table, not a second drill: the drill proves the exercise works and this
+ * proves what is *in* it, and those are different claims that a visitor reads
+ * at different speeds.
+ *
+ * **Every row is a real pair from `content/ielts-vocabulary`**, read the way
+ * the corpus files it — the word on the right is the headword and the word on
+ * the left is one of its listed equivalents. None of these six is written for
+ * the advert, which is the rule the error table above follows too. The note is
+ * the topic file it comes from, so a visitor can check any row on the
+ * vocabulary screen after signing in.
+ */
+interface IVocabularySwap {
+  readonly plain: string;
+  readonly better: string;
+  readonly note: string;
+}
+
+const VOCABULARY_EXAMPLES: readonly IVocabularySwap[] = [
+  { plain: 'huge', better: 'vast', note: 'quantity' },
+  { plain: 'boring', better: 'monotonous', note: 'quality' },
+  { plain: 'worsen', better: 'deteriorate', note: 'change' },
+  { plain: 'stubborn', better: 'obdurate', note: 'character' },
+  { plain: 'repeat', better: 'reiterate', note: 'communication' },
+  { plain: 'careless', better: 'negligent', note: 'character' },
+];
+
 interface IFaqEntry {
   readonly question: string;
   readonly answer: string;
@@ -115,8 +147,38 @@ function Section({
   );
 }
 
+/**
+ * Six questions in the front-door drill.
+ *
+ * Long enough that a visitor who answers them all has actually done something —
+ * two would read as a teaser — and short enough to finish standing up. The
+ * "another round" button is what makes six a floor rather than a ceiling.
+ */
+const VOCABULARY_QUESTIONS = 6;
+
+/**
+ * Six verb questions, drawn from the hundred commonest verbs only.
+ *
+ * The front door is not the place to ask for the past participle of `abash`. A
+ * visitor's first question is "can I do this", and a corpus-wide draw would
+ * answer it with "no" for a reason that has nothing to do with them. The full
+ * 998 are behind the sign-in, where somebody has already decided they want
+ * them.
+ */
+const VERB_QUESTIONS = 6;
+
 export default async function LandingPage(): Promise<ReactElement> {
-  const demoWord = await readDictationDemoWord();
+  /*
+   * Three reads, together rather than in turn. Only the first costs a query:
+   * the two drills are a random pick over a compiled module, which is the
+   * reason they can sit on the front door at all, and the reason a visitor gets
+   * three exercises for the latency of one.
+   */
+  const [demoWord, vocabulary, verbs] = await Promise.all([
+    readDictationDemoWord(),
+    readVocabularyDrill(VOCABULARY_QUESTIONS),
+    readVerbDrill(VERB_QUESTIONS, true),
+  ]);
 
   return (
     <main className="bg-neutral-50">
@@ -159,6 +221,94 @@ export default async function LandingPage(): Promise<ReactElement> {
           </div>
         </div>
       </section>
+
+      {/*
+        The vocabulary drill, directly under the hero and above the loop.
+
+        The hero's demo asks a visitor to *spell* — which is work, and which a
+        visitor on a phone in a queue will not start. This one asks them to
+        *choose*, which is one tap, and it is the section that makes the case
+        for the reference behind it: 777 pairs, and the four words on screen are
+        four of them rather than four written for the advert. Nothing is stored
+        and no account is asked for.
+      */}
+      <Section
+        note="Every word on the left is one you already have. The word beside it is the one an examiner was waiting for. Four options, one tap, and the answer is spoken aloud — because half of knowing a word is knowing how it sounds."
+        title="The better word"
+      >
+        <div className="grid gap-6 lg:grid-cols-2">
+          <div id="vocabulary">
+            <VocabularyDrill initial={vocabulary} roundSize={VOCABULARY_QUESTIONS} tone="light" />
+          </div>
+          <div className="flex flex-col gap-4">
+            <dl className="grid grid-cols-2 gap-4">
+              <div className="card p-4">
+                <dt className="label">Pairs</dt>
+                <dd className="num mt-1 text-2xl text-primary-900">{vocabulary.totalEntries}</dd>
+                <dd className="mt-2 text-muted">
+                  Filed by what the word does — character, change, quantity — not by the exam
+                  topic it turns up in.
+                </dd>
+              </div>
+              <div className="card p-4">
+                <dt className="label">Papers</dt>
+                <dd className="num mt-1 text-2xl text-primary-900">4</dd>
+                <dd className="mt-2 text-muted">
+                  A swap earns marks in Writing and Speaking, and costs nothing in Reading and
+                  Listening, where the same words arrive as the question.
+                </dd>
+              </div>
+            </dl>
+            <ul className="card divide-y divide-hairline">
+              {VOCABULARY_EXAMPLES.map((row) => (
+                <li className="flex items-baseline gap-3 px-4 py-2" key={row.plain}>
+                  <span className="w-24 shrink-0 font-mono text-muted">{row.plain}</span>
+                  <span className="text-muted">→</span>
+                  <span className="font-mono text-mastered">{row.better}</span>
+                  <span className="ml-auto text-[11px] text-muted">{row.note}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </Section>
+
+      {/*
+        Verb forms — the third and last demo, and the most teachable one.
+
+        It comes after the vocabulary swap because it is a bigger idea: a swap
+        is one word for another, and this is a system with five parts. So the
+        section is ordered the way it has to be learnt rather than the way it
+        would look best — what the five forms are, then a drill, then which
+        tense takes which. A visitor who reads only the five cards at the top
+        has still been taught the thing most learners are missing.
+
+        The drill draws from the hundred commonest verbs; the other 898 are
+        behind the sign-in.
+      */}
+      <Section
+        note="Every English verb has five forms, and almost every verb mistake is one of them standing where another belongs. Six questions, no account, and the rule behind each answer — the p in stopping doubles for a reason you can use on every verb shaped like it."
+        title="Five forms, one verb"
+      >
+        <div className="flex flex-col gap-6">
+          <FormKey />
+
+          <div className="grid gap-6 lg:grid-cols-2">
+            <div id="verbs">
+              <VerbDrill coreOnly initial={verbs} roundSize={VERB_QUESTIONS} tone="light" />
+            </div>
+            <div className="flex flex-col gap-2">
+              <p className="label">Which tense takes which form</p>
+              <TenseChart />
+            </div>
+          </div>
+
+          <p className="text-muted">
+            The full reference — <span className="num">{verbs.totalVerbs}</span> verbs in all five
+            forms, the spelling rules, and the eight mistakes that cost the most marks — is inside.
+          </p>
+        </div>
+      </Section>
 
       {/*
         The section that says what the product is, placed directly under the

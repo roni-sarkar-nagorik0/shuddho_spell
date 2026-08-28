@@ -21,6 +21,10 @@ import { createVerifyCertificateHandler } from '@/modules/certificates/presentat
 import { createGetDemoWordHandler } from '@/modules/library/presentation/handlers/get-demo-word';
 import { createScoreDemoSpeechHandler } from '@/modules/library/presentation/handlers/score-demo-speech';
 import { createGetLibraryHandler } from '@/modules/library/presentation/handlers/get-library';
+import { createGetVerbsHandler } from '@/modules/library/presentation/handlers/get-verbs';
+import { createGetVerbDrillHandler } from '@/modules/library/presentation/handlers/get-verb-drill';
+import { createGetVocabularyHandler } from '@/modules/library/presentation/handlers/get-vocabulary';
+import { createGetVocabularyDrillHandler } from '@/modules/library/presentation/handlers/get-vocabulary-drill';
 import { createGetWordFamiliesHandler } from '@/modules/library/presentation/handlers/get-word-families';
 import { createCompleteSessionHandler } from '@/modules/lessons/presentation/handlers/complete-session';
 import { createAdvanceStageHandler } from '@/modules/lessons/presentation/handlers/advance-stage';
@@ -52,6 +56,10 @@ import {
   makeGetDictationDemoWord,
   makeScoreDemoSpeech,
   makeGetLibraryPage,
+  makeGetVerbs,
+  makeGetVerbDrill,
+  makeGetVocabulary,
+  makeGetVocabularyDrill,
   makeGetWordFamilies,
   makeVerifyCertificate,
   makeGetMe,
@@ -261,4 +269,29 @@ export const recordDemoAttemptHandler = createRecordDemoAttemptHandler(() =>
  */
 export const getWordFamiliesHandler = createGetWordFamiliesHandler(() =>
   makeGetWordFamilies(container()),
+);
+
+/**
+ * The IELTS vocabulary reference — same shape as the families above: the page
+ * renders its first slice through `reads.ts`, and every filter after that comes
+ * through here.
+ */
+export const getVocabularyHandler = createGetVocabularyHandler(() =>
+  makeGetVocabulary(container()),
+);
+
+/**
+ * The public drill. The only endpoint over this corpus a visitor without a
+ * session can reach, and it hands out six questions rather than a page.
+ */
+export const getVocabularyDrillHandler = createGetVocabularyDrillHandler(() =>
+  makeGetVocabularyDrill(container()),
+);
+
+/** The verb reference — the third of the three library screens. */
+export const getVerbsHandler = createGetVerbsHandler(() => makeGetVerbs(container()));
+
+/** The public verb drill. Six questions, never a page. */
+export const getVerbDrillHandler = createGetVerbDrillHandler(() =>
+  makeGetVerbDrill(container()),
 );

@@ -50,6 +50,10 @@ import { GetExamCatalogueUseCase } from '@/modules/exams/application/use-cases/g
 import { GetNextExamUseCase } from '@/modules/exams/application/use-cases/get-next-exam';
 import { ListExamMilestonesUseCase } from '@/modules/exams/application/use-cases/list-exam-milestones';
 import { GetDictationDemoWordUseCase } from '@/modules/library/application/use-cases/get-dictation-demo-word';
+import { GetVerbsUseCase } from '@/modules/library/application/use-cases/get-verbs';
+import { GetVerbDrillUseCase } from '@/modules/library/application/use-cases/get-verb-drill';
+import { GetVocabularyUseCase } from '@/modules/library/application/use-cases/get-vocabulary';
+import { GetVocabularyDrillUseCase } from '@/modules/library/application/use-cases/get-vocabulary-drill';
 import { GetWordFamiliesUseCase } from '@/modules/library/application/use-cases/get-word-families';
 import { ScoreDemoSpeechUseCase } from '@/modules/library/application/use-cases/score-demo-speech';
 import { GetLibraryPageUseCase } from '@/modules/library/application/use-cases/get-library-page';
@@ -550,4 +554,43 @@ export function makeGetPractiseLog(c: IContainer): GetPractiseLogUseCase {
  */
 export function makeGetWordFamilies(c: IContainer): GetWordFamiliesUseCase {
   return new GetWordFamiliesUseCase(c.wordFamilies, c.ruleFamilies, c.courseWords);
+}
+
+/**
+ * The IELTS vocabulary reference.
+ *
+ * No repository and no query: both dependencies are compiled content. Unlike
+ * the families it needs no rule statements, because a synonym pair demonstrates
+ * no spelling rule — the swap *is* the lesson.
+ */
+export function makeGetVocabulary(c: IContainer): GetVocabularyUseCase {
+  return new GetVocabularyUseCase(c.vocabulary, c.courseWords);
+}
+
+/**
+ * The vocabulary drill behind the landing demo and the dashboard card.
+ *
+ * The random source is the third argument the reference version does not take,
+ * and it is the whole difference between them: this one picks.
+ */
+export function makeGetVocabularyDrill(c: IContainer): GetVocabularyDrillUseCase {
+  return new GetVocabularyDrillUseCase(c.vocabulary, c.random, c.courseWords);
+}
+
+/**
+ * The verb reference. Two content dependencies and no query — the course index
+ * is here for the same `course` badge the other two references carry.
+ */
+export function makeGetVerbs(c: IContainer): GetVerbsUseCase {
+  return new GetVerbsUseCase(c.verbs, c.courseWords);
+}
+
+/**
+ * The verb drill behind the landing demo and the dashboard card.
+ *
+ * No course index: a drill question is a verb and its own four other forms, so
+ * there is nothing on it for the badge to mark.
+ */
+export function makeGetVerbDrill(c: IContainer): GetVerbDrillUseCase {
+  return new GetVerbDrillUseCase(c.verbs, c.random);
 }
